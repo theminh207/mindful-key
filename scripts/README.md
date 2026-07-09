@@ -1,40 +1,30 @@
 # scripts/ — đóng gói & phát hành
 
-Thư mục này **cố ý chỉ có 3 script** (không tính script này). Không phải mang thiếu — đây là
-quyết định có chủ đích: mindful-key hiện phát hành bản **ad-hoc** (tự cài/tự test trên máy
-mình), chưa ký thật với Apple. Cả dây chuyền phát hành "xịn" (ký Developer ID + notarize +
-tự cập nhật) để dành tới **Bước 9** trong roadmap, khi có Apple Developer Program mới làm
-thật được.
+Chủ dự án đã có Apple Developer Program (dùng chung tài khoản với repo tham chiếu
+`github.com/sonpiaz/haynoi`), nên dây chuyền phát hành **ký thật (Developer ID) + notarize**
+đã lên hàng — không còn là "để dành tới Bước 9" nữa. Việc còn thiếu duy nhất là **auto-update
+qua Sparkle** (`make_appcast.sh`), vì app chưa gắn Sparkle SDK — xem mục cuối.
 
-> Ví như bếp nhà: giờ mới nấu ăn cho mình nên chỉ cần dao với thớt. Bộ nồi tiệc 10 món cất
-> trên gác, lấy xuống khi có khách (Bước 9). Cất gọn, không phải là quên.
- 
-## Đang có (chạy được với bản ad-hoc, KHÔNG cần tài khoản Apple trả phí)
+## Đang có
 
 | Script | Làm gì |
 |---|---|
-| `package_app.sh` | Build **universal binary** (chạy được cả máy chip M lẫn Intel) — build arm64 + x86_64 riêng rồi dán lại bằng `lipo`. Tắt hẳn code signing khi build nên KHÔNG cần Developer ID. Chạy: `make universal` hoặc `ARCHES="arm64 x86_64" bash scripts/package_app.sh`. |
-| `build-dmg.sh` | Đóng `MindfulKey.app` (đã build) thành file `.dmg` để cài. Adapt từ `package-dmg.sh` gốc, trỏ vào đường dẫn build của XcodeGen. Tự tìm thấy app do `package_app.sh` build ra. |
-| `sign-and-notarize.sh` | **Placeholder** — chạy là `exit 1` kèm hướng dẫn các bước ký thật + notarize. Chờ có Developer ID mới điền ruột. |
+| `package_app.sh` | Build **universal binary** (arm64 + x86_64, dán bằng `lipo`). Tắt code signing lúc build xcodebuild — chữ ký ad-hoc thật sự chỉ được gắn ở bước ký lại cuối script (bắt buộc, vì sửa `Info.plist`/`lipo` sau khi archive đã ký sẽ làm hỏng seal — xem comment trong file). |
+| `build-dmg.sh` | Đóng 1 `.app` (đường dẫn truyền vào hoặc tự dò trong `platforms/apple/build/`) thành `.dmg`. |
+| `sign-and-notarize.sh` | Ký thật (Developer ID Application, hardened runtime) + nộp notarize (App Store Connect API Key hoặc Apple ID) + staple. Chạy 2 lần tách biệt trong `release.sh`: 1 lần cho `.app`, 1 lần cho `.dmg` (mỗi loại cần vé staple riêng). |
+| `changelog-to-html.sh` | Cắt đúng mục `## [version]` trong `CHANGELOG.md`. Mặc định in HTML (dành cho `<description>` appcast Sparkle sau này); `RAW=1` in thẳng Markdown gốc (dùng làm GitHub Release body). |
+| `release.sh` | Nhạc trưởng: test engine → build universal → xuất+dán dSYM → ký/notarize `.app` → đóng `.dmg` → ký/notarize `.dmg` → cắt changelog. Output vào `release-out/`. `SKIP_SIGN=1` để build+đóng gói ad-hoc test cục bộ, không notarize (không dùng bản này để phát hành công khai). |
 
-> **Lưu ý:** `package_app.sh` ở đây chỉ port đúng phần "build universal" trong bản haynoi gốc
-> (phần không đụng tới tài khoản Apple) — KHÔNG bao gồm phần ký/notarize (bản gốc gộp chung,
-> ở đây tách riêng ra `sign-and-notarize.sh` cho đúng ranh giới "cái gì cần tiền, cái gì không").
+`.github/workflows/release.yml` gọi `release.sh` tự động khi gắn tag `v*` rồi đăng GitHub
+Release — xem checklist secrets cần cấu hình ở đầu file đó (hoặc `docs/RELEASE.md`).
 
-## Để dành tới Bước 9 (bản mẫu: repo haynoi)
+## Còn thiếu — auto-update Sparkle
 
-Bản mẫu đầy đủ ở repo tham chiếu **`github.com/sonpiaz/haynoi`** (thư mục `scripts/`) — cái
-mà HIẾN CHƯƠNG §3.2 nói "học theo". Khi bắt đầu ký thật, port thêm 3 script này qua (đổi
-`Haynoi`→`MindfulKey`, đổi đường dẫn cho khớp cấu trúc `platforms/apple/`):
-
-| Script | Làm gì |
-|---|---|
-| `make_appcast.sh` | Đổ một `<item>` (đã ký EdDSA) vào `appcast.xml` để app tự cập nhật qua Sparkle. Rào cản KHÁC hẳn 2 dòng dưới: không phải thiếu tiền mà thiếu công cụ `generate_appcast`, chỉ có sau khi gắn thư viện Sparkle vào project (việc riêng, miễn phí). |
-| `changelog-to-html.sh` | Cắt phần version tương ứng trong `CHANGELOG.md` → HTML làm release-notes cho Sparkle. Không cần tiền, không cần Sparkle — nhưng đứng một mình thì vô dụng vì không ai gọi nó (make_appcast.sh gọi). |
-| `release.sh` | Nhạc trưởng: gọi lần lượt package → sign/notarize → dmg (bản haynoi có ký+notarize+trang trí đẹp) → appcast. |
-
-> **Vì sao `appcast.xml` ở gốc repo đang rỗng?** Chính vì `make_appcast.sh` — thứ đổ dữ liệu
-> vào nó — nằm trong nhóm hoãn này. Cái khung có sẵn, cái máy bơm để dành. Không phải lỗi.
+`make_appcast.sh` (đổ `<item>` đã ký EdDSA vào `appcast.xml`) **chưa port** — không phải vì
+thiếu tiền/quyền như trước, mà vì **app chưa gắn Sparkle SDK vào `project.yml`**. Sinh
+appcast bây giờ sẽ là artifact chết, không ai đọc. Khi nào cắm Sparkle vào app xong, port
+`make_appcast.sh` từ `github.com/sonpiaz/haynoi` (đổi `Haynoi`→`MindfulKey`) và nối vào cuối
+`release.sh`.
 
 ## KHÔNG mang qua (không hợp mindful-key)
 
@@ -45,5 +35,6 @@ mà HIẾN CHƯƠNG §3.2 nói "học theo". Khi bắt đầu ký thật, port t
 
 ## Đọc thêm
 
-- Bối cảnh ký / notarize / vì sao đang ad-hoc: `docs/INSTALL.md`, `docs/PRD.md §6`.
+- Checklist đầy đủ để chạy release thật (lấy cert, cấu hình secrets GitHub): `docs/RELEASE.md`.
+- Bối cảnh trước khi có Developer Program: `docs/INSTALL.md`, `docs/PRD.md §6`.
 - Đích của cả dây chuyền (universal binary + Sparkle appcast): §3.3 trong `docs/AGENT-BRIEF.md`.

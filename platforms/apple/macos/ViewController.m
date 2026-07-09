@@ -10,6 +10,7 @@
 #import "OpenKeyManager.h"
 #import "AppDelegate.h"
 #import "MyTextField.h"
+#import "GatekeeperCardView.h"   // [MINDFUL] Story 1.4 (lát cắt dọc — treo card lên đầu panel)
 
 extern AppDelegate* appDelegate;
 extern void OnSpellCheckingChanged(void);

@@ -81,5 +81,13 @@ fi
 # riêng chỉ có ích khi gắn Sparkle tự-cập-nhật, việc đó đang hoãn, xem scripts/README.md).
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$APP_DIR/Contents/Info.plist"
 
+# Ký lại ad-hoc SAU khi đã sửa Info.plist (và dán lipo nếu universal) — bắt buộc, vì sửa
+# Info.plist/binary sau khi archive đã ký (ad-hoc tự động của linker arm64) làm hỏng seal chữ
+# ký cũ. Chữ ký hỏng khiến macOS không nhận diện đúng identity của app ở lần chạy sau, làm
+# TCC "quên" quyền Accessibility/Input Monitoring đã cấp trước đó dù chưa từng bị thu hồi
+# (đã xác nhận qua thực nghiệm: app tự thoát lặp lại dù TCC.db báo auth_value=2 cho tới khi
+# ký lại). Không dùng identity thật (chưa có Developer ID) nên vẫn ký "-" (ad-hoc).
+codesign --force --deep -s - "$APP_DIR"
+
 echo "==> Đã build xong: $APP_DIR"
 echo "    phiên bản: $VERSION"
