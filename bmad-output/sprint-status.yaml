@@ -171,13 +171,16 @@ stories:
   - id: "1.9.convert-window-reskin"
     title: "Thay áo cửa sổ Chuyển mã (Convert)"
     epic_id: "epic-1"
-    status: ready-for-dev
+    status: done                 # commit 7c759a7 — verified: xcodebuild sạch, make test xanh, lldb functional test
     file: "bmad-output/IMPLEMENTATION-PLAN-legacy-reskin.md#story-3"
     parallel_set: "2b"
     dependencies:
       - "1.1.brand-ui-primitives"
     owned_scope:
       - "platforms/apple/macos/ConvertToolViewController.mm"
+      - "platforms/apple/macos/ConvertToolViewController.h"
+      - "platforms/apple/macos/BrandControls.h"    # mở rộng: +SecondaryButton, +NSView(BrandCard)
+      - "platforms/apple/macos/BrandControls.m"
 
   - id: "1.10.about-window-reskin"
     title: "Thay áo cửa sổ Thông tin (About) — logo + vá bug đè chữ"
