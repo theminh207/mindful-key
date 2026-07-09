@@ -19,6 +19,40 @@ or delete past entries — supersede them with a new entry that references the o
 
 ---
 
+### 2026-07-10 — Reconciliation: huỷ 1.3/1.6 (bỏ 4-tab), chốt "card nổi + thay áo tab" là kiến trúc cuối
+- **Decision:** Trong 1 phiên làm việc khác (chat riêng, không biết epic-1 đã tồn tại), chủ dự
+  án được hỏi lại từ đầu và chốt **giữ nguyên 4 tab, chỉ thay áo** cho cả màn Điều khiển lẫn 3
+  cửa sổ legacy khác (Gõ tắt/Chuyển mã/Thông tin) — mâu thuẫn trực tiếp với goal gốc của epic-1
+  ("Bỏ 4-tab → 1-trang cuộn dọc", story `1.3.panel-scroll-layout` + `1.6.panel-integration-states`).
+  Khi đối chiếu lại với chủ dự án qua AskUserQuestion: **chốt kết hợp** — giữ nguyên lát cắt dọc
+  đã làm (card `GatekeeperCardView` nổi trên đỉnh cửa sổ 4-tab, xem entry "Thực thi: lát cắt
+  dọc" bên dưới), 4 tab bên dưới KHÔNG bị đập mà chỉ thay áo theo NOW BRAND OS. **Story 1.3 và
+  1.6 chính thức SUPERSEDED** (không triển khai như đã viết — file story giữ lại làm tài liệu
+  tham khảo, không xoá). Thêm 4 story mới **1.7–1.10** cho việc thay áo 4 cửa sổ (xem `epics.md`
+  cập nhật), đặc tả trong `IMPLEMENTATION-PLAN-legacy-reskin.md` thay vì viết đủ 4 file
+  `.story.md` đầy đủ như 1.1–1.6 (rút gọn quy trình có chủ đích, xem Rationale).
+- **Rationale:** (1) `BrandControls.h/.m` (story 1.1) đã code xong + commit — dùng lại được
+  100% cho cả 4 story mới, không tạo trùng lặp. (2) Lát cắt dọc (card nổi) đã hoạt động, đập
+  bỏ sẽ lãng phí việc đã làm và trì hoãn Feature #1 hiển thị — không có lý do kỹ thuật để đập.
+  (3) "Giữ 4 tab" giảm rủi ro thật (không phải sửa mù 2.281 dòng storyboard) và khớp đúng
+  "Surgical Changes" trong CLAUDE.md cho 1 đợt cải tiến, không phải viết lại. (4) Viết đủ 4 file
+  story.md đầy đủ format cho việc thuần "thay áo" (không có ẩn số kiến trúc, không cần UX
+  journey mới) là overhead không cần thiết — `IMPLEMENTATION-PLAN-legacy-reskin.md` (prompt +
+  owned_scope + cổng chất lượng) đã đủ để dispatch cho platform-shell-agent.
+- **Hệ quả cần biết khi làm 1.7 (legacy-tabs-reskin):** đụng `ViewController.m` — file NÀY đang
+  có sửa đổi CHƯA COMMIT từ lát cắt dọc (mount `GatekeeperCardView` trong `viewDidAppear`). 1.7
+  phải đọc state hiện tại trước, sửa THÊM vào phần nội dung 4-tab cũ (checkbox → PillSwitch, tab
+  cam → teal), TUYỆT ĐỐI không xoá/ghi đè khối `mountGatekeeperCardIfNeeded`. Vì vậy 1.7 **phụ
+  thuộc 1.4** (không chạy song song với phần chưa commit của 1.4), dù về mặt file thì 1.4 "xong
+  sớm" — ghi nhận đây là 1 dependency thực tế không có trong DAG gốc của 1.3/1.6.
+- **1.5 (bell-settings-card) chưa quyết cách gắn:** khi tới lúc làm, cần chốt lại — nổi thành
+  card thứ 2 phía trên 4 tab (giống 1.4) hay nhét vào 1 trong 4 tab cũ. CHƯA hỏi chủ dự án — để
+  ngỏ, không tự quyết khi tới story đó.
+- **Made by:** thực thi (platform-shell), xác nhận trực tiếp với chủ dự án qua AskUserQuestion.
+- **Supersedes:** story `1.3.panel-scroll-layout`, story `1.6.panel-integration-states`
+  (phần layout "bỏ 4-tab" trong entry "UX design: 2 tài liệu DESIGN + EXPERIENCE" bên dưới —
+  KHÔNG phải phần EmotionWave/Gatekeeper/Bell, vẫn giữ nguyên).
+
 ### 2026-07-09 — Brainstorm: hiện đại hóa Bảng điều khiển macOS (chủ đề NGOÀI scope Windows Port)
 - **Decision:** Chạy 1 phiên `bmad-brainstorm` cho chủ đề control panel **macOS** (bố cục
   hiện đại + chuông cấu hình được + hiển thị cảm xúc rõ hơn), dùng 3 kỹ thuật song song
@@ -46,6 +80,23 @@ or delete past entries — supersede them with a new entry that references the o
   các artifact macOS-panel giữ hậu tố riêng để không lẫn.
 - **Made by:** bmad-brainstorm (ghi nhận lựa chọn của chủ dự án)
 - **Supersedes:** phần "CHỜ chủ dự án chốt" trong entry brainstorm phía trên
+
+### 2026-07-09 — Thực thi: lát cắt dọc thay vì đúng thứ tự đợt (giảm rủi ro storyboard)
+- **Decision:** Khi vào Đợt 2, thay vì làm story 1.3 (đập `Main.storyboard` 2.281 dòng →
+  trang cuộn) trước theo plan, chọn **lát cắt dọc**: hiện thực `GatekeeperCardView` (story 1.4)
+  rồi TREO nó lên đầu panel HIỆN TẠI qua `ViewController.viewDidAppear` (nới cửa sổ cao thêm 1
+  dải ở đỉnh, nội dung cũ neo đáy giữ nguyên) — KHÔNG đập storyboard.
+- **Rationale:** (1) Storyboard 2.281 dòng + ~138 control, sửa "mù" (agent không thấy UI render,
+  chỉ chủ dự án thấy) rủi ro vỡ panel / mất setting OpenKey (TC-1.3-6) rất cao. (2) Theo plan,
+  card gác cổng chỉ hiện ở story 1.6 (Đợt 3) — chủ dự án (notech, đang học) cần thấy kết quả
+  sớm để có phản hồi thị giác. Lát cắt dọc cho "phần thưởng thị giác" (con sóng + Feature #1)
+  với rủi ro thấp, panel cũ nguyên vẹn. Chủ dự án chọn hướng này.
+- **Lệch plan có kiểm soát:** kéo MỘT phần việc "lắp card" của story 1.6 lên sớm cho riêng card
+  gác cổng. Story 1.3 (đập storyboard) vẫn làm sau, cẩn thận, chỗ chủ dự án xem được từng bước.
+  Owned-scope 1.4 (chỉ GatekeeperCardView.h/.mm) nay chạm thêm ViewController.m — ghi nhận, sẽ
+  hoà vào 1.6 khi làm thật.
+- **Made by:** thực thi (platform-shell + mood-layer), ngoài phạm vi BMAD planning.
+- **Supersedes:** none
 
 ### 2026-07-09 — Parallel plan: 3 đợt sóng (sửa lỗi over-serialize của script)
 - **Decision:** Tạo `parallelization-plan.md` (maxParallel=3) với 3 đợt: W1 {1.1,1.2} · W2

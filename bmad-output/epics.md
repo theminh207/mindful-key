@@ -15,9 +15,16 @@
 
 ## Epic 1: Hiện đại hóa Bảng điều khiển macOS
 
-**Goal:** Thay control panel 4-tab-checkbox cũ (kế thừa OpenKey) bằng 1 panel cuộn dọc
-hiện đại theo NOW BRAND OS — nơi Feature #1 (gác cổng) nổi bật nhất trên cùng, chuông cấu
-hình được, và trạng thái cảm xúc hiển thị rõ nhưng tôn trọng riêng tư + hiến chương.
+> **⚠️ REVISE 2026-07-10** (xem `decision-log.md` entry "Reconciliation: huỷ 1.3/1.6"). Hướng
+> "bỏ 4-tab" bên dưới KHÔNG còn là hướng thi công. Hướng THẬT đang làm: card mới
+> (Gatekeeper/Bell) **nổi trên đỉnh** cửa sổ 4-tab hiện có; 4 tab bên dưới **chỉ thay áo**
+> NOW BRAND OS (checkbox→PillSwitch, tab cam→teal), KHÔNG bị đập. Chi tiết: story 1.7–1.10
+> (mục Stories bên dưới) + `IMPLEMENTATION-PLAN-legacy-reskin.md`.
+
+**Goal (gốc — phần "bỏ 4-tab" đã lỗi thời, xem note trên):** Thay control panel 4-tab-checkbox
+cũ (kế thừa OpenKey) bằng ~~1 panel cuộn dọc~~ **card nổi + tab thay áo** hiện đại theo NOW
+BRAND OS — nơi Feature #1 (gác cổng) nổi bật nhất trên cùng, chuông cấu hình được, và trạng
+thái cảm xúc hiển thị rõ nhưng tôn trọng riêng tư + hiến chương.
 
 **In scope (cited):**
 - Bố cục 1-trang "quan sát trước, cấu hình sau" [Source: EXPERIENCE#nguyên-tắc + brainstorm#top-insights-1]
@@ -44,17 +51,26 @@ hình được, và trạng thái cảm xúc hiển thị rõ nhưng tôn trọn
 
 | ID | Slug | Intent | Wave | Status |
 |----|------|--------|------|--------|
-| 1.1 | brand-ui-primitives | Tạo PillSwitch (tint teal) + StatusDot (1 màu) + CTAButton (chữ tối) tái dùng; sở hữu token BrandColors | 1 | ready-for-dev |
-| 1.2 | emotion-wave-view | EmotionWaveView: sóng 1-hue biên độ, thu gọn mặc định, reduced-motion, VoiceOver | 1 | ready-for-dev |
-| 1.3 | panel-scroll-layout | Bỏ 4-tab → 1-trang cuộn dọc + card container + divider + PrivacyFooterRow + InputMethodCard | 2 | ready-for-dev |
-| 1.4 | gatekeeper-card | GatekeeperCardView full-width trên cùng + copy + lối tắt "Soi lại hôm nay →" | 2 | ready-for-dev |
-| 1.5 | bell-settings-card | BellSettingsView + đọc/ghi âm/volume/3-mức/giờ-yên-lặng qua UserDefaults thay hardcode | 2 | ready-for-dev |
-| 1.6 | panel-integration-states | Ráp các card vào panel + thứ tự ưu tiên + screen states (loading/empty/error/consent/tắt) | 3 | ready-for-dev |
+| 1.1 | brand-ui-primitives | Tạo PillSwitch (tint teal) + StatusDot (1 màu) + CTAButton (chữ tối) tái dùng; sở hữu token BrandColors | 1 | **done** |
+| 1.2 | emotion-wave-view | EmotionWaveView: sóng 1-hue biên độ, thu gọn mặc định, reduced-motion, VoiceOver | 1 | **done** |
+| 1.3 | panel-scroll-layout | ~~Bỏ 4-tab → 1-trang cuộn dọc~~ + card container + divider + PrivacyFooterRow + InputMethodCard | 2 | **superseded** (xem 2026-07-10 trong decision-log) |
+| 1.4 | gatekeeper-card | GatekeeperCardView full-width trên cùng + copy + lối tắt "Soi lại hôm nay →" | 2 | **in-progress** (lát cắt dọc, chưa commit — treo trên đỉnh 4-tab cũ) |
+| 1.5 | bell-settings-card | BellSettingsView + đọc/ghi âm/volume/3-mức/giờ-yên-lặng qua UserDefaults thay hardcode | 2 | ready-for-dev (cách gắn UI: CHƯA chốt — xem decision-log) |
+| 1.6 | panel-integration-states | ~~Ráp các card vào panel cuộn dọc~~ + thứ tự ưu tiên + screen states (loading/empty/error/consent/tắt) | 3 | **superseded** (xem 2026-07-10 trong decision-log) |
+| 1.7 | legacy-tabs-reskin | Thay áo nội dung 4 tab cũ (checkbox→PillSwitch, tab cam→teal, card hoá) trong `ViewController.m` — **giữ nguyên 4 tab + khối `mountGatekeeperCardIfNeeded`** | 2b | ready-for-dev — spec: `IMPLEMENTATION-PLAN-legacy-reskin.md` §Story 1 |
+| 1.8 | macro-window-reskin | Thay áo cửa sổ Gõ tắt (`MacroViewController.mm`): tên cột tiếng Việt, CTA cam cho "Thêm", card hoá | 2b | ready-for-dev — spec: `IMPLEMENTATION-PLAN-legacy-reskin.md` §Story 2 |
+| 1.9 | convert-window-reskin | Thay áo cửa sổ Chuyển mã (`ConvertToolViewController.mm`): bỏ ảnh nút xanh-dương/xanh-lá, CTA cam + nút phụ trung tính | 2b | ready-for-dev — spec: `IMPLEMENTATION-PLAN-legacy-reskin.md` §Story 3 |
+| 1.10 | about-window-reskin | Thay áo cửa sổ Thông tin (`AboutViewController.m`): logo sóng `~` thay "V" đỏ, vá bug đè chữ, **giữ nguyên credit Mai Vũ Tuyên (GPL v3)** | 2b | ready-for-dev — spec: `IMPLEMENTATION-PLAN-legacy-reskin.md` §Story 4 |
 
-> **Scope-conflict-check (2026-07-09):** sau khi giải quyết, chỉ còn 1 overlap CÓ CHỦ ĐÍCH:
-> 1.3 ↔ 1.6 trên `ViewController.m` + `Main.storyboard` → 2 story này PHẢI serialize (1.3
-> Wave 2 trước, 1.6 Wave 3 sau), KHÔNG chạy cùng đợt. Mọi cặp còn lại: OK (disjoint).
-> Token `BrandColors.h/.m` đã gán cho 1.1 sở hữu; 1.3/1.4/1.5 chỉ đọc.
+> **Scope-conflict-check (2026-07-09, revise 2026-07-10):** 1.3/1.6 superseded nên overlap gốc
+> của chúng với `ViewController.m`/`Main.storyboard` không còn áp dụng. Overlap MỚI cần biết:
+> **1.7 ↔ 1.4** cùng đụng `ViewController.m` — 1.4 đang có sửa đổi CHƯA COMMIT (mount card gác
+> cổng), nên 1.7 **phải chạy sau khi hiểu rõ state của 1.4**, sửa THÊM chứ không ghi đè (xem
+> decision-log). 1.8/1.9/1.10 dùng file hoàn toàn riêng (`MacroViewController.mm`,
+> `ConvertToolViewController.mm`, `AboutViewController.m`) → disjoint với mọi story khác, chạy
+> song song an toàn với nhau và với 1.5. Token `BrandColors.h/.m` (1.1) đã done — 1.7-1.10 chỉ
+> đọc, dùng lại `PillSwitch`/`StatusDot`/`CTAButton` có sẵn trong `BrandControls.h/.m`, KHÔNG
+> tạo helper mới trùng lặp.
 
 **Cross-epic dependencies:**
 - Blocked by: none (Epic 1 độc lập, không chờ Windows Port).
@@ -70,18 +86,25 @@ hình được, và trạng thái cảm xúc hiển thị rõ nhưng tôn trọn
 
 ## Delivery Tracking (count-based)
 
-- Total stories: 6
-- Ready-for-dev: 6
-- Done: 0
-- Remaining: 6
-- Completion rate: 0/6
+- Total stories: 10 (6 gốc + 4 thêm 2026-07-10; 2 trong 6 gốc đã superseded)
+- Done: 2 (1.1, 1.2)
+- Superseded: 2 (1.3, 1.6 — không tính vào "còn phải làm")
+- In-progress: 1 (1.4 — lát cắt dọc, chưa commit)
+- Remaining: 5 (1.5, 1.7, 1.8, 1.9, 1.10)
+- Completion rate: 2/8 hiệu lực (loại 2 superseded khỏi mẫu số)
 
 ## Notes
 
 - Đây là epic UI-nặng trên AppKit: `Main.storyboard` là XML lớn dùng chung → không thể song
-  song hoá tuyệt đối. Giải pháp: đẩy phần lớn UI vào **NSView subclass file mới** (mỗi story
-  1 component), chỉ để phần "nối dây vào panel" ở story tích hợp (1.6) chạy sau cùng.
+  song hoá tuyệt đối. Giải pháp gốc (đẩy UI vào NSView subclass file mới, story tích hợp ráp
+  sau cùng) đã **đổi hướng 2026-07-10**: thay vì 1 story tích hợp đập storyboard, các card mới
+  tự treo nổi lên trên (lát cắt dọc), 4 tab cũ giữ nguyên cấu trúc — ít điểm chạm storyboard
+  chung hơn hẳn so với plan gốc.
 - Mọi story chạm copy trạng thái phải mang acceptance criterion "gate: mô tả hay phán xét?".
 - Testing: dự án C++/ObjC không có unit-test UI — verify bằng `make build` sạch (0 warning
   mới) + checklist thủ công theo screen states trong EXPERIENCE. Engine không đụng → `make
   test` giữ xanh là đủ chứng minh không phá bộ não dùng chung.
+- Story 1.7–1.10 KHÔNG có file `.story.md` đầy đủ format (khác 1.1–1.6) — quyết định có chủ
+  đích (xem decision-log 2026-07-10): việc thuần "thay áo", không có ẩn số kiến trúc/UX mới,
+  nên dùng `IMPLEMENTATION-PLAN-legacy-reskin.md` (prompt + owned_scope + cổng chất lượng) làm
+  spec thay thế, đỡ overhead viết đủ format nặng cho việc rủi ro thấp.

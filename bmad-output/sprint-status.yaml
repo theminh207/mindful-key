@@ -1,9 +1,10 @@
 # BMAD Sprint Status — Sequencing System-of-Record
 # Generated: 2026-07-09T08:53:46Z
+# Last reconciled: 2026-07-10 (xem decision-log.md "Reconciliation: huỷ 1.3/1.6")
 # Project: mindful-key — Epic 1: Hiện đại hóa Bảng điều khiển macOS
 #
 # STATUS LIFECYCLE (chỉ là VIEW thứ tự — không phải metric):
-#   backlog → ready-for-dev → in-progress → review → done
+#   backlog → ready-for-dev → in-progress → review → done → (hoặc superseded, ngoài luồng)
 #
 # CAPACITY MODEL: wave width (số story chạy song song mỗi đợt), KHÔNG points.
 # KHÔNG velocity/burndown/points trong file này.
@@ -12,11 +13,19 @@
 #   - Trong TỪNG file story (.story.md): nghĩa "story đã BIÊN DỊCH xong, đủ mọi mục" — cả 6 đều vậy.
 #   - Trong file NÀY (sequencing): nghĩa "được DISPATCH ngay vì hết dependency" — chỉ Đợt 1.
 #   Story Đợt 2/3 để 'backlog' ở đây vì còn chờ story trước 'done', dù file đã biên dịch xong.
+#
+# ⚠️ RECONCILIATION 2026-07-10: 1.3 và 1.6 (goal "bỏ 4-tab") bị SUPERSEDED — hướng thi công
+# thật giờ là "card nổi trên đỉnh 4-tab cũ, 4 tab chỉ thay áo". Thêm story 1.7-1.10 cho việc
+# thay áo 4 cửa sổ legacy (Điều khiển/Gõ tắt/Chuyển mã/Thông tin), spec ở
+# bmad-output/IMPLEMENTATION-PLAN-legacy-reskin.md thay vì file .story.md đầy đủ (quyết định
+# có chủ đích — xem decision-log). 1.4 hiện IN-PROGRESS ngoài quy trình sprint bình thường
+# (lát cắt dọc, chưa commit) — đi trước 1.1/1.2 "done" dù dependency yêu cầu chờ chúng, vì
+# thực tế 1.1/1.2 đã done trước khi lát cắt dọc bắt đầu.
 
 project_name: "mindful-key — Bảng điều khiển macOS"
 track: "BMad Method"
 generated_at: "2026-07-09T08:53:46Z"
-last_updated: "2026-07-09T08:53:46Z"
+last_updated: "2026-07-10"
 
 # ---------------------------------------------------------------------------
 # EPICS
@@ -25,10 +34,11 @@ epics:
   - id: "epic-1"
     title: "Hiện đại hóa Bảng điều khiển macOS"
     description: >
-      Thay control panel 4-tab-checkbox cũ (kế thừa OpenKey) bằng 1 panel cuộn dọc hiện đại
-      theo NOW BRAND OS: Feature #1 (gác cổng) nổi bật nhất trên cùng, chuông cấu hình được,
-      trạng thái cảm xúc hiển thị rõ nhưng tôn trọng riêng tư + hiến chương.
-    status: in-progress          # có story ready-for-dev (Đợt 1) → epic in-progress
+      Card mới (Gatekeeper/Bell) nổi trên đỉnh cửa sổ 4-tab hiện có; 4 tab bên dưới CHỈ thay áo
+      NOW BRAND OS (không đập). Feature #1 (gác cổng) nổi bật nhất trên cùng, chuông cấu hình
+      được, trạng thái cảm xúc hiển thị rõ nhưng tôn trọng riêng tư + hiến chương.
+      [REVISE 2026-07-10 — bản gốc là "thay 4-tab bằng 1 panel cuộn dọc", xem decision-log]
+    status: in-progress
     story_ids:
       - "1.1.brand-ui-primitives"
       - "1.2.emotion-wave-view"
@@ -36,6 +46,10 @@ epics:
       - "1.4.gatekeeper-card"
       - "1.5.bell-settings-card"
       - "1.6.panel-integration-states"
+      - "1.7.legacy-tabs-reskin"
+      - "1.8.macro-window-reskin"
+      - "1.9.convert-window-reskin"
+      - "1.10.about-window-reskin"
 
 # ---------------------------------------------------------------------------
 # STORIES — order: epic trước, rồi topological theo dependency
@@ -44,11 +58,11 @@ epics:
 #   dependencies: story id phải 'done' trước khi story này lên 'ready-for-dev'.
 # ---------------------------------------------------------------------------
 stories:
-  # ---------- WAVE 1 (song song, dispatch ngay) ----------
+  # ---------- WAVE 1 (song song, dispatch ngay) — DONE ----------
   - id: "1.1.brand-ui-primitives"
     title: "Bộ control brand nền tảng — PillSwitch / StatusDot / CTAButton (+ sở hữu token BrandColors)"
     epic_id: "epic-1"
-    status: ready-for-dev
+    status: done                 # commit 4dcc947
     file: "bmad-output/stories/1.1.brand-ui-primitives.story.md"
     parallel_set: 1
     dependencies: []
@@ -61,7 +75,7 @@ stories:
   - id: "1.2.emotion-wave-view"
     title: "EmotionWaveView — widget sóng biên độ (1 hue, thu gọn mặc định)"
     epic_id: "epic-1"
-    status: ready-for-dev
+    status: done                 # commit 4dcc947
     file: "bmad-output/stories/1.2.emotion-wave-view.story.md"
     parallel_set: 1
     dependencies: []
@@ -69,11 +83,11 @@ stories:
       - "platforms/apple/macos/EmotionWaveView.h"
       - "platforms/apple/macos/EmotionWaveView.mm"
 
-  # ---------- WAVE 2 (sau khi Wave 1 done) ----------
+  # ---------- WAVE 2 gốc — SUPERSEDED 2026-07-10, giữ lại để truy vết ----------
   - id: "1.3.panel-scroll-layout"
     title: "Bỏ 4-tab → panel cuộn dọc + InputMethodCard + PrivacyFooterRow"
     epic_id: "epic-1"
-    status: backlog              # chờ 1.1 done (dùng PillSwitch/StatusDot/token)
+    status: superseded           # xem decision-log 2026-07-10 — KHÔNG triển khai
     file: "bmad-output/stories/1.3.panel-scroll-layout.story.md"
     parallel_set: 2
     dependencies:
@@ -86,7 +100,7 @@ stories:
   - id: "1.4.gatekeeper-card"
     title: "GatekeeperCardView — Card Gác cổng (Feature #1) full-width trên cùng"
     epic_id: "epic-1"
-    status: backlog              # chờ 1.2 (EmotionWaveView) + 1.1 (CTA/token)
+    status: in-progress          # lát cắt dọc: card mounted qua viewDidAppear, CHƯA COMMIT
     file: "bmad-output/stories/1.4.gatekeeper-card.story.md"
     parallel_set: 2
     dependencies:
@@ -95,11 +109,12 @@ stories:
     owned_scope:
       - "platforms/apple/macos/GatekeeperCardView.h"
       - "platforms/apple/macos/GatekeeperCardView.mm"
+      - "platforms/apple/macos/ViewController.m"   # mở rộng ngoài kế hoạch gốc — chỉ phần mountGatekeeperCardIfNeeded, xem decision-log
 
   - id: "1.5.bell-settings-card"
     title: "BellSettingsView — cấu hình chuông đọc UserDefaults thay hardcode"
     epic_id: "epic-1"
-    status: backlog              # chờ 1.1 (PillSwitch cho toggle Focus sync)
+    status: ready-for-dev        # chờ 1.1 (done) — dispatch được; cách gắn UI CHƯA chốt, hỏi trước khi làm
     file: "bmad-output/stories/1.5.bell-settings-card.story.md"
     parallel_set: 2
     dependencies:
@@ -112,11 +127,11 @@ stories:
       - "platforms/apple/macos/NudgeCoordinatorMac.mm"
       - "platforms/apple/macos/NudgeCoordinatorMac.h"
 
-  # ---------- WAVE 3 (ráp cuối) ----------
+  # ---------- WAVE 3 gốc — SUPERSEDED 2026-07-10, giữ lại để truy vết ----------
   - id: "1.6.panel-integration-states"
     title: "Ráp các card vào panel + thứ tự ưu tiên + screen states"
     epic_id: "epic-1"
-    status: backlog              # chờ 1.3+1.4+1.5; serialize với 1.3 (cùng ViewController+storyboard)
+    status: superseded           # xem decision-log 2026-07-10 — KHÔNG triển khai
     file: "bmad-output/stories/1.6.panel-integration-states.story.md"
     parallel_set: 3
     dependencies:
@@ -128,23 +143,78 @@ stories:
       - "platforms/apple/macos/ViewController.h"
       - "platforms/apple/Resources/Base.lproj/Main.storyboard"
 
+  # ---------- WAVE 2b (thêm 2026-07-10) — thay áo 4 cửa sổ legacy, song song với 1.5 ----------
+  - id: "1.7.legacy-tabs-reskin"
+    title: "Thay áo nội dung 4 tab cũ trong ViewController.m (checkbox→PillSwitch, tab cam→teal)"
+    epic_id: "epic-1"
+    status: ready-for-dev        # chờ hiểu rõ state của 1.4 (cùng file, xem note) — không phải 'backlog' cấu trúc
+    file: "bmad-output/IMPLEMENTATION-PLAN-legacy-reskin.md#story-1"
+    parallel_set: "2b"
+    dependencies:
+      - "1.1.brand-ui-primitives"
+      - "1.4.gatekeeper-card"     # cùng file ViewController.m — phải sửa THÊM, không đè
+    owned_scope:
+      - "platforms/apple/macos/ViewController.m"      # chỉ phần nội dung 4-tab, KHÔNG đụng mountGatekeeperCardIfNeeded
+      - "platforms/apple/Resources/Base.lproj/Main.storyboard"   # tối thiểu, chỉ nếu buộc phải
+
+  - id: "1.8.macro-window-reskin"
+    title: "Thay áo cửa sổ Gõ tắt (Macro)"
+    epic_id: "epic-1"
+    status: ready-for-dev
+    file: "bmad-output/IMPLEMENTATION-PLAN-legacy-reskin.md#story-2"
+    parallel_set: "2b"
+    dependencies:
+      - "1.1.brand-ui-primitives"
+    owned_scope:
+      - "platforms/apple/macos/MacroViewController.mm"
+
+  - id: "1.9.convert-window-reskin"
+    title: "Thay áo cửa sổ Chuyển mã (Convert)"
+    epic_id: "epic-1"
+    status: ready-for-dev
+    file: "bmad-output/IMPLEMENTATION-PLAN-legacy-reskin.md#story-3"
+    parallel_set: "2b"
+    dependencies:
+      - "1.1.brand-ui-primitives"
+    owned_scope:
+      - "platforms/apple/macos/ConvertToolViewController.mm"
+
+  - id: "1.10.about-window-reskin"
+    title: "Thay áo cửa sổ Thông tin (About) — logo + vá bug đè chữ"
+    epic_id: "epic-1"
+    status: ready-for-dev
+    file: "bmad-output/IMPLEMENTATION-PLAN-legacy-reskin.md#story-4"
+    parallel_set: "2b"
+    dependencies:
+      - "1.1.brand-ui-primitives"
+    owned_scope:
+      - "platforms/apple/macos/AboutViewController.m"
+      - "platforms/apple/Resources/Assets.xcassets"
+
 # ---------------------------------------------------------------------------
 # SEQUENCING SUMMARY
 # ---------------------------------------------------------------------------
 sequencing_summary:
   total_epics: 1
-  total_stories: 6
-  total_waves: 3
-  wave_widths: [2, 3, 1]         # Đợt 1: 2 story · Đợt 2: 3 story · Đợt 3: 1 story
+  total_stories: 10
+  superseded: 2                  # 1.3, 1.6 — không tính vào waves còn lại
+  total_waves: 3                 # Wave 1 (done) · Wave 2/2b (hiện tại) · Wave 3 (superseded, không còn)
+  wave_widths: [2, "1 in-progress + 4 ready (2b)", 0]
   ready_for_dev:
-    count: 2
+    count: 4
     story_ids:
-      - "1.1.brand-ui-primitives"
-      - "1.2.emotion-wave-view"
+      - "1.5.bell-settings-card"
+      - "1.7.legacy-tabs-reskin"
+      - "1.8.macro-window-reskin"
+      - "1.9.convert-window-reskin"
+      - "1.10.about-window-reskin"
   handoff_notes: >
-    Cả 6 file story ĐÃ biên dịch xong (ready-for-dev ở cấp file). Về sequencing, dispatch ngay
-    Đợt 1 = {1.1, 1.2} (owned_scope disjoint, an toàn song song). Khi cả 2 'done' → promote Đợt 2
-    {1.3, 1.4, 1.5}. Lưu ý serialize CÓ CHỦ ĐÍCH: 1.3 và 1.6 cùng sở hữu ViewController.m +
-    Main.storyboard nên 1.6 (Đợt 3) chạy SAU 1.3, không cùng đợt. Giao code qua skill
-    mindful-keyboard-harness: platform-shell-agent cho 1.1/1.3/1.4/1.6, mood-layer-agent cho
-    1.2/1.5. KHÔNG đụng core/engine (bộ não dùng chung) — giữ make test xanh.
+    2026-07-10 reconciliation: 1.1/1.2 done + committed. 1.4 in-progress (lát cắt dọc, chưa
+    commit — card nổi trên đỉnh 4-tab, KHÔNG đập storyboard). 1.3/1.6 superseded (goal "bỏ
+    4-tab" không còn). Dispatch được ngay: 1.7-1.10 (thay áo 4 cửa sổ legacy, disjoint file,
+    song song an toàn với nhau) + 1.5 (bell settings, cách gắn UI để ngỏ — hỏi chủ dự án
+    trước khi mount). DUY NHẤT 1.7 cần cẩn thận: cùng file ViewController.m với 1.4 đang
+    chưa commit — đọc state hiện tại trước, sửa thêm chứ không đè khối mountGatekeeperCardIfNeeded.
+    Giao code qua skill mindful-key:mindful-keyboard-harness: platform-shell-agent cho
+    1.4/1.7/1.8/1.9/1.10, mood-layer-agent cho 1.2 (done)/1.5. KHÔNG đụng core/engine — giữ
+    make test xanh.
