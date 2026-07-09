@@ -14,5 +14,7 @@
 + (NSColor *)charcoal    { return [NSColor colorNamed:@"Charcoal"]; }
 + (NSColor *)muted       { return [NSColor colorNamed:@"Muted"]; }
 + (NSColor *)softWhite   { return [NSColor colorNamed:@"SoftWhite"]; }
++ (NSColor *)divider     { return [NSColor colorNamed:@"Divider"]; }
++ (NSColor *)stone       { return [NSColor colorNamed:@"Stone"]; }
 
 @end

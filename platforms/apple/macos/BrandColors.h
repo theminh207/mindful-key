@@ -16,5 +16,7 @@
 + (NSColor *)charcoal;     // #2A2A2A — chữ chính
 + (NSColor *)muted;        // #666666 — chữ phụ
 + (NSColor *)softWhite;    // #F8F8F8 — nền trang/card
++ (NSColor *)divider;      // #E5E7E8 — đường ngăn mảnh, viền/nền off của toggle
++ (NSColor *)stone;        // #8A9BA0 — sắc độ trung tính-đá cho sóng biên độ thấp (KHÔNG dùng như "màu cảnh báo")
 
 @end
