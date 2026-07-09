@@ -39,4 +39,18 @@ NS_ASSUME_NONNULL_BEGIN
 @interface CTAButton : NSButton
 @end
 
+/// [MINDFUL] Story 1.9 — mở rộng BrandControls (không đổi API PillSwitch/StatusDot/CTAButton
+/// đã "done" ở story 1.1). Nút phụ trung tính (Đóng/Xoá/Nạp file/Xuất file…): nền trắng, viền
+/// Brand.divider 1px, chữ charcoal, bo góc 8px. Cùng kiểu hover/focus/active/disabled như
+/// CTAButton nhưng KHÔNG BAO GIỜ cam — cam CHỈ được dùng ở CTAButton.
+@interface SecondaryButton : NSButton
+@end
+
+/// [MINDFUL] Story 1.9 — helper card-wrap tái dùng cho các story thay áo sau (1.7/1.8/1.10):
+/// áp bo góc 16px + bóng ngọc bích `0 8px 30px rgba(29,124,145,0.08)` + nền trắng lên 1
+/// container view bất kỳ (NSView hoặc subclass, kể cả NSBox khi đã tắt fill/border gốc).
+@interface NSView (BrandCard)
+- (void)applyBrandCardStyle;
+@end
+
 NS_ASSUME_NONNULL_END

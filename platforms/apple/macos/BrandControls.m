@@ -231,3 +231,128 @@ static const CGFloat kDisabledAlpha = 0.4; // 40% opacity khi disabled
 - (BOOL)resignFirstResponder  { [self setNeedsDisplay:YES]; return [super resignFirstResponder]; }
 
 @end
+
+#pragma mark - SecondaryButton
+
+// [MINDFUL] Story 1.9 — cùng khung vẽ tay như CTAButton (tracking area hover, mouseDown pressed,
+// focus ring teal) nhưng bảng màu trung tính: nền trắng, viền divider, chữ charcoal. KHÔNG cam.
+@implementation SecondaryButton {
+    BOOL _hovering;
+    BOOL _pressed;
+    NSTrackingArea *_tracking;
+}
+
+- (instancetype)initWithFrame:(NSRect)frameRect {
+    if ((self = [super initWithFrame:frameRect])) { [self commonInit]; }
+    return self;
+}
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    if ((self = [super initWithCoder:coder])) { [self commonInit]; }
+    return self;
+}
+
+- (void)commonInit {
+    self.wantsLayer = YES;
+    self.bordered = NO;
+    self.bezelStyle = NSBezelStyleRegularSquare;
+    self.layer.cornerRadius = kCornerCTA;
+    self.layer.masksToBounds = YES;
+    [self applyTitleColor];
+}
+
+- (void)applyTitleColor {
+    NSString *text = self.title ?: @"";
+    NSDictionary *attrs = @{ NSForegroundColorAttributeName : [Brand charcoal],
+                             NSFontAttributeName : (self.font ?: [NSFont systemFontOfSize:13 weight:NSFontWeightSemibold]) };
+    self.attributedTitle = [[NSAttributedString alloc] initWithString:text attributes:attrs];
+}
+
+- (void)setTitle:(NSString *)title { [super setTitle:title]; [self applyTitleColor]; }
+
+- (void)updateTrackingAreas {
+    [super updateTrackingAreas];
+    if (_tracking) [self removeTrackingArea:_tracking];
+    _tracking = [[NSTrackingArea alloc] initWithRect:self.bounds
+                                             options:(NSTrackingActiveInKeyWindow | NSTrackingInVisibleRect | NSTrackingMouseEnteredAndExited)
+                                               owner:self userInfo:nil];
+    [self addTrackingArea:_tracking];
+}
+
+- (void)mouseEntered:(NSEvent *)event { _hovering = YES; [self setNeedsDisplay:YES]; }
+- (void)mouseExited:(NSEvent *)event  { _hovering = NO;  [self setNeedsDisplay:YES]; }
+
+- (void)mouseDown:(NSEvent *)event {
+    if (!self.isEnabled) return;
+    _pressed = YES; [self setNeedsDisplay:YES];
+    [super mouseDown:event];   // xử lý click + gửi action theo cơ chế NSButton
+    _pressed = NO;  [self setNeedsDisplay:YES];
+}
+
+- (void)drawRect:(NSRect)dirtyRect {
+    CGFloat alpha = self.isEnabled ? 1.0 : kDisabledAlpha;
+
+    // Active: dịch xuống 1px lúc nhấn (giống CTAButton).
+    NSRect body = self.bounds;
+    if (_pressed) body = NSOffsetRect(body, 0, -1);
+
+    NSBezierPath *bg = [NSBezierPath bezierPathWithRoundedRect:body xRadius:kCornerCTA yRadius:kCornerCTA];
+    NSColor *fill = [NSColor whiteColor];
+    if (_hovering) fill = [fill blendedColorWithFraction:0.5 ofColor:[Brand divider]]; // hover: xám nhạt, không cam
+    [[fill colorWithAlphaComponent:alpha] setFill];
+    [bg fill];
+
+    NSBezierPath *border = [NSBezierPath bezierPathWithRoundedRect:NSInsetRect(body, 0.5, 0.5)
+                                                             xRadius:kCornerCTA
+                                                             yRadius:kCornerCTA];
+    border.lineWidth = 1.0;
+    [[[Brand divider] colorWithAlphaComponent:alpha] setStroke];
+    [border stroke];
+
+    // Focus: viền teal 2px, offset 2px — cùng ngôn ngữ focus với CTAButton/PillSwitch.
+    if (self.window.firstResponder == self) {
+        NSRect ring = NSInsetRect(self.bounds, -kFocusInset, -kFocusInset);
+        NSBezierPath *ringPath = [NSBezierPath bezierPathWithRoundedRect:ring
+                                                                xRadius:kCornerCTA + kFocusInset
+                                                                yRadius:kCornerCTA + kFocusInset];
+        ringPath.lineWidth = kFocusRing;
+        [[Brand teal] setStroke];
+        [ringPath stroke];
+    }
+
+    // Vẽ tiêu đề (chữ charcoal) căn giữa.
+    NSAttributedString *title = self.attributedTitle;
+    NSSize sz = [title size];
+    NSPoint p = NSMakePoint(NSMidX(body) - sz.width / 2.0, NSMidY(body) - sz.height / 2.0);
+    [title drawAtPoint:p];
+}
+
+- (BOOL)acceptsFirstResponder { return self.isEnabled; }
+- (BOOL)becomeFirstResponder { [self setNeedsDisplay:YES]; return [super becomeFirstResponder]; }
+- (BOOL)resignFirstResponder  { [self setNeedsDisplay:YES]; return [super resignFirstResponder]; }
+
+@end
+
+#pragma mark - NSView (BrandCard)
+
+// [MINDFUL] Story 1.9 — helper dùng chung, thuần CALayer nên áp được lên bất kỳ NSView nào
+// (kể cả NSBox, miễn đã tắt fill/border gốc trước — xem ConvertToolViewController.mm).
+@implementation NSView (BrandCard)
+
+- (void)applyBrandCardStyle {
+    self.wantsLayer = YES;
+    self.layer.cornerRadius = 16.0;
+    self.layer.masksToBounds = NO;   // để bóng đổ ra ngoài viền, không bị cắt
+    self.layer.backgroundColor = [NSColor colorWithSRGBRed:1.0 green:1.0 blue:1.0 alpha:1.0].CGColor; // bg.card #FFFFFF
+
+    // Bóng ngọc bích NOW BRAND OS: 0 8px 30px rgba(29,124,145,0.08).
+    self.layer.shadowColor = [Brand teal].CGColor;
+    self.layer.shadowOpacity = 0.08;
+    self.layer.shadowRadius = 15.0;             // blur CSS 30px ~ bán kính Core Animation /2
+    self.layer.shadowOffset = CGSizeMake(0, -8.0); // AppKit: trục Y hướng lên → đổ "xuống" = offset âm
+
+    CGPathRef shadowPath = CGPathCreateWithRoundedRect(self.bounds, 16.0, 16.0, NULL);
+    self.layer.shadowPath = shadowPath;
+    CGPathRelease(shadowPath);
+}
+
+@end
