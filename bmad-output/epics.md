@@ -44,12 +44,17 @@ hình được, và trạng thái cảm xúc hiển thị rõ nhưng tôn trọn
 
 | ID | Slug | Intent | Wave | Status |
 |----|------|--------|------|--------|
-| 1.1 | brand-ui-primitives | Tạo PillSwitch (tint teal) + StatusDot (1 màu) + CTAButton (chữ tối) tái dùng | 1 | backlog |
-| 1.2 | emotion-wave-view | EmotionWaveView: sóng 1-hue biên độ, thu gọn mặc định, reduced-motion, VoiceOver | 1 | backlog |
-| 1.3 | panel-scroll-layout | Bỏ 4-tab → 1-trang cuộn dọc + card container + divider + PrivacyFooterRow + InputMethodCard | 2 | backlog |
-| 1.4 | gatekeeper-card | GatekeeperCardView full-width trên cùng + copy + lối tắt "Soi lại hôm nay →" | 2 | backlog |
-| 1.5 | bell-settings-card | BellSettingsView + đọc/ghi âm/volume/3-mức/giờ-yên-lặng qua UserDefaults thay hardcode | 2 | backlog |
-| 1.6 | panel-integration-states | Ráp các card vào panel + thứ tự ưu tiên + screen states (loading/empty/error/consent/tắt) | 3 | backlog |
+| 1.1 | brand-ui-primitives | Tạo PillSwitch (tint teal) + StatusDot (1 màu) + CTAButton (chữ tối) tái dùng; sở hữu token BrandColors | 1 | ready-for-dev |
+| 1.2 | emotion-wave-view | EmotionWaveView: sóng 1-hue biên độ, thu gọn mặc định, reduced-motion, VoiceOver | 1 | ready-for-dev |
+| 1.3 | panel-scroll-layout | Bỏ 4-tab → 1-trang cuộn dọc + card container + divider + PrivacyFooterRow + InputMethodCard | 2 | ready-for-dev |
+| 1.4 | gatekeeper-card | GatekeeperCardView full-width trên cùng + copy + lối tắt "Soi lại hôm nay →" | 2 | ready-for-dev |
+| 1.5 | bell-settings-card | BellSettingsView + đọc/ghi âm/volume/3-mức/giờ-yên-lặng qua UserDefaults thay hardcode | 2 | ready-for-dev |
+| 1.6 | panel-integration-states | Ráp các card vào panel + thứ tự ưu tiên + screen states (loading/empty/error/consent/tắt) | 3 | ready-for-dev |
+
+> **Scope-conflict-check (2026-07-09):** sau khi giải quyết, chỉ còn 1 overlap CÓ CHỦ ĐÍCH:
+> 1.3 ↔ 1.6 trên `ViewController.m` + `Main.storyboard` → 2 story này PHẢI serialize (1.3
+> Wave 2 trước, 1.6 Wave 3 sau), KHÔNG chạy cùng đợt. Mọi cặp còn lại: OK (disjoint).
+> Token `BrandColors.h/.m` đã gán cho 1.1 sở hữu; 1.3/1.4/1.5 chỉ đọc.
 
 **Cross-epic dependencies:**
 - Blocked by: none (Epic 1 độc lập, không chờ Windows Port).
@@ -66,6 +71,7 @@ hình được, và trạng thái cảm xúc hiển thị rõ nhưng tôn trọn
 ## Delivery Tracking (count-based)
 
 - Total stories: 6
+- Ready-for-dev: 6
 - Done: 0
 - Remaining: 6
 - Completion rate: 0/6

@@ -1,0 +1,150 @@
+# BMAD Sprint Status — Sequencing System-of-Record
+# Generated: 2026-07-09T08:53:46Z
+# Project: mindful-key — Epic 1: Hiện đại hóa Bảng điều khiển macOS
+#
+# STATUS LIFECYCLE (chỉ là VIEW thứ tự — không phải metric):
+#   backlog → ready-for-dev → in-progress → review → done
+#
+# CAPACITY MODEL: wave width (số story chạy song song mỗi đợt), KHÔNG points.
+# KHÔNG velocity/burndown/points trong file này.
+#
+# GHI CHÚ 2 nghĩa của "ready-for-dev" (tránh nhầm):
+#   - Trong TỪNG file story (.story.md): nghĩa "story đã BIÊN DỊCH xong, đủ mọi mục" — cả 6 đều vậy.
+#   - Trong file NÀY (sequencing): nghĩa "được DISPATCH ngay vì hết dependency" — chỉ Đợt 1.
+#   Story Đợt 2/3 để 'backlog' ở đây vì còn chờ story trước 'done', dù file đã biên dịch xong.
+
+project_name: "mindful-key — Bảng điều khiển macOS"
+track: "BMad Method"
+generated_at: "2026-07-09T08:53:46Z"
+last_updated: "2026-07-09T08:53:46Z"
+
+# ---------------------------------------------------------------------------
+# EPICS
+# ---------------------------------------------------------------------------
+epics:
+  - id: "epic-1"
+    title: "Hiện đại hóa Bảng điều khiển macOS"
+    description: >
+      Thay control panel 4-tab-checkbox cũ (kế thừa OpenKey) bằng 1 panel cuộn dọc hiện đại
+      theo NOW BRAND OS: Feature #1 (gác cổng) nổi bật nhất trên cùng, chuông cấu hình được,
+      trạng thái cảm xúc hiển thị rõ nhưng tôn trọng riêng tư + hiến chương.
+    status: in-progress          # có story ready-for-dev (Đợt 1) → epic in-progress
+    story_ids:
+      - "1.1.brand-ui-primitives"
+      - "1.2.emotion-wave-view"
+      - "1.3.panel-scroll-layout"
+      - "1.4.gatekeeper-card"
+      - "1.5.bell-settings-card"
+      - "1.6.panel-integration-states"
+
+# ---------------------------------------------------------------------------
+# STORIES — order: epic trước, rồi topological theo dependency
+#   parallel_set: số đợt sóng (1 = đợt đầu). Cùng đợt = không phụ thuộc nhau, chạy song song.
+#   owned_scope: file story được phép chạm. Cùng đợt PHẢI disjoint.
+#   dependencies: story id phải 'done' trước khi story này lên 'ready-for-dev'.
+# ---------------------------------------------------------------------------
+stories:
+  # ---------- WAVE 1 (song song, dispatch ngay) ----------
+  - id: "1.1.brand-ui-primitives"
+    title: "Bộ control brand nền tảng — PillSwitch / StatusDot / CTAButton (+ sở hữu token BrandColors)"
+    epic_id: "epic-1"
+    status: ready-for-dev
+    file: "bmad-output/stories/1.1.brand-ui-primitives.story.md"
+    parallel_set: 1
+    dependencies: []
+    owned_scope:
+      - "platforms/apple/macos/BrandControls.h"
+      - "platforms/apple/macos/BrandControls.m"
+      - "platforms/apple/macos/BrandColors.h"
+      - "platforms/apple/macos/BrandColors.m"
+
+  - id: "1.2.emotion-wave-view"
+    title: "EmotionWaveView — widget sóng biên độ (1 hue, thu gọn mặc định)"
+    epic_id: "epic-1"
+    status: ready-for-dev
+    file: "bmad-output/stories/1.2.emotion-wave-view.story.md"
+    parallel_set: 1
+    dependencies: []
+    owned_scope:
+      - "platforms/apple/macos/EmotionWaveView.h"
+      - "platforms/apple/macos/EmotionWaveView.mm"
+
+  # ---------- WAVE 2 (sau khi Wave 1 done) ----------
+  - id: "1.3.panel-scroll-layout"
+    title: "Bỏ 4-tab → panel cuộn dọc + InputMethodCard + PrivacyFooterRow"
+    epic_id: "epic-1"
+    status: backlog              # chờ 1.1 done (dùng PillSwitch/StatusDot/token)
+    file: "bmad-output/stories/1.3.panel-scroll-layout.story.md"
+    parallel_set: 2
+    dependencies:
+      - "1.1.brand-ui-primitives"
+    owned_scope:
+      - "platforms/apple/macos/ViewController.m"
+      - "platforms/apple/macos/ViewController.h"
+      - "platforms/apple/Resources/Base.lproj/Main.storyboard"
+
+  - id: "1.4.gatekeeper-card"
+    title: "GatekeeperCardView — Card Gác cổng (Feature #1) full-width trên cùng"
+    epic_id: "epic-1"
+    status: backlog              # chờ 1.2 (EmotionWaveView) + 1.1 (CTA/token)
+    file: "bmad-output/stories/1.4.gatekeeper-card.story.md"
+    parallel_set: 2
+    dependencies:
+      - "1.1.brand-ui-primitives"
+      - "1.2.emotion-wave-view"
+    owned_scope:
+      - "platforms/apple/macos/GatekeeperCardView.h"
+      - "platforms/apple/macos/GatekeeperCardView.mm"
+
+  - id: "1.5.bell-settings-card"
+    title: "BellSettingsView — cấu hình chuông đọc UserDefaults thay hardcode"
+    epic_id: "epic-1"
+    status: backlog              # chờ 1.1 (PillSwitch cho toggle Focus sync)
+    file: "bmad-output/stories/1.5.bell-settings-card.story.md"
+    parallel_set: 2
+    dependencies:
+      - "1.1.brand-ui-primitives"
+    owned_scope:
+      - "platforms/apple/macos/BellSettingsView.h"
+      - "platforms/apple/macos/BellSettingsView.mm"
+      - "platforms/apple/macos/BellMac.mm"
+      - "platforms/apple/macos/BellMac.h"
+      - "platforms/apple/macos/NudgeCoordinatorMac.mm"
+      - "platforms/apple/macos/NudgeCoordinatorMac.h"
+
+  # ---------- WAVE 3 (ráp cuối) ----------
+  - id: "1.6.panel-integration-states"
+    title: "Ráp các card vào panel + thứ tự ưu tiên + screen states"
+    epic_id: "epic-1"
+    status: backlog              # chờ 1.3+1.4+1.5; serialize với 1.3 (cùng ViewController+storyboard)
+    file: "bmad-output/stories/1.6.panel-integration-states.story.md"
+    parallel_set: 3
+    dependencies:
+      - "1.3.panel-scroll-layout"
+      - "1.4.gatekeeper-card"
+      - "1.5.bell-settings-card"
+    owned_scope:
+      - "platforms/apple/macos/ViewController.m"
+      - "platforms/apple/macos/ViewController.h"
+      - "platforms/apple/Resources/Base.lproj/Main.storyboard"
+
+# ---------------------------------------------------------------------------
+# SEQUENCING SUMMARY
+# ---------------------------------------------------------------------------
+sequencing_summary:
+  total_epics: 1
+  total_stories: 6
+  total_waves: 3
+  wave_widths: [2, 3, 1]         # Đợt 1: 2 story · Đợt 2: 3 story · Đợt 3: 1 story
+  ready_for_dev:
+    count: 2
+    story_ids:
+      - "1.1.brand-ui-primitives"
+      - "1.2.emotion-wave-view"
+  handoff_notes: >
+    Cả 6 file story ĐÃ biên dịch xong (ready-for-dev ở cấp file). Về sequencing, dispatch ngay
+    Đợt 1 = {1.1, 1.2} (owned_scope disjoint, an toàn song song). Khi cả 2 'done' → promote Đợt 2
+    {1.3, 1.4, 1.5}. Lưu ý serialize CÓ CHỦ ĐÍCH: 1.3 và 1.6 cùng sở hữu ViewController.m +
+    Main.storyboard nên 1.6 (Đợt 3) chạy SAU 1.3, không cùng đợt. Giao code qua skill
+    mindful-keyboard-harness: platform-shell-agent cho 1.1/1.3/1.4/1.6, mood-layer-agent cho
+    1.2/1.5. KHÔNG đụng core/engine (bộ não dùng chung) — giữ make test xanh.

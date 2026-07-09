@@ -1,0 +1,49 @@
+{
+  "max_parallel": 3,
+  "note": "CORRECTED by orchestrator: build-dependency-graph.py chained stories naively by intra-epic sequence (1.1->1.2->...->1.6), ignoring each story's explicit 'Blocked by' Dependency Maps. Real DAG (from story Dependency Maps + sprint-status.yaml) allows 3 waves, not 6. All same-wave pairs verified file-disjoint via scope-conflict-check.",
+  "waves": [
+    {
+      "wave": 1,
+      "base_branch": "main",
+      "integration_branch": "integration/wave-1",
+      "stories": [
+        {"id": "1.1", "slug": "brand-ui-primitives", "branch": "story/1.1-brand-ui-primitives",
+         "depends_on": [],
+         "scope": ["platforms/apple/macos/BrandControls.h","platforms/apple/macos/BrandControls.m","platforms/apple/macos/BrandColors.h","platforms/apple/macos/BrandColors.m"]},
+        {"id": "1.2", "slug": "emotion-wave-view", "branch": "story/1.2-emotion-wave-view",
+         "depends_on": [],
+         "scope": ["platforms/apple/macos/EmotionWaveView.h","platforms/apple/macos/EmotionWaveView.mm"]}
+      ],
+      "merge_order": ["1.1","1.2"]
+    },
+    {
+      "wave": 2,
+      "base_branch": "main",
+      "integration_branch": "integration/wave-2",
+      "stories": [
+        {"id": "1.3", "slug": "panel-scroll-layout", "branch": "story/1.3-panel-scroll-layout",
+         "depends_on": ["1.1"],
+         "scope": ["platforms/apple/macos/ViewController.m","platforms/apple/macos/ViewController.h","platforms/apple/Resources/Base.lproj/Main.storyboard"]},
+        {"id": "1.4", "slug": "gatekeeper-card", "branch": "story/1.4-gatekeeper-card",
+         "depends_on": ["1.1","1.2"],
+         "scope": ["platforms/apple/macos/GatekeeperCardView.h","platforms/apple/macos/GatekeeperCardView.mm"]},
+        {"id": "1.5", "slug": "bell-settings-card", "branch": "story/1.5-bell-settings-card",
+         "depends_on": ["1.1"],
+         "scope": ["platforms/apple/macos/BellSettingsView.h","platforms/apple/macos/BellSettingsView.mm","platforms/apple/macos/BellMac.mm","platforms/apple/macos/BellMac.h","platforms/apple/macos/NudgeCoordinatorMac.mm","platforms/apple/macos/NudgeCoordinatorMac.h"]}
+      ],
+      "merge_order": ["1.3","1.4","1.5"]
+    },
+    {
+      "wave": 3,
+      "base_branch": "main",
+      "integration_branch": "integration/wave-3",
+      "stories": [
+        {"id": "1.6", "slug": "panel-integration-states", "branch": "story/1.6-panel-integration-states",
+         "depends_on": ["1.3","1.4","1.5"],
+         "scope": ["platforms/apple/macos/ViewController.m","platforms/apple/macos/ViewController.h","platforms/apple/Resources/Base.lproj/Main.storyboard"]}
+      ],
+      "merge_order": ["1.6"]
+    }
+  ],
+  "deferred": []
+}
