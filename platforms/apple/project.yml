@@ -1,0 +1,81 @@
+# XcodeGen — nguồn thật của MindfulKey.xcodeproj (KHÔNG commit .xcodeproj sinh ra, xem .gitignore).
+# Build settings tham chiếu từ project.pbxproj gốc (OpenKey/Sources/OpenKey/macOS/OpenKey.xcodeproj)
+# để giữ hành vi build y hệt, chỉ đổi tên/bundle-id/đường dẫn cho cấu trúc mới.
+name: MindfulKey
+
+options:
+  deploymentTarget:
+    macOS: "10.15"
+
+configs:
+  Debug: debug
+  Release: release
+
+targets:
+  MindfulKey:
+    type: application
+    platform: macOS
+
+    # XcodeGen KHÔNG có khoá `resources:` riêng ở target — mọi file/folder liệt kê trong
+    # `sources:` được tự phân loại theo phần mở rộng (mã nguồn -> Compile Sources, còn lại
+    # như .xcassets/.storyboard/.png/.icns -> Copy Bundle Resources). Info.plist và
+    # entitlements bị excludes vì đã tiêu thụ qua INFOPLIST_FILE/CODE_SIGN_ENTITLEMENTS —
+    # để lọt vào đây sẽ bị Xcode copy thừa 1 bản vào Contents/Resources.
+    sources:
+      - path: ../../core/engine
+      - path: ../../core/mood
+      - path: macos
+      - path: shared
+        excludes:
+          - "*.md"
+      - path: Resources
+        excludes:
+          - "Info.plist"
+          - "MindfulKey.entitlements"
+
+    dependencies:
+      - sdk: Carbon.framework
+      - sdk: AppKit.framework
+      - sdk: ServiceManagement.framework
+      - sdk: CoreGraphics.framework
+      - sdk: Cocoa.framework
+      - sdk: EventKit.framework
+      - sdk: Foundation.framework
+      - sdk: IOKit.framework
+      - sdk: Security.framework
+      - sdk: libsqlite3.tbd
+      - sdk: libc++.tbd
+
+    settings:
+      base:
+        PRODUCT_NAME: MindfulKey
+        PRODUCT_BUNDLE_IDENTIFIER: vn.gnh.mindfulkey   # đề xuất — đổi ở đây nếu chủ dự án muốn ID khác
+        MARKETING_VERSION: "0.1.0"                     # theo version.env — day 1 của nhận diện mới
+        CURRENT_PROJECT_VERSION: "1"
+        MACOSX_DEPLOYMENT_TARGET: "10.15"
+
+        INFOPLIST_FILE: Resources/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Resources/MindfulKey.entitlements
+
+        CLANG_ENABLE_OBJC_ARC: YES
+        CLANG_CXX_LANGUAGE_STANDARD: "gnu++14"          # giữ như gốc (project.pbxproj)
+        CLANG_CXX_LIBRARY: "libc++"
+        GCC_C_LANGUAGE_STANDARD: gnu11
+
+        HEADER_SEARCH_PATHS:
+          - "$(SRCROOT)/../../core/engine"
+          - "$(SRCROOT)/../../core/mood"
+
+        LD_RUNPATH_SEARCH_PATHS:
+          - "$(inherited)"
+          - "@executable_path/../Frameworks"
+
+        COMBINE_HIDPI_IMAGES: YES   # Resources dùng PNG rời + hậu tố @2x thủ công (không phải asset catalog)
+
+        # Ký AD-HOC — không có Developer ID/Apple Developer Program (xem docs/INSTALL.md)
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: NO
+        ENABLE_HARDENED_RUNTIME: NO
+        # DEVELOPMENT_TEAM: cố ý bỏ trống/không khai báo (không dùng team gốc 8S7348QV8Q của tác giả OpenKey)

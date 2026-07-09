@@ -1,0 +1,17 @@
+# Xcode / XcodeGen (project.yml là nguồn thật — .xcodeproj sinh ra, không commit)
+platforms/apple/*.xcodeproj/
+platforms/apple/build/
+build/
+DerivedData/
+*.dSYM
+*.dSYM.zip
+
+# Đóng gói
+*.dmg
+.dmg-staging/
+
+# macOS
+.DS_Store
+
+# Build artifact của tests/engine
+tests/engine/test_engine

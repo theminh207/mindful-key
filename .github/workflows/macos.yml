@@ -1,0 +1,32 @@
+# CI: build macOS (XcodeGen) + regression engine.
+name: macOS
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Regression engine (bộ não dùng chung)
+        run: |
+          bash tests/engine/build.sh
+          ./tests/engine/test_engine
+
+      - name: Generate Xcode project
+        run: cd platforms/apple && xcodegen generate
+
+      - name: Build app macOS (ad-hoc sign)
+        run: |
+          xcodebuild \
+            -project "platforms/apple/MindfulKey.xcodeproj" \
+            -scheme MindfulKey -configuration Debug \
+            CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
+            build

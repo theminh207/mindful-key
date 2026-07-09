@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!-- Sparkle auto-update feed. Chưa có bản phát hành ký thật/notarize nào (xem docs/INSTALL.md
+     + AGENT-BRIEF §6 bước 9) — file này là khung rỗng, điền <item> khi có bản release đầu tiên. -->
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>Mindful Keyboard</title>
+        <description>Auto-update feed cho Mindful Keyboard. Điền bởi script phát hành khi có bản ký thật.</description>
+        <language>vi</language>
+    </channel>
+</rss>
