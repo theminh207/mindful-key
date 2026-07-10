@@ -6,6 +6,7 @@ name: MindfulKey
 options:
   deploymentTarget:
     macOS: "10.15"
+    iOS: "16.0"   # khớp SDK đã dùng để verify core/engine build được cho iOS (xem bmad-output/ios/tech-spec.md)
 
 configs:
   Debug: debug
@@ -79,3 +80,93 @@ targets:
         CODE_SIGNING_ALLOWED: NO
         ENABLE_HARDENED_RUNTIME: NO
         # DEVELOPMENT_TEAM: cố ý bỏ trống/không khai báo (không dùng team gốc 8S7348QV8Q của tác giả OpenKey)
+
+  # ===== iOS — Round 1 walking skeleton (đội iOS, xem bmad-output/ios/tech-spec.md) =====
+  # Sở hữu: platforms/apple/ios/**, platforms/apple/shared/** — KHÔNG đụng target MindfulKey
+  # (macOS) hay core/ ở trên.
+  MindfulKeyiOS:
+    type: application
+    platform: iOS
+
+    # KHÔNG cần core/engine/core/mood ở đây — container app Round 1 không gọi engine trực
+    # tiếp (chỉ UI onboarding + đọc App Group). Chỉ keyboard extension mới gõ chữ.
+    sources:
+      - path: ios/App
+      - path: shared
+        excludes:
+          - "*.md"
+
+    dependencies:
+      - target: MindfulKeyKeyboard
+        embed: true
+      - sdk: UIKit.framework
+      - sdk: Foundation.framework
+
+    settings:
+      base:
+        PRODUCT_NAME: MindfulKeyiOS
+        PRODUCT_BUNDLE_IDENTIFIER: vn.gnh.mindfulkey.ios   # đề xuất — đổi nếu chủ dự án muốn ID khác
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+        TARGETED_DEVICE_FAMILY: "1"   # iPhone only ở Round 1
+        ONLY_ACTIVE_ARCH: YES        # chỉ build kiến trúc Simulator đang chạy (arm64 trên máy Apple Silicon) — khớp mặc định template Xcode, tránh build thừa x86_64
+
+        INFOPLIST_FILE: ios/App/Info.plist
+
+        CLANG_ENABLE_OBJC_ARC: YES
+        CLANG_CXX_LANGUAGE_STANDARD: "gnu++14"   # shared/ có EngineKeyMap.mm (Obj-C++)
+        CLANG_CXX_LIBRARY: "libc++"
+
+        HEADER_SEARCH_PATHS:
+          - "$(SRCROOT)/shared"
+
+        # Ký AD-HOC, build cho Simulator — chưa cần Apple Developer Program (Round 1)
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: NO
+
+  MindfulKeyKeyboard:
+    type: app-extension
+    platform: iOS
+
+    sources:
+      - path: ../../core/engine
+      - path: ../../core/mood
+      - path: ios/KeyboardExtension
+      - path: shared
+        excludes:
+          - "*.md"
+
+    dependencies:
+      - sdk: UIKit.framework
+      - sdk: Foundation.framework
+      - sdk: libc++.tbd
+
+    settings:
+      base:
+        PRODUCT_NAME: MindfulKeyKeyboard
+        PRODUCT_BUNDLE_IDENTIFIER: vn.gnh.mindfulkey.ios.keyboard
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+        TARGETED_DEVICE_FAMILY: "1"
+        ONLY_ACTIVE_ARCH: YES
+
+        INFOPLIST_FILE: ios/KeyboardExtension/Info.plist
+
+        CLANG_ENABLE_OBJC_ARC: YES
+        CLANG_CXX_LANGUAGE_STANDARD: "gnu++14"
+        CLANG_CXX_LIBRARY: "libc++"
+        GCC_C_LANGUAGE_STANDARD: gnu11
+
+        HEADER_SEARCH_PATHS:
+          - "$(SRCROOT)/../../core/engine"
+          - "$(SRCROOT)/../../core/mood"
+          - "$(SRCROOT)/shared"
+
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: NO
