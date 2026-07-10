@@ -49,14 +49,14 @@
 }
 
 - (IBAction)onCheckNewVersion:(id)sender {
-    
-    self.CheckNewVersionButton.title = @"Đang kiểm tra...";
-    self.CheckNewVersionButton.enabled = false;
-    
-    [OpenKeyManager checkNewVersion: self.view.window callbackFunc:^{
-        self.CheckNewVersionButton.enabled = true;
-        self.CheckNewVersionButton.title = @"Kiểm tra bản mới...";
-    }];
+    // [MINDFUL] Đã gỡ bộ tự-cập-nhật OpenKey (xem OpenKeyManager.m). Chưa có kênh cập nhật
+    // riêng cho Mindful Keyboard nên nút chỉ báo thật thà tình trạng hiện tại, KHÔNG gọi mạng.
+    NSAlert *alert = [[NSAlert alloc] init];
+    alert.messageText = [NSString stringWithFormat:@"Bạn đang dùng phiên bản mới nhất (%@)",
+                         [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]];
+    alert.informativeText = @"Tính năng tự động kiểm tra cập nhật sẽ có ở phiên bản sau.";
+    [alert addButtonWithTitle:@"OK"];
+    [alert beginSheetModalForWindow:self.view.window completionHandler:nil];
 }
 
 @end

@@ -194,11 +194,12 @@ extern bool convertToolDontAlertWhenCompleted;
     }
     [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:@"NonFirstTime"];
     
-    //check update if enable
-    NSInteger dontCheckUpdate = [[NSUserDefaults standardUserDefaults] integerForKey:@"DontCheckUpdate"];
-    if (!dontCheckUpdate)
-        [OpenKeyManager checkNewVersion:nil callbackFunc:nil];
-    
+    // [MINDFUL] ĐÃ GỠ tự-kiểm-tra-cập-nhật lúc khởi động. Bộ updater kế thừa từ OpenKey hỏi
+    // version.json của kho tuyenvm/OpenKey (bản 2.0.3 / versionCode 47) rồi so với MindfulKey
+    // (versionCode 1) → LẦN NÀO MỞ CŨNG nag "có bản mới 2.0.3" và trỏ người dùng về OpenKey —
+    // sai nhận diện + tự gọi mạng lúc khởi động. Auto-update thật sẽ làm sau bằng Sparkle.
+    // Preference "DontCheckUpdate" vẫn được giữ để Sparkle đọc lại sau này.
+
     //correct run on startup
     NSInteger val = [[NSUserDefaults standardUserDefaults] integerForKey:@"RunOnStartup"];
     [appDelegate setRunOnStartup:val];
