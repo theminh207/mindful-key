@@ -57,10 +57,10 @@ thái cảm xúc hiển thị rõ nhưng tôn trọng riêng tư + hiến chươ
 | 1.4 | gatekeeper-card | GatekeeperCardView full-width trên cùng + copy + lối tắt "Soi lại hôm nay →" | 2 | **in-progress** (lát cắt dọc, chưa commit — treo trên đỉnh 4-tab cũ) |
 | 1.5 | bell-settings-card | BellSettingsView + đọc/ghi âm/volume/3-mức/giờ-yên-lặng qua UserDefaults thay hardcode | 2 | ready-for-dev (cách gắn UI: CHƯA chốt — xem decision-log) |
 | 1.6 | panel-integration-states | ~~Ráp các card vào panel cuộn dọc~~ + thứ tự ưu tiên + screen states (loading/empty/error/consent/tắt) | 3 | **superseded** (xem 2026-07-10 trong decision-log) |
-| 1.7 | legacy-tabs-reskin | Thay áo nội dung 4 tab cũ (checkbox→PillSwitch, tab cam→teal, card hoá) trong `ViewController.m` — **giữ nguyên 4 tab + khối `mountGatekeeperCardIfNeeded`** | 2b | ready-for-dev — spec: `IMPLEMENTATION-PLAN-legacy-reskin.md` §Story 1 |
-| 1.8 | macro-window-reskin | Thay áo cửa sổ Gõ tắt (`MacroViewController.mm`): tên cột tiếng Việt, CTA cam cho "Thêm", card hoá | 2b | ready-for-dev — spec: `IMPLEMENTATION-PLAN-legacy-reskin.md` §Story 2 |
+| 1.7 | legacy-tabs-reskin | Thay áo nội dung 4 tab cũ (checkbox→PillSwitch, tab cam→teal, card hoá) trong `ViewController.m` — **giữ nguyên 4 tab + khối `mountGatekeeperCardIfNeeded`** | 2b | **done** (commit 3b41b3d) — gap: radio Chế độ gõ chưa tint được (AppKit hạn chế) |
+| 1.8 | macro-window-reskin | Thay áo cửa sổ Gõ tắt (`MacroViewController.mm`): tên cột tiếng Việt, CTA cam cho "Thêm", card hoá | 2b | **done** (commit d370161) |
 | 1.9 | convert-window-reskin | Thay áo cửa sổ Chuyển mã (`ConvertToolViewController.mm`): bỏ ảnh nút xanh-dương/xanh-lá, CTA cam + nút phụ trung tính | 2b | **done** (commit 7c759a7) |
-| 1.10 | about-window-reskin | Thay áo cửa sổ Thông tin (`AboutViewController.m`): logo sóng `~` thay "V" đỏ, vá bug đè chữ, **giữ nguyên credit Mai Vũ Tuyên (GPL v3)** | 2b | ready-for-dev — spec: `IMPLEMENTATION-PLAN-legacy-reskin.md` §Story 4 |
+| 1.10 | about-window-reskin | Thay áo cửa sổ Thông tin (`AboutViewController.m`): logo sóng `~` thay "V" đỏ, vá bug đè chữ, **giữ nguyên credit Mai Vũ Tuyên (GPL v3)** | 2b | **done** (commit 2a4a090) |
 
 > **Scope-conflict-check (2026-07-09, revise 2026-07-10):** 1.3/1.6 superseded nên overlap gốc
 > của chúng với `ViewController.m`/`Main.storyboard` không còn áp dụng. Overlap MỚI cần biết:
@@ -87,11 +87,11 @@ thái cảm xúc hiển thị rõ nhưng tôn trọng riêng tư + hiến chươ
 ## Delivery Tracking (count-based)
 
 - Total stories: 10 (6 gốc + 4 thêm 2026-07-10; 2 trong 6 gốc đã superseded)
-- Done: 2 (1.1, 1.2)
+- Done: 6 (1.1, 1.2, 1.7, 1.8, 1.9, 1.10)
 - Superseded: 2 (1.3, 1.6 — không tính vào "còn phải làm")
 - In-progress: 1 (1.4 — lát cắt dọc, chưa commit)
-- Remaining: 5 (1.5, 1.7, 1.8, 1.9, 1.10)
-- Completion rate: 2/8 hiệu lực (loại 2 superseded khỏi mẫu số)
+- Remaining: 1 (1.5 — bell-settings-card, cách gắn UI chưa chốt)
+- Completion rate: 6/8 hiệu lực (loại 2 superseded khỏi mẫu số)
 
 ## Notes
 

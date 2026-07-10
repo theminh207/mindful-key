@@ -147,7 +147,8 @@ stories:
   - id: "1.7.legacy-tabs-reskin"
     title: "Thay áo nội dung 4 tab cũ trong ViewController.m (checkbox→PillSwitch, tab cam→teal)"
     epic_id: "epic-1"
-    status: ready-for-dev        # chờ hiểu rõ state của 1.4 (cùng file, xem note) — không phải 'backlog' cấu trúc
+    status: done                 # commit 3b41b3d — gatekeeper-mount block verified intact (2 lần độc lập); xcodebuild+make test verify độc lập lần nữa trước commit
+    known_gap: "Radio Chế độ gõ (Việt/English): chỉ tô chữ teal, glyph radio vẫn theo Accent Color hệ thống — AppKit không có API tint cho radio glyph, thay control rủi ro gãy cơ chế loại-trừ-lẫn-nhau mà sandbox không click-test được. Để lại có chủ đích, không phải quên."
     file: "bmad-output/IMPLEMENTATION-PLAN-legacy-reskin.md#story-1"
     parallel_set: "2b"
     dependencies:
@@ -160,7 +161,7 @@ stories:
   - id: "1.8.macro-window-reskin"
     title: "Thay áo cửa sổ Gõ tắt (Macro)"
     epic_id: "epic-1"
-    status: ready-for-dev
+    status: done                 # commit d370161 — xcodebuild sạch (11 warning = baseline), make test xanh, ibtool notice giảm
     file: "bmad-output/IMPLEMENTATION-PLAN-legacy-reskin.md#story-2"
     parallel_set: "2b"
     dependencies:
@@ -185,7 +186,7 @@ stories:
   - id: "1.10.about-window-reskin"
     title: "Thay áo cửa sổ Thông tin (About) — logo + vá bug đè chữ"
     epic_id: "epic-1"
-    status: ready-for-dev
+    status: done                 # commit 2a4a090 — root cause thật của bug đè chữ: field "Trang chủ:" ẩn trùng toạ độ với dòng credit. Credit Mai Vũ Tuyên verify còn nguyên văn.
     file: "bmad-output/IMPLEMENTATION-PLAN-legacy-reskin.md#story-4"
     parallel_set: "2b"
     dependencies:
