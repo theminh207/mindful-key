@@ -29,9 +29,13 @@
     
     self.macroName.delegate = self;
     self.macroContent.delegate = self;
-    
-    self.AutoCapsMacro.state = vAutoCapsMacro ? NSControlStateValueOn : NSControlStateValueOff;
-    
+
+    [self.AutoCapsMacro setOn:vAutoCapsMacro animated:NO];
+
+    // [MINDFUL] Story 1.8 — bọc bảng gõ tắt + hàng control (Nạp/Xuất file, switch tự viết hoa)
+    // vào card NOW BRAND OS (xem BrandControls.h).
+    [self.tableCard applyBrandCardStyle];
+
     //load data
     getAllMacro(keys, macroText, macroContent);
 }
@@ -139,8 +143,8 @@
     }
 }
 
-- (IBAction)onAutoCapButton:(NSButton *)sender {
-    NSInteger val = sender.state == NSControlStateValueOn ? 1 : 0;
+- (IBAction)onAutoCapButton:(PillSwitch *)sender {
+    NSInteger val = sender.isOn ? 1 : 0;
     vAutoCapsMacro = (int)val;
     [[NSUserDefaults standardUserDefaults] setInteger:vAutoCapsMacro forKey:@"vAutoCapsMacro"];
 }

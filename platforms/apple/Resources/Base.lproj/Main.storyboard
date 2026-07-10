@@ -1766,6 +1766,14 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="472"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
+                            <!-- [MINDFUL] Story 1.8 — nền card NOW BRAND OS (applyBrandCardStyle, gọi trong
+                                 viewDidLoad) đặt SAU CÙNG trong danh sách vẽ nhưng NẰM ĐẦU mảng subviews để vẽ
+                                 dưới cùng, bọc bảng gõ tắt + hàng control của bảng (Nạp/Xuất file, switch tự
+                                 viết hoa). KHÔNG bọc hàng nhập liệu Thêm/Sửa phía trên (khác nhóm chức năng). -->
+                            <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MacTableCardBg">
+                                <rect key="frame" x="6" y="0.0" width="588" height="398"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            </customView>
                             <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vlj-ox-8lT">
                                 <rect key="frame" x="20" y="408" width="113" height="25"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -1802,10 +1810,10 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <button imageHugsTitle="YES" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BJd-R9-7bL">
+                            <button imageHugsTitle="YES" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BJd-R9-7bL" customClass="CTAButton">
                                 <rect key="frame" x="419" y="406" width="76" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="smallSquare" title="Thêm" bezelStyle="smallSquare" image="NSAddTemplate" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="9CO-ps-Znh">
+                                <buttonCell key="cell" type="smallSquare" title="Thêm" bezelStyle="smallSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="9CO-ps-Znh">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                     <string key="keyEquivalent">t</string>
@@ -1813,17 +1821,15 @@
                                         <action selector="onAddMacro:" target="XIf-Yi-IFu" id="yNh-Gt-xb1"/>
                                     </connections>
                                 </buttonCell>
-                                <color key="contentTintColor" name="selectedTextBackgroundColor" catalog="System" colorSpace="catalog"/>
                             </button>
-                            <button imageHugsTitle="YES" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RDY-CW-mUe">
+                            <button imageHugsTitle="YES" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RDY-CW-mUe" customClass="SecondaryButton">
                                 <rect key="frame" x="504" y="406" width="76" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="smallSquare" title="Xoá" bezelStyle="smallSquare" image="NSRemoveTemplate" imagePosition="left" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="JzI-Jc-dU0">
+                                <buttonCell key="cell" type="smallSquare" title="Xoá" bezelStyle="smallSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="JzI-Jc-dU0">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                     <string key="keyEquivalent">x</string>
                                 </buttonCell>
-                                <color key="contentTintColor" name="systemRedColor" catalog="System" colorSpace="catalog"/>
                                 <connections>
                                     <action selector="onDeleteMacro:" target="XIf-Yi-IFu" id="BuL-jz-OYN"/>
                                 </connections>
@@ -1847,7 +1853,7 @@
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                     </tableHeaderCell>
-                                                    <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="YKu-Aq-DR6">
+                                                    <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Từ gõ tắt" id="YKu-Aq-DR6">
                                                         <font key="font" metaFont="system"/>
                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1861,7 +1867,7 @@
                                                                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tHp-KO-vck">
                                                                     <rect key="frame" x="0.0" y="0.0" width="83" height="17"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="XUi-td-0h0">
+                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Từ gõ tắt" id="XUi-td-0h0">
                                                                         <font key="font" metaFont="system"/>
                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1879,7 +1885,7 @@
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                     </tableHeaderCell>
-                                                    <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="A3K-cB-Qkf">
+                                                    <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Nội dung đầy đủ" id="A3K-cB-Qkf">
                                                         <font key="font" metaFont="system"/>
                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -1893,7 +1899,7 @@
                                                                 <textField focusRingType="none" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UoD-Tq-Y60">
                                                                     <rect key="frame" x="0.0" y="0.0" width="440" height="17"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="dx7-BM-h6E">
+                                                                    <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Nội dung đầy đủ" id="dx7-BM-h6E">
                                                                         <font key="font" metaFont="system"/>
                                                                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1919,7 +1925,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                             </scrollView>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sXP-A3-19r">
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sXP-A3-19r" customClass="SecondaryButton">
                                 <rect key="frame" x="14" y="1" width="115" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <buttonCell key="cell" type="push" title="Nạp từ file..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="dKc-Al-mnk">
@@ -1930,7 +1936,7 @@
                                     <action selector="onLoadFromFile:" target="XIf-Yi-IFu" id="8vS-9L-9eK"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ksD-xJ-wPh">
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ksD-xJ-wPh" customClass="SecondaryButton">
                                 <rect key="frame" x="135" y="1" width="117" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <buttonCell key="cell" type="push" title="Xuất ra file..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FCJ-yj-Hut">
@@ -1941,18 +1947,24 @@
                                     <action selector="onExportToFile:" target="XIf-Yi-IFu" id="5X6-CE-cPl"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LXc-GH-oYK">
-                                <rect key="frame" x="269" y="9" width="208" height="18"/>
+                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MacAutoCapsLbl">
+                                <rect key="frame" x="269" y="10" width="259" height="16"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <string key="toolTip">VD: bạn định nghĩa "ko=không" Nếu bạn gõ: "ko" sẽ thành "không" Nếu bạn gõ "Ko" sẽ thành "Không" Nếu bạn gõ "KO" sẽ thành "KHÔNG"</string>
-                                <buttonCell key="cell" type="check" title="Tự động viết hoa theo phím tắt" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="JdD-dm-U8K">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
+                                <textFieldCell key="cell" lineBreakMode="clipping" title="Tự động viết hoa theo phím tắt" id="MacAutoCapsCel">
+                                    <font key="font" usesAppearanceFont="YES"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LXc-GH-oYK" customClass="PillSwitch">
+                                <rect key="frame" x="540" y="6" width="40" height="24"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <string key="toolTip">VD: bạn định nghĩa "ko=không" Nếu bạn gõ: "ko" sẽ thành "không" Nếu bạn gõ "Ko" sẽ thành "Không" Nếu bạn gõ "KO" sẽ thành "KHÔNG"</string>
                                 <connections>
                                     <action selector="onAutoCapButton:" target="XIf-Yi-IFu" id="0vN-JT-uLd"/>
                                 </connections>
-                            </button>
+                            </customView>
                         </subviews>
                     </view>
                     <connections>
@@ -1961,6 +1973,7 @@
                         <outlet property="macroContent" destination="e48-Ve-MTZ" id="46P-f6-xbt"/>
                         <outlet property="macroName" destination="Vlj-ox-8lT" id="Dsy-hH-ZpE"/>
                         <outlet property="tableView" destination="LJ6-nV-dwY" id="aY4-Ak-dgV"/>
+                        <outlet property="tableCard" destination="MacTableCardBg" id="Wq7-mA-Tab"/>
                     </connections>
                 </viewController>
                 <customObject id="gqL-VI-1qz" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
