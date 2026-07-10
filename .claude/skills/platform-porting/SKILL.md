@@ -5,6 +5,12 @@ description: Build/port bộ gõ sang từng hệ điều hành cụ thể — W
 
 # Platform Porting
 
+> **Phạm vi:** vỏ **macOS/Windows/Android/Linux**. Vỏ **iOS đã tách sang skill riêng** `ios-keyboard-extension` + agent `ios-shell-agent` (chốt 2026-07-10) — sandbox keyboard-extension khác hẳn, đừng lo iOS ở đây.
+
+## Cổng an toàn (đọc TRƯỚC khi sửa — kể cả khi được gọi thẳng, không qua orchestrator)
+- **Phân loại rủi ro:** việc chạm **nhận diện** (con sóng/màu/copy/biên độ) · **pháp lý** (GPL v3, credit Mai Vũ Tuyên) · **riêng tư** (dữ liệu gõ/mood) · **sửa `core/` để vá riêng 1 OS** → **DỪNG, hỏi chủ dự án trước.** Việc nhỏ, rõ, không nhạy cảm → làm luôn.
+- **Phải đoán vì thiếu luật/nguồn sự thật?** → thêm 1 dòng cụ thể vào `docs/FRICTION-LOG.md`.
+
 ## Kiến trúc: 1 BỘ NÃO + N CÁI VỎ
 ```
 engine/    ← dùng chung, KHÔNG đụng OS (xem skill openkey-engine)
@@ -19,7 +25,7 @@ Mỗi OS có "ổ cắm" input method khác nhau — không có chuyện 1 code 
 1. **macOS** — máy dev hiện tại là macOS, build/thử tại chỗ, không phải chờ máy Windows + Visual Studio. Đang làm.
 2. **Windows** — sau khi macOS beta ổn định, tái dùng engine/ + design doc lớp cảm xúc, nhưng cần vỏ Win32 riêng.
 3. **Android** — tính năng "chặn tin nhắn nóng giận" hợp ngữ cảnh điện thoại nhất.
-4. **iPhone** — khuôn chật nhất của Apple, làm cuối cùng.
+4. **iPhone** — khuôn chật nhất của Apple, làm cuối cùng. **Đã tách sang skill `ios-keyboard-extension`** (sandbox keyboard-extension: nhật ký + nhắc thụ động, KHÔNG gác cổng gửi tin).
 
 ## macOS — sự thật đã xác minh trong repo (không giả định)
 - `OpenKey/Sources/OpenKey/macOS/OpenKey.xcodeproj` là project **thật**, chỉ **1 target `OpenKey`** (không phải 3 target như tưởng ban đầu — `OpenKeyHelper`/`OpenKeyUpdate` chỉ là group thư mục + scheme cũ, không phải target build được).
