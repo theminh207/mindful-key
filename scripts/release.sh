@@ -26,8 +26,8 @@ echo "======================================================"
 
 echo ""
 echo "==> [1/6] Regression engine (lưới an toàn trước khi phát hành)"
-bash tests/engine/build.sh
-./tests/engine/test_engine
+bash tests/core/build.sh
+./tests/core/test_engine
 
 echo ""
 echo "==> [2/6] Universal build (arm64 + x86_64)"

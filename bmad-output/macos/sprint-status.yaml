@@ -17,7 +17,7 @@
 # ⚠️ RECONCILIATION 2026-07-10: 1.3 và 1.6 (goal "bỏ 4-tab") bị SUPERSEDED — hướng thi công
 # thật giờ là "card nổi trên đỉnh 4-tab cũ, 4 tab chỉ thay áo". Thêm story 1.7-1.10 cho việc
 # thay áo 4 cửa sổ legacy (Điều khiển/Gõ tắt/Chuyển mã/Thông tin), spec ở
-# bmad-output/IMPLEMENTATION-PLAN-legacy-reskin.md thay vì file .story.md đầy đủ (quyết định
+# bmad-output/macos/IMPLEMENTATION-PLAN-legacy-reskin.md thay vì file .story.md đầy đủ (quyết định
 # có chủ đích — xem decision-log). 1.4 hiện IN-PROGRESS ngoài quy trình sprint bình thường
 # (lát cắt dọc, chưa commit) — đi trước 1.1/1.2 "done" dù dependency yêu cầu chờ chúng, vì
 # thực tế 1.1/1.2 đã done trước khi lát cắt dọc bắt đầu.
@@ -63,7 +63,7 @@ stories:
     title: "Bộ control brand nền tảng — PillSwitch / StatusDot / CTAButton (+ sở hữu token BrandColors)"
     epic_id: "epic-1"
     status: done                 # commit 4dcc947
-    file: "bmad-output/stories/1.1.brand-ui-primitives.story.md"
+    file: "bmad-output/macos/stories/1.1.brand-ui-primitives.story.md"
     parallel_set: 1
     dependencies: []
     owned_scope:
@@ -76,7 +76,7 @@ stories:
     title: "EmotionWaveView — widget sóng biên độ (1 hue, thu gọn mặc định)"
     epic_id: "epic-1"
     status: done                 # commit 4dcc947
-    file: "bmad-output/stories/1.2.emotion-wave-view.story.md"
+    file: "bmad-output/macos/stories/1.2.emotion-wave-view.story.md"
     parallel_set: 1
     dependencies: []
     owned_scope:
@@ -88,7 +88,7 @@ stories:
     title: "Bỏ 4-tab → panel cuộn dọc + InputMethodCard + PrivacyFooterRow"
     epic_id: "epic-1"
     status: superseded           # xem decision-log 2026-07-10 — KHÔNG triển khai
-    file: "bmad-output/stories/1.3.panel-scroll-layout.story.md"
+    file: "bmad-output/macos/stories/1.3.panel-scroll-layout.story.md"
     parallel_set: 2
     dependencies:
       - "1.1.brand-ui-primitives"
@@ -101,7 +101,7 @@ stories:
     title: "GatekeeperCardView — Card Gác cổng (Feature #1) full-width trên cùng"
     epic_id: "epic-1"
     status: in-progress          # lát cắt dọc: card mounted qua viewDidAppear, CHƯA COMMIT
-    file: "bmad-output/stories/1.4.gatekeeper-card.story.md"
+    file: "bmad-output/macos/stories/1.4.gatekeeper-card.story.md"
     parallel_set: 2
     dependencies:
       - "1.1.brand-ui-primitives"
@@ -115,7 +115,7 @@ stories:
     title: "BellSettingsView — cấu hình chuông đọc UserDefaults thay hardcode"
     epic_id: "epic-1"
     status: ready-for-dev        # chờ 1.1 (done) — dispatch được; cách gắn UI CHƯA chốt, hỏi trước khi làm
-    file: "bmad-output/stories/1.5.bell-settings-card.story.md"
+    file: "bmad-output/macos/stories/1.5.bell-settings-card.story.md"
     parallel_set: 2
     dependencies:
       - "1.1.brand-ui-primitives"
@@ -132,7 +132,7 @@ stories:
     title: "Ráp các card vào panel + thứ tự ưu tiên + screen states"
     epic_id: "epic-1"
     status: superseded           # xem decision-log 2026-07-10 — KHÔNG triển khai
-    file: "bmad-output/stories/1.6.panel-integration-states.story.md"
+    file: "bmad-output/macos/stories/1.6.panel-integration-states.story.md"
     parallel_set: 3
     dependencies:
       - "1.3.panel-scroll-layout"
@@ -149,7 +149,7 @@ stories:
     epic_id: "epic-1"
     status: done                 # commit 3b41b3d — gatekeeper-mount block verified intact (2 lần độc lập); xcodebuild+make test verify độc lập lần nữa trước commit
     known_gap: "Radio Chế độ gõ (Việt/English): chỉ tô chữ teal, glyph radio vẫn theo Accent Color hệ thống — AppKit không có API tint cho radio glyph, thay control rủi ro gãy cơ chế loại-trừ-lẫn-nhau mà sandbox không click-test được. Để lại có chủ đích, không phải quên."
-    file: "bmad-output/IMPLEMENTATION-PLAN-legacy-reskin.md#story-1"
+    file: "bmad-output/macos/IMPLEMENTATION-PLAN-legacy-reskin.md#story-1"
     parallel_set: "2b"
     dependencies:
       - "1.1.brand-ui-primitives"
@@ -162,7 +162,7 @@ stories:
     title: "Thay áo cửa sổ Gõ tắt (Macro)"
     epic_id: "epic-1"
     status: done                 # commit d370161 — xcodebuild sạch (11 warning = baseline), make test xanh, ibtool notice giảm
-    file: "bmad-output/IMPLEMENTATION-PLAN-legacy-reskin.md#story-2"
+    file: "bmad-output/macos/IMPLEMENTATION-PLAN-legacy-reskin.md#story-2"
     parallel_set: "2b"
     dependencies:
       - "1.1.brand-ui-primitives"
@@ -173,7 +173,7 @@ stories:
     title: "Thay áo cửa sổ Chuyển mã (Convert)"
     epic_id: "epic-1"
     status: done                 # commit 7c759a7 — verified: xcodebuild sạch, make test xanh, lldb functional test
-    file: "bmad-output/IMPLEMENTATION-PLAN-legacy-reskin.md#story-3"
+    file: "bmad-output/macos/IMPLEMENTATION-PLAN-legacy-reskin.md#story-3"
     parallel_set: "2b"
     dependencies:
       - "1.1.brand-ui-primitives"
@@ -187,7 +187,7 @@ stories:
     title: "Thay áo cửa sổ Thông tin (About) — logo + vá bug đè chữ"
     epic_id: "epic-1"
     status: done                 # commit 2a4a090 — root cause thật của bug đè chữ: field "Trang chủ:" ẩn trùng toạ độ với dòng credit. Credit Mai Vũ Tuyên verify còn nguyên văn.
-    file: "bmad-output/IMPLEMENTATION-PLAN-legacy-reskin.md#story-4"
+    file: "bmad-output/macos/IMPLEMENTATION-PLAN-legacy-reskin.md#story-4"
     parallel_set: "2b"
     dependencies:
       - "1.1.brand-ui-primitives"

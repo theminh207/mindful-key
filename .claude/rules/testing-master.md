@@ -8,7 +8,7 @@ paths:
   - "**/*.spec.*"
 ---
 
-> 🗺️ **mindful-key (C++/ObjC):** test thật = `make test` → `tests/engine/test_engine` (harness tự viết, 5 case Telex→Unicode hard-code trong `main()`, KHÔNG vitest/jest). Ví dụ TS dưới đọc như *nguyên tắc*. Đụng logic bộ não trong `core/` = bắt buộc chạy lại regression.
+> 🗺️ **mindful-key (C++/ObjC):** test thật = `make test-core` → `tests/core/test_engine` (harness tự viết, 5 case Telex→Unicode hard-code trong `main()`, KHÔNG vitest/jest). `tests/macos/` và `tests/ios/` hiện chưa có test tự động (no-op). Ví dụ TS dưới đọc như *nguyên tắc*. Đụng logic bộ não trong `core/` = bắt buộc chạy lại regression.
 
 # 🧪 TESTING MASTER RULE — The Distilled Standard
 

@@ -15,7 +15,7 @@ project:
 
 paths:
   output_folder: "bmad-output"
-  stories_folder: "bmad-output/stories"
+  stories_folder: "bmad-output/macos/stories"
   decision_log: "bmad-output/decision-log.md"
   project_context: "bmad-output/project-context.md"
 

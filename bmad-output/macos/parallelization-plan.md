@@ -36,11 +36,11 @@ Phụ thuộc THẬT (trích từ mục Dependency Maps của 6 story):
 
 | Input | Nguồn |
 |-------|-------|
-| Story backlog | `bmad-output/stories/` (status: ready-for-dev) |
-| Sprint status | `bmad-output/sprint-status.yaml` |
+| Story backlog | `bmad-output/macos/stories/` (status: ready-for-dev) |
+| Sprint status | `bmad-output/macos/sprint-status.yaml` |
 | "Kiến trúc" (ranh giới ngữ nghĩa) | `DESIGN-macos-control-panel.md §6` (bản đồ component↔code) + `context/sharding-context.md` |
-| Dependency graph (raw, chưa sửa) | `bmad-output/dependency-graph.json` |
-| Waves (đã sửa) | `bmad-output/waves.json` |
+| Dependency graph (raw, chưa sửa) | `bmad-output/macos/dependency-graph.json` |
+| Waves (đã sửa) | `bmad-output/macos/waves.json` |
 
 **Module dùng chung / dễ đụng (nguồn xung đột ngữ nghĩa):** `ViewController.m` + `Main.storyboard`
 (xương sống panel — 1.3 và 1.6 cùng sở hữu → cố ý tách 2 đợt); `BrandColors.h/.m` (token — chỉ 1.1

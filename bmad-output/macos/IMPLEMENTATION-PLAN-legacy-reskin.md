@@ -125,8 +125,8 @@ Coi là "xong" chỉ khi:
 
 ```
 Bối cảnh: dự án mindful-key, thay áo cửa sổ Chuyển mã theo NOW BRAND OS. Đọc trước:
-docs/AGENT-BRIEF.md (HIẾN CHƯƠNG §2.2/2.3), bmad-output/DESIGN-macos-control-panel.md §1
-(token màu), bmad-output/DESIGN-legacy-screens-macos.md §4.3,
+docs/AGENT-BRIEF.md (HIẾN CHƯƠNG §2.2/2.3), bmad-output/macos/DESIGN-macos-control-panel.md §1
+(token màu), bmad-output/macos/DESIGN-legacy-screens-macos.md §4.3,
 platforms/apple/macos/BrandControls.h + .m (ĐỌC KỸ code thật, đây là control tự vẽ tay, không
 phải hàm tint) + BrandColors.h.
 
@@ -210,7 +210,7 @@ TUYỆT ĐỐI KHÔNG xoá/sửa/ghi đè: property `gatekeeperCard`, `gatekeepe
 THÊM vào phần code 4-tab CŨ (phần chưa đụng tới của lát cắt dọc), không phải viết lại file.
 
 Phụ thuộc: Story 1.9 đã xong (dùng lại SecondaryButton/card helper — ĐỌC lại BrandControls.h/.m
-trước). Đọc bmad-output/DESIGN-legacy-screens-macos.md §4.1 và §3.
+trước). Đọc bmad-output/macos/DESIGN-legacy-screens-macos.md §4.1 và §3.
 
 Việc: thay áo PHẦN 4-TAB của ViewController.m (không đụng phần Gatekeeper đã mount):
 - Mọi checkbox (Phím chuyển, 2 lưới trong 4 tab Bộ gõ/Gõ tắt/Hệ thống/Thông tin, Kêu beep...) →
@@ -236,7 +236,7 @@ checklist HIẾN CHƯƠNG §5 trong design doc.
 ## PROMPT — Điều phối tổng (nếu muốn giao cả gói 1 lần)
 
 ```
-Chạy skill mindful-key:mindful-keyboard-harness. Đọc bmad-output/IMPLEMENTATION-PLAN-legacy-reskin.md
+Chạy skill mindful-key:mindful-keyboard-harness. Đọc bmad-output/macos/IMPLEMENTATION-PLAN-legacy-reskin.md
 VÀ bmad-output/decision-log.md (entry 2026-07-10 "Reconciliation"). Điều phối story 1.7-1.10 cho
 platform-shell-agent theo đúng thứ tự: 1.9 TRƯỚC (thêm SecondaryButton + card helper vào
 BrandControls.h/.m, ít rủi ro nhất), rồi 1.8, 1.10 (song song được, đều đọc lại BrandControls

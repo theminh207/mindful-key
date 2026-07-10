@@ -14,7 +14,7 @@ thừa từ **[OpenKey](https://github.com/tuyenvm/OpenKey) của Mai Vũ Tuyên
 mindful-key/
 ├── core/
 │   ├── engine/     ← Bộ não OpenKey nguyên vẹn 100% (Telex/VNI/VIQR, bảng mã, macro...).
-│   │                 KHÔNG sửa "mù" — mọi PR chạm vào đây phải kèm test ở tests/engine/.
+│   │                 KHÔNG sửa "mù" — mọi PR chạm vào đây phải kèm test ở tests/core/.
 │   └── mood/       ← MoodBuffer (gom từ→câu) + BreathingPause (hợp đồng "nhịp thở") — C++
 │                     thuần, dùng chung mọi nền tảng, không phụ thuộc core/engine.
 ├── platforms/
@@ -27,7 +27,10 @@ mindful-key/
 ├── brand/          ← Nhận diện NOW BRAND OS: SVG nguồn + export.sh xuất PNG/.icns.
 ├── docs/           ← Hiến chương, PRD, spec kỹ thuật, ghi chú riêng tư.
 ├── scripts/        ← build-dmg.sh (đóng gói ad-hoc), sign-and-notarize.sh (placeholder).
-├── tests/engine/   ← Regression test core/engine (Telex→Unicode, 5/5).
+├── tests/
+│   ├── core/       ← Regression test core/engine (Telex→Unicode, 5/5) — đội core sở hữu.
+│   ├── macos/      ← Test riêng vỏ macOS — đội macOS sở hữu (chưa có test tự động).
+│   └── ios/        ← Test riêng vỏ iOS — đội iOS sở hữu (chưa có gì, chưa mở vỏ).
 └── .github/workflows/  ← CI: build macOS + regression engine.
 ```
 
@@ -37,7 +40,7 @@ mindful-key/
 make generate   # xcodegen generate
 make build      # generate + xcodebuild (Debug, ký ad-hoc)
 make run        # build rồi mở app
-make test       # regression engine (tests/engine)
+make test       # test cả 3 đội: test-core (regression engine) + test-macos + test-ios
 make brand      # xuất lại icon/asset từ brand/svg/
 ```
 

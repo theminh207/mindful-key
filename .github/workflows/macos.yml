@@ -17,8 +17,8 @@ jobs:
 
       - name: Regression engine (bộ não dùng chung)
         run: |
-          bash tests/engine/build.sh
-          ./tests/engine/test_engine
+          bash tests/core/build.sh
+          ./tests/core/test_engine
 
       - name: Generate Xcode project
         run: cd platforms/apple && xcodegen generate

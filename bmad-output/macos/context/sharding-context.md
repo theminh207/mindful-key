@@ -4,9 +4,9 @@
 > Ngôn ngữ: định danh/tên component/token = tiếng Anh; chữ hiển thị UI + văn xuôi = tiếng Việt.
 
 ## Nguồn spec (thay vai trò PRD/architecture — dự án chưa có prd.md/architecture.md)
-- `bmad-output/DESIGN-macos-control-panel.md` — token, spec 7 component, WCAG (§3), ràng buộc hiến chương (§5), bản đồ component↔code (§6).
-- `bmad-output/EXPERIENCE-macos-control-panel.md` — 4 journey, screen states (§3), wireframe, decision points (§4).
-- `bmad-output/brainstorming-report-macos-control-panel.md` — 18 ý tưởng, risks.
+- `bmad-output/macos/DESIGN-macos-control-panel.md` — token, spec 7 component, WCAG (§3), ràng buộc hiến chương (§5), bản đồ component↔code (§6).
+- `bmad-output/macos/EXPERIENCE-macos-control-panel.md` — 4 journey, screen states (§3), wireframe, decision points (§4).
+- `bmad-output/macos/brainstorming-report-macos-control-panel.md` — 18 ý tưởng, risks.
 - `docs/AGENT-BRIEF.md` — HIẾN CHƯƠNG bất khả xâm phạm.
 - Cite theo dạng `[Source: DESIGN-macos-control-panel.md#2.1]`, `[Source: EXPERIENCE-macos-control-panel.md#3.1]`. Suy luận riêng ghi `[Inference]`.
 

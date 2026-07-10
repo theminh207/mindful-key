@@ -1,7 +1,7 @@
 # Epics — mindful-key (bổ sung: epic Bảng điều khiển macOS)
 
 > Bản đồ epic (index mỏng, không phải context object). Chi tiết story nằm ở từng file
-> `bmad-output/stories/{epic}.{story}.{slug}.story.md`.
+> `bmad-output/macos/stories/{epic}.{story}.{slug}.story.md`.
 >
 > Track: BMad Method
 > **Lưu ý workspace:** workspace này gốc khoá cho **Windows Port** (Epic chưa chẻ). File

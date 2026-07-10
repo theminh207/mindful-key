@@ -14,5 +14,5 @@ release-out/
 # macOS
 .DS_Store
 
-# Build artifact của tests/engine
-tests/engine/test_engine
+# Build artifact của tests/core
+tests/core/test_engine

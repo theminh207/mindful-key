@@ -5,16 +5,24 @@ CONFIG    := Debug
 DERIVED   := platforms/apple/build
 VERSION   := $(shell . ./version.env >/dev/null 2>&1; grep '^VERSION=' version.env | cut -d= -f2)
 
-.PHONY: help generate test build run universal brand version clean
+.PHONY: help generate test test-core test-macos test-ios build run universal brand version clean
 help:
-	@echo "make generate | test | build | run | universal | brand | version | clean   (v$(VERSION))"
+	@echo "make generate | test | test-core | test-macos | test-ios | build | run | universal | brand | version | clean   (v$(VERSION))"
 
 generate:        ## Sinh .xcodeproj từ platforms/apple/project.yml (XcodeGen)
 	cd platforms/apple && xcodegen generate
 
-test:            ## Regression engine (bộ não dùng chung)
-	bash tests/engine/build.sh
-	./tests/engine/test_engine
+test: test-core test-macos test-ios  ## Chạy test cả 3 đội (core + macos + ios)
+
+test-core:       ## Regression engine (bộ não dùng chung, đội core sở hữu)
+	bash tests/core/build.sh
+	./tests/core/test_engine
+
+test-macos:      ## Test riêng vỏ macOS (đội macOS sở hữu) — chưa có test tự động, no-op
+	@echo "tests/macos: chưa có test tự động (xem tests/macos/README.md)"
+
+test-ios:        ## Test riêng vỏ iOS (đội iOS sở hữu) — chưa có test tự động, no-op
+	@echo "tests/ios: chưa có test tự động (xem tests/ios/README.md)"
 
 build: generate  ## Build app macOS (ký ad-hoc)
 	xcodebuild -project "$(XCODEPROJ)" -scheme "$(SCHEME)" -configuration "$(CONFIG)" build
@@ -33,4 +41,4 @@ version:
 	@echo "$(VERSION)"
 
 clean:
-	rm -rf "$(DERIVED)" "$(XCODEPROJ)" tests/engine/test_engine
+	rm -rf "$(DERIVED)" "$(XCODEPROJ)" tests/core/test_engine

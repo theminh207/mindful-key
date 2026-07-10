@@ -76,7 +76,7 @@ Mọi dòng trong diff PHẢI truy được về đúng request của user. Mổ
 Every code task MUST leave the codebase **at least as clean as before**. Never trade debt for speed.
 
 **Cổng chất lượng bắt buộc trước khi coi task là "xong" (mindful-key — C++/Objective-C, KHÔNG có tsc/ESLint/vitest):**
-- `make test` — regression engine (`tests/engine`) phải XANH, 0 case fail. Đây là lưới an toàn của bộ não dùng chung.
+- `make test` — regression engine (`tests/core`) phải XANH, 0 case fail. Đây là lưới an toàn của bộ não dùng chung.
 - `make build` / `xcodebuild` — build app macOS sạch: 0 error, KHÔNG thêm warning mới của compiler.
 - CI `.github/workflows/macos.yml` — xanh (nó chạy đúng `make test` + `xcodebuild` Debug ad-hoc).
 - **Debt delta = 0**: số error/warning/test-fail KHÔNG được tăng so với baseline trước task.
@@ -98,10 +98,31 @@ Every code task MUST leave the codebase **at least as clean as before**. Never t
 ### Domain Rules — nạp khi cần, đừng gánh cả tủ sách
 Rules chi tiết nằm ở `.claude/rules/` (ngay trong repo này). Dự án CHƯA cắm hook auto-load theo `paths:`, nên coi chúng là **tài liệu tra cứu**: khi task rơi vào domain nào thì PHẢI `Read` file đó TRƯỚC khi quyết định lớn. Ví dụ code trong rule là TypeScript — đọc như *nguyên tắc*, tự ánh xạ sang C++/ObjC:
 - Refactor lớn / thiết kế bộ não C++ (`core/engine`, `core/mood`) → `Read .claude/rules/architecture-master.md`
-- Viết/sửa test regression (`tests/engine`) → `Read .claude/rules/testing-master.md`
+- Viết/sửa test regression (`tests/core`) → `Read .claude/rules/testing-master.md`
 - Review code C++/ObjC trước khi coi là xong → `Read .claude/rules/code-review-master.md`
 - Riêng tư dữ liệu cảm xúc, entitlements, Keychain, input-monitoring → `Read .claude/rules/security-master.md`
 - CI / build / ký / notarize (`.github/workflows`, `scripts/`, XcodeGen `project.yml`) → `Read .claude/rules/devops-master.md`
 - UI native macOS (AppKit/popup/tray) → `Read .claude/rules/ui-ux-master.md` — nhưng NHẬN DIỆN/brand theo HIẾN CHƯƠNG là tối cao, rule này chỉ lo a11y/state/form.
 - Model sentiment on-device (PhoBERT ONNX, send-risk) → `Read .claude/rules/ai-engineering-master.md`
 - Bản đầy đủ có ví dụ code → `.claude/rules-archive/`
+
+---
+
+## Harness (điều phối agent)
+
+**Mô hình "1 bộ não + nhiều vỏ + 1 lớp cảm xúc" chia thành 4 chuyên gia** (chạy chế độ sub-agent, không phải Agent Teams — xem `.claude/skills/mindful-keyboard-harness/SKILL.md`):
+
+| Chuyên gia | Mảng | Sở hữu | Skill chuyên biệt |
+|---|---|---|---|
+| `engine-agent` | Bộ não C++ dùng chung | `core/engine`, `tests/core` | `openkey-engine` |
+| `mood-layer-agent` | Lớp cảm xúc/chánh niệm | `core/mood` | `mood-sentiment-layer` |
+| `platform-shell-agent` | Vỏ macOS/Windows/Android/Linux | `platforms/{apple/macos,windows,android,linux}` | `platform-porting` |
+| `ios-shell-agent` | Vỏ iOS (keyboard extension) | `platforms/apple/ios`, `tests/ios` | `ios-keyboard-extension` |
+
+Việc chưa rõ thuộc mảng nào, hoặc chạm ≥2 mảng → qua orchestrator `mindful-keyboard-harness`. Việc rõ 1 mảng → gọi thẳng skill/agent tương ứng. Hai sổ đi kèm harness: `docs/TEST_MATRIX.md` (bằng chứng hành vi) + `docs/FRICTION-LOG.md` (chỗ AI phải đoán).
+
+### Lịch sử thay đổi
+
+| Ngày | Thay đổi | Lý do |
+|------|----------|-------|
+| 2026-07-10 | Đồng bộ điều phối từ repo cha `mindful-keyboard` xuống `mindful-key`: (a) harness orchestrator + `platform-porting` thêm **cổng rủi ro** + phản xạ ghi `TEST_MATRIX`/`FRICTION-LOG`; (b) mang 2 sổ `TEST_MATRIX.md` + `FRICTION-LOG.md` về `docs/` con (vá path `prototype/`→`tests/core/`); (c) tách **iOS thành chuyên gia thứ 4** `ios-shell-agent` + skill `ios-keyboard-extension`, gỡ iOS khỏi `platform-shell-agent`. | Chủ dự án chuẩn bị mở đội iOS. iOS bị sandbox chặn (không global hook) nên mandate chốt hẹp: **nhật ký + nhắc thụ động, KHÔNG gác cổng gửi tin** (FRICTION-LOG 2026-07-10, đã chốt). Còn lệch: `.claude/agents/{engine,platform-shell}` + skill `openkey-engine` vẫn giữ path bản gốc — ghi ở FRICTION-LOG, chưa quét đổi để giữ phạm vi. |
