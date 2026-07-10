@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "MyTextField.h"
+#import "BrandControls.h"
 
 @interface ViewController : NSViewController<MyTextFieldDelegate>
 @property (strong) IBOutlet NSView *viewParent;
@@ -20,6 +21,9 @@
 @property (weak) IBOutlet NSBox *tabviewSystem;
 @property (weak) IBOutlet NSBox *tabviewInfo;
 
+// [MINDFUL] Story 1.7 — box header (Kiểu gõ/Bảng mã/Phím chuyển/Chế độ gõ), bọc card NOW BRAND OS.
+@property (weak) IBOutlet NSBox *headerBox;
+
 @property (weak) IBOutlet NSPopUpButton *popupInputType;
 @property (weak) IBOutlet NSPopUpButton *popupCode;
 
@@ -31,39 +35,41 @@
 @property (weak) IBOutlet NSButton *EngButton;
 
 @property (weak) IBOutlet NSButton *FreeMarkButton;
-@property (weak) IBOutlet NSButton *UseModernOrthography;
+// [MINDFUL] Story 1.7 — checkbox 4-tab thay bằng PillSwitch (xem BrandControls.h). FreeMarkButton
+// ở trên KHÔNG đổi — nó là control ẨN (hidden=YES) nằm ngoài 4 tab, không thuộc phạm vi story này.
+@property (weak) IBOutlet PillSwitch *UseModernOrthography;
 
-@property (weak) IBOutlet NSButton *CheckSpellingButton;
+@property (weak) IBOutlet PillSwitch *CheckSpellingButton;
 
-@property (weak) IBOutlet NSButton *RunOnStartupButton;
-@property (weak) IBOutlet NSButton *ShowUIButton;
+@property (weak) IBOutlet PillSwitch *RunOnStartupButton;
+@property (weak) IBOutlet PillSwitch *ShowUIButton;
 
-@property (weak) IBOutlet NSButton *UseGrayIcon;
-@property (weak) IBOutlet NSButton *QuickTelex;
+@property (weak) IBOutlet PillSwitch *UseGrayIcon;
+@property (weak) IBOutlet PillSwitch *QuickTelex;
 
-@property (weak) IBOutlet NSButton *RestoreIfInvalidWord;
-@property (weak) IBOutlet NSButton *FixRecommendBrowser;
-@property (weak) IBOutlet NSButton *AllowZWJF;
-@property (weak) IBOutlet NSButton *TempOffSpellChecking;
+@property (weak) IBOutlet PillSwitch *RestoreIfInvalidWord;
+@property (weak) IBOutlet PillSwitch *FixRecommendBrowser;
+@property (weak) IBOutlet PillSwitch *AllowZWJF;
+@property (weak) IBOutlet PillSwitch *TempOffSpellChecking;
 
-@property (weak) IBOutlet NSButton *UseMacro;
-@property (weak) IBOutlet NSButton *UseMacroInEnglishMode;
+@property (weak) IBOutlet PillSwitch *UseMacro;
+@property (weak) IBOutlet PillSwitch *UseMacroInEnglishMode;
 
-@property (weak) IBOutlet NSButton *SendKeyStepByStep;
-@property (weak) IBOutlet NSButton *AutoRememberSwitchKey;
-@property (weak) IBOutlet NSButton *UpperCaseFirstChar;
-@property (weak) IBOutlet NSButton *QuickStartConsonant;
-@property (weak) IBOutlet NSButton *QuickEndConsonant;
+@property (weak) IBOutlet PillSwitch *SendKeyStepByStep;
+@property (weak) IBOutlet PillSwitch *AutoRememberSwitchKey;
+@property (weak) IBOutlet PillSwitch *UpperCaseFirstChar;
+@property (weak) IBOutlet PillSwitch *QuickStartConsonant;
+@property (weak) IBOutlet PillSwitch *QuickEndConsonant;
 
-@property (weak) IBOutlet NSButton *RememberTableCode;
-@property (weak) IBOutlet NSButtonCell *OtherLanguage;
+@property (weak) IBOutlet PillSwitch *RememberTableCode;
+@property (weak) IBOutlet PillSwitch *OtherLanguage;
 
-@property (weak) IBOutlet NSButton *TempOffOpenKey;
-@property (weak) IBOutlet NSButton *AutoCapsMacro;
-@property (weak) IBOutlet NSButton *ShowIconOnDock;
-@property (weak) IBOutlet NSButton *CheckNewVersionOnStartup;
-@property (weak) IBOutlet NSButton *FixChromiumBrowser;
-@property (weak) IBOutlet NSButton *PerformLayoutCompat;
+@property (weak) IBOutlet PillSwitch *TempOffOpenKey;
+@property (weak) IBOutlet PillSwitch *AutoCapsMacro;
+@property (weak) IBOutlet PillSwitch *ShowIconOnDock;
+@property (weak) IBOutlet PillSwitch *CheckNewVersionOnStartup;
+@property (weak) IBOutlet PillSwitch *FixChromiumBrowser;
+@property (weak) IBOutlet PillSwitch *PerformLayoutCompat;
 
 @property (weak) IBOutlet NSButton *CheckNewVersionButton;
 @property (weak) IBOutlet NSTextField *VersionInfo;

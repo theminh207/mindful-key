@@ -11,6 +11,7 @@
 #import "AppDelegate.h"
 #import "MyTextField.h"
 #import "GatekeeperCardView.h"   // [MINDFUL] Story 1.4 (lát cắt dọc — treo card lên đầu panel)
+#import "BrandColors.h"          // [MINDFUL] Story 1.7 — [Brand teal]/[Brand charcoal]/[Brand divider]
 
 extern AppDelegate* appDelegate;
 extern void OnSpellCheckingChanged(void);
@@ -41,15 +42,18 @@ extern int vFixChromiumBrowser;
 extern int vPerformLayoutCompat;
 
 @implementation ViewController {
-    __weak IBOutlet NSButton *CustomSwitchCommand;
-    __weak IBOutlet NSButton *CustomSwitchOption;
-    __weak IBOutlet NSButton *CustomSwitchControl;
-    __weak IBOutlet NSButton *CustomSwitchShift;
+    // [MINDFUL] Story 1.7 — hàng "Phím chuyển" + "Kêu beep" thay bằng PillSwitch (BrandControls.h).
+    __weak IBOutlet PillSwitch *CustomSwitchCommand;
+    __weak IBOutlet PillSwitch *CustomSwitchOption;
+    __weak IBOutlet PillSwitch *CustomSwitchControl;
+    __weak IBOutlet PillSwitch *CustomSwitchShift;
     __weak IBOutlet MyTextField *CustomSwitchKey;
-    __weak IBOutlet NSButton *CustomBeepSound;
+    __weak IBOutlet PillSwitch *CustomBeepSound;
     NSArray* tabviews, *tabbuttons;
     NSRect tabViewRect;
     NSView* tabButtonBackground;
+    GatekeeperCardView* gatekeeperCard;   // [MINDFUL] Story 1.4
+    BOOL gatekeeperMounted;
 }
 
 - (void)viewDidLoad {
@@ -84,7 +88,8 @@ extern int vPerformLayoutCompat;
     }
     
     [self showTab:0];
-    
+    [self applyBrandCardStyleToGroups];
+
     NSArray* inputTypeData = [[NSArray alloc] initWithObjects:@"Telex", @"VNI", @"Simple Telex 1", @"Simple Telex 2", nil];
     NSArray* codeData = [OpenKeyManager getTableCodes];
     
@@ -110,6 +115,38 @@ extern int vPerformLayoutCompat;
     [super viewDidAppear];
     NSString* str = @"Mindful Keyboard %@ - Bộ gõ Tiếng Việt";
     self.view.window.title = [NSString stringWithFormat:str, [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"]];
+    [self mountGatekeeperCardIfNeeded];
+    [gatekeeperCard refresh];
+}
+
+// [MINDFUL] Story 1.4 — lát cắt dọc: treo card Gác cổng lên đầu panel HIỆN TẠI, không
+// đập storyboard. Cửa sổ cao thêm 1 dải ở trên; nội dung cũ neo đáy (autoresizing mặc định)
+// nên giữ nguyên vị trí, card nằm vào dải mới ở trên cùng. Chỉ chạy 1 lần.
+- (void)mountGatekeeperCardIfNeeded {
+    if (gatekeeperMounted) return;
+    NSWindow* window = self.view.window;
+    if (!window) return;
+
+    const CGFloat cardHeight = 92.0;
+    const CGFloat margin = 16.0;
+    const CGFloat strip = cardHeight + margin;   // khoảng thêm ở đỉnh
+
+    // Nới cửa sổ cao thêm 'strip' (giữ mép trên cố định → khoảng trống mở ra phía trên nội dung cũ).
+    NSSize contentSize = self.view.frame.size;
+    contentSize.height += strip;
+    NSRect frame = window.frame;
+    frame.size.height += strip;   // giữ frame.origin → cạnh dưới cố định, mở thêm ở trên
+    [window setFrame:frame display:YES];
+    [window setContentSize:contentSize];
+
+    CGFloat w = self.view.bounds.size.width;
+    CGFloat h = self.view.bounds.size.height;
+    gatekeeperCard = [[GatekeeperCardView alloc]
+        initWithFrame:NSMakeRect(margin, h - cardHeight - (margin / 2.0), w - 2 * margin, cardHeight)];
+    gatekeeperCard.autoresizingMask = NSViewWidthSizable | NSViewMinYMargin;  // bám mép trên, giãn ngang
+    [self.view addSubview:gatekeeperCard];
+
+    gatekeeperMounted = YES;
 }
 
 - (void)viewWillAppear {
@@ -133,6 +170,55 @@ extern int vPerformLayoutCompat;
     // Update the view, if already loaded.
 }
 
+// [MINDFUL] Story 1.7 — bọc box header ("Kiểu gõ"/"Bảng mã"/"Phím chuyển"/"Chế độ gõ") + 4 box
+// nội dung tab vào card NOW BRAND OS (bo góc 16px + bóng ngọc bích, xem BrandControls.h). Cùng kỹ
+// thuật với ConvertToolViewController -applyBrandCardStyleToOptionBoxes (story 1.9): boxType +
+// transparent tắt fill/viền gốc trước khi áp layer tự vẽ. Gọi sau khi mọi box đã có frame cuối
+// (sau vòng lặp gán tabViewRect + showTab:0 ở trên) để shadowPath tính đúng kích thước.
+- (void)applyBrandCardStyleToGroups {
+    for (NSBox *box in @[self.headerBox, self.tabviewPrimary, self.tabviewMacro, self.tabviewSystem, self.tabviewInfo]) {
+        box.boxType = NSBoxCustom;
+        box.transparent = YES;
+        [box applyBrandCardStyle];
+    }
+}
+
+// [MINDFUL] Story 1.7 — 4 nút chọn tab hiện đang tô "đang chọn" bằng accent color hệ thống (nút
+// bezelStyle="rounded" + state=on, macOS tự vẽ nền bằng NSColor.controlAccentColor — không có API
+// công khai để ép riêng 1 màu, cùng lý do PillSwitch phải tự vẽ tay thay vì tint checkbox). Nên
+// tắt hẳn bezel gốc (bordered=NO) và tự vẽ nền teal/viền divider bằng CALayer khi chọn/không chọn.
+- (void)styleTabButton:(NSButton *)button selected:(BOOL)selected {
+    button.bordered = NO;
+    button.wantsLayer = YES;
+    button.layer.cornerRadius = 8.0;
+    button.layer.borderWidth = selected ? 0.0 : 1.0;
+    button.layer.borderColor = [Brand divider].CGColor;
+    button.layer.backgroundColor = selected ? [Brand teal].CGColor : [NSColor clearColor].CGColor;
+
+    NSDictionary *attrs = @{
+        NSForegroundColorAttributeName: selected ? [NSColor whiteColor] : [Brand charcoal],
+        NSFontAttributeName: (button.font ?: [NSFont systemFontOfSize:13])
+    };
+    button.attributedTitle = [[NSAttributedString alloc] initWithString:button.title attributes:attrs];
+}
+
+// [MINDFUL] Story 1.7 — radio "Chế độ gõ" (Tiếng Việt/English): KHÔNG đổi buttonType/bordered.
+// Đã verify (đọc tài liệu AppKit + đối chiếu lý do PillSwitch đã ghi trong BrandControls.h):
+// checkbox/radio button cell không có API tint công khai đáng tin cậy (contentTintColor/bezelColor
+// đều không tác dụng lên glyph switch/radio, Apple tài liệu hoá rõ với bezelColor). Cách vẽ lại
+// đúng đắn là tự vẽ cả glyph tròn (như PillSwitch làm với checkbox) — nhưng việc đó cần verify
+// hành vi loại-trừ-lẫn-nhau (chọn Việt tự tắt Anh) bằng THAO TÁC CLICK THẬT, và sandbox này không
+// có quyền Accessibility để tự động click kiểm tra. Rủi ro làm gãy tính năng chuyển Việt/Anh (rất
+// hay dùng) lớn hơn lợi ích thẩm mỹ — nên CHỈ tô màu CHỮ (không đụng chấm radio/cơ chế chọn) sang
+// Brand.teal khi đang chọn. Chấm radio vẫn theo Accent Color hệ thống — đã báo lại, xem báo cáo.
+- (void)styleLanguageRadioButton:(NSButton *)button selected:(BOOL)selected {
+    NSDictionary *attrs = @{
+        NSForegroundColorAttributeName: selected ? [Brand teal] : [NSColor labelColor],
+        NSFontAttributeName: (button.font ?: [NSFont systemFontOfSize:13])
+    };
+    button.attributedTitle = [[NSAttributedString alloc] initWithString:button.title attributes:attrs];
+}
+
 -(void)showTab:(NSInteger)index {
     NSRect tempRect = tabViewRect;
     tempRect.origin.y = 1000;
@@ -142,13 +228,15 @@ extern int vPerformLayoutCompat;
     }
     for (NSButton* b in tabbuttons) {
         [b setState:NSControlStateValueOff];
+        [self styleTabButton:b selected:NO];
     }
     NSBox* b = [tabviews objectAtIndex:index];
     [b setHidden:NO];
     b.frame = tabViewRect;
-    
+
     NSButton* button = [tabbuttons objectAtIndex:index];
     [button setState:NSControlStateValueOn];
+    [self styleTabButton:button selected:YES];
 
     [self.view addSubview:tabButtonBackground positioned:NSWindowAbove relativeTo:b];
     for (NSButton* tabButton in tabbuttons) {
@@ -170,6 +258,11 @@ extern int vPerformLayoutCompat;
 
 - (IBAction)onLanguageChanged:(id)sender {
     [appDelegate onInputMethodSelected];
+    // [MINDFUL] Story 1.7 — radio loại-trừ-lẫn-nhau vẫn do AppKit tự quản lý (buttonType=radio,
+    // KHÔNG đụng); ở đây chỉ đồng bộ lại màu chữ teal cho bên đang chọn (xem
+    // -styleLanguageRadioButton:selected: — không đụng chấm radio/cơ chế chọn).
+    [self styleLanguageRadioButton:self.VietButton selected:(self.VietButton.state == NSControlStateValueOn)];
+    [self styleLanguageRadioButton:self.EngButton selected:(self.EngButton.state == NSControlStateValueOn)];
 }
 
 - (IBAction)onRestart:(id)sender {
@@ -185,12 +278,12 @@ extern int vPerformLayoutCompat;
     vFreeMark = (int)val;
 }
 
-- (IBAction)onModernOrthography:(NSButton *)sender {
+- (IBAction)onModernOrthography:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"ModernOrthography"];
     vUseModernOrthography = (int)val;
 }
 
-- (IBAction)onCheckSpelling:(NSButton *)sender {
+- (IBAction)onCheckSpelling:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"Spelling"];
     vCheckSpelling = (int)val;
     [self.RestoreIfInvalidWord setEnabled:val];
@@ -199,68 +292,68 @@ extern int vPerformLayoutCompat;
     OnSpellCheckingChanged();
 }
 
-- (IBAction)onShowUIOnStartup:(NSButton *)sender {
+- (IBAction)onShowUIOnStartup:(PillSwitch *)sender {
     [self setCustomValue:sender keyToSet:@"ShowUIOnStartup"];
 }
 
-- (IBAction)onRunOnStartup:(NSButton *)sender {
+- (IBAction)onRunOnStartup:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"RunOnStartup"];
     [appDelegate setRunOnStartup:val];
 }
 
-- (IBAction)onGrayIcon:(id)sender {
+- (IBAction)onGrayIcon:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"GrayIcon"];
     [appDelegate setGrayIcon:val];
 }
 
-- (IBAction)onQuickTelex:(id)sender {
+- (IBAction)onQuickTelex:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"QuickTelex"];
     vQuickTelex = (int)val;
 }
 
-- (IBAction)onRestoreIfInvalidWord:(id)sender {
+- (IBAction)onRestoreIfInvalidWord:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"RestoreIfInvalidWord"];
     vRestoreIfWrongSpelling = (int)val;
 }
 
-- (IBAction)omTempOffSpellChecking:(id)sender {
+- (IBAction)omTempOffSpellChecking:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"vTempOffSpelling"];
     vTempOffSpelling = (int)val;
 }
 
-- (IBAction)onAllowZFWJ:(id)sender {
+- (IBAction)onAllowZFWJ:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"vAllowConsonantZFWJ"];
     vAllowConsonantZFWJ = (int)val;
 }
 
-- (IBAction)onFixRecommendBrowser:(id)sender {
+- (IBAction)onFixRecommendBrowser:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"FixRecommendBrowser"];
     vFixRecommendBrowser = (int)val;
     [self.FixChromiumBrowser setEnabled:val];
 }
 
-- (IBAction)onControlSwitchKey:(NSButton *)sender {
+- (IBAction)onControlSwitchKey:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:nil];
     vSwitchKeyStatus &= (~0x100);
     vSwitchKeyStatus |= val << 8;
     [[NSUserDefaults standardUserDefaults] setInteger:vSwitchKeyStatus forKey:@"SwitchKeyStatus"];
 }
 
-- (IBAction)onOptionSwitchKey:(NSButton *)sender {
+- (IBAction)onOptionSwitchKey:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:nil];
     vSwitchKeyStatus &= (~0x200);
     vSwitchKeyStatus |= val << 9;
     [[NSUserDefaults standardUserDefaults] setInteger:vSwitchKeyStatus forKey:@"SwitchKeyStatus"];
 }
 
-- (IBAction)onCommandSwitchKey:(NSButton *)sender {
+- (IBAction)onCommandSwitchKey:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:nil];
     vSwitchKeyStatus &= (~0x400);
     vSwitchKeyStatus |= val << 10;
     [[NSUserDefaults standardUserDefaults] setInteger:vSwitchKeyStatus forKey:@"SwitchKeyStatus"];
 }
 
-- (IBAction)onShiftSwitchKey:(NSButton *)sender {
+- (IBAction)onShiftSwitchKey:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:nil];
     vSwitchKeyStatus &= (~0x800);
     vSwitchKeyStatus |= val << 11;
@@ -275,30 +368,34 @@ extern int vPerformLayoutCompat;
     [[NSUserDefaults standardUserDefaults] setInteger:vSwitchKeyStatus forKey:@"SwitchKeyStatus"];
 }
 
-- (IBAction)onBeepSound:(NSButton *)sender {
+- (IBAction)onBeepSound:(PillSwitch *)sender {
     unsigned int val = (unsigned int)[self setCustomValue:sender keyToSet:nil];
     vSwitchKeyStatus &= (~0x8000);
     vSwitchKeyStatus |= val << 15;
     [[NSUserDefaults standardUserDefaults] setInteger:vSwitchKeyStatus forKey:@"SwitchKeyStatus"];
 }
 
-- (IBAction)onSendKeyStepByStep:(id)sender {
+- (IBAction)onSendKeyStepByStep:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"SendKeyStepByStep"];
     vSendKeyStepByStep = (int)val;
 }
 
-- (IBAction)onPerformLayoutCompat:(id)sender {
+- (IBAction)onPerformLayoutCompat:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"vPerformLayoutCompat"];
     vPerformLayoutCompat = (int)val;
 }
 
-- (NSInteger)setCustomValue:(NSButton*)sender keyToSet:(NSString*) key {
-    NSInteger val = 0;
-    if (sender.state == NSControlStateValueOn) {
-        val = 1;
-    } else {
-        val = 0;
+// [MINDFUL] Story 1.7 — nhận cả PillSwitch (đã chuyển) lẫn NSButton (vd onFreeMark: — control ẩn,
+// NGOÀI phạm vi story này, xem ViewController.h). Dò kiểu bằng respondsToSelector thay vì ép kiểu
+// cứng, để không control nào bị đổi hành vi ngoài ý muốn và không phát sinh warning ép kiểu sai.
+- (NSInteger)setCustomValue:(id)sender keyToSet:(NSString*) key {
+    BOOL isOn = NO;
+    if ([sender respondsToSelector:@selector(isOn)]) {
+        isOn = [(PillSwitch *)sender isOn];
+    } else if ([sender respondsToSelector:@selector(state)]) {
+        isOn = ([(NSButton *)sender state] == NSControlStateValueOn);
     }
+    NSInteger val = isOn ? 1 : 0;
     if (key != nil)
         [[NSUserDefaults standardUserDefaults] setInteger:val forKey:key];
     return val;
@@ -308,57 +405,57 @@ extern int vPerformLayoutCompat;
     [appDelegate onMacroSelected];
 }
 
-- (IBAction)onMacroChanged:(NSButton *)sender {
+- (IBAction)onMacroChanged:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"UseMacro"];
     vUseMacro = (int)val;
 }
 
-- (IBAction)onUseMacroInEnglishModeChanged:(NSButton *)sender {
+- (IBAction)onUseMacroInEnglishModeChanged:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"UseMacroInEnglishMode"];
     vUseMacroInEnglishMode = (int)val;
 }
 
-- (IBAction)onAutoRememberSwitchKey:(NSButton *)sender {
+- (IBAction)onAutoRememberSwitchKey:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"UseSmartSwitchKey"];
     vUseSmartSwitchKey = (int)val;
 }
 
-- (IBAction)onUpperCaseFirstChar:(NSButton *)sender {
+- (IBAction)onUpperCaseFirstChar:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"UpperCaseFirstChar"];
     vUpperCaseFirstChar = (int)val;
 }
-- (IBAction)onQuickStartConsonant:(id)sender {
+- (IBAction)onQuickStartConsonant:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"vQuickStartConsonant"];
     vQuickStartConsonant = (int)val;
 }
 
-- (IBAction)onQuickEndConsonant:(id)sender {
+- (IBAction)onQuickEndConsonant:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"vQuickEndConsonant"];
     vQuickEndConsonant = (int)val;
 }
 
-- (IBAction)onTempOffOpenKeyByHotKey:(id)sender {
+- (IBAction)onTempOffOpenKeyByHotKey:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"vTempOffOpenKey"];
     vTempOffOpenKey = (int)val;
 }
 
-- (IBAction)onRememberTableCode:(id)sender {
+- (IBAction)onRememberTableCode:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"vRememberCode"];
     vRememberCode = (int)val;
 }
-- (IBAction)onOtherLanguage:(id)sender {
-    
+- (IBAction)onOtherLanguage:(PillSwitch *)sender {
+
     NSInteger val = [self setCustomValue:sender keyToSet:@"vOtherLanguage"];
     vOtherLanguage = (int)val;
 }
 
 
-- (IBAction)onAutoCapsMacro:(id)sender {
+- (IBAction)onAutoCapsMacro:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"vAutoCapsMacro"];
     vAutoCapsMacro = (int)val;
 }
 
-- (IBAction)onShowIconOnDock:(id)sender {
+- (IBAction)onShowIconOnDock:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"vShowIconOnDock"];
     vShowIconOnDock = (int)val;
     if (!vShowIconOnDock) {
@@ -367,12 +464,12 @@ extern int vPerformLayoutCompat;
     [appDelegate showIconOnDock:vShowIconOnDock];
 }
 
-- (IBAction)onCheckNewVersionOnStartup:(NSButton *)sender {
-    NSInteger val = sender.state == NSControlStateValueOn ? 0 : 1;
+- (IBAction)onCheckNewVersionOnStartup:(PillSwitch *)sender {
+    NSInteger val = sender.isOn ? 0 : 1;
     [[NSUserDefaults standardUserDefaults] setInteger:val forKey:@"DontCheckUpdate"];
 }
 
-- (IBAction)onFixChromiumBrowser:(NSButton *)sender {
+- (IBAction)onFixChromiumBrowser:(PillSwitch *)sender {
     NSInteger val = [self setCustomValue:sender keyToSet:@"vFixChromiumBrowser"];
     vFixChromiumBrowser = (int)val;
 }
@@ -390,103 +487,106 @@ extern int vPerformLayoutCompat;
     } else if (intInputMethod == 0) {
         self.EngButton.state = NSControlStateValueOn;
     }
-    
+    // [MINDFUL] Story 1.7 — đồng bộ màu chữ teal cho radio đang chọn (xem -styleLanguageRadioButton:selected:).
+    [self styleLanguageRadioButton:self.VietButton selected:(self.VietButton.state == NSControlStateValueOn)];
+    [self styleLanguageRadioButton:self.EngButton selected:(self.EngButton.state == NSControlStateValueOn)];
+
     NSInteger intInputType = [[NSUserDefaults standardUserDefaults] integerForKey:@"InputType"];
     [self.popupInputType selectItemAtIndex:intInputType];
-    
+
     NSInteger intCodeTable = [[NSUserDefaults standardUserDefaults] integerForKey:@"CodeTable"];
     [self.popupCode selectItemAtIndex:intCodeTable];
-    
+
     //option
     NSInteger showui = [[NSUserDefaults standardUserDefaults] integerForKey:@"ShowUIOnStartup"];
-    self.ShowUIButton.state = showui ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.ShowUIButton setOn:showui animated:NO];
+
     NSInteger freeMark = [[NSUserDefaults standardUserDefaults] integerForKey:@"FreeMark"];
     self.FreeMarkButton.state = freeMark ? NSControlStateValueOn : NSControlStateValueOff;
-    
+
     NSInteger useModernOrthography = [[NSUserDefaults standardUserDefaults] integerForKey:@"ModernOrthography"];
-    self.UseModernOrthography.state = useModernOrthography ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.UseModernOrthography setOn:useModernOrthography animated:NO];
+
     NSInteger spelling = [[NSUserDefaults standardUserDefaults] integerForKey:@"Spelling"];
-    self.CheckSpellingButton.state = spelling ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.CheckSpellingButton setOn:spelling animated:NO];
+
     NSInteger runOnStartup = [[NSUserDefaults standardUserDefaults] integerForKey:@"RunOnStartup"];
-    self.RunOnStartupButton.state = runOnStartup ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.RunOnStartupButton setOn:runOnStartup animated:NO];
+
     NSInteger useGrayIcon = [[NSUserDefaults standardUserDefaults] integerForKey:@"GrayIcon"];
-    self.UseGrayIcon.state = useGrayIcon ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.UseGrayIcon setOn:useGrayIcon animated:NO];
+
     NSInteger quicTelex = [[NSUserDefaults standardUserDefaults] integerForKey:@"QuickTelex"];
-    self.QuickTelex.state = quicTelex ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.QuickTelex setOn:quicTelex animated:NO];
+
     NSInteger restoreIfInvalidWord = [[NSUserDefaults standardUserDefaults] integerForKey:@"RestoreIfInvalidWord"];
-    self.RestoreIfInvalidWord.state = restoreIfInvalidWord ? NSControlStateValueOn : NSControlStateValueOff;
+    [self.RestoreIfInvalidWord setOn:restoreIfInvalidWord animated:NO];
     [self.RestoreIfInvalidWord setEnabled:spelling];
-    
+
     NSInteger tempOffSpelling = [[NSUserDefaults standardUserDefaults] integerForKey:@"vTempOffSpelling"];
-    self.TempOffSpellChecking.state = tempOffSpelling ? NSControlStateValueOn : NSControlStateValueOff;
+    [self.TempOffSpellChecking setOn:tempOffSpelling animated:NO];
     [self.TempOffSpellChecking setEnabled:spelling];
-    
+
     NSInteger allowZFWJ = [[NSUserDefaults standardUserDefaults] integerForKey:@"vAllowConsonantZFWJ"];
-    self.AllowZWJF.state = allowZFWJ ? NSControlStateValueOn : NSControlStateValueOff;
+    [self.AllowZWJF setOn:allowZFWJ animated:NO];
     [self.AllowZWJF setEnabled:spelling];
-    
+
     NSInteger fixRecommendBrowser = [[NSUserDefaults standardUserDefaults] integerForKey:@"FixRecommendBrowser"];
-    self.FixRecommendBrowser.state = fixRecommendBrowser ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.FixRecommendBrowser setOn:fixRecommendBrowser animated:NO];
+
     NSInteger useMacro = [[NSUserDefaults standardUserDefaults] integerForKey:@"UseMacro"];
-    self.UseMacro.state = useMacro ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.UseMacro setOn:useMacro animated:NO];
+
     NSInteger useMacroInEnglish = [[NSUserDefaults standardUserDefaults] integerForKey:@"UseMacroInEnglishMode"];
-    self.UseMacroInEnglishMode.state = useMacroInEnglish ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.UseMacroInEnglishMode setOn:useMacroInEnglish animated:NO];
+
     NSInteger sendKeySbS = [[NSUserDefaults standardUserDefaults] integerForKey:@"SendKeyStepByStep"];
-    self.SendKeyStepByStep.state = sendKeySbS ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.SendKeyStepByStep setOn:sendKeySbS animated:NO];
+
     NSInteger useSmartSwitchKey = [[NSUserDefaults standardUserDefaults] integerForKey:@"UseSmartSwitchKey"];
-    self.AutoRememberSwitchKey.state = useSmartSwitchKey ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.AutoRememberSwitchKey setOn:useSmartSwitchKey animated:NO];
+
     NSInteger upperCaseFirstChar = [[NSUserDefaults standardUserDefaults] integerForKey:@"UpperCaseFirstChar"];
-    self.UpperCaseFirstChar.state = upperCaseFirstChar ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.UpperCaseFirstChar setOn:upperCaseFirstChar animated:NO];
+
     NSInteger quickStartConsonant = [[NSUserDefaults standardUserDefaults] integerForKey:@"vQuickStartConsonant"];
-    self.QuickStartConsonant.state = quickStartConsonant ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.QuickStartConsonant setOn:quickStartConsonant animated:NO];
+
     NSInteger quickEndConsonant = [[NSUserDefaults standardUserDefaults] integerForKey:@"vQuickEndConsonant"];
-    self.QuickEndConsonant.state = quickEndConsonant ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.QuickEndConsonant setOn:quickEndConsonant animated:NO];
+
     value = [[NSUserDefaults standardUserDefaults] integerForKey:@"vRememberCode"];
-    self.RememberTableCode.state = value ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.RememberTableCode setOn:value animated:NO];
+
     value = [[NSUserDefaults standardUserDefaults] integerForKey:@"vOtherLanguage"];
-    self.OtherLanguage.state = value ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.OtherLanguage setOn:value animated:NO];
+
     value = [[NSUserDefaults standardUserDefaults] integerForKey:@"vTempOffOpenKey"];
-    self.TempOffOpenKey.state = value ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.TempOffOpenKey setOn:value animated:NO];
+
     value = [[NSUserDefaults standardUserDefaults] integerForKey:@"vAutoCapsMacro"];
-    self.AutoCapsMacro.state = value ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.AutoCapsMacro setOn:value animated:NO];
+
     value = [[NSUserDefaults standardUserDefaults] integerForKey:@"vShowIconOnDock"];
-    self.ShowIconOnDock.state = value ? NSControlStateValueOn : NSControlStateValueOff;
-    
+    [self.ShowIconOnDock setOn:value animated:NO];
+
     value = [[NSUserDefaults standardUserDefaults] integerForKey:@"DontCheckUpdate"];
-    self.CheckNewVersionOnStartup.state = value ? NSControlStateValueOff :NSControlStateValueOn;
-    
+    [self.CheckNewVersionOnStartup setOn:!value animated:NO];
+
     value = [[NSUserDefaults standardUserDefaults] integerForKey:@"vFixChromiumBrowser"];
-    self.FixChromiumBrowser.state = value ? NSControlStateValueOn : NSControlStateValueOff;
+    [self.FixChromiumBrowser setOn:value animated:NO];
     self.FixChromiumBrowser.enabled = fixRecommendBrowser ? YES : NO;
-    
+
     value = [[NSUserDefaults standardUserDefaults] integerForKey:@"vPerformLayoutCompat"];
-    self.PerformLayoutCompat.state = value ? NSControlStateValueOn : NSControlStateValueOff;
-    
-    CustomSwitchControl.state = (vSwitchKeyStatus & 0x100) ? NSControlStateValueOn : NSControlStateValueOff;
-    CustomSwitchOption.state = (vSwitchKeyStatus & 0x200) ? NSControlStateValueOn : NSControlStateValueOff;
-    CustomSwitchCommand.state = (vSwitchKeyStatus & 0x400) ? NSControlStateValueOn : NSControlStateValueOff;
-    CustomSwitchShift.state = (vSwitchKeyStatus & 0x800) ? NSControlStateValueOn : NSControlStateValueOff;
-    CustomBeepSound.state = (vSwitchKeyStatus & 0x8000) ? NSControlStateValueOn : NSControlStateValueOff;
+    [self.PerformLayoutCompat setOn:value animated:NO];
+
+    [CustomSwitchControl setOn:(vSwitchKeyStatus & 0x100) != 0 animated:NO];
+    [CustomSwitchOption setOn:(vSwitchKeyStatus & 0x200) != 0 animated:NO];
+    [CustomSwitchCommand setOn:(vSwitchKeyStatus & 0x400) != 0 animated:NO];
+    [CustomSwitchShift setOn:(vSwitchKeyStatus & 0x800) != 0 animated:NO];
+    [CustomBeepSound setOn:(vSwitchKeyStatus & 0x8000) != 0 animated:NO];
     [CustomSwitchKey setTextByChar:((vSwitchKeyStatus>>24) & 0xFF)];
-    
+
 }
 
 - (IBAction)onOK:(id)sender {
@@ -502,10 +602,10 @@ extern int vPerformLayoutCompat;
         if (returnCode == 1000) {
             [appDelegate loadDefaultConfig];
             [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:@"ShowUIOnStartup"];
-            self.ShowUIButton.state = NSControlStateValueOff;
-            
+            [self.ShowUIButton setOn:NO animated:NO];
+
             [[NSUserDefaults standardUserDefaults] setInteger:1 forKey:@"RunOnStartup"];
-            self.RunOnStartupButton.state = NSControlStateValueOn;
+            [self.RunOnStartupButton setOn:YES animated:NO];
         }
     }];
 }
