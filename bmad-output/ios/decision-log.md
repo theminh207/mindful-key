@@ -16,6 +16,30 @@ mới ở TRÊN CÙNG (mới nhất trước), không xoá/sửa entry cũ.
 
 ---
 
+### 2026-07-10 — UX design: DESIGN.md + EXPERIENCE.md, phát hiện + vá 2 lỗi contrast trong mockup
+- **Decision:** Tạo `bmad-output/ios/DESIGN.md` (hệ thống design bền cho cả app iOS) +
+  `EXPERIENCE.md` (journey Round 1 + phác Round 2). Chạy `bmad-ux/scripts/contrast-check.py`
+  kiểm THẬT mọi cặp màu brand trước khi chốt token — số ghi trong DESIGN §3 là output thật.
+- **2 lỗi accessibility phát hiện khi verify (mockup HTML tao dựng trước đó dính cả 2):**
+  (1) teal `#1D7C91` trên tealLight `#E8F2F4` = 4.24:1 → TRƯỢT AA normal. Vá: badge số bước
+  dùng `tealStrong #155A66` (6.86:1). (2) stone `#8A9BA0` = 2.72:1 → TRƯỢT cả ngưỡng graphic
+  3:1 cho đường phẳng "không bao giờ". Vá: thêm `stoneStrong #5E6E73` (5.00:1) cho graphic
+  mang nghĩa; giữ `stone` gốc CHỈ cho con sóng trang trí (Round 2). Cả 2 token phái sinh
+  KHÔNG đặt vào BrandPalette.h (đó là nguồn màu gốc), chỉ khai trong DESIGN.md.
+- **Nguyên tắc design mới nâng thành luật:** "biên độ mang nghĩa" (amplitude-as-meaning,
+  DESIGN §2.10) — phân biệt trạng thái đối lập bằng SÓNG `~` vs ĐƯỜNG PHẲNG, không bao giờ
+  bằng ✓xanh/✗đỏ. Đúng hiến chương §2.3 tuyệt đối + không phụ thuộc màu (mù màu vẫn đọc) +
+  nghĩa luôn kèm nhãn chữ. Đã áp ở màn Full Access.
+- **Phạm vi cố ý:** DESIGN = toàn app (bền mọi round); EXPERIENCE = bám Round 1 (2 màn
+  onboarding + gõ Telex + home tối thiểu), Round 2+ chỉ phác. Quick Flow → giữ gọn, không phình.
+- **Ranh giới hiến chương ghi rõ trong EXPERIENCE:** KHÔNG journey "chặn Enter/gác cổng" trên
+  iOS (mandate 2026-07-10). KHÔNG semantic đỏ-xanh. Lỗi hệ thống ≠ cảm xúc → không tô đỏ.
+- **4 câu hỏi mở để chủ dự án chốt** (cuối EXPERIENCE): giọng copy, giữ/bỏ nút "Để sau",
+  glyph sóng chính thức, wordmark/logo.
+- **Made by:** bmad-ux (Create), gọi bởi agent đóng vai kỹ sư đội iOS.
+- **Supersedes:** none (mockup HTML là bản thử ngoài BMAD; DESIGN.md nay là nguồn chuẩn,
+  mockup cần sửa 2 màu theo token đã vá nếu còn dùng làm tham chiếu).
+
 ### 2026-07-10 — tech-spec created, đã verify bằng thực nghiệm compile thật
 - **Decision:** Tạo `bmad-output/ios/tech-spec.md` trả lời 6 mục kỹ thuật bắt buộc (XcodeGen
   target, cầu nối core, trần RAM, container↔extension detection, Nhịp 0 extract, tests/ios).
