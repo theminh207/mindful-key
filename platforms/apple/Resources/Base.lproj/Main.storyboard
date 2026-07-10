@@ -2000,7 +2000,6 @@
                                     <rect key="frame" x="0.0" y="0.0" width="480" height="115"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <!-- [MINDFUL] Story 1.9 — PillSwitch (teal) thay checkbox cam hệ thống; nhãn tách riêng vì PillSwitch không vẽ title. -->
                                         <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="G6V-SA-gQn" customClass="PillSwitch">
                                             <rect key="frame" x="162" y="68" width="40" height="24"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -2009,7 +2008,7 @@
                                             </connections>
                                         </customView>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MKLbl01">
-                                            <rect key="frame" x="9" y="71" width="145" height="18"/>
+                                            <rect key="frame" x="9" y="71" width="145" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Chuyển sang chữ HOA" id="MKCel01">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -2025,7 +2024,7 @@
                                             </connections>
                                         </customView>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MKLbl02">
-                                            <rect key="frame" x="9" y="41" width="160" height="18"/>
+                                            <rect key="frame" x="9" y="41" width="160" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Chuyển sang chữ thường" id="MKCel02">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -2041,7 +2040,7 @@
                                             </connections>
                                         </customView>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MKLbl03">
-                                            <rect key="frame" x="9" y="11" width="105" height="18"/>
+                                            <rect key="frame" x="9" y="11" width="105" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Loại bỏ dấu câu" id="MKCel03">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -2057,7 +2056,7 @@
                                             </connections>
                                         </customView>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MKLbl04">
-                                            <rect key="frame" x="250" y="71" width="136" height="18"/>
+                                            <rect key="frame" x="250" y="71" width="136" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Đặt chữ Hoa đầu câu" id="MKCel04">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -2073,7 +2072,7 @@
                                             </connections>
                                         </customView>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MKLbl05">
-                                            <rect key="frame" x="250" y="41" width="155" height="18"/>
+                                            <rect key="frame" x="250" y="41" width="155" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Đặt chữ Hoa Sau Mỗi Từ" id="MKCel05">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -2089,7 +2088,7 @@
                                             </connections>
                                         </customView>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MKLbl06">
-                                            <rect key="frame" x="250" y="11" width="176" height="18"/>
+                                            <rect key="frame" x="250" y="11" width="176" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Thông báo khi chuyển xong" id="MKCel06">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -2161,16 +2160,14 @@
                                             </connections>
                                         </customView>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MKLbl11">
-                                            <rect key="frame" x="353" y="91" width="14" height="18"/>
+                                            <rect key="frame" x="351" y="91" width="17" height="11"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="⇧" id="MKCel11">
-                                                <font key="font" usesAppearanceFont="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="⇧" id="MKCel11">
+                                                <font key="font" metaFont="system" size="9"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <!-- [MINDFUL] Story 1.9 — checkbox hệ thống hiện màu theo Accent Color máy (verify: cam trên
-                                             máy dev) → thay PillSwitch teal cho nhất quán 65 control còn lại; symbol tách thành nhãn nhỏ. -->
                                         <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wms-Sn-AVs" customClass="PillSwitch">
                                             <rect key="frame" x="195" y="88" width="40" height="24"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -2179,10 +2176,10 @@
                                             </connections>
                                         </customView>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MKLbl08">
-                                            <rect key="frame" x="179" y="91" width="14" height="18"/>
+                                            <rect key="frame" x="177" y="91" width="17" height="11"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="⌃" id="MKCel08">
-                                                <font key="font" usesAppearanceFont="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="⌃" id="MKCel08">
+                                                <font key="font" metaFont="system" size="9"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -2195,10 +2192,10 @@
                                             </connections>
                                         </customView>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MKLbl09">
-                                            <rect key="frame" x="237" y="91" width="14" height="18"/>
+                                            <rect key="frame" x="235" y="91" width="17" height="11"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="⌥" id="MKCel09">
-                                                <font key="font" usesAppearanceFont="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="⌥" id="MKCel09">
+                                                <font key="font" metaFont="system" size="9"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -2211,10 +2208,10 @@
                                             </connections>
                                         </customView>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MKLbl10">
-                                            <rect key="frame" x="295" y="91" width="14" height="18"/>
+                                            <rect key="frame" x="293" y="91" width="17" height="11"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="⌘" id="MKCel10">
-                                                <font key="font" usesAppearanceFont="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="⌘" id="MKCel10">
+                                                <font key="font" metaFont="system" size="9"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -2249,10 +2246,6 @@
                                                 <action selector="onToCodeSelected:" target="t29-xc-bE6" id="hg1-pt-AYR"/>
                                             </connections>
                                         </popUpButton>
-                                        <!-- [MINDFUL] Story 1.9 — luôn khoá bật (enabled=NO, on=YES), chỉ mang tính hiển thị.
-                                             Giữ NGUYÊN action selector/target cũ (trỏ sang XfG-lQ-9wD/onModernOrthography:,
-                                             có vẻ là dây nối lạc từ trước) — control đang disabled nên action này chưa từng
-                                             tự bắn được; không thuộc phạm vi story này nên không sửa. -->
                                         <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bsW-za-GmZ" customClass="PillSwitch">
                                             <rect key="frame" x="192" y="110" width="40" height="24"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -2265,7 +2258,7 @@
                                             </connections>
                                         </customView>
                                         <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MKLbl07">
-                                            <rect key="frame" x="9" y="113" width="175" height="18"/>
+                                            <rect key="frame" x="9" y="113" width="175" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Chuyển mã trong Clipboard" id="MKCel07">
                                                 <font key="font" usesAppearanceFont="YES"/>
@@ -2288,7 +2281,6 @@
                                 </view>
                                 <font key="titleFont" metaFont="system"/>
                             </box>
-                            <!-- [MINDFUL] Story 1.9 — bỏ ảnh nút xanh-dương hệ thống (StartConvert), đổi sang CTAButton cam có sẵn. -->
                             <button imageHugsTitle="YES" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7P6-e7-DLd" customClass="CTAButton">
                                 <rect key="frame" x="99" y="19" width="120" height="42"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -2300,7 +2292,6 @@
                                     <action selector="onConvertButton:" target="t29-xc-bE6" id="eaY-By-Cca"/>
                                 </connections>
                             </button>
-                            <!-- [MINDFUL] Story 1.9 — bỏ ảnh nút xanh-lá hệ thống (OK), đổi sang SecondaryButton trung tính mới thêm. -->
                             <button imageHugsTitle="YES" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CAK-Bp-55n" customClass="SecondaryButton">
                                 <rect key="frame" x="269" y="19" width="120" height="42"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
