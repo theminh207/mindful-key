@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="brand/marketing/readme-hero.png" width="100%" alt="Mindful Keyboard — Bộ gõ Tiếng Việt chánh niệm">
+</p>
+
 # Mindful Keyboard
 
 > Bộ gõ Tiếng Việt giúp bạn gõ trong tỉnh thức — người gác cổng cảm xúc trước khi bạn gửi đi

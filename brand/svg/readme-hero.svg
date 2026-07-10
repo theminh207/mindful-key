@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 400">
+  <rect x="0" y="0" width="1280" height="400" fill="#F4F9FA"/>
+  <g transform="translate(96,100) scale(0.1953)">
+    <rect x="32" y="32" width="960" height="960" rx="224" fill="#1D7C91"/>
+    <circle cx="512" cy="516" r="250" fill="none" stroke="#FFFFFF" stroke-width="12" opacity="0.28"/>
+    <circle cx="512" cy="516" r="352" fill="none" stroke="#FFFFFF" stroke-width="12" opacity="0.16"/>
+    <path d="M356 540 C 420 412, 484 412, 512 528 C 540 644, 604 644, 668 500" fill="none" stroke="#FF7A1A" stroke-width="58" stroke-linecap="round"/>
+  </g>
+  <text x="336" y="196" font-family="Montserrat, 'Helvetica Neue', Arial, sans-serif" font-size="80" font-weight="600" fill="#1D7C91">Mindful Keyboard</text>
+  <text x="340" y="250" font-family="'Helvetica Neue', Arial, sans-serif" font-size="34" fill="#5A6B70">Bộ gõ Tiếng Việt chánh niệm • Lan tỏa điều tử tế</text>
+</svg>

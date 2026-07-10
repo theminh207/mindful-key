@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400">
+  <rect x="0" y="0" width="640" height="400" fill="#F4F9FA"/>
+  <g transform="translate(268,40) scale(0.05)">
+    <rect x="32" y="32" width="960" height="960" rx="224" fill="#1D7C91"/>
+    <path d="M356 540 C 420 412, 484 412, 512 528 C 540 644, 604 644, 668 500" fill="none" stroke="#FF7A1A" stroke-width="58" stroke-linecap="round"/>
+  </g>
+  <text x="322" y="76" font-family="Montserrat, 'Helvetica Neue', Arial, sans-serif" font-size="26" font-weight="600" fill="#1D7C91">Mindful Keyboard</text>
+  <path d="M250 190 L378 190" fill="none" stroke="#FF7A1A" stroke-width="9" stroke-linecap="round"/>
+  <path d="M370 178 L392 190 L370 202" fill="none" stroke="#FF7A1A" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="320" y="360" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="16" fill="#9AA0A6">Kéo icon vào Applications — Lan tỏa điều tử tế</text>
+</svg>

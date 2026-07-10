@@ -16,10 +16,9 @@
 
 **Quy tắc màu:** cam CHỈ dùng cho điểm nhấn/CTA và "khoảnh khắc con người" (hơi thở, cảnh báo, chuông đang mời). Ngọc bích là nền mặc định. **Không dùng đỏ, không xanh-lá, không mặt cười/mếu.**
 
+> **Token máy-đọc-được (dùng chung MỌI nền tảng):** `brand/tokens.json` — nguồn DUY NHẤT cho màu/font/hình khối + thang mood. iOS/Android/Windows/web đọc từ đây, đừng hard-code lại.
+
 - Font: **Montserrat** (heading, đậm/uppercase) + **Inter** (body).
-  > TODO (chưa làm): chưa bundle file `.ttf`/giấy phép font vào `platforms/apple/Resources/` —
-  > UI macOS hiện tại (`platforms/apple/macos/`) dùng system font mặc định (San Francisco) làm
-  > fallback. Khi bundle font thật, nhớ khai báo `ATSApplicationFontsPath` trong Info.plist.
 - Bo góc 16px (card/hero) · 8px (khối nhỏ). Bóng `0 8px 30px rgba(29,124,145,0.08)`. Không neon, không viền gắt.
 
 ## 2. Dấu ấn (mark)
@@ -30,6 +29,32 @@
 - Xuất: `bash brand/export.sh` → ghi PNG/`.icns` vào `Resources/`, preview vào `brand/png/`.
   Lần chạy đầu tự backup icon gốc vào `brand/backup-original/`.
 - Yêu cầu: `rsvg-convert` (`brew install librsvg`), `iconutil`, `sips`.
+
+### 3b. App icon đa nền tảng — `bash brand/export-appicon.sh` → `brand/appicon/`
+- `ios/AppIcon.appiconset/` — 1024 light + dark + tinted (iOS 18). Kéo vào Assets.xcassets target iOS.
+- `macos/AppIcon.appiconset/` (thang 16→1024) + `macos/Icon.icns`. Kéo vào Assets.xcassets, hoặc thay thẳng `platforms/apple/Resources/Icon.icns`.
+- `png/` — 1024 rời (macos-teal, macos-light, ios-light/dark/tinted).
+- Nguồn: `AppIcon.svg` (mac teal), `AppIcon-light.svg` (mac trắng), `AppIcon-ios-{light,dark,tinted}.svg` (full-bleed vuông, không alpha — chuẩn iOS).
+
+### 3c. Truyền thông — `bash brand/export-marketing.sh` → `brand/marketing/`
+- `wordmark.png` (chữ teal) / `wordmark-white.png` (nền tối) — logo + tên + tagline.
+- `dmg-background.png` (660×420) — nền cửa sổ `.dmg` (mũi tên kéo vào Applications).
+- `social-preview.png` (1280×640) — ảnh GitHub Social Preview (Settings → Social preview).
+- `readme-hero.png` (1280×400) — banner đầu README.
+- Font wordmark: fallback Helvetica; đổi sang Montserrat khi bundle được `.ttf` (TODO §D fonts).
+
+### 3d. Icon UI (đơn sắc ngọc bích) — `bash brand/export-ui.sh` → `brand/png-ui/` (24/48px)
+- Tab settings: `ui-tab-bogo` (keycap + sóng ~), `ui-tab-gotat` (tia chớp), `ui-tab-hethong` (sliders), `ui-tab-thongtin` (info).
+- Xin quyền onboarding: `ui-perm-accessibility` (người trong vòng), `ui-perm-inputmonitoring` (bàn phím + mắt).
+- Thông báo/chuông: `ui-notif` (chuông), `ui-snooze` (chuông + đồng hồ = tạm hoãn), `ui-resume` (chuông + sóng = bật lại).
+- Nét chuẩn: stroke 3px, tông `#1D7C91`, bo tròn. Có thể thay bằng SF Symbols nếu muốn nhẹ hơn.
+- Toggle/trạng thái: `ui-toggle-on`/`ui-toggle-off` (bật/tắt bộ gõ), `ui-lang-vi`/`ui-lang-en` (Việt/Anh).
+- Nền `.dmg` đã wire vào `package-dmg.sh` (`--background brand/marketing/dmg-background.png`, khớp toạ độ icon 170,190 + drop 470,190).
+
+### 3e. Icon nền tảng khác — `bash brand/export-platform.sh` → `brand/platform/`
+- **Windows**: `windows/AppIcon.ico` (đa cỡ 16→256, nền vuông teal, đóng bằng `brand/pack-ico.py` thuần python). Trỏ trong resource `.rc`.
+- **Android**: adaptive icon 432px — `ic_launcher_{foreground,background,monochrome}.png`. Cho vào `res/mipmap-*` + `mipmap-anydpi-v26/ic_launcher.xml` (`<adaptive-icon>` foreground+background, `<monochrome>` cho themed icon Android 13+). Kèm mipmap vuông legacy 48→192.
+- **Linux**: `linux/hicolor/<size>/apps/mindful-keyboard.png` (48→512) + `scalable/apps/mindful-keyboard.svg`. Cài vào `/usr/share/icons/hicolor`, trỏ `Icon=mindful-keyboard` trong `.desktop`.
 
 ## 4. Bộ asset (map vào ModernKey/Resources)
 | File | Cỡ | Nội dung | Trạng thái |
