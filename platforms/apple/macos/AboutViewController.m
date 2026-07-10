@@ -33,11 +33,12 @@
 }
 
 - (IBAction)onHomePage:(id)sender {
-    [[NSWorkspace sharedWorkspace] openURL: [NSURL URLWithString:@"https://github.com/tuyenvm/OpenKey"]];
+    // [MINDFUL] "Trang GitHub" của app = repo MindfulKey (KHÁC dòng credit "Dựa trên OpenKey" giữ nguyên).
+    [[NSWorkspace sharedWorkspace] openURL: [NSURL URLWithString:@"https://github.com/theminh207/mindful-key"]];
 }
 
 - (IBAction)onLatestReleaseVersion:(id)sender {
-    [[NSWorkspace sharedWorkspace] openURL: [NSURL URLWithString:@"https://github.com/tuyenvm/OpenKey/releases"]];
+    [[NSWorkspace sharedWorkspace] openURL: [NSURL URLWithString:@"https://github.com/theminh207/mindful-key/releases"]];
 }
 
 - (IBAction)onCheckUpdateOnStartup:(PillSwitch *)sender {
