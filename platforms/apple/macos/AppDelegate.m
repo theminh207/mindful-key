@@ -98,16 +98,17 @@ extern bool convertToolDontAlertWhenCompleted;
 }
 
 -(void)askPermission {
-    // [MINDFUL] Bộ gõ cần CẢ HAI quyền: Accessibility (điều khiển UI) + Input Monitoring
-    // (nghe sự kiện bàn phím toàn cục, gate riêng từ macOS 10.15) — thiếu 1 trong 2 là
-    // CGEventTap không hoạt động. Onboarding đầy đủ (giải thích trước khi hiện popup hệ
-    // thống) là việc của bước 9; ở đây chỉ đảm bảo cả 2 panel đúng được mở khi thiếu.
+    // [MINDFUL] Bộ gõ cần CẢ HAI quyền: Accessibility + Input Monitoring cho CGEventTap.
+    // TRƯỚC: thiếu quyền → hiện hộp này rồi [NSApp terminate] (app tự thoát) → người dùng
+    // không xem/chỉnh được giao diện, phải mò cấp quyền + tự mở lại. NAY: chỉ NHẮC + mở đúng
+    // 2 panel Cài đặt, KHÔNG thoát app — luồng khởi động vẫn dựng bảng điều khiển để xem/chỉnh.
+    // Phần GÕ (event tap) tự thất bại êm và bật lại sau khi cấp đủ 2 quyền rồi mở lại app.
     NSAlert *alert = [[NSAlert alloc] init];
-    [alert setMessageText: [NSString stringWithFormat:@"Mindful Keyboard cần bạn cấp quyền để có thể hoạt động!"]];
-    [alert setInformativeText:@"Vui lòng cấp quyền Trợ năng (Accessibility) VÀ Giám sát Nhập liệu (Input Monitoring) trong System Settings > Privacy & Security, rồi chạy lại ứng dụng."];
+    [alert setMessageText:@"Cần cấp quyền để gõ tiếng Việt"];
+    [alert setInformativeText:@"Phần GÕ cần quyền Trợ năng (Accessibility) VÀ Giám sát Nhập liệu (Input Monitoring). Bạn vẫn mở/chỉnh được bảng điều khiển ngay bây giờ; riêng phần gõ chỉ hoạt động sau khi cấp đủ 2 quyền trong System Settings › Privacy & Security rồi mở lại ứng dụng."];
 
-    [alert addButtonWithTitle:@"Không"];
-    [alert addButtonWithTitle:@"Cấp quyền"];
+    [alert addButtonWithTitle:@"Để sau"];
+    [alert addButtonWithTitle:@"Mở cài đặt quyền"];
 
     [alert.window makeKeyAndOrderFront:nil];
     [alert.window setLevel:NSStatusWindowLevel];
@@ -120,8 +121,7 @@ extern bool convertToolDontAlertWhenCompleted;
         if (!MJInputMonitoringIsEnabled())
             MJInputMonitoringOpenPanel();
     }
-
-    [NSApp terminate:0];
+    // KHÔNG [NSApp terminate] nữa — để app sống tiếp và dựng giao diện.
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
@@ -160,21 +160,23 @@ extern bool convertToolDontAlertWhenCompleted;
     
     // check if user granted Accessibility + Input Monitoring permission (cả 2 đều bắt buộc
     // cho CGEventTap trên macOS hiện đại — xem MJAccessibilityUtils.h)
-    if (!MJAccessibilityIsEnabled() || !MJInputMonitoringIsEnabled()) {
+    // [MINDFUL] Thiếu quyền: KHÔNG return/thoát app nữa. Chỉ ghi cờ + kích popup hệ thống ở đây;
+    // hộp NHẮC quyền (askPermission) được đẩy xuống CUỐI, hiện SAU khi bảng điều khiển đã render —
+    // nếu hiện modal ngay đây thì nó chặn luồng khiến cửa sổ điều khiển tạo ra nhưng trắng, chưa vẽ.
+    BOOL permissionMissing = (!MJAccessibilityIsEnabled() || !MJInputMonitoringIsEnabled());
+    if (permissionMissing) {
         MJInputMonitoringRequestAccess(); // kích hoạt popup hệ thống lần đầu nếu chưa từng hỏi
-        [self askPermission];
-        return;
     }
-    
+
     vShowIconOnDock = (int)[[NSUserDefaults standardUserDefaults] integerForKey:@"vShowIconOnDock"];
     if (vShowIconOnDock)
         [NSApp setActivationPolicy: NSApplicationActivationPolicyRegular];
-    
+
     if (vSwitchKeyStatus & 0x8000)
         NSBeep();
 
     [self createStatusBarMenu];
-    
+
     //init
     dispatch_async(dispatch_get_main_queue(), ^{
         if (![OpenKeyManager initEventTap]) {
@@ -186,6 +188,10 @@ extern bool convertToolDontAlertWhenCompleted;
             }
         }
         [self setQuickConvertString];
+        // [MINDFUL] Nhắc quyền SAU khi UI đã hiện — panel render trước, hộp nhắc bung lên trên.
+        if (permissionMissing) {
+            [self askPermission];
+        }
     });
     
     //load default config if is first launch
