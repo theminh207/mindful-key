@@ -6,7 +6,7 @@
 **Project:** mindful-key — vỏ iOS
 **Track:** Quick Flow
 **Date:** 2026-07-10
-**Version:** 0.1 (draft — chờ duyệt)
+**Version:** 0.2 (draft — thêm màn Bàn phím, Cài đặt, mục Future Round 2/3; chờ duyệt)
 
 ---
 
@@ -307,6 +307,120 @@ bình thản ("Có vẻ bàn phím chưa bật — thử lại nhé"), KHÔNG qu
 
 ---
 
+### Screen: Bàn phím Mindful Key (khung extension) — bề mặt lõi Round 1
+
+**Purpose:** gõ tiếng Việt Telex/VNI qua `core/engine`; hiện trong ô nhập của host app.
+**Entry from:** người dùng chạm 🌐 chọn Mindful Key ở bất kỳ app nào.
+**Exits to:** — (bàn phím ẩn khi rời ô nhập hoặc đổi bàn phím khác).
+
+#### Layout Wireframe (khung ~216–260pt cao)
+
+```
+┌──────────────────────────────┐
+│ (thanh gợi ý)                │  ~40pt — Round 1: trống/gợi ý từ · Round 2: con sóng ~
+├──────────────────────────────┤
+│  q w e r t y u i o p         │  hàng 1
+│   a s d f g h j k l          │  hàng 2
+│  ⇧   z x c v b n m   ⌫       │  hàng 3 (⇧ trái, ⌫ phải)
+│ 123  🌐   [ space ]   ↵      │  hàng dưới
+└──────────────────────────────┘
+```
+
+#### Component Hierarchy
+1. Thanh gợi ý (§DESIGN 2.6)
+2. 3 hàng phím chữ (§DESIGN 2.5)
+3. Hàng chức năng: ⇧ (Shift), 123 (đổi lớp), 🌐 (đổi bàn phím), space, ↵/⌫
+
+#### Named States
+
+**Default:** chữ thường, thanh gợi ý theo Round.
+
+**Shift (một lần) / Caps (khoá):** ⇧ sáng `tealLight`; một lần = chữ hoa 1 ký tự rồi tự về;
+double-tap ⇧ = khoá Caps (⇧ có chỉ dấu khoá). Đổi visual phím sang chữ hoa.
+
+**Lớp số & ký hiệu:** chạm `123` → hàng phím thành số + ký hiệu; nút đổi thành `ABC` để quay
+lại. (Lớp 2 ký hiệu phụ nếu cần — giữ tối giản Round 1.)
+
+**Lần đầu hiện (first-appearance):** khung dựng < ~150ms; KHÔNG spinner (bàn phím phải tức
+thì). `KeyboardBridge_Init()` chạy 1 lần nền, không chặn UI.
+
+**Ô bảo mật (secure text field):** vẫn gõ chữ bình thường; **tuyệt đối không đọc/log/hiện
+sóng** — kể cả Round 2. (Riêng tư mặc định; là điểm khác biệt so với "bàn phím thường".)
+
+**Không có Full Access:** gõ chạy bình thường (insert/delete không cần quyền). Chỉ tính năng
+sóng (Round 2) mới cần → thanh gợi ý ở trạng thái Round 1.
+
+#### Interactions & Animations
+
+| Interaction | Behavior | Timing | Reduced-motion |
+|-------------|----------|--------|----------------|
+| Nhấn phím chữ | Sáng nền `tealLight` + scale 0.97 + "pop" preview ký tự phía trên (như iOS gốc) | ~80ms | **Tắt pop**, giữ đổi nền |
+| Giữ phím (long-press) | Hiện ký tự/dấu phụ nếu có (vd giữ để lấy số/ký tự thay thế) | 400ms giữ | Không đổi |
+| Nhấn ⌫ giữ | Xoá lặp tăng tốc | chuẩn iOS | Không đổi |
+
+#### Accessibility
+- Mỗi phím `accessibilityLabel` rõ ("chữ a", "phím hoa", "xoá lùi", "đổi bàn phím", "phím
+  cách"). Hit area ≥ 44pt kể cả khi visual phím hẹp hơn (mở rộng vùng chạm).
+- VoiceOver đọc theo thứ tự hàng trái→phải, trên→dưới.
+- Sóng ở thanh gợi ý = trang trí → `isAccessibilityElement=false` (xem §DESIGN 2.6).
+- **RAM nhẹ:** không blur/ảnh nền/bóng nặng trong khung — né trần ~48–60MB (đo bằng Instruments).
+
+---
+
+### Screen: Cài đặt bàn phím (container app)
+
+**Purpose:** chỉnh bàn phím tại chỗ, thấy kết quả ngay (kế thừa "slider trực tiếp + preview
+sống" của Laban; BỎ mọi gamification/ví xu/đếm tải).
+**Entry from:** Home → mục Cài đặt.
+**Exits to:** Home; hoặc màn con Gõ tắt/macro.
+
+#### Layout Wireframe
+
+```
+┌──────────────────────────────┐
+│ Cài đặt bàn phím              │  .title2
+│                              │
+│ ┌ Preview sống ────────────┐ │  khung bàn phím thu nhỏ, cập nhật realtime
+│ │  q w e r t y … (mô phỏng) │ │
+│ └──────────────────────────┘ │
+│                              │
+│ Kiểu gõ      [ Telex | VNI ] │  segmented (§DESIGN 2.11), chọn = teal
+│ Chiều cao    ●───────  ──   │  slider (§DESIGN 2.11)
+│ Gõ tắt / macro            > │  list row → màn con
+└──────────────────────────────┘
+```
+
+#### Component Hierarchy
+1. Tiêu đề `.title2`
+2. Khu **Preview sống** (khung bàn phím thu nhỏ)
+3. List rows: Kiểu gõ (segmented Telex/VNI), Chiều cao (slider), Gõ tắt/macro (row → màn con)
+
+#### Named States
+
+**Default:** giá trị hiện tại (đọc từ App Group/UserDefaults).
+
+**Preview cập nhật realtime:** chỉnh slider/segmented → khung preview đổi NGAY (không cần
+lưu/thoát). Đây là điểm UX cốt lõi kế thừa Laban.
+
+**Empty (chưa có macro):** màn con Gõ tắt trống → dòng gợi ý "Chưa có gõ tắt nào. Thêm một
+mục để gõ nhanh cụm bạn hay dùng." + nút thêm. Không phải lỗi, giọng bình thản.
+
+**Loading/Error:** không async nặng (đọc UserDefaults local) → bỏ qua.
+
+#### Interactions & Animations
+
+| Interaction | Behavior | Timing | Reduced-motion |
+|-------------|----------|--------|----------------|
+| Kéo slider chiều cao | Preview đổi realtime | tức thì | Tức thì (không animate) |
+| Đổi Telex/VNI | Preview đổi cách hiển thị gõ | tức thì | — |
+
+#### Accessibility
+- Slider `accessibilityValue` đọc được; segmented đúng role selected. Mỗi row ≥ 44pt.
+- Preview là minh hoạ → không bắt buộc là accessibility element, nhưng thay đổi giá trị
+  báo qua VoiceOver ("chiều cao: mức 3").
+
+---
+
 ## Error & Edge Case Catalogue
 
 ### Error: Không mở được Cài đặt (deep link fail)
@@ -325,6 +439,62 @@ khẳng định sai "đã bật". Nếu gõ thử không ra bàn phím Mindful K
 **Scenario:** con trỏ ở secure field.
 **Behavior:** gõ chữ thường bình thường; tuyệt đối không đọc/log/hiện sóng (kể cả Round 2).
 Riêng tư mặc định.
+
+---
+
+## Future Screens (Round 2/3) — ngôn ngữ thị giác + quyết định còn mở
+
+> ⚠️ Các màn dưới đây **chưa đặc tả đủ để thi công**. Chúng chạm trực tiếp **nhận diện +
+> dữ liệu cảm xúc** — vùng hiến chương dặn "mơ hồ thì hỏi chủ dự án". Ở đây chỉ chốt phần
+> bám chắc hiến chương + tiền lệ macOS (đã được chủ dự án duyệt); phần là **quyết định sản
+> phẩm** thì đánh dấu **❓** và để chủ dự án chốt, KHÔNG tự quyết trong im lặng.
+
+### Future B1 — Con sóng cảm xúc trên thanh gợi ý (Round 2)
+
+**Chốt được (bám hiến chương §2.3):** thanh gợi ý (§DESIGN 2.6) hiện con sóng `~` màu
+`brand.teal` biến hình theo **biên độ** — mặt hồ phẳng lặng ↔ gợn sóng. Trung tính, "quan
+sát không chặn". Cần Full Access (đọc text-trước-con-trỏ, on-device). Reduce Motion: sóng
+đứng yên ở biên độ tương ứng. **KHÔNG** đổi thanh sang đỏ/cam để cảnh báo; **KHÔNG** chặn
+Enter (mandate iOS 2026-07-10).
+
+**❓ Quyết định mở (cần chủ dự án):**
+1. Map `MoodWatch send-risk 0..1` → biên độ sóng cụ thể ra sao? (tuyến tính? có ngưỡng chết
+   ở dưới X để "mặt hồ phẳng" khi bình thường?)
+2. Có kèm **1 câu quan sát** ("Mặt hồ đang gợn sóng") không, hay chỉ sóng im lặng? Nếu có,
+   hiện khi nào, biến mất khi nào (tránh làm phiền)?
+3. Ngưỡng đổi biên độ — bao nhiêu bậc? (macOS dùng "N câu căng liên tiếp" cho chuông — iOS
+   có mượn khái niệm này không?)
+
+### Future B2 — Nhật ký cảm xúc on-device (Round 3)
+
+**Chốt được (tiền lệ macOS `MoodStoreMac` đã duyệt):** nhật ký lưu **on-device, mã hoá**,
+**không rời máy**. Trình bày theo tinh thần macOS: **câu phản chiếu là trọng tâm**, số liệu
+(số lần, giờ đỉnh điểm, app chủ yếu) chỉ là **bối cảnh phụ, cỡ nhỏ**. **CỐ Ý không biểu đồ,
+không streak, không điểm** — "thiết kế để tự nhận ra, không phải thống kê cho vui". Có consent
+gate hỏi 1 lần (không hỏi giữa lúc căng thẳng).
+
+**❓ Quyết định mở:**
+1. Nhật ký iOS hiện **chính xác** những gì? (danh sách câu phản chiếu theo ngày? 1 con số
+   bối cảnh?) — cần chủ dự án vẽ ranh giới "đủ để tự nhận ra" vs "thành dashboard".
+2. Nút **"Xoá tất cả"** (macOS có) đặt ở đâu trên iOS? Xác nhận 2 bước thế nào (KHÔNG nút đỏ
+   mặc định — xem DESIGN §2.3)?
+3. Đồng bộ App Group extension↔container: extension ghi, container đọc — hay ngược lại? Ai sở
+   hữu file mã hoá?
+
+### Future B3 — Soi lại cuối ngày (Round 3)
+
+**Chốt được:** trọng tâm là **câu hỏi phản chiếu**, không phải con số (như macOS
+`ReflectionScreen`). Giọng quan sát, không tổng kết thành tích.
+
+**❓ Quyết định mở:**
+1. Trên iOS đây là **1 màn trong container**, hay **1 thông báo đẩy** cuối ngày, hay **cả
+   hai**? (macOS là màn; iOS có thể hợp với local notification nhẹ — nhưng notification chạm
+   "nhắc chủ động", cần cân với tinh thần "không hối thúc".)
+2. Nội dung phản chiếu cụ thể là gì? (1 câu hỏi mở? có cho ghi chú riêng tư không?)
+3. Cuối ngày là mấy giờ, ai chỉnh được?
+
+> Khi chủ dự án chốt B1/B2/B3, chạy lại `bmad-ux` (Update) để nâng phần này thành screen
+> inventory đầy đủ (states/wireframe/a11y) như nhóm A.
 
 ---
 

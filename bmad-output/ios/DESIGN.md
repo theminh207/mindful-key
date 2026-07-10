@@ -6,7 +6,7 @@
 **Project:** mindful-key — vỏ iOS (Custom Keyboard Extension + container app)
 **Track:** Quick Flow
 **Date:** 2026-07-10
-**Version:** 0.1 (draft — chờ chủ dự án duyệt)
+**Version:** 0.2 (draft — thêm §2.11 segmented/slider; chờ chủ dự án duyệt)
 
 > ⚖️ **Luật tối cao = HIẾN CHƯƠNG** (`docs/AGENT-BRIEF.md` §2.2/§2.3), đè mọi quy tắc UI
 > trong file này. Bất khả xâm phạm: KHÔNG đèn đỏ/xanh-lá mã hoá cảm xúc · KHÔNG mặt cười/
@@ -260,6 +260,36 @@ mã màu cảm xúc; (2) nhất quán nhận diện — sóng vs mặt hồ là 
 (3) không phụ thuộc màu để truyền nghĩa (người mù màu vẫn phân biệt sóng vs đường thẳng).
 **Nghĩa luôn có kèm nhãn chữ** — graphic không bao giờ là kênh truyền nghĩa duy nhất.
 
+### 2.11 Segmented control + Slider (màn Cài đặt)
+
+Hai control cấu hình bàn phím. **Màu "đang chọn/đã tô" = `brand.teal`, KHÔNG dùng xanh-lá
+hệ thống iOS** (xanh-lá = mã màu valence, phạm hiến chương).
+
+**Segmented control** (vd chọn Kiểu gõ: Telex / VNI)
+
+| Phần | Visual | Ratio |
+|------|--------|-------|
+| Track (nền) | `tealLight` #E8F2F4 (light) / `#1C1C1E` (dark) | — |
+| Đoạn ĐANG chọn | pill nền `surface.card` #FFFFFF, chữ `tealStrong` #155A66 | **7.82:1** ✅ |
+| Đoạn KHÔNG chọn | chữ `ink.secondary` #666666 trên track | **5.04:1** ✅ |
+
+- States: default / pressed (pill mờ nhẹ) / disabled (opacity 40%).
+- A11y: `UISegmentedControl` chuẩn; mỗi đoạn có label đọc được ("Telex", "VNI"); đoạn đang
+  chọn báo trạng thái selected cho VoiceOver.
+- Target: control cao ≥ 44pt.
+
+**Slider** (vd Chiều cao bàn phím)
+
+| Phần | Visual | Ratio |
+|------|--------|-------|
+| Track đã tô | `brand.teal` #1D7C91 | **3.90:1** trên track trống #E5E7E8 (graphic ≥3 ✅) |
+| Track trống | `line.divider` #E5E7E8 | — |
+| Thumb | `surface.card` #FFFFFF + `elev.card` | — |
+
+- States: default / dragging (thumb hơi to + preview cập nhật realtime) / disabled.
+- A11y: `UISlider` với `accessibilityValue` đọc được (vd "mức 3/5"); chỉnh được bằng
+  VoiceOver. Reduce Motion: preview đổi tức thì, không animate.
+
 ---
 
 ## 3. WCAG 2.1 AA Contract
@@ -280,6 +310,10 @@ mã màu cảm xúc; (2) nhất quán nhận diện — sóng vs mặt hồ là 
 | `brand.tealStrong` #155A66 / `tealLight` #E8F2F4 | **6.86:1** | ✅ | ✅ | Chữ badge số bước (KHÔNG dùng #1D7C91 ở đây — chỉ 4.24:1, TRƯỢT) |
 | `neutral.stoneStrong` #5E6E73 / #F8F8F8 | **5.00:1** | ✅ | ✅ | Đường phẳng "không bao giờ" (mang nghĩa) |
 | ~~`neutral.stone` #8A9BA0 / #F8F8F8~~ | **2.72:1** | ❌ | ❌ | **Chỉ cho sóng trang trí**, KHÔNG cho graphic mang nghĩa |
+| `tealStrong` #155A66 / `surface.card` #FFFFFF | **7.82:1** | ✅ | ✅ | Chữ đoạn đang chọn của segmented control |
+| `ink.secondary` #666666 / `tealLight` #E8F2F4 | **5.04:1** | ✅ | ✅ | Chữ đoạn không chọn segmented |
+| `brand.teal` #1D7C91 / `line.divider` #E5E7E8 | **3.90:1** | — | ✅ | Slider track đã tô (graphic) |
+| Chữ trắng #FFFFFF / `brand.teal` #1D7C91 | **4.83:1** | ✅ | ✅ | Chỉ dùng nếu cần pill teal-đặc (mặc định ưu tiên pill trắng) |
 
 **Cặp màu đã verify (dark mode)**
 

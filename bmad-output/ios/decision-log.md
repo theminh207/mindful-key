@@ -16,6 +16,25 @@ mới ở TRÊN CÙNG (mới nhất trước), không xoá/sửa entry cũ.
 
 ---
 
+### 2026-07-10 — UX Update: thêm màn Bàn phím + Cài đặt (đầy đủ) + mục Future Round 2/3 (v0.2)
+- **Decision:** Mở rộng DESIGN.md (§2.11 Segmented control + Slider — màu chọn = teal, KHÔNG
+  xanh-lá hệ thống) + EXPERIENCE.md 2 màn đặc tả đầy đủ (Bàn phím Mindful Key với states
+  Shift/Caps/lớp số/secure field; Cài đặt bàn phím với preview sống + slider + segmented) và
+  1 mục "Future Screens (Round 2/3)".
+- **Ranh giới cố ý:** chia làm 2 nhóm. Nhóm A (bàn phím, cài đặt) = thuần công cụ/Round 1,
+  đặc tả ĐẦY ĐỦ. Nhóm B (sóng cảm xúc B1, nhật ký B2, soi lại B3) = chạm nhận diện + dữ liệu
+  cảm xúc → CHỈ chốt phần bám hiến chương + tiền lệ macOS đã duyệt; mọi quyết định sản phẩm
+  còn mở đánh dấu **❓** để chủ dự án chốt, KHÔNG tự bịa hành vi. Đúng hiến chương "chạm nhận
+  diện mà mơ hồ → hỏi chủ dự án".
+- **Contrast component mới đã verify thật:** segmented đoạn chọn (pill trắng + tealStrong
+  #155A66 = 7.82:1), đoạn không chọn (muted #666666/tealLight = 5.04:1), slider track teal/
+  divider = 3.90:1 (graphic ≥3). Ghi vào DESIGN §3.
+- **Quyết định mở nổi bật cần chủ dự án (tóm trong EXPERIENCE Future):** map send-risk→biên
+  độ sóng + có/không câu quan sát (B1); nhật ký iOS hiện gì + nút xoá + App Group ownership
+  (B2); soi-lại là màn hay notification (B3).
+- **Made by:** bmad-ux (Update), gọi bởi agent đội iOS.
+- **Supersedes:** none (mở rộng v0.1, không phá phần cũ).
+
 ### 2026-07-10 — UX design: DESIGN.md + EXPERIENCE.md, phát hiện + vá 2 lỗi contrast trong mockup
 - **Decision:** Tạo `bmad-output/ios/DESIGN.md` (hệ thống design bền cho cả app iOS) +
   `EXPERIENCE.md` (journey Round 1 + phác Round 2). Chạy `bmad-ux/scripts/contrast-check.py`
