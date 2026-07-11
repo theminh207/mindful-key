@@ -16,7 +16,7 @@
 R1 ███████░░░  Walking skeleton (gõ Telex thật + onboarding)      ~55% — ĐANG DỞ (Mốc B xong)
 R2 ░░░░░░░░░░  Bàn phím giống Laban + lớp cảm xúc nhẹ (sóng+chuông)  0% — chờ R1 + chốt ❓
 R3 ░░░░░░░░░░  Cá nhân hóa + nhật ký + soi lại cuối ngày            0% — chờ R2 + chốt ❓
-R4 ░░░░░░░░░░  Nâng cao + phát hành (vuốt/macro, sync, notarize)    0% — phác
+R4 ░░░░░░░░░░  Nâng cao + phát hành (vuốt phím, sync, notarize)     0% — phác
 ```
 
 Trạng thái tổng: **Round 1 ~55%** (Mốc B xong — đã gõ tiếng Việt có dấu THẬT qua engine, commit
@@ -56,6 +56,7 @@ bắt đầu (R2+, chờ chốt Q1–Q3).
 |---|---|---|---|
 | FR-A01+ | Lõi gõ đầy đủ: VNI, sửa lỗi, gợi ý từ | ⬜ chưa | engine đã có `Vietnamese.cpp`/`SmartSwitchKey.cpp` — bọc vỏ |
 | FR-A11 | Cài đặt + preview sống + slider | ⬜ chưa | kế thừa Laban (bỏ game hóa) |
+| FR-A15a | Gõ tắt (macro chữ) | ⬜ chưa | **tách từ FR-A15, đưa lên R2 (chốt 2026-07-11)** — engine đã có `Macro.cpp`, chỉ cần UI + sync App Group + nhánh `vReplaceMaro` |
 | **FR-A09** | **MoodBridge gom câu → send-risk on-device** | ⬜ chưa | set `vOnWordCommitted` (Mốc A cố ý chưa) — cầu vào `core/mood` |
 | **FR-A08** | **Con sóng `~` ambient trên thanh gợi ý** | ⬜ chưa | biểu hiện iOS của Feature #1 — "nhắc", KHÔNG chặn (M6) |
 | FR-A10 | Tiếng chuông chánh niệm | ⬜ chưa | preset âm và/hoặc nhắc nghỉ (Q3) |
@@ -91,11 +92,11 @@ tất cả" (2 bước, không nút đỏ) · KHÔNG biểu đồ/streak/điểm
 
 | FR | Hạng mục | Ghi chú |
 |---|---|---|
-| FR-A15 | Vuốt phím + gõ tắt (macro) | engine có `Macro.cpp`; vỏ vuốt viết mới |
+| FR-A15b | Vuốt phím (swipe-typing) | vỏ vuốt viết mới (nhận diện quỹ đạo + đoán từ) — phần NẶNG. *(Gõ tắt macro đã tách sang R2 = FR-A15a.)* |
 | FR-A16 | Sync theme opt-in | mặc định OFF; nhật ký cảm xúc KHÔNG sync (M3) |
 | — | Ký thật / notarize / TestFlight | cần Apple Developer Program; iPad/landscape mở ở đây |
 
-**Định nghĩa HOÀN THÀNH R4:** phát hành được bản ký thật; vuốt/macro hoạt động; sync theme opt-in an toàn.
+**Định nghĩa HOÀN THÀNH R4:** phát hành được bản ký thật; vuốt phím hoạt động; sync theme opt-in an toàn.
 **Cần chốt:** đăng ký Apple Developer Program; Q9 (sync).
 
 ---

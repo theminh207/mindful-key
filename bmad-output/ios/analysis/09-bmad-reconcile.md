@@ -112,10 +112,14 @@ trỏ về specs):
 - **Màn Giới thiệu (credit GPL / Mai Vũ Tuyên)** (M5) — nghĩa vụ pháp lý, chưa có FR. Cần FR khi vào
   Round 1–2 (làm cùng cụm Cài đặt).
 
-**⚠️ 1 MÂU THUẪN THẬT — chờ chủ dự án chốt (chưa sửa):** tiering "gõ tắt" (macro chữ). EXPERIENCE để
-ở **M5, Round 1–2**; `analysis` (F8/`FR-A15`) gộp với "vuốt phím" đẩy xuống **Round 4/Won't**. Cùng 1
-tính năng, 2 đầu lộ trình. Đề xuất soi: tách macro-chữ (engine đã có `Macro.cpp`, rẻ) về R2, để riêng
-vuốt-phím (khó) ở R4.
+**✅ 1 MÂU THUẪN THẬT — ĐÃ CHỐT 2026-07-11 (chủ dự án):** tiering "gõ tắt". Trước: EXPERIENCE để ở
+**M5, Round 1–2** vs `analysis` (F8/`FR-A15`) gộp "vuốt phím" đẩy xuống **Round 4**. **Quyết định: TÁCH
+FR-A15** →
+- **FR-A15a · Gõ tắt (macro chữ)** → **Round 2** (Should): engine đã có `core/engine/Macro.cpp`, rẻ,
+  hợp mục tiêu R2 "đủ tiện như Laban".
+- **FR-A15b · Vuốt phím (swipe)** → **Round 4** (Won't đợt này): phần nặng, để dành.
+Đã cập nhật `07-functional-requirements/_index.md`, `ROADMAP.md` (R2/R4), `06-software-vision.md`
+(F8 + bảng round). EXPERIENCE giữ nguyên (ô "Gõ tắt" ở M5, nay khớp R2).
 
 ## 7. Drift cơ học đã vá 2026-07-11 (audit đồng bộ)
 

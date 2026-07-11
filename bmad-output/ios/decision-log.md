@@ -16,6 +16,22 @@ mới ở TRÊN CÙNG (mới nhất trước), không xoá/sửa entry cũ.
 
 ---
 
+### 2026-07-11 — Audit đồng bộ 3 nguồn + chốt tiering "gõ tắt" (tách FR-A15)
+- **Decision:** Quét chéo khung L (Laban) · gói `analysis/` · specs (`EXPERIENCE.md`/`DESIGN.md`) tìm
+  xung đột. Kết luận: KHÔNG có xung đột nền tảng (3 nguồn nhất trí phần hồn). Xử lý:
+  1. **Vá drift cơ học** (commit b6953bc): DESIGN radius 12→8pt (§2.1/§2.4), tab Mặt hồ round-tier
+     3→2–3, EXPERIENCE thêm cảnh báo "L (lô thiết kế) ≠ mức sóng 1–5", ROADMAP cập nhật Mốc B xong,
+     09-reconcile thêm bảng bắc cầu **F1–F8 ↔ Module 1–6** + ghi chú 3 FR mồ côi (nền cá nhân, lớp
+     nhịp thở, màn Giới thiệu-GPL — cần chính thức hoá khi tới round).
+  2. **Chốt 1 mâu thuẫn thật — tiering "gõ tắt":** TÁCH `FR-A15` cũ → **FR-A15a Gõ tắt (macro chữ) =
+     Round 2** (engine đã có `Macro.cpp`, rẻ) + **FR-A15b Vuốt phím = Round 4** (nặng). Cập nhật
+     `07-functional-requirements`, `ROADMAP`, `06-software-vision`, `09-reconcile §6`.
+- **Rationale:** analysis gộp nhầm 2 thứ khác cân nặng vào FR-A15. Gõ tắt rẻ vì logic macro nằm sẵn
+  trong bộ não dùng chung; vuốt phím mới là việc lớn. Hướng đồng bộ: **specs = nguồn chân lý UX**,
+  analysis trỏ về specs, khung L = giàn giáo quy trình trực giao (không phải mô hình sản phẩm).
+- **Made by:** audit đồng bộ (3 agent soi song song) + chủ dự án chốt qua AskUserQuestion.
+- **Supersedes:** FR-A15 (gộp) → FR-A15a + FR-A15b.
+
 ### 2026-07-11 — Mốc B XONG: iOS gõ Telex thật qua core/engine (commit 91a8742)
 - **Decision:** Nối bàn phím tự vẽ iOS vào `vKeyHandleEvent()` của `core/engine` qua `KeyboardBridge`,
   giải mã HookState (`backspaceCount` + `charData`, chế độ Unicode vCodeTable=0) thành thao tác
