@@ -5,9 +5,9 @@ CONFIG    := Debug
 DERIVED   := platforms/apple/build
 VERSION   := $(shell . ./version.env >/dev/null 2>&1; grep '^VERSION=' version.env | cut -d= -f2)
 
-.PHONY: help generate test test-core test-macos test-ios build run universal brand version clean
+.PHONY: help generate test test-core test-macos test-ios build run universal brand brand-lint hooks version clean
 help:
-	@echo "make generate | test | test-core | test-macos | test-ios | build | run | universal | brand | version | clean   (v$(VERSION))"
+	@echo "make generate | test | build | run | universal | brand | brand-lint | hooks | version | clean   (v$(VERSION))"
 
 generate:        ## Sinh .xcodeproj từ platforms/apple/project.yml (XcodeGen)
 	cd platforms/apple && xcodegen generate
@@ -36,6 +36,13 @@ universal:       ## Build bản chạy được cả máy chip M lẫn Intel (ch
 
 brand:           ## Xuất lại brand-asset từ SVG nguồn
 	bash brand/export.sh
+
+brand-lint:      ## Ràng buộc nhận diện NOW BRAND OS (chặn đỏ/xanh cảm xúc, emoji chấm điểm, gamification, hardcode màu)
+	bash scripts/brand-lint.sh
+
+hooks:           ## Bật git pre-commit chạy brand-lint (mỗi máy chạy 1 lần)
+	git config core.hooksPath .githooks
+	@echo "✓ đã bật .githooks — pre-commit sẽ chạy brand-lint"
 
 version:
 	@echo "$(VERSION)"

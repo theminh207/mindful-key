@@ -1,0 +1,14 @@
+name: brand-lint
+
+on:
+  push:
+    branches: [ main, "2.0" ]
+  pull_request:
+
+jobs:
+  brand-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ràng buộc nhận diện NOW BRAND OS (hiến chương §2)
+        run: bash scripts/brand-lint.sh

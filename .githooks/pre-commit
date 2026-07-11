@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Chặn commit nếu vi phạm nhận diện NOW BRAND OS. Bật hook: make hooks
+files=$(git diff --cached --name-only --diff-filter=ACM | grep -Ei '\.(m|mm|swift|h|html|css|js|ts|tsx|kt|xml|storyboard|xib|svg)$' || true)
+[ -z "$files" ] && exit 0
+exec "$(git rev-parse --show-toplevel)/scripts/brand-lint.sh" $files

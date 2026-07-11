@@ -79,6 +79,7 @@ Every code task MUST leave the codebase **at least as clean as before**. Never t
 - `make test` — regression engine (`tests/core`) phải XANH, 0 case fail. Đây là lưới an toàn của bộ não dùng chung.
 - `make build` / `xcodebuild` — build app macOS sạch: 0 error, KHÔNG thêm warning mới của compiler.
 - CI `.github/workflows/macos.yml` — xanh (nó chạy đúng `make test` + `xcodebuild` Debug ad-hoc).
+- `make brand-lint` — **0 vi phạm nhận diện** (đỏ/xanh cảm xúc, emoji chấm điểm, gamification, hardcode màu ngoài `brand/tokens.json`). Ràng buộc CỨNG qua CI `.github/workflows/brand-lint.yml` + pre-commit (`make hooks`) + Claude PostToolUse hook (`scripts/brand-guard.sh`) — chặn mọi tool/agent, không phụ thuộc "có đọc CLAUDE.md hay không".
 - **Debt delta = 0**: số error/warning/test-fail KHÔNG được tăng so với baseline trước task.
 
 **Cái gì tính là để lại nợ (cấm):**
