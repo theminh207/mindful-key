@@ -16,7 +16,24 @@ mới ở TRÊN CÙNG (mới nhất trước), không xoá/sửa entry cũ.
 
 ---
 
-### 2026-07-11 — Chốt 3 quyết định gấp mở khóa Round 1 (Q7/Q8/Q10a)
+### 2026-07-11 — Validate + reconcile tech-spec.md với code thật (v0.1 → v0.2)
+- **Decision:** Chạy `bmad-tech-spec` (intent Validate) thay vì `bmad-architecture` — vì đội iOS
+  là Quick Flow, tech-spec đã thay vai architecture.md; đẻ file `architecture.md` thứ hai chỉ tạo
+  drift. Kết quả: tech-spec QUA checklist Quick Flow, vá 3 chỗ lệch giữa doc và code thật:
+  1. **Ngôn ngữ container app = Objective-C (chốt).** Doc cũ ghi "Swift hoặc Obj-C, chưa chốt";
+     thực tế Mốc A đã scaffold `ios/App/*.m` bằng Obj-C → khoá lại cho khớp.
+  2. **Container KHÔNG biên dịch engine.** YAML minh hoạ cũ trong doc liệt kê `core/engine`+
+     `core/mood` dưới `MindfulKeyiOS`; `project.yml` thật thì container chỉ có `ios/App`+`shared`
+     — chỉ extension mới ôm engine. Sửa YAML doc cho khớp thực tế.
+  3. **App Group: tên đã chốt (Q7) nhưng wiring chưa làm.** Doc v0.1 gọi đây là "quyết định mở,
+     cần xác nhận" — sai chiều: Q7 (entry ngay dưới) đã chốt tên `group.vn.gnh.mindfulkey`. Việc
+     còn lại thuần code: tạo 2 `.entitlements` + `CODE_SIGN_ENTITLEMENTS` (FR-A06), chặn story #5.
+- **Rationale:** "Bắt được drift 2 chiều": doc nói thừa (YAML engine dưới container, App Group
+  'chưa chốt') và nói thiếu (ngôn ngữ container chưa khoá). Quy chiếu `project.yml` + scaffold thật
+  + decision-log Q7 để sửa, không đoán.
+- **Made by:** `bmad-tech-spec` (Validate), theo lựa chọn chủ dự án (không tạo architecture.md).
+- **Supersedes:** không xoá gì; cập nhật tech-spec.md v0.1 → v0.2.
+
 - **Decision:** Chủ dự án duyệt gói phân tích `analysis/` (00→09 + ROADMAP) và chốt 3 câu nhóm A
   của decision queue (`analysis/09-bmad-reconcile.md` §3):
   - **Q7 — Bundle ID + App Group:** DÙNG bản đề xuất — app `vn.gnh.mindfulkey.ios`, extension
