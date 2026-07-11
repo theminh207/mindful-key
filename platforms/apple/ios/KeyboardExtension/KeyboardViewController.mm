@@ -69,6 +69,14 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
         [self.rootStack.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-4],
     ]];
 
+    // BẮT BUỘC: custom keyboard phải TỰ khai chiều cao — hệ thống KHÔNG tự cấp. Thiếu dòng này
+    // = bàn phím cao 0pt / dải trắng, không thấy phím, không gõ được (build sạch nhưng runtime
+    // hỏng — đúng bẫy "build-verify ≠ device-verify"). Priority 999 (< required 1000) để nhường
+    // ràng buộc hệ thống thêm vào input view, tránh "unable to satisfy constraints".
+    NSLayoutConstraint *heightC = [self.view.heightAnchor constraintEqualToConstant:260];
+    heightC.priority = UILayoutPriorityRequired - 1;   // 999
+    heightC.active = YES;
+
     [self rebuildRows];
 }
 
