@@ -13,19 +13,19 @@
 ## Bức tranh 1 nhìn
 
 ```
-R1 ██████░░░░  Walking skeleton (gõ Telex thật + onboarding)      ~30% — ĐANG DỞ
+R1 ███████░░░  Walking skeleton (gõ Telex thật + onboarding)      ~55% — ĐANG DỞ (Mốc B xong)
 R2 ░░░░░░░░░░  Bàn phím giống Laban + lớp cảm xúc nhẹ (sóng+chuông)  0% — chờ R1 + chốt ❓
 R3 ░░░░░░░░░░  Cá nhân hóa + nhật ký + soi lại cuối ngày            0% — chờ R2 + chốt ❓
 R4 ░░░░░░░░░░  Nâng cao + phát hành (vuốt/macro, sync, notarize)    0% — phác
 ```
 
-Trạng thái tổng: **Round 1 mới ~30%** (khung + đã gỡ rủi ro engine), phần chứng minh giá trị
-người dùng (gõ ra dấu thật, onboarding) chưa xong. Lớp chánh niệm — *linh hồn sản phẩm* — chưa
-bắt đầu (R2+).
+Trạng thái tổng: **Round 1 ~55%** (Mốc B xong — đã gõ tiếng Việt có dấu THẬT qua engine, commit
+91a8742; còn onboarding + App Group = story #5). Lớp chánh niệm — *linh hồn sản phẩm* — chưa
+bắt đầu (R2+, chờ chốt Q1–Q3).
 
 ---
 
-## ROUND 1 — Walking skeleton · ĐANG DỞ (~30%)
+## ROUND 1 — Walking skeleton · ĐANG DỞ (~55%, Mốc B xong)
 **Mục tiêu:** người dùng cài được bàn phím và gõ ra tiếng Việt có dấu thật; đã gỡ rủi ro kỹ thuật lớn nhất.
 
 | FR | Hạng mục | Trạng thái | Việc còn lại |
@@ -33,12 +33,12 @@ bắt đầu (R2+).
 | (nền) | Engine sống trong extension | ✅ đã có | — (thực nghiệm compile + `KeyboardBridge_Init`) |
 | FR-A03 | Target iOS trong project.yml | ✅ đã có | 🟡 verify `xcodegen generate` thật (đóng R5) |
 | FR-A02 | Bàn phím tự vẽ QWERTY + điều khiển | 🟡 một phần | Shift/Caps/lớp số (Mốc A mới có chữ thường) |
-| **FR-A01** | **Gõ Telex ra dấu qua engine (Mốc B)** | 🟡 **chưa** | **Nối `vKeyHandleEvent`, bỏ `insertText:letter` thô — việc lõi nhất** |
-| FR-A04 | Onboarding kích hoạt (Màn 01) | ⬜ chưa | UI + copy (thiếu mockup — Q8) |
-| FR-A05 | Minh bạch Full Access (Màn 02) | ⬜ chưa | UI cặp biên độ + "Để sau" |
-| FR-A06 | App Group heartbeat detection | ⬜ chưa | `AppGroupBridge` + entitlement App Group |
+| **FR-A01** | **Gõ Telex ra dấu qua engine (Mốc B)** | ✅ **XONG** (commit 91a8742) | Bridge nối `vKeyHandleEvent` → `UITextDocumentProxy`; 5 ca Telex qua bridge PASS ("vieetj"→"việt") |
+| FR-A04 | Onboarding kích hoạt (Màn 01) | ⬜ chưa (story #5) | UI + copy (dựng theo EXPERIENCE v0.3 — Q8 đã đóng) |
+| FR-A05 | Minh bạch Full Access (Màn 02) | ⬜ chưa (story #5) | UI cặp biên độ + "Để sau" |
+| FR-A06 | App Group heartbeat detection | ⬜ chưa (story #5) | `AppGroupBridge` + entitlement App Group (tên đã chốt Q7, còn wiring) |
 | FR-A07 | Loại ô mật khẩu + không log | ⬜ chưa | guard secure field |
-| FR-A17 | `tests/ios` test thật | 🟡 no-op | test bridge + smoke, tái dùng case `tests/core` |
+| FR-A17 | `tests/ios` test thật | ✅ **XONG** (Mốc B) | `bridge_test.mm` 5 ca Telex qua bridge (host) + build-smoke `xcodebuild` PASS; `make test-ios` hết no-op |
 
 **Định nghĩa HOÀN THÀNH R1:** SC1 đạt (gõ "việt" trong Notes+Zalo) · `git diff core/` rỗng ·
 `make test-ios` chạy thật · `make build` macOS xanh · extension không bị kill vì RAM (thủ công).
@@ -115,8 +115,8 @@ graph LR
 ## Bảng trạng thái tổng hợp (17 FR)
 | Trạng thái | FR | Đếm |
 |---|---|---|
-| ✅ đã có | FR-A03 (+ nền engine-sống) | 1 |
-| 🟡 cần hoàn thiện | FR-A01, FR-A02, FR-A17 | 3 |
+| ✅ đã có | FR-A01, FR-A03, FR-A17 (+ nền engine-sống) | 3 |
+| 🟡 cần hoàn thiện | FR-A02 (Shift/số) | 1 |
 | ⬜ chưa bắt đầu | FR-A04..A16 (trừ đã nêu) | 13 |
 
 > **Đọc con số này:** phần "đã có" là *khung + gỡ rủi ro*; toàn bộ **giá trị người dùng thấy được**

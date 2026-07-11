@@ -176,7 +176,7 @@ Dark mode: bóng đổ gần như vô hình → dùng **đổi nền elevated** 
 | Chữ | `ink.primary` **#2A2A2A** (chữ TỐI — luật cứng §3, KHÔNG chữ trắng) |
 | Cao | ≥ 50pt (thoải mái ngón tay) |
 | Padding | 14pt dọc, 16pt ngang |
-| Radius | `radius.control` 12pt |
+| Radius | `radius.control` 8pt |
 | Font | `.body` Semibold |
 
 **States**
@@ -210,7 +210,7 @@ Round 3.)
 |-----------|---------|
 | Cao | ≥ 44pt |
 | Viền | 1px `line.divider`, focus → `brand.teal` |
-| Radius | `radius.control` 12pt |
+| Radius | `radius.control` 8pt |
 | Font | `.body` 17pt (đủ lớn, không lo zoom) |
 
 Trạng thái lỗi (vd "không mở được Cài đặt"): viền **KHÔNG đỏ** — dùng chữ helper
@@ -341,7 +341,9 @@ Thanh tab đáy của **container app** — 3 mục top-level (xem EXPERIENCE §
 - A11y: `UITabBar` chuẩn; mục đang chọn báo trait `.selected` cho VoiceOver; target ≥ 44pt;
   tôn trọng safe-area đáy (home indicator).
 - Round-tiering: Round 1 thực tế chỉ cần **Trang chủ + Cài đặt** (2 tab); tab **Mặt hồ** là
-  Round 3 (nhật ký/soi lại) — vẽ trong spec cho trọn vision, không phải scope code Mốc B.
+  **Round 2–3** (khớp `EXPERIENCE.md` §Kiến trúc thông tin) — xuất hiện ở **R2** khi có con sóng
+  (thang mặt hồ) và đầy đủ ở **R3** khi có nhật ký/soi lại. Vẽ trong spec cho trọn vision, không
+  phải scope code Mốc B.
 
 ---
 

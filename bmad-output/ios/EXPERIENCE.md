@@ -51,6 +51,11 @@ onboarding phải cực rõ.
 
 ### 6 module — bản đồ màn + phủ L + round-tier
 
+> ⚠️ **Đừng lẫn 2 thang "1–5":** cột **"Phủ L"** dưới đây = **lô thiết kế Laban** (L1–L5, cách
+> chia ảnh tham khảo gửi Claude Design — xem `ref-ux-ui-laban-key/L-MAP.md`), HOÀN TOÀN KHÁC với
+> **mức sóng cảm xúc 1–5** (An→Cuộn, `moodScale` trong `DESIGN.md §1.1`). "L5" = nhóm màn nguy
+> hiểm cần mổ bỏ; "mức 5 = Cuộn" = sóng cao nhất. Hai hệ trực giao, không liên quan nhau.
+
 | Module | Màn | Bề mặt | Phủ L | Round |
 |--------|-----|--------|-------|-------|
 | **1 · Vào cửa** | Splash · Kích hoạt bàn phím · Full Access (cặp sóng/đường phẳng) | Onboarding | L1 | 1 |

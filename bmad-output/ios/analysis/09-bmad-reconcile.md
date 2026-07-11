@@ -81,5 +81,53 @@
 | `analysis/00`→`09` + ROADMAP | mới tạo — chờ chủ dự án đọc/duyệt |
 | `stories/` | trống (cố ý — chưa sharding) |
 
+## 6. Bản đồ bắc cầu F↔Module + doc-sync 2026-07-11 (audit đồng bộ 3 nguồn)
+
+Sau khi soi chéo khung L (Laban) · gói `analysis/` · specs (`EXPERIENCE.md`/`DESIGN.md`): **không có
+xung đột nền tảng** — cả ba nhất trí phần hồn (sóng theo biên độ, không màu valence, không gamify,
+soi lại lấy câu hỏi làm chính, iOS chỉ nhắc không chặn). Vá xong các drift cơ học; còn 1 quyết định
+thật (tiering "gõ tắt") để chủ dự án chốt.
+
+**Vì sao đọc thấy "lệch":** gói `analysis/` mô tả sản phẩm bằng **8 chủ đề F1–F8** (lăng kính yêu
+cầu), còn specs mô tả bằng **6 module + 3 bề mặt** (lăng kính màn hình/điều hướng). Hai bản đồ CÙNG
+một vùng đất, trước nay THIẾU bảng bắc cầu. Bổ sung tại đây (nguồn chân lý UX = specs; `analysis/`
+trỏ về specs):
+
+| Chủ đề F (analysis) | Module (EXPERIENCE) | Ghi chú |
+|---|---|---|
+| F1 · Lõi gõ | M2 Bàn phím + M5 (Cài đặt bàn phím: kiểu gõ) | Mốc B đã làm phần lõi |
+| F2 · Onboarding & quyền | M1 Vào cửa | story #5 |
+| F3 · Riêng tư | M2 (ô mật khẩu) + xuyên suốt (copy Full Access ở M1) | không phải 1 màn riêng |
+| F4 · Sóng cảm xúc | **M4 Lớp cảm xúc** + M2 trạng thái (b) | Round 2, chờ Q1/Q2 |
+| F5 · Tiếng chuông | M4 + M5 (Âm & rung + Chuông) | Round 2, chờ Q3 |
+| F6 · Cá nhân hóa | M3 Ngôi nhà + M5 Cài đặt chi tiết + **M6 Nền cá nhân** | preview sống + theme + nền |
+| F7 · Nhật ký & soi lại | M4 (tab Mặt hồ: nhật ký + soi lại) | Round 3, chờ Q4–Q6 |
+| F8 · Nâng cao | (chưa có module riêng — vuốt/macro/sync nằm dưới M5 khi tới R4) | xem tiering "gõ tắt" |
+
+**3 tính năng "mồ côi" (có trong specs, CHƯA có FR-A tương ứng — cần chính thức hoá khi tới round):**
+- **Nền cá nhân** (M6: chọn nền + ảnh + slider làm mờ) — gần `FR-A12` (theme màu) nhưng KHÁC (nền/ảnh).
+  Cần FR riêng khi vào Round 3.
+- **Lớp nhịp thở** (M2 thẻ mời thở + M4 full-screen mức Cuộn) — hiện chỉ là hộp `core/mood`
+  BreathingPause trong sơ đồ kiến trúc, chưa thành FR-A người-dùng. Cần FR khi vào Round 2.
+- **Màn Giới thiệu (credit GPL / Mai Vũ Tuyên)** (M5) — nghĩa vụ pháp lý, chưa có FR. Cần FR khi vào
+  Round 1–2 (làm cùng cụm Cài đặt).
+
+**⚠️ 1 MÂU THUẪN THẬT — chờ chủ dự án chốt (chưa sửa):** tiering "gõ tắt" (macro chữ). EXPERIENCE để
+ở **M5, Round 1–2**; `analysis` (F8/`FR-A15`) gộp với "vuốt phím" đẩy xuống **Round 4/Won't**. Cùng 1
+tính năng, 2 đầu lộ trình. Đề xuất soi: tách macro-chữ (engine đã có `Macro.cpp`, rẻ) về R2, để riêng
+vuốt-phím (khó) ở R4.
+
+## 7. Drift cơ học đã vá 2026-07-11 (audit đồng bộ)
+
+| # | File | Sửa gì |
+|---|---|---|
+| S1 ✅ | `DESIGN.md` §2.1, §2.4 | `radius.control` 12pt → **8pt** (sót của lần reconcile trước, lệch `tokens.json`) |
+| S2 ✅ | `DESIGN.md` §2.12 | Tab "Mặt hồ" round-tier: Round 3 → **Round 2–3** (khớp EXPERIENCE) |
+| S3 ✅ | `EXPERIENCE.md` §6 module | Thêm cảnh báo "L (lô thiết kế) ≠ mức sóng cảm xúc 1–5" |
+| S4 ✅ | `ROADMAP.md` | Cập nhật Mốc B XONG: FR-A01/A17 ✅, R1 ~30%→~55% |
+| S5 ✅ | `09` §6 (file này) | Thêm bảng bắc cầu F↔Module + ghi chú 3 FR mồ côi |
+
 ---
-*Pha 4/4 xong. Gói phân tích `bmad-output/ios/analysis/` hoàn tất — chờ chủ dự án duyệt + chốt decision queue.*
+*Pha 4/4 xong. Gói phân tích `bmad-output/ios/analysis/` hoàn tất. Audit đồng bộ 2026-07-11: specs =
+nguồn chân lý UX, analysis trỏ về specs, khung L = giàn giáo quy trình trực giao. Còn 1 quyết định mở:
+tiering "gõ tắt".*
