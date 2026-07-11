@@ -21,8 +21,9 @@ test-core:       ## Regression engine (bộ não dùng chung, đội core sở h
 test-macos:      ## Test riêng vỏ macOS (đội macOS sở hữu) — chưa có test tự động, no-op
 	@echo "tests/macos: chưa có test tự động (xem tests/macos/README.md)"
 
-test-ios:        ## Test riêng vỏ iOS (đội iOS sở hữu) — chưa có test tự động, no-op
-	@echo "tests/ios: chưa có test tự động (xem tests/ios/README.md)"
+test-ios:        ## Test riêng vỏ iOS (đội iOS sở hữu) — bridge Telex chạy trên host, không cần Simulator
+	bash tests/ios/build.sh
+	./tests/ios/bridge_test
 
 build: generate  ## Build app macOS (ký ad-hoc)
 	xcodebuild -project "$(XCODEPROJ)" -scheme "$(SCHEME)" -configuration "$(CONFIG)" build

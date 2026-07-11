@@ -3,12 +3,13 @@
 //  mindful-key — iOS keyboard extension (Round 1 walking skeleton, Mốc A)
 //
 //  Bàn phím tự vẽ tối thiểu: 3 hàng QWERTY + hàng dưới (chuyển bàn phím / dấu cách / xoá).
-//  Chạm phím chèn THẲNG ký tự thô qua UITextDocumentProxy — CHƯA gọi core/engine (Mốc B).
-//  KeyboardBridge_Init() vẫn được gọi ở viewDidLoad để chứng minh engine sống được trong
-//  tiến trình extension (rủi ro lớn nhất của SPEC), tách biệt khỏi việc gõ đúng Telex.
+//  Mốc B: mỗi lần chạm phím đi QUA core/engine (KeyboardBridge) — gõ Telex ra tiếng Việt có dấu,
+//  rồi áp kết quả (xoá lùi + chèn) lên UITextDocumentProxy. Không còn chèn thô như Mốc A.
+//  KeyboardBridge_Init() gọi ở viewDidLoad để khởi động engine trong sandbox extension.
 
 #import "KeyboardViewController.h"
 #import "KeyboardBridge.h"
+#import "EngineKeyMap.h"
 
 static NSArray<NSString *> *KVCRow(NSString *letters) {
     NSMutableArray<NSString *> *out = [NSMutableArray array];
@@ -110,19 +111,35 @@ static NSArray<NSString *> *KVCRow(NSString *letters) {
     return button;
 }
 
-#pragma mark - Mốc A: chèn thô, chưa qua core/engine (xem Mốc B)
+#pragma mark - Mốc B: gõ qua core/engine (KeyboardBridge)
+
+// Áp thao tác engine trả về lên ô nhập: xoá lùi TRƯỚC, rồi chèn chuỗi mới.
+- (void)applyBridgeResult:(KeyboardBridgeResult *)result {
+    for (NSInteger i = 0; i < result.backspaceCount; i++) {
+        [self.textDocumentProxy deleteBackward];
+    }
+    if (result.textToInsert.length > 0) {
+        [self.textDocumentProxy insertText:result.textToInsert];
+    }
+}
 
 - (void)letterKeyTapped:(UIButton *)sender {
     NSString *letter = [sender titleForState:UIControlStateNormal];
-    [self.textDocumentProxy insertText:letter];
+    NSNumber *keyCode = EngineKeyMap_CharacterToKeyCode()[letter];
+    if (keyCode == nil) {
+        // Ký tự không có trong bảng phím engine (không nên xảy ra với QWERTY) — chèn thẳng.
+        [self.textDocumentProxy insertText:letter];
+        return;
+    }
+    [self applyBridgeResult:KeyboardBridge_HandleKeyTap(keyCode.unsignedShortValue, NO)];
 }
 
 - (void)spaceKeyTapped:(UIButton *)sender {
-    [self.textDocumentProxy insertText:@" "];
+    [self applyBridgeResult:KeyboardBridge_HandleSpace()];
 }
 
 - (void)backspaceKeyTapped:(UIButton *)sender {
-    [self.textDocumentProxy deleteBackward];
+    [self applyBridgeResult:KeyboardBridge_HandleBackspace()];
 }
 
 @end
