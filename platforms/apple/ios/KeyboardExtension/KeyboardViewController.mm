@@ -11,6 +11,7 @@
 #import "KeyboardViewController.h"
 #import "KeyboardBridge.h"
 #import "EngineKeyMap.h"
+#import "AppGroupBridge.h"
 
 typedef NS_ENUM(NSInteger, KVCShiftState) {
     KVCShiftOff = 0,   // chữ thường
@@ -42,6 +43,9 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
 - (void)viewDidLoad {
     [super viewDidLoad];
     KeyboardBridge_Init();   // khởi động engine trong sandbox extension
+    // Nhịp tim App Group: báo cho container "bàn phím đã chạy" + cờ Full Access (chỉ đọc được
+    // từ trong extension). Chỉ ghi timestamp/bool — KHÔNG bao giờ nội dung gõ.
+    KeyboardExtension_WriteHeartbeat(self.hasFullAccess);
     self.shiftState = KVCShiftOff;
     self.numberLayer = NO;
     self.lastShiftTapAt = 0;

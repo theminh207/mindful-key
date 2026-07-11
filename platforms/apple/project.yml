@@ -113,6 +113,7 @@ targets:
         ONLY_ACTIVE_ARCH: YES        # chỉ build kiến trúc Simulator đang chạy (arm64 trên máy Apple Silicon) — khớp mặc định template Xcode, tránh build thừa x86_64
 
         INFOPLIST_FILE: ios/App/Info.plist
+        CODE_SIGN_ENTITLEMENTS: ios/App/MindfulKeyiOS.entitlements   # App Group group.vn.gnh.mindfulkey (story 1.6)
 
         CLANG_ENABLE_OBJC_ARC: YES
         CLANG_CXX_LANGUAGE_STANDARD: "gnu++14"   # shared/ có EngineKeyMap.mm (Obj-C++)
@@ -155,6 +156,7 @@ targets:
         ONLY_ACTIVE_ARCH: YES
 
         INFOPLIST_FILE: ios/KeyboardExtension/Info.plist
+        CODE_SIGN_ENTITLEMENTS: ios/KeyboardExtension/KeyboardExtension.entitlements   # CÙNG App Group group.vn.gnh.mindfulkey (story 1.6)
 
         CLANG_ENABLE_OBJC_ARC: YES
         CLANG_CXX_LANGUAGE_STANDARD: "gnu++14"
