@@ -16,6 +16,47 @@ mới ở TRÊN CÙNG (mới nhất trước), không xoá/sửa entry cũ.
 
 ---
 
+### 2026-07-11 — UX Update v0.3: reconcile brand + chốt bản đồ 6-module/IA + font hybrid
+- **Decision:** Sau khi hệ thống hoá mockup (Claude Design) thành sản phẩm hoàn chỉnh, chạy
+  `bmad-ux` (Update) kéo `DESIGN.md`/`EXPERIENCE.md` lên **v0.3**, khớp lại với `brand/tokens.json`
+  (nguồn brand chính thức) và chốt kiến trúc thông tin:
+  1. **Font HYBRID** (chủ dự án chốt qua AskUserQuestion): **Montserrat(heading)+Inter(body) cho
+     container app** (RAM thoải mái, đúng nhận diện) · **SF Pro cho keyboard extension** (chật RAM
+     ~48–60MB, không bundle font, render dấu Việt chuẩn). Được cả hai.
+  2. **moodScale 5 bậc** (`tokens.json`: An #9FB6BC → Cuộn #3F646E) làm thang con sóng chính thức;
+     `stone/stoneStrong` lùi về vai "đường phẳng không-xảy-ra". Mức 1 nhạt gần vô hình là cố ý.
+  3. **radius.control 12→8pt**, **bóng card → teal `rgba(29,124,145,.08)`** — khớp tokens.json,
+     hết drift giữa DESIGN.md và brand.
+  4. **Bản đồ 6 module + IA 3 bề mặt** (EXPERIENCE mới): onboarding tuyến-tính-không-tab · container
+     có **tab bar 3 mục** (Trang chủ/Mặt hồ/Cài đặt, DESIGN §2.12) · keyboard extension không tab.
+     Phủ L1→M1, L2+L3→M5 (cài đặt chi tiết drill-down), L4→M6 (nền tĩnh), L5→cắt/hoà. Cấm nút "+",
+     Analytics/Goals/Profile, tài khoản/login.
+  5. **Màn "Soi lại cuối ngày" chốt = CÂU HỎI PHẢN CHIẾU là trọng tâm, BỎ biểu đồ/timeline** làm
+     nhân vật chính (đó là "thống kê cho vui", phạm hiến chương). Sửa lại đúng tiền lệ macOS.
+- **Rationale:** Mockup đã vượt spec → docs bị lệch với cả brand tokens lẫn hình hài thực. Update 1
+  pass để 3 thứ (bản vẽ / phối cảnh / luật brand) khớp nhau, có spec chuẩn git-tracked trước khi
+  code Mốc B. "Đầy đủ L1–L5" = phủ mọi chức năng bằng số màn tối thiểu, KHÔNG dựng lại 46 màn Laban.
+- **Còn mở (Round 2–3, không chặn Mốc B):** map send-risk→biên độ (B1), nội dung nhật ký + App Group
+  ownership (B2), soi-lại có notification đẩy không (B3).
+- **Made by:** bmad-ux (Update v0.3), gọi bởi agent đội iOS; font do chủ dự án chốt trực tiếp.
+- **Supersedes:** none (mở rộng v0.2; reconcile các con số radius/shadow/font trong DESIGN.md).
+
+### 2026-07-10 — iOS thành workspace BMAD tự-đủ (đóng lại câu hỏi treo về log riêng)
+- **Decision:** `bmad-output/ios/` nay là một workspace BMAD tự-đủ — có `config.yaml` riêng
+  (name "Mindful Keyboard — iOS", track **quick-flow**, `languages: Vietnamese`) trỏ mọi path về
+  chính nó: `decision_log: bmad-output/ios/decision-log.md`, `project_context:
+  bmad-output/ios/project-context.md`, `stories_folder: bmad-output/ios/stories`. Thêm mới
+  `project-context.md` (điền từ SPEC.md). `decision-log.md` cũ giữ nguyên (script không đè).
+- **Rationale:** Chủ dự án chốt cho iOS một "tủ hồ sơ" riêng thay vì dùng chung config root
+  (root vẫn là track bmad-method cho macOS/Windows, `name` cũ "Windows Port"). iOS mandate hẹp +
+  chỉ cần tech-spec → **quick-flow** đúng hơn hẳn bmad-method. Đây chính là câu trả lời cho open
+  item ở entry "Ghi chú vận hành: log riêng đội iOS" bên dưới: `config.yaml` iOS giờ trỏ thẳng
+  log riêng, không còn mượn `decision_log` của root.
+- **Ranh giới cố ý:** Đây là workspace SIBLING với root, KHÔNG thay thế nó. Quyết định xuyên đội
+  vẫn ghi ở `../decision-log.md` root theo quy ước `_shared/`. HIẾN CHƯƠNG vẫn là luật tối cao.
+- **Made by:** bmad-init (Create, --output bmad-output/ios), gọi bởi chủ dự án.
+- **Supersedes:** none (bổ sung, không phá). Đóng open item của entry log-riêng phía dưới.
+
 ### 2026-07-10 — UX Update: thêm màn Bàn phím + Cài đặt (đầy đủ) + mục Future Round 2/3 (v0.2)
 - **Decision:** Mở rộng DESIGN.md (§2.11 Segmented control + Slider — màu chọn = teal, KHÔNG
   xanh-lá hệ thống) + EXPERIENCE.md 2 màn đặc tả đầy đủ (Bàn phím Mindful Key với states

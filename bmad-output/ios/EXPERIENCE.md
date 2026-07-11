@@ -6,7 +6,7 @@
 **Project:** mindful-key — vỏ iOS
 **Track:** Quick Flow
 **Date:** 2026-07-10
-**Version:** 0.2 (draft — thêm màn Bàn phím, Cài đặt, mục Future Round 2/3; chờ duyệt)
+**Version:** 0.3 (draft — chốt bản đồ 6-module + IA 3-bề-mặt + tab nav + màn Soi lại câu-hỏi-trước; chờ duyệt)
 
 ---
 
@@ -31,6 +31,42 @@ onboarding phải cực rõ.
 > gửi tin" trên iOS (sandbox chặn — đã chốt mandate 2026-07-10; nhận diện người-gác-cổng giữ
 > ở macOS). iOS chỉ **quan sát + nhắc thụ động**. KHÔNG màn nào chấm điểm cảm xúc bằng màu/
 > emoji. Copy mọi màn qua bài kiểm *"mô tả hay phán xét?"*.
+
+---
+
+## Kiến trúc thông tin — bản đồ 6 module + 3 bề mặt (chốt 2026-07-11)
+
+> Chốt sau khi hệ thống hoá mockup (Claude Design) + đối chiếu triage Laban (L1–L5). Chất riêng
+> Mindful Key nằm ở **lớp cảm xúc dệt vào bàn phím** (Module 4) — đó là xương sống, không phải
+> tính năng phụ. Nguyên tắc: **phủ mọi chức năng bằng số màn TỐI THIỂU**, không dựng lại kiểu
+> Laban (7 màn cài đặt rời + cửa hàng theme).
+
+### 3 bề mặt (chi phối điều hướng — đừng gắn nav lung tung)
+
+| Bề mặt | Điều hướng | Màn |
+|--------|-----------|-----|
+| **Onboarding** | Tuyến tính, 1 lần, KHÔNG tab bar (chỉ tiến/lùi) | Splash · Kích hoạt · Full Access |
+| **Container app** | **Tab bar 3 mục** (§DESIGN 2.12): Trang chủ · Mặt hồ · Cài đặt | Trang chủ, Cài đặt (+ màn con), Mặt hồ (nhật ký/soi lại/thang) |
+| **Keyboard extension** | KHÔNG tab bar — hiện đè trong app khác (Zalo/Notes) | Bàn phím + 3 trạng thái (sóng gợi ý, thẻ mời thở) |
+
+### 6 module — bản đồ màn + phủ L + round-tier
+
+| Module | Màn | Bề mặt | Phủ L | Round |
+|--------|-----|--------|-------|-------|
+| **1 · Vào cửa** | Splash · Kích hoạt bàn phím · Full Access (cặp sóng/đường phẳng) | Onboarding | L1 | 1 |
+| **2 · Bàn phím** | 1 màn, **3 trạng thái**: (a) gõ Telex · (b) +sóng thanh gợi ý + câu quan sát · (c) +thẻ mời thở (không chặn) | Extension | — | 1 (a) · 2 (b,c) |
+| **3 · Ngôi nhà** | Trang chủ · Cài đặt (GỘP 1 màn hub) | Container | — | 1 |
+| **4 · Lớp cảm xúc (linh hồn)** | Thang mặt hồ 5 mức · Lớp nhịp thở (mức 5, full screen) · Soi lại cuối ngày | Container (tab Mặt hồ) + Extension | — | 2–3 |
+| **5 · Cài đặt chi tiết** | ~5 màn con drill-down: Bàn phím (kiểu gõ+chiều cao+preview) · Sửa lỗi/gợi ý · Gõ tắt · Âm&rung+Chuông · Giới thiệu (credit GPL) | Container (dưới tab Cài đặt) | **L2 + L3** | 1–2 |
+| **6 · Nền cá nhân** (tuỳ chọn) | Chọn nền tĩnh + ảnh của bạn · slider Làm mờ (legibility) · bàn phím trên nền khó | Container (Cài đặt › Giao diện) | **L4** | 3 |
+
+**L5 (nhóm nguy hiểm) — cố ý KHÔNG thành module:** cửa hàng theme → chuyển thành gallery nền
+tĩnh (Module 6, không marketplace); ghi chú tô màu → bỏ mã màu, phần "câu hay dùng" nằm ở Gõ
+tắt (Module 5); value-prop "kho chủ đề/tiết kiệm %" → bỏ.
+
+**Ghi chú round-tier cho Mốc B:** Round 1 (đang code) chỉ cần Module 1 + 2(a) + 3 (Trang chủ +
+Cài đặt tối thiểu). Tab "Mặt hồ" + Module 4/6 là Round 2–3 — đã đặc tả để trọn vision, **không
+phải scope code ngay**.
 
 ---
 
@@ -483,14 +519,20 @@ gate hỏi 1 lần (không hỏi giữa lúc căng thẳng).
 
 ### Future B3 — Soi lại cuối ngày (Round 3)
 
-**Chốt được:** trọng tâm là **câu hỏi phản chiếu**, không phải con số (như macOS
-`ReflectionScreen`). Giọng quan sát, không tổng kết thành tích.
+**Chốt được (2026-07-11, sau mockup + review):** trọng tâm là **CÂU HỎI PHẢN CHIẾU**, không
+phải biểu đồ/con số (như macOS `ReflectionScreen`). Giọng quan sát, không tổng kết thành tích.
+- **Bố cục đã chốt:** dẫn bằng 1 câu hỏi mở ("Hôm nay có lúc nào mặt hồ dậy sóng không?") + vài
+  chip trả lời nhẹ ("Có, vài lần" / "Một chút" / "Khá lặng") + câu quan sát ("...điều đó rất
+  người") + ghi chú "mọi ghi nhận ở lại trên máy này".
+- **BỎ biểu đồ đường + timeline làm nhân vật chính** — đó là "thống kê cho vui", phạm tinh thần
+  hiến chương (§2 macOS decision "cố ý không biểu đồ/gamify"). Nếu vẽ con sóng, chỉ là **nền
+  ambient nhẹ**, không phải chart dữ liệu.
+- Sống ở **tab "Mặt hồ"** trong container app.
 
-**❓ Quyết định mở:**
-1. Trên iOS đây là **1 màn trong container**, hay **1 thông báo đẩy** cuối ngày, hay **cả
-   hai**? (macOS là màn; iOS có thể hợp với local notification nhẹ — nhưng notification chạm
-   "nhắc chủ động", cần cân với tinh thần "không hối thúc".)
-2. Nội dung phản chiếu cụ thể là gì? (1 câu hỏi mở? có cho ghi chú riêng tư không?)
+**❓ Quyết định còn mở:**
+1. Có kèm **1 thông báo đẩy** cuối ngày mời soi lại không? (notification chạm "nhắc chủ động",
+   cần cân với tinh thần "không hối thúc" — hoặc chỉ để trong app, người dùng tự vào.)
+2. Có cho **ghi chú riêng tư** (1 dòng) không, hay chỉ chọn chip?
 3. Cuối ngày là mấy giờ, ai chỉnh được?
 
 > Khi chủ dự án chốt B1/B2/B3, chạy lại `bmad-ux` (Update) để nâng phần này thành screen

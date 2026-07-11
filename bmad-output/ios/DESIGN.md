@@ -6,7 +6,7 @@
 **Project:** mindful-key — vỏ iOS (Custom Keyboard Extension + container app)
 **Track:** Quick Flow
 **Date:** 2026-07-10
-**Version:** 0.2 (draft — thêm §2.11 segmented/slider; chờ chủ dự án duyệt)
+**Version:** 0.3 (draft — reconcile với `brand/tokens.json`: font hybrid, moodScale 5 bậc, radius 8, bóng teal; thêm §2.12 tab bar; chờ chủ dự án duyệt)
 
 > ⚖️ **Luật tối cao = HIẾN CHƯƠNG** (`docs/AGENT-BRIEF.md` §2.2/§2.3), đè mọi quy tắc UI
 > trong file này. Bất khả xâm phạm: KHÔNG đèn đỏ/xanh-lá mã hoá cảm xúc · KHÔNG mặt cười/
@@ -58,19 +58,46 @@ Mọi giá trị hex gốc lấy từ `BrandPalette.h`. Cặp text/nền đều 
 | `surface.card` (dark) | `#1C1C1E` | Elevated. |
 | `neutral.stoneStrong` (dark) | `#9BA3A6` | Đường phẳng mang nghĩa trên nền tối. |
 
+**Thang "mặt hồ tâm" — moodScale 5 bậc (nguồn CHÍNH THỨC: `brand/tokens.json`)**
+
+Đây là thang màu **con sóng cảm xúc** — trung tính, không bão hoà, đậm dần theo biên độ. Dùng
+cho NÉT/NỀN con sóng, **KHÔNG dùng làm màu chữ** (tông giữa trượt contrast). Tín hiệu chính là
+**biên độ (hình)**, màu chỉ phụ hoạ.
+
+| Mức | Token | Value | Contrast trên nền sáng | Nghĩa (mô tả, không phán xét) |
+|-----|-------|-------|:---:|-------|
+| 1 | `mood.an`   | `#9FB6BC` | 2.0:1 — **cố ý nhạt** (tôn vinh cái tĩnh) | Mặt hồ đang lặng — trạng thái "nhà" |
+| 2 | `mood.nhe`  | `#86A2AA` | — | Mặt hồ gợn êm — bình thường |
+| 3 | `mood.gon`  | `#6E8E97` | 3.31:1 | Mặt hồ chớm động |
+| 4 | `mood.song` | `#567A84` | — | Mặt hồ đang dậy sóng — chuông có thể ngân mời |
+| 5 | `mood.cuon` | `#3F646E` | 6.07:1 | Mặt hồ đang cuộn — kích hoạt lớp nhịp thở |
+
+> **Quan hệ với `stone`/`stoneStrong`:** moodScale là thang **con sóng** (nhận diện). Còn
+> `neutral.stone`/`stoneStrong` là neutral cho **đường phẳng "không xảy ra"** (§2.10) — 2 vai
+> khác nhau, đừng lẫn. Mức 1 (An) nhạt gần vô hình là ĐÚNG Ý: nghĩa nằm ở HÌNH (biên độ thấp)
+> + nhãn chữ, không dựa màu (hiến chương §2.3, "không màu đơn độc").
+
 > **KHÔNG có token semantic success/warning/error/info kiểu web.** Đây là ràng buộc hiến
 > chương, không phải thiếu sót: app này **cấm** dùng màu xanh-lá "tốt" / đỏ "xấu" để chấm
 > điểm cảm xúc. Lỗi hệ thống (vd "chưa bật được bàn phím") KHÔNG phải trạng thái cảm xúc →
 > dùng `ink.primary` + copy rõ ràng, không tô đỏ. Xem §2.10 (Nguyên tắc biên độ).
 
-### 1.2 Typography
+### 1.2 Typography — **HYBRID** (chốt 2026-07-11)
 
-**Font** — dùng hệ thống Apple (SF Pro), KHÔNG nhúng webfont:
+Brand (`tokens.json`) muốn **Montserrat (heading) + Inter (body)**, nhưng keyboard extension bị
+trần RAM ~48–60MB nếu nhồi file font. Chủ dự án chốt **hybrid theo bề mặt** — đúng nhận diện ở
+nơi RAM thoải mái, an toàn ở nơi chật:
 
-| Vai trò | Stack | Lý do |
-|---------|-------|-------|
-| UI (mọi chữ hiển thị) | `-apple-system / SF Pro Text / SF Pro Display` | Render dấu tiếng Việt chuẩn nhất, đúng chất iOS, hỗ trợ **Dynamic Type** miễn phí. |
-| Số liệu canh cột (nếu có) | SF Pro + `.monospacedDigit` | Số thẳng hàng. |
+| Bề mặt | Heading | Body | Lý do |
+|--------|---------|------|-------|
+| **Container app** (Trang chủ, Mặt hồ, Cài đặt, onboarding) | **Montserrat** (Semibold/Bold) | **Inter** | RAM thoải mái → dùng đúng font brand cho cá tính nhận diện. Bundle 2 `.ttf` vào app bundle. |
+| **Keyboard extension** (khung bàn phím) | **SF Pro** hệ thống | **SF Pro** | Chật RAM → KHÔNG bundle font; SF Pro render dấu tiếng Việt chuẩn + Dynamic Type miễn phí. |
+| Số liệu canh cột | font tương ứng + `.monospacedDigit`/`tabular-nums` | | Số thẳng hàng. |
+
+- Cả Montserrat lẫn Inter đều phủ dấu tiếng Việt tốt (subset Vietnamese khi bundle để nhẹ).
+- **Giữ đúng VAI** ở cả 2 bề mặt: heading geometric-đậm, body sạch dễ đọc — để container app và
+  keyboard cảm giác cùng một họ dù khác font.
+- Dark/Light + Dynamic Type áp cho cả 2.
 
 **Type scale** — dùng iOS **Text Styles** (Dynamic Type), KHÔNG hard-code pt cứng. Cột "pt
 mặc định" chỉ là giá trị ở kích cỡ Large (mặc định); phải co giãn theo cài đặt người dùng.
@@ -119,7 +146,7 @@ iOS ít đổ bóng nặng. Dùng tiết chế:
 | Token | Value | Dùng |
 |-------|-------|------|
 | `elev.hairline` | 1px `line.divider` | Ngăn phím / list row |
-| `elev.card` | `0 1px 3px rgba(0,0,0,.08)` | Card onboarding nổi nhẹ |
+| `elev.card` | `0 8px 30px rgba(29,124,145,0.08)` | **Bóng brand (ngả teal, mềm)** — nguồn `tokens.json`. Card onboarding/sheet nổi nhẹ. Không bóng đen gắt. |
 | `elev.keyPressed` | key sáng lên + scale 0.97 | Phản hồi chạm phím |
 
 Dark mode: bóng đổ gần như vô hình → dùng **đổi nền elevated** (`#1C1C1E`) thay bóng.
@@ -129,9 +156,9 @@ Dark mode: bóng đổ gần như vô hình → dùng **đổi nền elevated** 
 | Token | Value | Dùng |
 |-------|-------|------|
 | `radius.key` | 5pt | Phím bàn phím |
-| `radius.control` | 12pt | Nút, ô nhập, card nhỏ |
-| `radius.card` | 16pt | Card onboarding, sheet |
-| `radius.pill` | 999pt | Badge bước, chip |
+| `radius.control` | **8pt** | Nút, ô nhập, chip, khối nhỏ — **khớp `tokens.json`** (trước ghi 12pt, đã reconcile). |
+| `radius.card` | 16pt | Card onboarding, sheet — khớp `tokens.json`. |
+| `radius.pill` | 999pt | Badge bước, chip tròn |
 
 ---
 
@@ -290,6 +317,32 @@ hệ thống iOS** (xanh-lá = mã màu valence, phạm hiến chương).
 - A11y: `UISlider` với `accessibilityValue` đọc được (vd "mức 3/5"); chỉnh được bằng
   VoiceOver. Reduce Motion: preview đổi tức thì, không animate.
 
+### 2.12 Tab bar (điều hướng container app)
+
+Thanh tab đáy của **container app** — 3 mục top-level (xem EXPERIENCE §Kiến trúc thông tin).
+**Chỉ container app có tab bar**; onboarding (tuyến tính) và keyboard extension KHÔNG có.
+
+| Mục | Icon | Label |
+|-----|------|-------|
+| Trang chủ | nhà (hoặc dấu ngã `~`) | "Trang chủ" |
+| Mặt hồ | con sóng `~` | "Mặt hồ" (nhật ký + soi lại + thang mặt hồ) |
+| Cài đặt | sliders | "Cài đặt" |
+
+**Visual & states**
+
+| Trạng thái | Màu | Ratio |
+|-----------|-----|-------|
+| Tab đang chọn | `brand.teal` #1D7C91 (icon + label) trên `surface.card` | 4.83:1 (✅ ≥3 graphic/large) |
+| Tab tắt | `ink.secondary` #666666 | 5.74:1 (✅) |
+| Nền tab bar | `surface.card` (light) / `#1C1C1E` (dark) + hairline trên | — |
+
+- **CẤM:** nút "+" giữa, "Analytics/Goals/Profile", tab tài khoản/đăng nhập (on-device, không login).
+- Tối đa 3 mục (xa dưới trần 5 của HIG). Icon + label bắt buộc (không icon-only).
+- A11y: `UITabBar` chuẩn; mục đang chọn báo trait `.selected` cho VoiceOver; target ≥ 44pt;
+  tôn trọng safe-area đáy (home indicator).
+- Round-tiering: Round 1 thực tế chỉ cần **Trang chủ + Cài đặt** (2 tab); tab **Mặt hồ** là
+  Round 3 (nhật ký/soi lại) — vẽ trong spec cho trọn vision, không phải scope code Mốc B.
+
 ---
 
 ## 3. WCAG 2.1 AA Contract
@@ -359,8 +412,12 @@ hệ thống iOS** (xanh-lá = mã màu valence, phạm hiến chương).
 | KHÔNG có token semantic success/error đỏ-xanh | Cấm chấm điểm cảm xúc bằng màu. Lỗi hệ thống dùng ink + copy | Bộ semantic web mặc định → kéo theo đèn đỏ-xanh |
 | Full Access onboarding nói THẬT "gõ được mà chưa cần bật" | Round 1 gõ không cần Full Access; xin quyền thừa là phản riêng-tư-mặc-định | Ép bật Full Access ngay → mất niềm tin, khác biệt vs Laban mất |
 | Bỏ toàn bộ theme store/ví xu/đếm tải của Laban | Gamification + tiền tệ hoá phạm §2.2 | Giữ marketplace tông trung tính → vẫn là gamification lõi |
+| **Font HYBRID** (2026-07-11): Montserrat/Inter cho container app, SF Pro cho keyboard extension | Brand muốn Montserrat/Inter; nhưng nhồi font vào extension tốn RAM (trần 48–60MB). Hybrid: đúng nhận diện ở app, an toàn+native ở bàn phím | (a) tất cả Montserrat/Inter → rủi ro RAM bàn phím; (b) tất cả SF Pro → mất bản sắc typography brand |
+| **moodScale 5 bậc** (`tokens.json`) làm thang con sóng chính thức, thay token stone tự chế cho biên độ | tokens.json đã có thang An→Cuộn desaturated; đây là nguồn brand chính thức. stone/stoneStrong lùi về vai "đường phẳng không xảy ra" | Giữ stone tự chế cho biên độ → lệch nguồn brand + thiếu bậc |
+| **radius.control 12→8pt, bóng card → teal `rgba(29,124,145,.08)`** | Reconcile khớp `tokens.json` (nguồn hình khối chính thức); tránh drift giữa DESIGN.md và brand | Giữ 12pt/bóng đen → 3 bản token lệch nhau |
+| **Container app dùng tab bar 3 mục** (Trang chủ/Mặt hồ/Cài đặt), keyboard KHÔNG tab | 3 bề mặt khác nhau (onboarding tuyến tính / container có tab / extension không tab). Bỏ tab "Cửa hàng/Tài khoản" của Laban (mình on-device, không store/login) | Bê thanh tab 5 mục của Laban → kéo theo store + account đã cắt |
 
 ---
 
 *Part of the BMAD Planning & Orchestrator plugin. Produced by the `bmad-ux` skill.*
-*Nguồn màu: `platforms/apple/shared/BrandPalette.h`. Hiến chương: `docs/AGENT-BRIEF.md`.*
+*Nguồn màu: `brand/tokens.json` (chính thức) + `platforms/apple/shared/BrandPalette.h`. Hiến chương: `docs/AGENT-BRIEF.md`.*
