@@ -255,6 +255,18 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
     [self rebuildRows];
 }
 
+#pragma mark - Riêng tư: cổng ô bảo mật (story 1.4 / FR-A07)
+
+// CỔNG BẮT BUỘC (single query point). Trả YES khi con trỏ đang ở ô bảo mật (mật khẩu).
+// HỢP ĐỒNG: mọi consumer tương lai ĐỌC nội dung vừa gõ để tính send-risk (FR-A09, R2) hoặc để
+// ghi nhật ký cảm xúc (R3) PHẢI gọi hàm này TRƯỚC và BỎ QUA khi nó trả YES — không đọc/không log/
+// không hiện sóng ở ô bảo mật, kể cả R2+. Round 1 chưa có consumer nào đọc nội dung (chỉ gõ), nên
+// đây là cổng dựng sẵn cho tương lai; KHÔNG dùng nó để chặn/nuốt việc GÕ (gõ ở ô bảo mật giống ô thường).
+// App Group (khi story 1.6 nối) chỉ được chứa timestamp/bool vận hành, TUYỆT ĐỐI không nội dung gõ.
+- (BOOL)mk_isSecureField {
+    return self.textDocumentProxy.secureTextEntry;
+}
+
 #pragma mark - Gõ qua core/engine (KeyboardBridge)
 
 - (void)applyBridgeResult:(KeyboardBridgeResult *)result {
