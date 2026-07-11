@@ -9,8 +9,10 @@
 - **Bridge test (`bridge_test.mm`)** — ĐÃ CÓ, wired vào `make test-ios` (`tests/ios/build.sh`).
   Tái dùng 5 ca Telex→Unicode của `tests/core/test_engine.cpp` nhưng gõ QUA `KeyboardBridge`
   (Mốc B). `make test-ios` hiện chạy thật, exit 0, KHÔNG còn no-op.
-- **Build-smoke** (`xcodebuild -sdk iphonesimulator`) — chưa wire vào gate tự động (story 1.8).
-  Hiện kiểm thủ công (xem bằng chứng dưới).
+- **Build-smoke** (`tests/ios/build_smoke.sh`: `xcodegen generate` + `xcodebuild -scheme
+  MindfulKeyKeyboard -sdk iphonesimulator build`) — ĐÃ wire vào `make test-ios` (story 1.8).
+  Bắt lỗi mà bridge test host không bắt (API chỉ có trên iOS, project.yml hỏng). `make test-ios`
+  exit non-zero nếu bridge test HOẶC build-smoke lỗi (verify: bẻ scheme → exit 2, trả lại → 0).
 
 ## Bằng chứng build-verification (story 1.5 — đóng Risk R5 của tech-spec)
 
