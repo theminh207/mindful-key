@@ -16,6 +16,23 @@ mới ở TRÊN CÙNG (mới nhất trước), không xoá/sửa entry cũ.
 
 ---
 
+### 2026-07-11 — Chốt 3 quyết định gấp mở khóa Round 1 (Q7/Q8/Q10a)
+- **Decision:** Chủ dự án duyệt gói phân tích `analysis/` (00→09 + ROADMAP) và chốt 3 câu nhóm A
+  của decision queue (`analysis/09-bmad-reconcile.md` §3):
+  - **Q7 — Bundle ID + App Group:** DÙNG bản đề xuất — app `vn.gnh.mindfulkey.ios`, extension
+    `vn.gnh.mindfulkey.ios.keyboard`, App Group `group.vn.gnh.mindfulkey`. (Bundle ID đã có sẵn
+    trong `platforms/apple/project.yml`; App Group entitlement wiring là việc code FR-A06.)
+  - **Q8 — Mockup onboarding:** KHÔNG cần file riêng — dev dựng 2 màn 01/02 theo `EXPERIENCE.md`
+    (wireframe chữ + states + a11y đã đủ, nay ở v0.3). Đóng open item của SPEC.
+  - **Q10a — Sàn iOS:** GIỮ **16.0** (khớp SDK đã thực nghiệm compile engine).
+- **Rationale:** 3 câu này chặn hoàn tất Round 1. Đều theo phương án khuyến nghị, rủi ro thấp, đổi
+  sau được (Bundle ID/sàn iOS chỉ là cấu hình). Không cần đổi code ngay để "áp" quyết định.
+- **Hệ quả:** Round 1 (FR-A01/A02/A03/A04/A05/A06/A17) hết vướng *quyết định* — còn lại là *code*
+  (việc lõi = Mốc B: nối `vKeyHandleEvent` gõ Telex ra dấu). Nhóm B/C (Q1–Q6, chạm nhận diện) vẫn
+  mở, chặn R2/R3 — khớp mục "Còn mở" của entry v0.3 ngay dưới.
+- **Made by:** chủ dự án (qua AskUserQuestion), ghi bởi agent phân tích.
+- **Supersedes:** đóng Q7/Q8/Q10a (nhóm A) trong `analysis/09-bmad-reconcile.md`.
+
 ### 2026-07-11 — UX Update v0.3: reconcile brand + chốt bản đồ 6-module/IA + font hybrid
 - **Decision:** Sau khi hệ thống hoá mockup (Claude Design) thành sản phẩm hoàn chỉnh, chạy
   `bmad-ux` (Update) kéo `DESIGN.md`/`EXPERIENCE.md` lên **v0.3**, khớp lại với `brand/tokens.json`

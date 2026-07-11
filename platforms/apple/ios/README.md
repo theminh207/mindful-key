@@ -1,8 +1,12 @@
 # apple/ios
 
 Vỏ **iOS** — bàn phím tiếng Việt chánh niệm dạng **Custom Keyboard Extension** (App Extension).
-Chưa mở code. Theo lộ trình nền tảng (`../../README.md`), iOS làm SAU CÙNG — không bắt đầu
-trước khi macOS ổn định (Hiến chương: "macOS là công dân hạng nhất").
+
+**Trạng thái: Round 1 (walking skeleton) — Mốc A đã committed.** Đã có target iOS trong
+`../project.yml` + skeleton container app (`App/`) và keyboard extension (`KeyboardExtension/`):
+`KeyboardBridge` gọi `vKeyInit()` chứng minh engine sống trong sandbox; `KeyboardViewController`
+vẽ QWERTY, hiện **chèn ký tự thô — Mốc B nối `vKeyHandleEvent` gõ Telex ra dấu CHƯA làm**.
+Vẫn tôn trọng "macOS là công dân hạng nhất" (Hiến chương) — iOS không làm loãng chất lượng macOS.
 
 ## Mandate đã chốt (2026-07-10)
 

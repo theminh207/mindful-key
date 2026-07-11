@@ -1,0 +1,32 @@
+# BMAD Planning & Orchestrator — Project Configuration
+# Generated: 2026-07-10T09:43:36Z
+# Single source of truth: other planning skills read paths and track from here.
+
+bmad_version: "6.x"
+
+project:
+  name: "Mindful Keyboard — iOS"
+  # Scale-adaptive track (never a numbered level):
+  #   quick-flow   = 1-15 stories, tech-spec only
+  #   bmad-method  = 10-50+ stories, PRD + Architecture (+ optional UX)
+  #   enterprise   = 30+ stories, + Security planning + DevOps planning
+  track: "quick-flow"
+  created: "2026-07-10T09:43:36Z"
+
+paths:
+  output_folder: "bmad-output/ios"
+  stories_folder: "bmad-output/ios/stories"
+  decision_log: "bmad-output/ios/decision-log.md"
+  project_context: "bmad-output/ios/project-context.md"
+
+languages:
+  communication: "Vietnamese"
+  document_output: "Vietnamese"
+  # Khớp phần còn lại của repo (root config.yaml, docs/PRD.md, docs/AGENT-BRIEF.md,
+  # và mọi doc iOS đã viết đều tiếng Việt). Đổi tại đây nếu sau này muốn doc kế hoạch English.
+
+# Delivery is COUNT-BASED: track stories remaining / completion rate.
+# No story points, no velocity, no burndown.
+delivery:
+  metric: "count-based"
+  story_sizing: "one agent session (~2-8h, one dev-day max); split if larger"

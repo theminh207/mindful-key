@@ -60,6 +60,7 @@ static string toUtf8(unsigned int cp) {
 // ── 4. "Màn hình ảo": lưu các codepoint đang hiển thị ──
 static vector<unsigned int> screen;
 static vKeyHookState* st = nullptr;
+static int gFail = 0;   // đếm ca sai — để make test THẬT SỰ đỏ được (CI mới gate được)
 
 // giải mã 1 phần tử charData (chế độ Unicode, vCodeTable=0) — y hệt logic vỏ Win/Mac
 static unsigned int decodeChar(Uint32 t) {
@@ -104,6 +105,7 @@ static void runCase(const char* telex, const char* expect) {
 
     string got = screenStr();
     bool ok = (got == expect);
+    if (!ok) gFail++;
     printf("  gõ Telex: %-22s -> \"%s\"   [mong đợi: \"%s\"]  %s\n",
            telex, got.c_str(), expect, ok ? "✅" : "❌ SAI");
 
@@ -120,6 +122,26 @@ int main() {
     runCase("tooi ddang vui",      "tôi đang vui");
     runCase("tooi ddang buoonf",   "tôi đang buồn");
     runCase("hoom nay meejt quas", "hôm nay mệt quá");
-    printf("\n=== XONG ===\n");
-    return 0;
+
+    // ── Ca biên bổ sung (ma trận Telex — skill mindful-test-design) ──
+    // Kỳ vọng dưới đây được VERIFY bằng chính make test (engine là trọng tài),
+    // không chép từ trí nhớ. Ca PROBE (undo) chạy để đọc hành vi engine thật rồi khóa.
+    printf("\n--- Loại 1: nguyên âm/phụ âm biến hình ---\n");
+    runCase("nawm", "năm");                 // aw -> ă
+    runCase("hown", "hơn");                 // ow -> ơ
+    runCase("tuw",  "tư");                  // uw -> ư
+    printf("\n--- Loại 2: dấu thanh ---\n");
+    runCase("as", "á");                     // sắc
+    runCase("af", "à");                     // huyền
+    printf("\n--- Loại 3: undo (PROBE — đọc output engine rồi khóa) ---\n");
+    runCase("dddi", "ddi");                 // gõ modifier đ lần 2 = trả chữ gốc?
+    runCase("ass",  "as");                  // gõ thanh sắc lần 2 = bỏ dấu + trả 's'?
+    printf("\n--- Loại 8: xen tiếng Anh (SmartSwitchKey OFF) ---\n");
+    runCase("hello", "hello");              // không bỏ dấu bừa vào từ Anh
+
+    if (gFail == 0)
+        printf("\n=== XONG — TẤT CẢ PASS ===\n");
+    else
+        printf("\n=== XONG — %d CA SAI (make test sẽ đỏ) ===\n", gFail);
+    return gFail == 0 ? 0 : 1;   // exit code != 0 để CI/make gate được khi có regression
 }

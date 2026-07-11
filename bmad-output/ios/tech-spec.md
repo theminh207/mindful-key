@@ -235,7 +235,9 @@ API này không tồn tại trong app extension sandbox.
 
 #### 1. XcodeGen targets (`platforms/apple/project.yml`) — trả lời mục 1
 
-**Đề xuất — chưa chạy qua `xcodegen generate` thật, cần xác nhận ở story đầu tiên:**
+**Cập nhật 2026-07-11:** 2 target iOS dưới đây **đã có thật** trong `project.yml` (thêm ở Mốc A —
+xem `bmad-output/ios/analysis/00-input-ledger.md`). Việc còn lại: verify `xcodegen generate` chạy
+sạch (FR-A03 / rủi ro R5). Khối YAML dưới đây là bản đối chiếu:
 
 ```yaml
 targets:
