@@ -340,12 +340,12 @@ Hợp đồng thật của `core/engine` (không đổi, chỉ tiêu thụ):
 |---|------|-------------|-------------------------|-------|
 | 1 | iOS Round 1 | Nhịp 0 — rút `EngineKeyMap`, `EngineDefaults`, hex màu ra `shared/` | ✅ **xong** (Mốc A — file có thật ở `shared/`) | Đã committed |
 | 2 | iOS Round 1 | Thêm target iOS + keyboard extension vào `project.yml`, verify `xcodegen generate` | ✅ **xong** (2 target có thật) · 🟡 còn verify `xcodegen generate` chạy sạch | R5 |
-| 3 | iOS Round 1 | `KeyboardBridge.mm` — gọi `vKeyInit`/`vKeyHandleEvent`, chèn ký tự qua `UITextDocumentProxy` | 🟡 **đang làm = Mốc B**; `KeyboardBridge_Init()`/`vKeyInit()` đã có, chỉ thêm handler bắt phím | Việc lõi nhất R1 |
-| 4 | iOS Round 1 | Bàn phím tự vẽ tối thiểu (QWERTY + phím Telex cần) gọi `EngineKeyMap` | 🟡 **một phần**: UI QWERTY + hàng điều khiển đã có, đang chèn **thô**; cần đổi sang gõ qua engine | Thực chất gộp vào Mốc B (#3) |
+| 3 | iOS Round 1 | `KeyboardBridge.mm` — gọi `vKeyInit`/`vKeyHandleEvent`, chèn ký tự qua `UITextDocumentProxy` | ✅ **xong (Mốc B, commit 91a8742)**: `HandleKeyTap`/`HandleSpace`/`HandleBackspace` giải mã HookState | Việc lõi nhất R1 |
+| 4 | iOS Round 1 | Bàn phím tự vẽ tối thiểu (QWERTY + phím Telex cần) gọi `EngineKeyMap` | ✅ **xong (Mốc B)**: 3 handler đi qua bridge, hết chèn thô | Gộp vào Mốc B (#3) |
 | 5 | iOS Round 1 | Container app: 2 màn onboarding + `AppGroupBridge` heartbeat | ⬜ chưa | Chặn bởi wiring App Group (FR-A06) |
-| 6 | iOS Round 1 | `tests/ios`: unit test bridge layer + build-smoke test | ⬜ chưa (`make test-ios` còn no-op) | Phụ thuộc #3 |
+| 6 | iOS Round 1 | `tests/ios`: unit test bridge layer + build-smoke test | ✅ **xong (Mốc B)**: `bridge_test.mm` (5 ca Telex qua bridge trên host) + build-smoke `xcodebuild` PASS; `make test-ios` hết no-op | — |
 
-**Total stories:** 6 (Quick Flow ceiling: 15). **Còn lại thực sự cho Round 1:** #3+#4 (Mốc B — 1 mạch), rồi #5, #6.
+**Total stories:** 6 (Quick Flow ceiling: 15). **Đã xong Mốc B (#1–#4, #6).** Còn lại cho Round 1: **#5** (onboarding + App Group heartbeat, chặn bởi wiring FR-A06) + kiểm thủ công gõ trên Simulator/RAM jetsam.
 
 > Đây chỉ là outline 1 dòng/story theo yêu cầu template Quick Flow — KHÔNG phải story file
 > đầy đủ. Theo chỉ đạo của chủ dự án, KHÔNG chạy `bmad-epics-and-stories`/`bmad-parallel-plan`

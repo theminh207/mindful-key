@@ -16,6 +16,28 @@ mới ở TRÊN CÙNG (mới nhất trước), không xoá/sửa entry cũ.
 
 ---
 
+### 2026-07-11 — Mốc B XONG: iOS gõ Telex thật qua core/engine (commit 91a8742)
+- **Decision:** Nối bàn phím tự vẽ iOS vào `vKeyHandleEvent()` của `core/engine` qua `KeyboardBridge`,
+  giải mã HookState (`backspaceCount` + `charData`, chế độ Unicode vCodeTable=0) thành thao tác
+  `UITextDocumentProxy` (deleteBackward + insertText). Logic diễn giải HookState bám ĐÚNG bản mẫu
+  đã có: `platforms/apple/macos/OpenKey.mm` (SendNewCharString) + `tests/core/test_engine.cpp`
+  (typeChar). Bridge thuần Foundation (không UIKit) → test chạy được trên host.
+  - **Quyết định thiết kế:** bridge trả struct kết quả `{backspaceCount, textToInsert}` thay vì tự
+    đụng `UITextDocumentProxy` — để (a) tách vỏ UI khỏi nội tạng engine, (b) `tests/ios` test được
+    trên host bằng `NSMutableString` làm "ô nhập ảo" (không cần Simulator).
+  - **Space/Backspace vẫn ĐI QUA engine** (KEY_SPACE/KEY_DELETE) chứ không chèn/xoá "tắt" — để buffer
+    từ trong bộ não luôn đồng bộ (nếu không, từ kế tiếp sẽ hỏng).
+- **Bằng chứng (verify không đoán):** `make test` xanh cả 3 đội — `tests/ios/bridge_test` chạy 5 ca
+  Telex của `tests/core` XUYÊN QUA bridge đều PASS ("vieetj"→"việt"); `git diff core/` rỗng;
+  `xcodebuild` scheme `MindfulKeyKeyboard` (iphonesimulator) **BUILD SUCCEEDED**, `.appex` nhúng vào
+  app container. Dù config mặc định iOS (`EngineDefaults.h`) khác config inline của test core, output
+  vẫn đúng — kiểm bằng chạy thật, không suy diễn.
+- **CHƯA làm (thành thật):** chưa kiểm thủ công gõ trên Simulator/thiết bị thật (thêm bàn phím +
+  Full Access + gõ trong Notes) và chưa đo RAM jetsam bằng Instruments — 2 việc này tech-spec §Testing
+  đã ghi là kiểm thủ công Round 1, chưa tự động hoá được.
+- **Made by:** DEV Round 1 (Mốc B), theo walking-skeleton milestone của chủ dự án. Dừng ở đây chờ review.
+- **Supersedes:** đóng story #3/#4/#6 trong Story List tech-spec; Round 1 còn lại story #5 (onboarding + App Group).
+
 ### 2026-07-11 — Validate + reconcile tech-spec.md với code thật (v0.1 → v0.2)
 - **Decision:** Chạy `bmad-tech-spec` (intent Validate) thay vì `bmad-architecture` — vì đội iOS
   là Quick Flow, tech-spec đã thay vai architecture.md; đẻ file `architecture.md` thứ hai chỉ tạo
