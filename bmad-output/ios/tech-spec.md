@@ -288,7 +288,7 @@ Bản đối chiếu đúng với `project.yml` thật (rút gọn phần khớp
 |---|---|---|---|
 | `EngineKeyMap.h/.mm` | `platforms/apple/shared/` | Bảng char → `KEY_x`, rút từ `OpenKey.mm` dòng 29-43 (`keyStringToKeyCodeMap`) | **Rút ra nguyên xi** — thuần `NSDictionary`/Foundation, không đụng AppKit |
 | `EngineDefaults.h` | `platforms/apple/shared/` | Định nghĩa mặc định 20 biến `extern int` của `Engine.h`, rút từ `AppDelegate.m` dòng 32-62 | **Rút ra thành hằng số dùng chung** — macOS đọc để giữ đồng bộ, iOS gọi lúc init |
-| `KeyboardBridge.h/.mm` | `platforms/apple/ios/KeyboardExtension/` | Định nghĩa thật 20 biến (dùng default từ `EngineDefaults.h`), gọi `vKeyInit()`/`vKeyHandleEvent()`, đọc `pData`, gọi `UITextDocumentProxy` | **Viết MỚI hoàn toàn** — không có file macOS nào tương đương (phần gửi ký tự của `OpenKey.mm` là CGEventTap, không tái dùng được) |
+| `KeyboardBridge.h/.mm` | `platforms/apple/ios/KeyboardExtension/` | Định nghĩa thật 20 biến (dùng default từ `EngineDefaults.h`), gọi `vKeyInit()`/`vKeyHandleEvent()`, đọc `pData`, gọi `UITextDocumentProxy` | **Đã có một phần** (Mốc A: `KeyboardBridge_Init()` gọi `vKeyInit()` xong). **Mốc B chỉ THÊM** hàm `KeyboardBridge_HandleKeyTap()` bọc `vKeyHandleEvent` + đọc `pData`. ⚠️ ĐỌC file thật trước khi sửa — đừng viết đè phần init đã chạy |
 | `BrandColors+UIKit.h/.m` | `platforms/apple/shared/` hoặc `ios/App/` | Bọc UIColor quanh cùng hex value đang có trong `BrandColors.h` (macOS) | **Giá trị hex rút ra shared/, wrapper UIColor viết mới** — `NSColor`/`UIColor` không dùng chung API được |
 
 #### 3. Container ↔ extension detection — trả lời mục 4
@@ -336,16 +336,16 @@ Hợp đồng thật của `core/engine` (không đổi, chỉ tiêu thụ):
 
 ## Story List
 
-| # | Epic | Story Title | Notes |
-|---|------|-------------|-------|
-| 1 | iOS Round 1 | Nhịp 0 — rút `EngineKeyMap`, `EngineDefaults`, hex màu ra `shared/` | Làm TRƯỚC mọi story khác |
-| 2 | iOS Round 1 | Thêm target iOS + keyboard extension vào `project.yml`, verify `xcodegen generate` | Phụ thuộc #1 |
-| 3 | iOS Round 1 | `KeyboardBridge.mm` — gọi `vKeyInit`/`vKeyHandleEvent`, chèn ký tự qua `UITextDocumentProxy` | Phụ thuộc #2 |
-| 4 | iOS Round 1 | Bàn phím tự vẽ tối thiểu (QWERTY + phím Telex cần) gọi `EngineKeyMap` | Phụ thuộc #1, có thể song song #3 |
-| 5 | iOS Round 1 | Container app: 2 màn onboarding + `AppGroupBridge` heartbeat | Phụ thuộc #2 |
-| 6 | iOS Round 1 | `tests/ios`: unit test bridge layer + build-smoke test | Phụ thuộc #3 |
+| # | Epic | Story Title | Trạng thái (2026-07-11) | Notes |
+|---|------|-------------|-------------------------|-------|
+| 1 | iOS Round 1 | Nhịp 0 — rút `EngineKeyMap`, `EngineDefaults`, hex màu ra `shared/` | ✅ **xong** (Mốc A — file có thật ở `shared/`) | Đã committed |
+| 2 | iOS Round 1 | Thêm target iOS + keyboard extension vào `project.yml`, verify `xcodegen generate` | ✅ **xong** (2 target có thật) · 🟡 còn verify `xcodegen generate` chạy sạch | R5 |
+| 3 | iOS Round 1 | `KeyboardBridge.mm` — gọi `vKeyInit`/`vKeyHandleEvent`, chèn ký tự qua `UITextDocumentProxy` | 🟡 **đang làm = Mốc B**; `KeyboardBridge_Init()`/`vKeyInit()` đã có, chỉ thêm handler bắt phím | Việc lõi nhất R1 |
+| 4 | iOS Round 1 | Bàn phím tự vẽ tối thiểu (QWERTY + phím Telex cần) gọi `EngineKeyMap` | 🟡 **một phần**: UI QWERTY + hàng điều khiển đã có, đang chèn **thô**; cần đổi sang gõ qua engine | Thực chất gộp vào Mốc B (#3) |
+| 5 | iOS Round 1 | Container app: 2 màn onboarding + `AppGroupBridge` heartbeat | ⬜ chưa | Chặn bởi wiring App Group (FR-A06) |
+| 6 | iOS Round 1 | `tests/ios`: unit test bridge layer + build-smoke test | ⬜ chưa (`make test-ios` còn no-op) | Phụ thuộc #3 |
 
-**Total stories:** 6 (Quick Flow ceiling: 15)
+**Total stories:** 6 (Quick Flow ceiling: 15). **Còn lại thực sự cho Round 1:** #3+#4 (Mốc B — 1 mạch), rồi #5, #6.
 
 > Đây chỉ là outline 1 dòng/story theo yêu cầu template Quick Flow — KHÔNG phải story file
 > đầy đủ. Theo chỉ đạo của chủ dự án, KHÔNG chạy `bmad-epics-and-stories`/`bmad-parallel-plan`
@@ -366,9 +366,12 @@ lại engine (đã có `tests/core` lo việc đó).
 
 ### Integration / End-to-End Scenarios — trả lời mục 6 (2/3)
 
-1 build-smoke test: `xcodebuild -project platforms/apple/MindfulKey.xcodeproj -scheme
-MindfulKeyKeyboard -sdk iphonesimulator build` chạy sạch (0 error) — mirror đúng cách
-`make build` hiện làm cho macOS, gate trong `make test-ios`.
+1 build-smoke test: **phải `make generate` (xcodegen dựng lại `.xcodeproj` từ `project.yml`)
+TRƯỚC**, rồi `xcodebuild -project platforms/apple/MindfulKey.xcodeproj -scheme
+MindfulKeyKeyboard -sdk iphonesimulator build` chạy sạch (0 error). Lý do bước generate:
+`.xcodeproj` là đồ SINH RA, KHÔNG commit tin cậy (xem header `project.yml`) — build thẳng vào
+bản `.xcodeproj` cũ sẽ cho kết quả sai lệch sau mỗi lần sửa `project.yml`. `make test-ios`
+(hiện còn no-op) phải bọc đúng chuỗi generate→build này khi được implement ở story #6.
 
 ### Performance / Load Considerations — trả lời mục 6 (3/3)
 
