@@ -46,6 +46,7 @@ static map<char, Uint16> KEYMAP = {
     {'1',KEY_1},{'2',KEY_2},{'3',KEY_3},{'4',KEY_4},{'5',KEY_5},
     {'6',KEY_6},{'7',KEY_7},{'8',KEY_8},{'9',KEY_9},{'0',KEY_0},
     {' ',KEY_SPACE},{'.',KEY_DOT},{',',KEY_COMMA},
+    {'\b',KEY_DELETE},   // sentinel: '\b' trong chuỗi runCase = bấm phím ⌫ (xóa lùi)
 };
 
 // ── 3. codepoint -> UTF-8 ──
@@ -82,7 +83,13 @@ static void typeChar(char c) {
     vKeyHandleEvent(vKeyEvent::Keyboard, vKeyEventState::KeyDown, keycode, 0, false);
 
     if (st->code == vDoNothing) {
-        screen.push_back((unsigned int)c);           // phím đi thẳng ra app
+        // ⌫: engine trả vDoNothing (tự lùi buffer nội bộ), KHÔNG báo qua backspaceCount —
+        // vỏ phải tự xóa 1 ký tự trên màn hình (mirror KeyboardBridge.mm vDoNothing+KEY_DELETE).
+        if (keycode == KEY_DELETE) {
+            if (!screen.empty()) screen.pop_back();
+        } else {
+            screen.push_back((unsigned int)c);       // phím đi thẳng ra app
+        }
     } else if (st->code == vWillProcess || st->code == vRestore ||
                st->code == vRestoreAndStartNewSession) {
         for (int i = 0; i < st->backspaceCount; i++)  // xóa lùi
@@ -138,6 +145,13 @@ int main() {
     runCase("ass",  "as");                  // gõ thanh sắc lần 2 = bỏ dấu + trả 's'?
     printf("\n--- Loại 8: xen tiếng Anh (SmartSwitchKey OFF) ---\n");
     runCase("hello", "hello");              // không bỏ dấu bừa vào từ Anh
+
+    printf("\n--- Loại 6: backspace / sửa giữa từ (⌫ = '\\b') ---\n");
+    runCase("vieetj\b",   "việ");           // gõ "việt" rồi ⌫ 1 lần → bỏ 't'
+    // ⚠️ QUIRK (đã verify, khóa làm mốc): sau ⌫ về rỗng qua 1 âm tiết CÓ DẤU, biến hình aw→ă
+    // KHÔNG tái kích hoạt → "nawm" ra thô "nawm" (không phải "năm"). Xem docs/FRICTION-LOG.md.
+    runCase("as\b\bnawm", "nawm");          // á, ⌫⌫ về rỗng, gõ "nawm" → engine không transform lại
+    runCase("tooi\bs",    "tố");            // "tôi", ⌫ bỏ 'i' → "tô", rồi 's' (sắc) → "tố" (đúng)
 
     if (gFail == 0)
         printf("\n=== XONG — TẤT CẢ PASS ===\n");
