@@ -14,6 +14,7 @@
 
 static const CGFloat kPad         = 14.0;  // padding trong thẻ (mockup .card: 13px 14px)
 static const CGFloat kWaveH       = 26.0;
+static const CGFloat kWaveW       = 150.0; // sóng nhỏ CANH TRÁI (mockup wave(150,26,5)) — KHÔNG kéo full-width (tránh đọc thành divider)
 static const CGFloat kWaveGap     = 6.0;   // sóng → tít
 static const CGFloat kTitleH      = 20.0;  // tít trạng thái, 16pt semibold
 static const CGFloat kTitleGap    = 8.0;   // tít → hàng phụ đề/link
@@ -37,7 +38,7 @@ static const CGFloat kSubRowH     = 34.0;  // hàng phụ đề/link — chừa 
         _title = [self labelWithString:@"" font:[NSFont systemFontOfSize:16 weight:NSFontWeightSemibold] color:[Brand charcoal]];
         [self addSubview:_title];
 
-        _caption = [self labelWithString:@"" font:[NSFont systemFontOfSize:12.5 weight:NSFontWeightRegular] color:[Brand muted]];
+        _caption = [self labelWithString:@"" font:[NSFont systemFontOfSize:11.5 weight:NSFontWeightRegular] color:[Brand muted]];
         _caption.lineBreakMode = NSLineBreakByWordWrapping;
         _caption.maximumNumberOfLines = 2;
         [self addSubview:_caption];
@@ -82,7 +83,7 @@ static const CGFloat kSubRowH     = 34.0;  // hàng phụ đề/link — chừa 
     CGFloat h = NSHeight(self.bounds);
     CGFloat top = h - kPad;
 
-    _wave.frame = NSMakeRect(kPad, top - kWaveH, w - 2 * kPad, kWaveH);
+    _wave.frame = NSMakeRect(kPad, top - kWaveH, kWaveW, kWaveH);   // 150px canh trái, không full-width
     top -= kWaveH + kWaveGap;
 
     _title.frame = NSMakeRect(kPad, top - kTitleH, w - 2 * kPad, kTitleH);
