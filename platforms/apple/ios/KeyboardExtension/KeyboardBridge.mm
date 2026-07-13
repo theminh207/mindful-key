@@ -138,3 +138,11 @@ KeyboardBridgeResult *KeyboardBridge_HandleSpace(void) {
 KeyboardBridgeResult *KeyboardBridge_HandleBackspace(void) {
     return KeyboardBridge_HandleKeyTap(KEY_DELETE, NO);
 }
+
+void KeyboardBridge_ToggleInputType(void) {
+    vInputType = (vInputType == vTelex) ? vVNI : vTelex;
+}
+
+BOOL KeyboardBridge_IsVNI(void) {
+    return vInputType == vVNI;
+}

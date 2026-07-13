@@ -7,11 +7,14 @@
 //  chèn) lên UITextDocumentProxy.
 //  Story 1.3: thêm Shift (one-shot) / Caps (khoá) + lớp số & ký hiệu (123↔ABC). Trạng thái
 //  Shift đổi bằng SÓNG sáng nền teal-nhạt + chỉ dấu khoá — KHÔNG đèn đỏ/xanh (hiến chương).
+//  Story 2.1: đổi kiểu gõ Telex<->VNI qua long-press phím 123/ABC (tạm, chờ Cài đặt ở story
+//  2.3) + dựng SuggestionBarView (~40pt, TRỐNG nội dung — bề mặt cho sóng 2.5).
 
 #import "KeyboardViewController.h"
 #import "KeyboardBridge.h"
 #import "EngineKeyMap.h"
 #import "AppGroupBridge.h"
+#import "SuggestionBarView.h"
 
 typedef NS_ENUM(NSInteger, KVCShiftState) {
     KVCShiftOff = 0,   // chữ thường
@@ -29,6 +32,7 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
 
 @interface KeyboardViewController ()
 @property (nonatomic, strong) UIButton *nextKeyboardButtonRef;
+@property (nonatomic, strong) SuggestionBarView *suggestionBar;   // story 2.1: bar TRỐNG, phía trên rootStack
 @property (nonatomic, strong) UIStackView *rootStack;
 @property (nonatomic, strong) UIButton *shiftButton;
 @property (nonatomic, strong) UIButton *layerButton;      // 123 / ABC
@@ -55,6 +59,11 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
 #pragma mark - Dựng UI
 
 - (void)buildKeyboardUI {
+    // Story 2.1: SuggestionBarView (~40pt, TRỐNG) nằm TRÊN rootStack — bề mặt cho sóng 2.5.
+    self.suggestionBar = [[SuggestionBarView alloc] init];
+    [self.view addSubview:self.suggestionBar];
+    [self.suggestionBar setSuggestions:@[]];   // AC#5: hố cắm sẵn, KHÔNG dữ liệu giả — luôn rỗng
+
     self.rootStack = [[UIStackView alloc] init];
     self.rootStack.axis = UILayoutConstraintAxisVertical;
     self.rootStack.distribution = UIStackViewDistributionFillEqually;
@@ -63,7 +72,13 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
     [self.view addSubview:self.rootStack];
 
     [NSLayoutConstraint activateConstraints:@[
-        [self.rootStack.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:6],
+        [self.suggestionBar.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+        [self.suggestionBar.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+        [self.suggestionBar.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+
+        // rootStack giờ neo dưới suggestionBar thay vì top view — không co bóp 4 hàng phím cũ,
+        // chiều cao thanh gợi ý CỘNG THÊM vào khung (đúng AC#3), không nhường chỗ.
+        [self.rootStack.topAnchor constraintEqualToAnchor:self.suggestionBar.bottomAnchor constant:6],
         [self.rootStack.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor constant:-6],
         [self.rootStack.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:4],
         [self.rootStack.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-4],
@@ -73,7 +88,9 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
     // = bàn phím cao 0pt / dải trắng, không thấy phím, không gõ được (build sạch nhưng runtime
     // hỏng — đúng bẫy "build-verify ≠ device-verify"). Priority 999 (< required 1000) để nhường
     // ràng buộc hệ thống thêm vào input view, tránh "unable to satisfy constraints".
-    NSLayoutConstraint *heightC = [self.view.heightAnchor constraintEqualToConstant:260];
+    // Story 2.1: 260 (khung 4 hàng phím cũ) + SuggestionBarViewHeight (~40, thanh gợi ý mới) —
+    // cộng thêm vào hằng số cũ, KHÔNG dựng height constraint thứ 2 độc lập cho bar (AC#3).
+    NSLayoutConstraint *heightC = [self.view.heightAnchor constraintEqualToConstant:(260 + SuggestionBarViewHeight)];
     heightC.priority = UILayoutPriorityRequired - 1;   // 999
     heightC.active = YES;
 
@@ -164,6 +181,15 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
     self.layerButton = [self keyButtonWithTitle:(self.numberLayer ? @"ABC" : @"123")
                                          action:@selector(layerKeyTapped:)];
     self.layerButton.accessibilityLabel = @"đổi lớp số";
+    // Story 2.1 AC#1: long-press (giữ) trên 123/ABC đổi kiểu gõ Telex<->VNI — giải pháp TẠM
+    // (tái dùng nguyên tắc long-press = hành động phụ đã có ở story 1.3) cho tới khi Cài đặt
+    // (2.3) có segmented control đầy đủ. Phím này không có ký tự/dấu phụ nào để giữ ra nên
+    // không xung đột ngữ nghĩa với long-press hiện có trên phím chữ.
+    UILongPressGestureRecognizer *toggleInputType =
+        [[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                        action:@selector(layerButtonLongPressed:)];
+    toggleInputType.minimumPressDuration = 0.4;   // ~400ms, ngưỡng long-press DESIGN.md §2.5
+    [self.layerButton addGestureRecognizer:toggleInputType];
 
     UIButton *nextKeyboard = [self keyButtonWithTitle:@"🌐" action:nil];
     nextKeyboard.accessibilityLabel = @"đổi bàn phím";
@@ -265,6 +291,17 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
     self.numberLayer = !self.numberLayer;
     if (self.numberLayer) self.shiftState = KVCShiftOff;  // lớp số không có Shift
     [self rebuildRows];
+}
+
+// Story 2.1 AC#1: giữ phím 123/ABC ~400ms đổi kiểu gõ Telex<->VNI (cấu hình engine, không phải
+// gõ ký tự). Chỉ xử lý state Began — recognizer mặc định cancelsTouchesInView=YES nên
+// touchUpInside (layerKeyTapped:, đổi lớp số) KHÔNG bắn kèm, không nhầm 2 hành động.
+- (void)layerButtonLongPressed:(UILongPressGestureRecognizer *)gesture {
+    if (gesture.state != UIGestureRecognizerStateBegan) return;
+    KeyboardBridge_ToggleInputType();
+    // Thông báo quan sát trung tính — không khen/chê, không đèn đỏ/xanh (hiến chương).
+    NSString *announcement = KeyboardBridge_IsVNI() ? @"Đang gõ VNI" : @"Đang gõ Telex";
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement);
 }
 
 #pragma mark - Riêng tư: cổng ô bảo mật (story 1.4 / FR-A07)

@@ -37,3 +37,17 @@ KeyboardBridgeResult *KeyboardBridge_HandleKeyTap(unsigned short keyCode, BOOL i
 // Cả hai vẫn ĐI QUA engine (để buffer từ trong bộ não luôn đồng bộ), không chèn/xoá "tắt".
 KeyboardBridgeResult *KeyboardBridge_HandleSpace(void);
 KeyboardBridgeResult *KeyboardBridge_HandleBackspace(void);
+
+// Story 2.1 — đổi kiểu gõ Telex<->VNI.
+//
+// Đổi giá trị biến `vInputType` engine đã định nghĩa sẵn (KeyboardBridge.mm dòng 14, mặc định
+// vTelex) — KHÔNG tạo biến mới. Đây là thay đổi CẤU HÌNH (không phải đường chèn văn bản) nên
+// KHÔNG bắt buộc đi qua vKeyHandleEvent(). An toàn gọi bất cứ lúc nào: engine tự đọc vInputType
+// ở đầu mỗi macro xử lý phím (IS_KEY_S/IS_KEY_F/...), không có state trung gian "kiểu gõ lúc bắt
+// đầu từ" — nếu gọi giữa 1 từ đang gõ dở, những phím tiếp theo trong CÙNG từ áp bảng MỚI ngay
+// (verify hành vi thật, ghi lại trong Dev Agent Record — không giả định).
+void KeyboardBridge_ToggleInputType(void);
+
+// YES nếu đang ở kiểu gõ VNI, NO nếu Telex. Tiện cho vỏ UI khỏi phải import core/engine để biết
+// enum vKeyInputType — giữ KeyboardBridge là cửa DUY NHẤT vào engine (đúng doc-comment đầu file).
+BOOL KeyboardBridge_IsVNI(void);
