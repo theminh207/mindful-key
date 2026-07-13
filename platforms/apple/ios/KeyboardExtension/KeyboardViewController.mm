@@ -15,6 +15,7 @@
 #import "EngineKeyMap.h"
 #import "AppGroupBridge.h"
 #import "SuggestionBarView.h"
+#import "MoodBridge.h"
 
 typedef NS_ENUM(NSInteger, KVCShiftState) {
     KVCShiftOff = 0,   // chữ thường
@@ -47,6 +48,7 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
 - (void)viewDidLoad {
     [super viewDidLoad];
     KeyboardBridge_Init();   // khởi động engine trong sandbox extension
+    MoodBridge_Init();       // story 2.2: nối vOnWordCommitted -> lớp cảm xúc (chưa hiển thị gì)
     // Nhịp tim App Group: báo cho container "bàn phím đã chạy" + cờ Full Access (chỉ đọc được
     // từ trong extension). Chỉ ghi timestamp/bool — KHÔNG bao giờ nội dung gõ.
     KeyboardExtension_WriteHeartbeat(self.hasFullAccess);
@@ -328,6 +330,9 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
 }
 
 - (void)letterKeyTapped:(UIButton *)sender {
+    // Story 2.2 (AC#3): đẩy trạng thái ô bảo mật vào MoodBridge TRƯỚC khi phím này có thể khiến
+    // engine commit 1 từ — đúng hợp đồng "gọi cổng TRƯỚC" đã khoá ở story 1.4 AC#6.
+    MoodBridge_SetSecureFieldActive([self mk_isSecureField]);
     NSString *shown = [sender titleForState:UIControlStateNormal];
     BOOL isShift = [self shiftActive];
     // Engine tra theo ký tự thường; hoa/thường do cờ isShift quyết định.
@@ -348,10 +353,15 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
 }
 
 - (void)spaceKeyTapped:(UIButton *)sender {
+    // Story 2.2 (AC#3): space thường chốt 1 từ (vBreakWord) — cùng lý do như letterKeyTapped:.
+    MoodBridge_SetSecureFieldActive([self mk_isSecureField]);
     [self applyBridgeResult:KeyboardBridge_HandleSpace()];
 }
 
 - (void)backspaceKeyTapped:(UIButton *)sender {
+    // Story 2.2 (Opus review): giữ cờ ô bảo mật LUÔN tươi — phòng backspace lỡ chạm word-commit
+    // khi state cache còn cũ (phòng thủ riêng tư, rẻ). Callback đọc cờ này trước khi phân tích.
+    MoodBridge_SetSecureFieldActive([self mk_isSecureField]);
     [self applyBridgeResult:KeyboardBridge_HandleBackspace()];
 }
 
