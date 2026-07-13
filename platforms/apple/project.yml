@@ -146,6 +146,7 @@ targets:
       - sdk: Foundation.framework
       - sdk: QuartzCore.framework   # story 2.5: CAShapeLayer/CABasicAnimation/CATransaction cho con sóng ambient (SuggestionBarView)
       - sdk: CoreGraphics.framework # story 2.5: CGRectGetWidth/Height cho path sóng
+      - sdk: AudioToolbox.framework # story 2.6: AudioServicesPlaySystemSound cho chuông nhắc nghỉ (NudgeCoordinatorIOS)
       - sdk: libc++.tbd
 
     settings:

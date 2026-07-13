@@ -9,11 +9,14 @@
 #import "KeyboardPreviewView.h"
 #import "KeyboardSettingsBridge.h"
 #import "MacroManagerViewController.h"
+#import "BellReminderSettingsBridge.h"   // story 2.6: chuông nhắc nghỉ (cấu hình bật/tắt + hoãn)
 
 @interface SettingsViewController ()
 @property (nonatomic, strong) KeyboardPreviewView *previewView;
 @property (nonatomic, strong) UISegmentedControl *inputTypeControl;
 @property (nonatomic, strong) UISlider *heightSlider;
+@property (nonatomic, strong) UISwitch *bellReminderSwitch;      // story 2.6
+@property (nonatomic, strong) UIButton *bellSnoozeButton;        // story 2.6
 @end
 
 @implementation SettingsViewController
@@ -60,8 +63,11 @@
     [stack addArrangedSubview:[self mk_dividerView]];
     [stack addArrangedSubview:[self mk_heightRow]];
     [stack addArrangedSubview:[self mk_dividerView]];
-    // Chừa chỗ cho 2.5/2.6 gắn thêm row bật/tắt sau — stack đứng, mỗi row tự co giãn, không
-    // layout cứng nhắc (xem story 2.3 Dependency Maps).
+    // Story 2.6: "Chuông nhắc nghỉ" chèn ở ĐÚNG chỗ đã chừa (giữa divider sau "Chiều cao" và row
+    // "Gõ tắt / macro") — không sửa 2 row Telex/VNI + chiều cao ở trên (sở hữu 2.3).
+    [stack addArrangedSubview:[self mk_bellReminderRow]];
+    [stack addArrangedSubview:[self mk_bellSnoozeRow]];
+    [stack addArrangedSubview:[self mk_dividerView]];
     [stack addArrangedSubview:[self mk_macroRow]];
 
     [NSLayoutConstraint activateConstraints:@[
@@ -150,6 +156,36 @@
     return [self mk_rowWithLabel:label control:self.heightSlider];
 }
 
+// Story 2.6 (AC#3): switch bật/tắt chuông nhắc nghỉ — KHÔNG hiện số câu/số lần đã nhắc ở đâu
+// trong row này (AC#5, không gamify), chỉ 1 nhãn tĩnh + 1 công tắc.
+- (UIView *)mk_bellReminderRow {
+    UILabel *label = [OnboardingUI bodyLabel:@"Chuông nhắc nghỉ"];
+
+    self.bellReminderSwitch = [[UISwitch alloc] init];
+    // AC #1 (kế thừa từ 2.3): KHÔNG BAO GIỜ dùng tint xanh-lá mặc định của UISwitch — set thẳng
+    // token teal, đúng nguyên tắc đã áp cho inputTypeControl ở trên.
+    self.bellReminderSwitch.onTintColor = [BrandColorsUIKit brandTeal];
+    self.bellReminderSwitch.accessibilityLabel = @"Chuông nhắc nghỉ";
+    [self.bellReminderSwitch addTarget:self
+                                 action:@selector(mk_bellReminderChanged)
+                       forControlEvents:UIControlEventValueChanged];
+
+    return [self mk_rowWithLabel:label control:self.bellReminderSwitch];
+}
+
+// Story 2.6 (AC#4): "Tạm hoãn" mirror hành vi macOS "Tạm hoãn chuông 1 giờ" (BellMac_Snooze(60),
+// AppDelegate.m dòng 602) — KHÔNG hiện đếm ngược/thời điểm hết hoãn ra chữ (đó cũng là 1 dạng
+// đếm/gamify, ngoài AC yêu cầu).
+- (UIView *)mk_bellSnoozeRow {
+    self.bellSnoozeButton = [OnboardingUI ghostButton:@"Tạm hoãn 1 giờ"];
+    self.bellSnoozeButton.accessibilityLabel = @"Tạm hoãn chuông nhắc nghỉ 1 giờ";
+    [self.bellSnoozeButton addTarget:self
+                               action:@selector(mk_bellSnoozeTapped)
+                     forControlEvents:UIControlEventTouchUpInside];
+    [self.bellSnoozeButton.heightAnchor constraintGreaterThanOrEqualToConstant:44].active = YES;
+    return self.bellSnoozeButton;
+}
+
 - (UIView *)mk_macroRow {
     UIButton *row = [UIButton buttonWithType:UIButtonTypeSystem];
     [row setTitle:@"Gõ tắt / macro  ›" forState:UIControlStateNormal];
@@ -194,6 +230,18 @@
     self.inputTypeControl.selectedSegmentIndex = (NSInteger)inputType;
     self.heightSlider.value = (float)heightLevel;
     [self mk_updatePreviewAndAccessibilityAnnounce:NO];
+
+    // Story 2.6: nạp lại cờ bật/tắt + cập nhật nhãn nút hoãn mỗi lần màn hiện (đề phòng đổi từ
+    // nơi khác trong cùng phiên, đúng lý do viewWillAppear đã gọi hàm này — Dev Notes AC #4 của 2.3).
+    self.bellReminderSwitch.on = BellReminderSettingsBridge_IsEnabled();
+    [self mk_refreshBellSnoozeButtonTitle];
+}
+
+// Nhãn nút CHỈ nói trạng thái quan sát được ("đang hoãn" / hành động khả dụng) — KHÔNG in ra thời
+// điểm hết hoãn hay bất kỳ con số nào (AC#5).
+- (void)mk_refreshBellSnoozeButtonTitle {
+    NSString *title = BellReminderSettingsBridge_IsSnoozedAt([NSDate date]) ? @"Đang tạm hoãn" : @"Tạm hoãn 1 giờ";
+    [self.bellSnoozeButton setTitle:title forState:UIControlStateNormal];
 }
 
 - (KeyboardSettingsInputType)mk_currentInputType {
@@ -218,6 +266,19 @@
 // Thả tay (touchUpInside/touchUpOutside) → ghi App Group đúng 1 lần (AC #4).
 - (void)mk_heightSettled {
     KeyboardSettingsBridge_WriteHeightLevel(self.heightSlider.value);
+}
+
+// Story 2.6 (AC#3): đổi switch → ghi App Group NGAY, không debounce (cùng lối với inputType).
+- (void)mk_bellReminderChanged {
+    BellReminderSettingsBridge_SetEnabled(self.bellReminderSwitch.on);
+}
+
+// Story 2.6 (AC#4): bấm nút → hoãn 60 phút kể từ bây giờ (mirror macOS "Tạm hoãn chuông 1 giờ").
+- (void)mk_bellSnoozeTapped {
+    BellReminderSettingsBridge_SnoozeForMinutes(60);
+    [self mk_refreshBellSnoozeButtonTitle];
+    // Quan sát trung tính, không khen/chê — cùng tinh thần thông báo VoiceOver đã dùng ở 2.1/2.3.
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, @"Đã tạm hoãn chuông nhắc nghỉ 1 giờ");
 }
 
 - (void)mk_updatePreviewAndAccessibilityAnnounce:(BOOL)announce {

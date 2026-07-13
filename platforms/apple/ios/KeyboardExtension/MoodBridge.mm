@@ -10,6 +10,7 @@
 #include "Engine.h"
 #include "MoodBuffer.h"
 #include "SendRiskAnalyzer.h"
+#import "NudgeCoordinatorIOS.h"   // story 2.6: chuông nhắc nghỉ — xem NudgeCoordinatorIOS.h "NƠI GỌI"
 
 using namespace std;
 
@@ -47,6 +48,12 @@ static void MoodBridge_OnWordCommitted(const wstring& word) {
         g_moodBuffer.pushWord(wordCopy);
         double risk = SendRiskAnalyzer_Analyze(g_moodBuffer.recentText());
         g_lastSendRisk.store(risk, std::memory_order_relaxed);
+        // Story 2.6 — đếm số câu căng liên tiếp CẠNH chỗ risk vừa tính, đúng vị trí macOS gọi
+        // (MoodWatchMac.mm: đếm chuỗi liên tiếp ngay sau `g_lastSendRisk = risk;`, cùng 1 callback,
+        // cùng 1 serial queue). KHÔNG gọi từ KeyboardViewController — xem NudgeCoordinatorIOS.h
+        // "NƠI GỌI" cho lý do đầy đủ (engine chỉ có 1 callback vOnWordCommitted, callback đó đã bị
+        // MoodBridge chiếm; poll ở KeyboardViewController sẽ đếm sai/quá nhanh).
+        NudgeCoordinatorIOS_RegisterSentenceRisk(risk);
     });
 }
 

@@ -12,6 +12,12 @@
 //  row vào màn này sau (xem story 2.3 Dependency Maps "Blocks") — không code sẵn khoảng trống,
 //  chỉ không làm layout cứng nhắc khó chèn thêm row.
 //
+//  Story 2.6: thêm row "Chuông nhắc nghỉ" (switch bật/tắt) + nút "Tạm hoãn 1 giờ", chèn giữa
+//  divider sau "Chiều cao" (2.3) và row "Gõ tắt / macro" (2.4) — KHÔNG sửa phần Telex/VNI/slider
+//  chiều cao thuộc sở hữu của 2.3. Đọc/ghi qua NudgeCoordinatorIOS (App Group, 2 khoá mới
+//  bellReminderEnabled/bellSnoozeUntil). Chỉ hiện trạng thái bật/tắt + đang-hoãn-hay-không —
+//  KHÔNG hiển thị số câu/số lần đã nhắc (AC#5, không gamify).
+//
 
 #import <UIKit/UIKit.h>
 

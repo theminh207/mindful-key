@@ -14,11 +14,15 @@ ENGINE_SRC=("$ENGINE/Engine.cpp" "$ENGINE/Vietnamese.cpp" "$ENGINE/Macro.cpp" \
             "$ENGINE/SmartSwitchKey.cpp" "$ENGINE/ConvertTool.cpp")
 
 # .mm -> Objective-C++, .cpp -> C++ (clang tự nhận theo đuôi). -fobjc-arc cho các file .mm.
+# Story 2.6: MoodBridge.mm giờ gọi NudgeCoordinatorIOS_RegisterSentenceRisk() ngay cạnh chỗ tính
+# risk (xem NudgeCoordinatorIOS.h "NƠI GỌI") — phải link thêm NudgeCoordinatorIOS.mm (tự né UIKit
+# trên host qua TARGET_OS_IPHONE) + BellReminderSettingsBridge.mm (cấu hình bật/tắt + hoãn mà
+# NudgeCoordinatorIOS gọi sang), không thì thiếu symbol lúc link.
 clang++ -std=c++14 -fobjc-arc \
   -I "$ENGINE" -I "$MOOD" -I "$SHARED" -I "$IOSEXT" \
   "$HERE/mood_bridge_test.mm" \
-  "$SHARED/EngineKeyMap.mm" "$SHARED/SendRiskAnalyzer.mm" \
-  "$IOSEXT/KeyboardBridge.mm" "$IOSEXT/MoodBridge.mm" \
+  "$SHARED/EngineKeyMap.mm" "$SHARED/SendRiskAnalyzer.mm" "$SHARED/BellReminderSettingsBridge.mm" \
+  "$IOSEXT/KeyboardBridge.mm" "$IOSEXT/MoodBridge.mm" "$IOSEXT/NudgeCoordinatorIOS.mm" \
   "$MOOD/MoodBuffer.cpp" \
   "${ENGINE_SRC[@]}" \
   -framework Foundation \
