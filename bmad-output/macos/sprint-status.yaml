@@ -234,11 +234,11 @@ v2_roadmap:
   steps:
     - n: 1
       title: "Nền móng popover 3-tab + reconcile"
-      status: done                 # df31657 + 3651a25; build/test/brand-lint sạch. CHỜ xác nhận bằng mắt.
+      status: done                 # df31657 + 3651a25 + 0de1216 (áo v2) + 6df6cb4 (fix sóng 150px). Chủ dự án ĐÃ duyệt bằng mắt 2026-07-13: nút chạy thật (đổi Độ nhạy/Bộ tiếng/toggle gõ đều ăn + lưu); tính năng cảm xúc (dòng sông/soi lại/chuông) để Bước 3-6 đúng plan.
       owner: platform-shell-agent
     - n: 2
       title: "Dời Bộ gõ/Gõ tắt/Chuyển mã/Hệ thống vào cửa sổ 6 mục nav + trim menu chuột phải"
-      status: backlog
+      status: in-progress          # 2026-07-13 dispatch platform-shell-agent (shell-nav-window): dựng SettingsWindowController nav-trái 6 mục, tái dùng ViewController/MacroVC/ConvertVC/AboutVC làm pane, trim tray. Hôm nay/Chuông/Riêng tư = phòng trống (Bước 3-6).
       owner: platform-shell-agent
     - n: 3
       title: "Kho nhật ký lấy mẫu theo nhịp chuông + check-in 3 sóng + độ nhạy 3 mức (gác cổng có sàn; nối NudgeCoordinator_TenseStreakTrigger đang hardcode '3')"
