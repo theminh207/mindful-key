@@ -79,3 +79,31 @@
 - **Ranh giới cứng mọi story:** `core/` đóng băng (`git diff core/` rỗng) · CẤM đụng `platforms/apple/macos/*.mm` (việc macOS đang dở) · story chạm `project.yml` chỉ THÊM block iOS, KHÔNG sửa target macOS.
 - Story 1.7 có **lỗ asset nhận diện** (glyph con sóng, wordmark, copy cuối — Q10b chưa chốt): dùng placeholder + SF Symbols, đánh dấu chờ chủ dự án, KHÔNG tự chế nhận diện.
 - Round 1 xong = "v1.0 skeleton": gõ "việt" trong Notes+Zalo · `make test-core`+`make test-ios` xanh · `xcodebuild` iOS sạch · macOS build xanh · `git diff core/` rỗng.
+
+---
+
+## Epic 2: iOS Round 2 — lõi Laban đầy đủ + lớp cảm xúc (sóng + chuông)
+
+**Goal:** Bàn phím đủ tiện (VNI, macro, cài đặt) + **linh hồn chánh niệm**: con sóng `~` biến hình theo cảm xúc + chuông nhắc nghỉ. Spec: `tech-spec-r2.md`. Quyết định nhận diện Q1/Q2/Q3/Q11 chốt 2026-07-13.
+
+**Stories (ordered — 1 luồng tuần tự, 13 conflict trên `KeyboardViewController.mm`/App, KHÔNG parallel):**
+
+| ID | Slug | Track | Trạng thái | Model |
+|----|------|-------|--------|-------|
+| 2.1 | full-keyboard-suggestion-bar | A | ready-for-dev | Sonnet |
+| 2.2 | moodbridge-send-risk | A | ready-for-dev | Sonnet + **Opus review** (riêng tư/async) |
+| 2.4 | macro-text-expansion | A | ready-for-dev | Sonnet |
+| 2.3 | keyboard-settings-live-preview | A | ready-for-dev | Sonnet |
+| 2.5 | emotion-wave-ambient | B | ready-for-dev | Sonnet + **Opus review nhận diện** |
+| 2.6 | rest-reminder-bell | B | ready-for-dev | Sonnet + **Opus review nhận diện** |
+
+**Thứ tự dev:** `2.1 → 2.2 → 2.4 → 2.3 → 2.5 → 2.6` (2.5 blocked-by 2.1+2.2; 2.6 blocked-by 2.2+2.3).
+
+**Phát hiện từ sharding (đã bake vào story, tránh dev vấp):**
+- Engine **KHÔNG** có API gợi ý từ/sửa lỗi (chỉ `checkCorrectVowel` nội bộ) → thanh gợi ý 2.1 là hook rỗng, không bịa (2.1).
+- send-risk thực tế = **cửa sổ trượt 15 từ mỗi từ**, không "cuối câu"; callback engine chạy đồng bộ trong mạch gõ → serial queue + cache secure-field (2.2, rủi ro cao nhất).
+- Extension **không import chéo** `ios/App` → con sóng tự-chứa trong `KeyboardExtension/`, chỉ dùng `shared/BrandPalette.h` (2.5).
+- `Macro.cpp` đủ dùng; bug thật = `KeyboardBridge.mm` no-op `vReplaceMaro` (2.4). Container không link engine → macro qua `MacroBridge` NSDictionary.
+- Chuỗi App Group literal lặp nhiều lần → **gom hằng số dùng chung** khi dev.
+
+**Đích R2 (SC2):** câu căng → sóng gợn (đường cong Q1); câu thường → mặt hồ phẳng; chuông sau N câu căng liên tiếp, tắt/hoãn được; `git diff core/` rỗng; qua bài kiểm "mô tả không phán xét".
