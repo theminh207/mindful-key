@@ -15,6 +15,7 @@
 #import "BrandColors.h"
 #import "EmotionWaveView.h"
 #import "NudgeCoordinatorMac.h"
+#import "BellMac.h"   // [MINDFUL] Story 1.5 — BellMac_PreviewSound() cho "nghe thử khi chọn"
 
 // UserDefaults keys (story 1.5). Đặt cạnh nhau để không rải magic-string.
 static NSString *const kKeySensitivity = @"vBellSensitivity"; // int 1..3
@@ -135,6 +136,10 @@ static NSInteger ParseHour(NSString *s) {
 
 @implementation BellSettingsView {
     NSTextField *_title;
+    NSTextField *_headerChevron;   // ▸ thu gọn / ▾ mở
+    NSButton    *_headerHit;        // vùng bấm trong suốt phủ hàng tiêu đề
+    BOOL         _collapsed;        // mặc định YES — không phình cửa sổ (giống card Bộ gõ thu gọn trong mockup)
+    BOOL         _hideHeaderRow;    // [MINDFUL] popover 3-tab: ẩn hàng "Chuông ▸/▾" khi đã có tab label riêng
 
     // Độ nhạy
     NSTextField *_lblSensitivity;
@@ -176,12 +181,11 @@ static NSInteger ParseHour(NSString *s) {
 
 - (instancetype)initWithFrame:(NSRect)frameRect {
     if ((self = [super initWithFrame:frameRect])) {
-        // Card: nền trắng + viền divider 1px (nhỏ hơn Gác cổng, KHÔNG viền teal nhấn) — DESIGN §2.3.
+        // [MINDFUL] Compact (như Haynoi): KHÔNG vỏ card — mục nằm trên nền panel trắng, phân tách
+        // bằng divider mảnh. Nhẹ & gọn hơn kiểu hộp-viền cũ.
         self.wantsLayer = YES;
-        self.layer.cornerRadius = 16.0;
-        self.layer.backgroundColor = [NSColor whiteColor].CGColor;
-        self.layer.borderWidth = 1.0;
-        self.layer.borderColor = [Brand divider].CGColor;
+
+        _collapsed = YES;   // mặc định thu gọn
 
         [self buildTitle];
         [self buildSensitivity];
@@ -220,6 +224,34 @@ static NSInteger ParseHour(NSString *s) {
     _title = [self label:@"Chuông"
                     font:[NSFont systemFontOfSize:14 weight:NSFontWeightSemibold]
                    color:[Brand charcoal]];
+    _headerChevron = [self label:@"▸" font:[self fSemibold] color:[Brand muted]];
+    // Nút trong suốt phủ hàng tiêu đề: bấm đâu trên hàng "Chuông" cũng thu gọn/mở.
+    _headerHit = [NSButton buttonWithTitle:@"" target:self action:@selector(toggleCollapsed:)];
+    _headerHit.bordered = NO;
+    ((NSButtonCell *)_headerHit.cell).backgroundColor = [NSColor clearColor];
+    [self addSubview:_headerHit];
+}
+
+- (void)toggleCollapsed:(id)sender {
+    _collapsed = !_collapsed;
+    [self applyCollapsedState];
+    [self notifyLayoutChanged];
+}
+
+// Ẩn/hiện toàn bộ control theo trạng thái thu gọn. Khi mở lại, khôi phục đúng trạng thái
+// điều kiện của caption (giải thích quyền / lỗi giờ / số nâng cao).
+- (void)applyCollapsedState {
+    BOOL c = _collapsed;
+    _headerChevron.stringValue = c ? @"▸" : @"▾";
+    NSArray<NSView *> *fields = @[_lblSensitivity, _seg, _demoWave, _demoCap,
+                                  _lblSound, _soundPopup, _lblVolume, _volume,
+                                  _lblQuiet, _quietFrom, _arrow, _quietTo,
+                                  _lblFocus, _focusSwitch, _advBtn, _advChevron];
+    for (NSView *v in fields) v.hidden = c;
+    _focusExplain.hidden = c || !_focusSwitch.isOn;
+    _quietError.hidden   = c || !_quietInvalid;
+    _advNumber.hidden    = c || !_advExpanded;
+    _advNote.hidden      = c || !_advExpanded;
 }
 
 - (void)buildSensitivity {
@@ -347,6 +379,19 @@ static NSInteger ParseHour(NSString *s) {
     _focusExplain.hidden = !focus;
 
     [self syncAdvancedNumber];
+    [self applyCollapsedState];
+    self.needsLayout = YES;
+}
+
+// [MINDFUL] popover 3-tab — xem BellSettingsView.h. Gọi 1 lần lúc tạo view; không đổi logic
+// đọc/ghi UserDefaults (refresh/setSensitivity/onFocusSwitch... nguyên vẹn).
+- (void)expandForTabPresentation {
+    _hideHeaderRow = YES;
+    _collapsed = NO;
+    _title.hidden = YES;
+    _headerChevron.hidden = YES;
+    _headerHit.hidden = YES;
+    [self applyCollapsedState];
     self.needsLayout = YES;
 }
 
@@ -382,10 +427,15 @@ static NSInteger ParseHour(NSString *s) {
 - (void)onSound:(NSPopUpButton *)sender {
     [[NSUserDefaults standardUserDefaults] setObject:SoundNameForIndex(sender.indexOfSelectedItem)
                                               forKey:kKeySoundName];
+    BellMac_PreviewSound();   // nghe thử ngay âm vừa chọn (EXPERIENCE Journey B)
 }
 
 - (void)onVolume:(NSSlider *)sender {
     [[NSUserDefaults standardUserDefaults] setDouble:sender.doubleValue forKey:kKeyVolume];
+    // Lưu liên tục khi kéo, nhưng chỉ NGHE THỬ lúc thả tay (tránh phát âm dồn dập).
+    if ([NSApp currentEvent].type == NSEventTypeLeftMouseUp) {
+        BellMac_PreviewSound();
+    }
 }
 
 - (void)onFocusSwitch:(PillSwitch *)sender {
@@ -463,9 +513,20 @@ static NSInteger ParseHour(NSString *s) {
 
 #define FRAMEAT(v, x, w, h, t) if (apply) { (v).frame = NSMakeRect((x), H - (t) - (h), (w), (h)); }
 
-    // Tiêu đề
-    FRAMEAT(_title, kPad, W - 2 * kPad, kTitleH, top);
-    top += kTitleH + kFieldGap;
+    if (_hideHeaderRow) {
+        // [MINDFUL] popover 3-tab: tab đã có nhãn "Chuông" rồi, bỏ hàng tiêu đề + luôn bung
+        // (expandForTabPresentation đã ép _collapsed = NO).
+    } else {
+        // Hàng tiêu đề: "Chuông" + chevron (phải); cả hàng bấm được để thu gọn/mở.
+        FRAMEAT(_title, kPad, W - 2 * kPad - 20, kTitleH, top);
+        FRAMEAT(_headerChevron, W - kPad - 14, 14, kTitleH, top);
+        FRAMEAT(_headerHit, 0, W, kTitleH + 8, top - 4);
+        if (_collapsed) {
+            top += kTitleH + kPad;   // thu gọn: chỉ hàng tiêu đề
+            return top;
+        }
+        top += kTitleH + kFieldGap;
+    }
 
     // Độ nhạy: label (căn giữa hàng segmented) + segmented + hàng sóng demo dưới.
     FRAMEAT(_lblSensitivity, kPad, kLabelW, 16.0, top + (kSegH - 16.0) / 2.0);

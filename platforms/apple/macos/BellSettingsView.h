@@ -29,6 +29,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// Đọc lại giá trị từ UserDefaults và cập nhật control (gọi khi panel mở).
 - (void)refresh;
 
+/// [MINDFUL] Popover 3-tab ("Áo mới" Bước 1) — gọi 1 LẦN ngay sau khi tạo view khi đặt trong
+/// tab "Chuông" riêng: bung nội dung sẵn (không chờ bấm mở) + ẩn hàng tiêu đề "Chuông ▸/▾"
+/// (tab đã có nhãn riêng nên hàng đó thừa). KHÔNG đổi logic đọc/ghi UserDefaults bên trong.
+- (void)expandForTabPresentation;
+
 @end
 
 NS_ASSUME_NONNULL_END
