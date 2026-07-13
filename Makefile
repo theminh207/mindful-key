@@ -3,11 +3,14 @@ XCODEPROJ := platforms/apple/MindfulKey.xcodeproj
 SCHEME    := MindfulKey
 CONFIG    := Debug
 DERIVED   := platforms/apple/build
+IOS_SIM   ?= iPhone 17
+IOS_DD    := build/ios-dd
+IOS_APPID := vn.gnh.mindfulkey.ios
 VERSION   := $(shell . ./version.env >/dev/null 2>&1; grep '^VERSION=' version.env | cut -d= -f2)
 
-.PHONY: help generate test test-core test-macos test-ios build run universal brand brand-lint hooks version clean
+.PHONY: help generate test test-core test-macos test-ios build run run-ios universal brand brand-lint hooks version clean
 help:
-	@echo "make generate | test | build | run | universal | brand | brand-lint | hooks | version | clean   (v$(VERSION))"
+	@echo "make generate | test | build | run | run-ios | universal | brand | brand-lint | hooks | version | clean   (v$(VERSION))"
 
 generate:        ## Sinh .xcodeproj từ platforms/apple/project.yml (XcodeGen)
 	cd platforms/apple && xcodegen generate
@@ -32,6 +35,20 @@ build: generate  ## Build app macOS (ký ad-hoc)
 run: build       ## Build rồi mở app dev
 	xcodebuild -project "$(XCODEPROJ)" -scheme "$(SCHEME)" -configuration "$(CONFIG)" -derivedDataPath "$(DERIVED)" build
 	open "$(DERIVED)/Build/Products/$(CONFIG)/"*.app
+
+run-ios: generate  ## Build + cài + mở container app iOS trên Simulator (IOS_SIM="iPhone 17")
+	xcodebuild -project "$(XCODEPROJ)" -scheme MindfulKeyiOS -configuration "$(CONFIG)" \
+	  -sdk iphonesimulator -destination 'platform=iOS Simulator,name=$(IOS_SIM)' \
+	  -derivedDataPath "$(IOS_DD)" CODE_SIGNING_ALLOWED=NO build
+	-xcrun simctl boot "$(IOS_SIM)"
+	xcrun simctl bootstatus "$(IOS_SIM)" -b
+	xcrun simctl install "$(IOS_SIM)" "$$(find $(IOS_DD)/Build/Products -name 'MindfulKeyiOS.app' -maxdepth 3 | head -1)"
+	xcrun simctl launch "$(IOS_SIM)" "$(IOS_APPID)"
+	open -a Simulator
+	@echo ""
+	@echo "→ Mindful Key đã mở trên Simulator ($(IOS_SIM))."
+	@echo "  Bật bàn phím: Settings › General › Keyboard › Keyboards › Add New Keyboard › Mindful Key"
+	@echo "  Rồi: Safari → chạm ô nhập → giữ 🌐 → Mindful Key → gõ 'vieetj' → 'việt'."
 
 universal:       ## Build bản chạy được cả máy chip M lẫn Intel (chưa ký thật, xem scripts/README.md)
 	ARCHES="arm64 x86_64" bash scripts/package_app.sh release
