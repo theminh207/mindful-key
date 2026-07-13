@@ -95,6 +95,20 @@
 
 ---
 
+## Phần F — Round 3 · Kho nhật ký cảm xúc (story 3.1 → FR-A13 nền) — DEVICE-ONLY
+
+> ⚠️ Host test (`tests/ios/mood_journal_store_test`) đã chứng minh: mã hóa AES round-trip, đĩa
+> không có plaintext, cổng consent, DeleteAll, SetConsent(NO) xóa sạch. 3 mục dưới **KHÔNG** host-test
+> được — cần **thiết bị/Simulator có Team ID thật** (ký ad-hoc không cấp keychain-access-group).
+
+- [ ] **F1.** (Cần Team ID thật) Gõ vài câu căng (`send-risk ≥ 0.35`) qua Mindful Key trong Notes → mở container app → màn soi lại (story 3.3 khi có) đọc được summary → xác nhận extension GHI và container ĐỌC **cùng 1 khóa Keychain** (không `errSecMissingEntitlement`). Nếu lỗi → soát `kSecAttrAccessGroup` trong `MoodJournalStore.mm` (xem FRICTION-LOG 2026-07-13).
+- [ ] **F2.** Bật consent → gõ câu căng → kiểm file `mood-journal.enc` xuất hiện trong App Group container; tắt consent → file biến mất (round-trip 2 tiến trình thật).
+- [ ] **F3.** Instruments đo RAM extension khi kho + Keychain + crypto đã nạp → xác nhận vẫn **dưới trần jetsam ~48–60MB** (crypto/Keychain không đội RAM quá ngưỡng).
+
+→ Cập nhật dòng `TEST_MATRIX.md`: *"Kho nhật ký cảm xúc mã hóa on-device + consent (story 3.1)"* — nâng phần device-only lên `✅` khi làm xong trên máy thật.
+
+---
+
 ## Sau khi xong (định nghĩa "đã trải nghiệm thật")
 
 - [ ] Tất cả ô tick ở Phần A, B, C, E xong trên Simulator.

@@ -11,6 +11,7 @@
 #include "MoodBuffer.h"
 #include "SendRiskAnalyzer.h"
 #import "NudgeCoordinatorIOS.h"   // story 2.6: chuông nhắc nghỉ — xem NudgeCoordinatorIOS.h "NƠI GỌI"
+#import "MoodJournalStore.h"      // story 3.1: kho nhật ký "khoảnh khắc căng" — xem MoodJournalStore.h
 
 using namespace std;
 
@@ -54,6 +55,13 @@ static void MoodBridge_OnWordCommitted(const wstring& word) {
         // "NƠI GỌI" cho lý do đầy đủ (engine chỉ có 1 callback vOnWordCommitted, callback đó đã bị
         // MoodBridge chiếm; poll ở KeyboardViewController sẽ đếm sai/quá nhanh).
         NudgeCoordinatorIOS_RegisterSentenceRisk(risk);
+        // Story 3.1 — ghi "khoảnh khắc căng" vào kho nhật ký mã hóa, ĐÚNG vị trí/ngưỡng đã dùng
+        // cho chuông nhắc (NudgeCoordinatorIOS_TenseThreshold) — kho tự gác cổng consent riêng
+        // (MoodJournalStore_LogTenseMoment không làm gì nếu chưa consent), ở đây chỉ gác ngưỡng
+        // risk để không ghi mọi câu (xem MoodJournalStore.h).
+        if (risk >= NudgeCoordinatorIOS_TenseThreshold) {
+            MoodJournalStore_LogTenseMoment(risk);
+        }
     });
 }
 

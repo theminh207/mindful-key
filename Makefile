@@ -24,7 +24,7 @@ test-core:       ## Regression engine (bộ não dùng chung, đội core sở h
 test-macos:      ## Test riêng vỏ macOS (đội macOS sở hữu) — chưa có test tự động, no-op
 	@echo "tests/macos: chưa có test tự động (xem tests/macos/README.md)"
 
-test-ios:        ## Test riêng vỏ iOS: bridge Telex (host) + mood bridge (host) + settings bridge (host) + emotion wave amplitude (host) + nudge coordinator/chuông nhắc nghỉ (host) + build-smoke extension (iphonesimulator)
+test-ios:        ## Test riêng vỏ iOS: bridge Telex (host) + mood bridge (host) + settings bridge (host) + emotion wave amplitude (host) + nudge coordinator/chuông nhắc nghỉ (host) + mood journal store (host) + build-smoke extension (iphonesimulator)
 	bash tests/ios/build.sh
 	./tests/ios/bridge_test
 	bash tests/ios/mood_bridge_build.sh
@@ -35,6 +35,8 @@ test-ios:        ## Test riêng vỏ iOS: bridge Telex (host) + mood bridge (hos
 	./tests/ios/emotion_wave_test
 	bash tests/ios/nudge_coordinator_ios_build.sh
 	./tests/ios/nudge_coordinator_ios_test
+	bash tests/ios/mood_journal_store_build.sh
+	./tests/ios/mood_journal_store_test
 	bash tests/ios/build_smoke.sh
 
 build: generate  ## Build app macOS (ký ad-hoc)

@@ -6,5 +6,13 @@
 	<array>
 		<string>group.vn.gnh.mindfulkey</string>
 	</array>
+	<!-- Story 3.1: chia sẻ khóa Keychain (MoodJournalStore) giữa container và keyboard extension.
+	     $(AppIdentifierPrefix) do Xcode/codesign điền lúc KÝ THẬT bằng Team ID thật — dự án hiện
+	     ký ad-hoc (project.yml: DEVELOPMENT_TEAM bỏ trống), nên việc khớp đúng access group này
+	     CHỈ verify được trên thiết bị thật/Simulator có Team ID thật (xem MoodJournalStore.mm). -->
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)vn.gnh.mindfulkey.shared</string>
+	</array>
 </dict>
 </plist>

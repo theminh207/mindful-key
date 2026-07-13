@@ -101,6 +101,7 @@ targets:
         embed: true
       - sdk: UIKit.framework
       - sdk: Foundation.framework
+      - sdk: Security.framework   # story 3.1: MoodJournalStore đọc khóa Keychain chia sẻ (container đọc summary)
 
     settings:
       base:
@@ -147,6 +148,7 @@ targets:
       - sdk: QuartzCore.framework   # story 2.5: CAShapeLayer/CABasicAnimation/CATransaction cho con sóng ambient (SuggestionBarView)
       - sdk: CoreGraphics.framework # story 2.5: CGRectGetWidth/Height cho path sóng
       - sdk: AudioToolbox.framework # story 2.6: AudioServicesPlaySystemSound cho chuông nhắc nghỉ (NudgeCoordinatorIOS)
+      - sdk: Security.framework    # story 3.1: MoodJournalStore — khóa AES trong Keychain (SecItemAdd/CopyMatching/SecRandomCopyBytes)
       - sdk: libc++.tbd
 
     settings:

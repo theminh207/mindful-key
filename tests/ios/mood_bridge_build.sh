@@ -18,13 +18,16 @@ ENGINE_SRC=("$ENGINE/Engine.cpp" "$ENGINE/Vietnamese.cpp" "$ENGINE/Macro.cpp" \
 # risk (xem NudgeCoordinatorIOS.h "NƠI GỌI") — phải link thêm NudgeCoordinatorIOS.mm (tự né UIKit
 # trên host qua TARGET_OS_IPHONE) + BellReminderSettingsBridge.mm (cấu hình bật/tắt + hoãn mà
 # NudgeCoordinatorIOS gọi sang), không thì thiếu symbol lúc link.
+# Story 3.1: MoodBridge.mm giờ gọi thêm MoodJournalStore_LogTenseMoment() cạnh đó — phải link thêm
+# MoodJournalStore.mm (+ -framework Security cho CommonCrypto/Keychain của kho đó).
 clang++ -std=c++14 -fobjc-arc \
   -I "$ENGINE" -I "$MOOD" -I "$SHARED" -I "$IOSEXT" \
   "$HERE/mood_bridge_test.mm" \
   "$SHARED/EngineKeyMap.mm" "$SHARED/SendRiskAnalyzer.mm" "$SHARED/BellReminderSettingsBridge.mm" \
+  "$SHARED/MoodJournalStore.mm" \
   "$IOSEXT/KeyboardBridge.mm" "$IOSEXT/MoodBridge.mm" "$IOSEXT/NudgeCoordinatorIOS.mm" \
   "$MOOD/MoodBuffer.cpp" \
   "${ENGINE_SRC[@]}" \
-  -framework Foundation \
+  -framework Foundation -framework Security \
   -o "$HERE/mood_bridge_test"
 echo "OK -> $HERE/mood_bridge_test"
