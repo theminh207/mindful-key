@@ -18,6 +18,7 @@
 @property (nonatomic, strong) UILabel *statusBody;
 @property (nonatomic, strong) UITextField *testField;
 @property (nonatomic, strong) UIButton *returnButton;   // chỉ hiện ở nhánh "chưa bật"
+@property (nonatomic, strong) UIButton *macroButton;    // story 2.4: lối vào màn Gõ tắt, luôn hiện
 @end
 
 @implementation HomeViewController
@@ -86,6 +87,12 @@
     [self.testField.heightAnchor constraintGreaterThanOrEqualToConstant:44].active = YES;
     [stack addArrangedSubview:self.testField];
 
+    // Story 2.4: lối vào màn Gõ tắt — luôn hiện (không phụ thuộc trạng thái heartbeat như
+    // returnButton bên dưới).
+    self.macroButton = [OnboardingUI ghostButton:@"Gõ tắt…"];
+    [self.macroButton addTarget:self action:@selector(mk_openMacroManager) forControlEvents:UIControlEventTouchUpInside];
+    [stack addArrangedSubview:self.macroButton];
+
     // Nút quay lại hướng dẫn — chỉ hiện khi "chưa bật".
     self.returnButton = [OnboardingUI ghostButton:@"Quay lại hướng dẫn kích hoạt"];
     [self.returnButton addTarget:self action:@selector(mk_returnToActivation) forControlEvents:UIControlEventTouchUpInside];
@@ -115,6 +122,10 @@
 
 - (void)mk_returnToActivation {
     if (self.onReturnToActivation) { self.onReturnToActivation(); }
+}
+
+- (void)mk_openMacroManager {
+    if (self.onOpenMacroManager) { self.onOpenMacroManager(); }
 }
 
 @end

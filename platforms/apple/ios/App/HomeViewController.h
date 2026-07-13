@@ -14,4 +14,9 @@
 // Gọi khi người dùng chạm "Quay lại hướng dẫn" ở nhánh "chưa bật". AppDelegate gán để điều hướng.
 @property (nonatomic, copy) void (^onReturnToActivation)(void);
 
+// Story 2.4: gọi khi người dùng chạm nút "Gõ tắt…" — AppDelegate gán để push
+// MacroManagerViewController. Lối vào riêng, không phụ thuộc SettingsViewController của story 2.3
+// (xem story 2.4 Dev Notes "Lối vào từ Home — CONTENDED với story 2.3").
+@property (nonatomic, copy) void (^onOpenMacroManager)(void);
+
 @end

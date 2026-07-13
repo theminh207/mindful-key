@@ -112,6 +112,33 @@ KeyboardBridgeResult *KeyboardBridge_HandleKeyTap(unsigned short keyCode, BOOL i
             result.textToInsert = out;
             break;
         }
+        case vReplaceMaro: {
+            // Story 2.4: gõ hết 1 macro (từ gõ tắt) rồi bấm phím ngắt-từ (space/dấu câu) — engine
+            // đã tìm thấy macro khớp, hBPC = số ký tự TỪ GÕ TẮT cần xoá lùi, hMacroData chứa nội
+            // dung bung (mã hoá y hệt charData, giải mã bằng KBDecodeChar).
+            result.backspaceCount = sHookState->backspaceCount;
+
+            NSMutableString *out = [NSMutableString string];
+            // macroData PHẢI duyệt XUÔI (0 -> size()) — KHÁC thứ tự NGƯỢC của charData ở trên.
+            // charData xếp "ký tự phải nhất ở index 0" nên duyệt ngược; macroData đã đúng thứ tự
+            // hiển thị trái->phải sẵn (đúng bản gốc macOS OpenKey.mm SendNewCharString(dataFromMacro=true)).
+            // Duyệt ngược ở đây (copy nhầm từ nhánh charData) sẽ đảo ngược thứ tự chữ — bug im
+            // lặng, không crash (xem story 2.4 Dev Notes).
+            for (size_t i = 0; i < sHookState->macroData.size(); i++) {
+                [out appendString:KBStringFromChar(KBDecodeChar(sHookState->macroData[i]))];
+            }
+            // macroData KHÔNG bao gồm chính ký tự ngắt-từ vừa gõ — engine gốc (OpenKey.mm
+            // handleMacro(): SendKeyCode(_keycode) sau khi gửi xong nội dung macro) luôn phát lại
+            // nó riêng. Vỏ iOS phải tự thêm, y hệt nhánh vRestore* ở trên.
+            unichar rc = (unichar)keyCodeToCharacter((Uint32)keyCode | (caps ? CAPS_MASK : 0));
+            if (rc != 0) {
+                [out appendString:KBStringFromChar(rc)];
+            } else {
+                [out appendString:KBLiteralForControlKey(keyCode)]; // vd space kết thúc macro
+            }
+            result.textToInsert = out;
+            break;
+        }
         case vDoNothing:
         default: {
             // Engine không biến đổi — phát ký tự thô đúng như phím vừa chạm.
@@ -123,8 +150,6 @@ KeyboardBridgeResult *KeyboardBridge_HandleKeyTap(unsigned short keyCode, BOOL i
             } else if (keyCode == KEY_DELETE) {
                 result.backspaceCount = 1; // xoá 1 ký tự
             }
-            // vBreakWord / vReplaceMaro (macro): Round 1 macro rỗng nên không phát sinh — rơi vào
-            // đây = no-op an toàn.
             break;
         }
     }

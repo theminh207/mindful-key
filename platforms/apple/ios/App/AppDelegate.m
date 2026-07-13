@@ -11,6 +11,7 @@
 #import "ActivationViewController.h"
 #import "FullAccessViewController.h"
 #import "HomeViewController.h"
+#import "MacroManagerViewController.h"
 #import "AppGroupBridge.h"
 
 @interface AppDelegate ()
@@ -76,7 +77,16 @@
     vc.onReturnToActivation = ^{
         [weakSelf.nav setViewControllers:@[[weakSelf mk_makeActivation]] animated:YES];
     };
+    // Story 2.4: push màn Gõ tắt — lối vào riêng, độc lập với hàng chevron "Gõ tắt/macro" mà
+    // story 2.3 để trống trong SettingsViewController (xem story 2.4 Dev Notes).
+    vc.onOpenMacroManager = ^{
+        [weakSelf.nav pushViewController:[weakSelf mk_makeMacroManager] animated:YES];
+    };
     return vc;
+}
+
+- (UIViewController *)mk_makeMacroManager {
+    return [[MacroManagerViewController alloc] init];
 }
 
 @end

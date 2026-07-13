@@ -16,6 +16,8 @@
 #import "AppGroupBridge.h"
 #import "SuggestionBarView.h"
 #import "MoodBridge.h"
+#import "MacroBridge.h"
+#import "Macro.h"   // story 2.4: addMacro() — file này (.mm) đã link core/engine, gọi C++ trực tiếp
 
 typedef NS_ENUM(NSInteger, KVCShiftState) {
     KVCShiftOff = 0,   // chữ thường
@@ -48,6 +50,7 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
 - (void)viewDidLoad {
     [super viewDidLoad];
     KeyboardBridge_Init();   // khởi động engine trong sandbox extension
+    [self mk_loadStoredMacros];   // story 2.4 (AC #4/#5): nạp macro TRƯỚC khi gõ chữ đầu tiên
     MoodBridge_Init();       // story 2.2: nối vOnWordCommitted -> lớp cảm xúc (chưa hiển thị gì)
     // Nhịp tim App Group: báo cho container "bàn phím đã chạy" + cờ Full Access (chỉ đọc được
     // từ trong extension). Chỉ ghi timestamp/bool — KHÔNG bao giờ nội dung gõ.
@@ -56,6 +59,23 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
     self.numberLayer = NO;
     self.lastShiftTapAt = 0;
     [self buildKeyboardUI];
+}
+
+#pragma mark - Story 2.4: nạp macro đã lưu vào engine
+
+// Container (MindfulKeyiOS) KHÔNG link core/engine nên lưu macro dạng NSDictionary thuần qua
+// MacroBridge (xem MacroBridge.h Dev Notes). Extension NÀY đã link core/engine — đọc lại mảng đó
+// rồi tự gọi addMacro() C++ để nạp vào macroMap trong bộ nhớ CHO PHIÊN CHẠY HIỆN TẠI (mỗi lần
+// extension khởi động lại). AC #5: MacroBridge_ReadAll() trả mảng RỖNG nếu chưa từng thêm macro
+// nào — vòng lặp này khi đó không làm gì, macroMap giữ rỗng đúng rào chắn RAM NFR-01.
+- (void)mk_loadStoredMacros {
+    for (NSDictionary<NSString *, NSString *> *macro in MacroBridge_ReadAll()) {
+        NSString *trigger = macro[MacroBridgeFieldTrigger];
+        NSString *content = macro[MacroBridgeFieldContent];
+        if (trigger.length > 0 && content.length > 0) {
+            addMacro(trigger.UTF8String, content.UTF8String);
+        }
+    }
 }
 
 #pragma mark - Dựng UI

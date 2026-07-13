@@ -13,6 +13,7 @@
 #import "Engine.h"          // startNewSession() để reset engine giữa các ca
 #import "EngineKeyMap.h"
 #import "KeyboardBridge.h"
+#include "Macro.h"          // story 2.4: addMacro() — nạp macro thẳng vào macroMap của engine
 
 // "Ô nhập ảo" — thay cho UITextDocumentProxy: bridge trả {xoá lùi, chèn chuỗi}, ta áp vào đây.
 static NSMutableString *gDoc;
@@ -90,6 +91,38 @@ static void runInputTypeCase(const char *keys, const char *expectTelex, const ch
     KeyboardBridge_ToggleInputType();   // về Telex mặc định — không rò trạng thái sang ca sau
 }
 
+// Story 2.4 (AC #4): gõ hết 1 macro rồi bấm phím ngắt-từ (space) -> bridge phải bung đúng nội
+// dung, ĐÚNG THỨ TỰ (bẫy chính: macroData duyệt XUÔI, khác charData duyệt NGƯỢC — xem story 2.4
+// Dev Notes). addMacro() nạp thẳng vào macroMap toàn cục của Macro.cpp (static, sống suốt vòng
+// đời process test) — đặt SAU mọi ca Telex thường ở trên (không ca nào khác gõ chuỗi "vn") để
+// không đụng độ.
+static void runMacroCase(const char *trigger, const char *content, const char *typeKeys, const char *expect) {
+    bool added = addMacro(trigger, content);
+    if (!added) gFail++;
+    printf("  addMacro(\"%s\", \"%s\") -> %s\n", trigger, content, added ? "OK" : "SAI <<< (đã tồn tại?)");
+
+    // hMacroKey (HookState.macroKey) là buffer XUYÊN SUỐT nhiều "phiên" gõ, chỉ tự clear khi gặp
+    // phím ngắt-từ (space/dấu câu) — startNewSession() KHÔNG đụng tới nó (xác nhận đọc trực tiếp
+    // Engine.cpp: startNewSession() reset _index/hBPC/_hasHandledMacro, không có dòng nào đụng
+    // hMacroKey). Các ca Telex/VNI chạy TRƯỚC không kết thúc bằng space nên để lại rác trong
+    // buffer này — gõ 1 space "xả" trước (bất kỳ space nào cũng clear hMacroKey dù có khớp macro
+    // hay không, xem Engine.cpp nhánh KEY_SPACE) rồi mới reset gDoc, để ca macro bắt đầu sạch.
+    KeyboardBridge_HandleSpace();
+
+    gDoc = [NSMutableString string];
+    startNewSession();
+    NSString *input = [NSString stringWithUTF8String:typeKeys];
+    for (NSUInteger i = 0; i < input.length; i++) {
+        typeOneChar([input characterAtIndex:i]);
+    }
+
+    NSString *expected = [NSString stringWithUTF8String:expect];
+    BOOL ok = [gDoc isEqualToString:expected];
+    if (!ok) gFail++;
+    printf("  gõ macro qua bridge: %-14s -> \"%s\"   [mong đợi: \"%s\"]  %s\n",
+           typeKeys, gDoc.UTF8String, expect, ok ? "OK" : "SAI <<<");
+}
+
 int main(int argc, const char *argv[]) {
     @autoreleasepool {
         KeyboardBridge_Init();
@@ -109,6 +142,9 @@ int main(int argc, const char *argv[]) {
         // "viet5" không doubling e nên VNI ra "viẹt" [ẹ], không phải "việt" [ệ]).
         runInputTypeCase("a1", "a1", "á");
         runInputTypeCase("viet5", "viet5", "viẹt");
+
+        // Story 2.4 AC #4: macro "vn" -> "Việt Nam", gõ "vn " (kèm space ngắt-từ) qua bridge.
+        runMacroCase("vn", "Việt Nam", "vn ", "Việt Nam ");
 
         if (gFail == 0) {
             printf("\n=== XONG — TẤT CẢ PASS (bridge gõ Telex ra dấu đúng) ===\n");
