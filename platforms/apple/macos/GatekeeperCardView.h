@@ -22,6 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// Gọi khi panel mở hoặc khi trạng thái đổi.
 - (void)refresh;
 
+/// Chiều cao cần để hiện đủ (tiêu đề + sóng + mô tả 2 dòng) — host popover dùng để xếp thẻ.
+- (CGFloat)preferredHeight;
+
 @end
 
 NS_ASSUME_NONNULL_END

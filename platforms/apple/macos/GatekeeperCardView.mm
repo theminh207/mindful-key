@@ -11,9 +11,9 @@
 #import "MoodWatchMac.h"
 #import "ReflectionScreenMac.h"
 
-static const CGFloat kCardRadius   = 16.0;
-static const CGFloat kCardBorder   = 1.5;   // viền teal đậm hơn card khác (card khác không viền)
 static const CGFloat kPad          = 16.0;
+static const CGFloat kTitleH       = 22.0;  // "Gác cổng gửi tin" (system 17pt bold)
+static const CGFloat kDescH        = 34.0;  // mô tả tối đa 2 dòng ở bề rộng panel hẹp (~328pt)
 
 @implementation GatekeeperCardView {
     EmotionWaveView *_wave;
@@ -24,10 +24,9 @@ static const CGFloat kPad          = 16.0;
 
 - (instancetype)initWithFrame:(NSRect)frameRect {
     if ((self = [super initWithFrame:frameRect])) {
+        // [MINDFUL] Compact (như Haynoi): Gác cổng là DẢI nền tealLight full-width (điểm nhấn Feature #1
+        // bằng sắc nền, không phải hộp viền) — canh lề thẳng với các mục dưới, nhẹ & gọn.
         self.wantsLayer = YES;
-        self.layer.cornerRadius = kCardRadius;
-        self.layer.borderWidth = kCardBorder;
-        self.layer.borderColor = [Brand teal].CGColor;
         self.layer.backgroundColor = [Brand tealLight].CGColor;
 
         _title = [self labelWithString:@"Gác cổng gửi tin"
@@ -77,22 +76,26 @@ static const CGFloat kPad          = 16.0;
 
 #pragma mark - Layout (frame-based, để khớp panel absolute-frame hiện tại)
 
+- (CGFloat)preferredHeight { return kPad + kTitleH + 8.0 + kDescH + kPad; }
+
 - (void)layout {
     [super layout];
     CGFloat w = NSWidth(self.bounds);
-    CGFloat top = NSHeight(self.bounds) - kPad;
+    CGFloat h = NSHeight(self.bounds);
+    CGFloat top = h - kPad;
 
-    NSSize titleSize = _title.intrinsicContentSize;
-    _title.frame = NSMakeRect(kPad, top - titleSize.height, w - 2 * kPad, titleSize.height);
-
-    CGFloat waveY = NSMinY(_title.frame) - 8 - 24;
-    _wave.frame = NSMakeRect(kPad, waveY, w - 2 * kPad, 24);
-
+    // Hàng trên: tiêu đề (trái) + link "Soi lại hôm nay →" (phải), cùng hàng.
     NSSize linkSize = _reflectLink.attributedTitle.size;
-    _reflectLink.frame = NSMakeRect(w - kPad - linkSize.width - 8, kPad - 2, linkSize.width + 8, linkSize.height + 4);
+    _reflectLink.frame = NSMakeRect(w - kPad - linkSize.width - 8, top - kTitleH - 2,
+                                    linkSize.width + 8, kTitleH + 4);
+    _title.frame = NSMakeRect(kPad, top - kTitleH, w - 2 * kPad - linkSize.width - 12, kTitleH);
 
-    CGFloat descW = w - 2 * kPad - linkSize.width - 12;
-    _desc.frame = NSMakeRect(kPad, kPad - 2, descW, 32);
+    // Hàng dưới: sóng (trái) + mô tả 2 dòng (phải), canh dòng đầu — sóng KHÔNG vẽ chồng lên chữ.
+    CGFloat descTop = top - kTitleH - 8.0;   // đỉnh vùng mô tả (đo từ trên xuống)
+    CGFloat waveW = 56.0, waveH = 18.0;
+    _wave.frame = NSMakeRect(kPad, descTop - waveH, waveW, waveH);
+    CGFloat descX = kPad + waveW + 10.0;
+    _desc.frame = NSMakeRect(descX, descTop - kDescH, w - descX - kPad, kDescH);
 }
 
 #pragma mark - State

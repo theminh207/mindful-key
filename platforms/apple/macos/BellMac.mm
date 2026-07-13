@@ -42,13 +42,34 @@ static BOOL isInBellRange(NSInteger hour) {
     return hour >= vBellFrom || hour < vBellTo;
 }
 
+// [MINDFUL] Story 1.5 — phát âm chuông người dùng CHỌN, ở ÂM LƯỢNG người dùng chọn.
+// Đọc tươi từ UserDefaults mỗi lần reo → đổi cài đặt áp dụng ngay, không cần khởi động lại.
+// NSUserNotification.soundName KHÔNG chỉnh được âm lượng → tách phần phát âm sang NSSound (Dev Notes #1).
+static void playBellSound(void) {
+    NSUserDefaults *d = [NSUserDefaults standardUserDefaults];
+    NSString *name = [d stringForKey:@"vBellSoundName"];
+    if (name.length == 0) name = @"Glass";           // mặc định = "Tiếng chuông"
+    float vol = [d objectForKey:@"vBellVolume"] ? (float)[d doubleForKey:@"vBellVolume"] : 0.6f;
+    if (vol < 0) vol = 0;
+    if (vol > 1) vol = 1;                            // user kéo về 0 = im lặng (có chủ đích)
+
+    NSSound *sound = [NSSound soundNamed:name] ?: [NSSound soundNamed:@"Glass"];
+    if (sound) {
+        if (sound.isPlaying) [sound stop];           // cho phép reo lại liên tiếp
+        sound.volume = vol;
+        [sound play];
+    } else {
+        NSBeep();                                    // dự phòng nếu không tìm được âm hệ thống
+    }
+}
+
 static void showBellPrompt(NSString *message) {
-    NSBeep();
+    playBellSound();   // thay NSBeep + soundName mặc định: dùng âm + âm lượng đã chọn
     if ([NSUserNotificationCenter class]) {
         NSUserNotification *note = [[NSUserNotification alloc] init];
         note.title = @"Chuông tỉnh thức - Mindful";
         note.informativeText = message;
-        note.soundName = NSUserNotificationDefaultSoundName;
+        note.soundName = nil;   // đã tự phát âm (có âm lượng) ở trên → tránh phát trùng âm mặc định
         [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
         return;
     }
@@ -100,6 +121,12 @@ void BellMac_RingForTenseStreak(void) {
 void BellMac_Snooze(int minutes) {
     if (minutes < 0) minutes = 0;
     g_snoozeUntil = [NSDate timeIntervalSinceReferenceDate] + (minutes * 60.0);
+}
+
+// [MINDFUL] Story 1.5 — nghe thử ngay âm/âm lượng đang chọn (bỏ qua snooze/giờ yên lặng/cooldown:
+// đây là hành động chủ động của người dùng, không phải chuông tự reo).
+void BellMac_PreviewSound(void) {
+    playBellSound();
 }
 
 void BellMac_ApplySettings() {

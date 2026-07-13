@@ -20,6 +20,7 @@
 #import "BellMac.h"
 #import "MoodStoreMac.h"
 #import "ReflectionScreenMac.h"
+#import "PanelViewController.h"   // [MINDFUL] PHA 1 — popover panel trạng thái
 
 AppDelegate* appDelegate;
 extern ViewController* viewController;
@@ -77,7 +78,11 @@ extern bool convertToolDontAlertWhenCompleted;
     
     NSStatusItem *statusItem;
     NSMenu *theMenu;
-    
+
+    // [MINDFUL] PHA 1 — popover panel trạng thái (bấm trái icon). Menu cũ chuyển sang bấm phải / gear.
+    NSPopover *_panelPopover;
+    PanelViewController *_panelVC;
+
     NSMenuItem* menuInputMethod;
     
     NSMenuItem* mnuTelex;
@@ -281,11 +286,54 @@ extern bool convertToolDontAlertWhenCompleted;
     
     [self setInputTypeMenu:menuInputType];
     [self setCodeMenu:menuCode];
-    
-    //set menu
-    [statusItem setMenu:theMenu];
-    
+
+    // [MINDFUL] PHA 1 — KHÔNG dùng setMenu (sẽ khiến bấm-trái mở menu). Thay: bấm TRÁI icon → popover
+    // panel trạng thái; bấm PHẢI (hoặc gear trong panel) → menu cũ. Menu 'theMenu' giữ nguyên.
+    _panelVC = [[PanelViewController alloc] init];
+    __weak AppDelegate *weakSelf = self;
+    _panelVC.onOpenFullSettings = ^{ [weakSelf onControlPanelSelected]; };
+    _panelVC.onShowMenu = ^(NSView *anchor) { [weakSelf showLegacyMenu]; };
+
+    _panelPopover = [[NSPopover alloc] init];
+    _panelPopover.contentViewController = _panelVC;
+    _panelPopover.behavior = NSPopoverBehaviorTransient;   // bấm ra ngoài tự đóng
+    _panelPopover.animates = YES;
+
+    statusItem.button.target = self;
+    statusItem.button.action = @selector(onStatusItemClicked:);
+    [statusItem.button sendActionOn:(NSEventMaskLeftMouseUp | NSEventMaskRightMouseUp)];
+
     [self fillData];
+}
+
+- (void)onStatusItemClicked:(id)sender {
+    NSEvent *e = [NSApp currentEvent];
+    BOOL wantsMenu = (e.type == NSEventTypeRightMouseUp) ||
+                     ((e.modifierFlags & NSEventModifierFlagControl) != 0);
+    if (wantsMenu) {
+        [self showLegacyMenu];
+    } else {
+        [self togglePanelPopover];
+    }
+}
+
+- (void)togglePanelPopover {
+    if (_panelPopover.isShown) {
+        [_panelPopover close];
+        return;
+    }
+    [_panelPopover showRelativeToRect:statusItem.button.bounds
+                               ofView:statusItem.button
+                        preferredEdge:NSMinYEdge];
+    [_panelVC refreshAll];                                  // view đã load → cập nhật trạng thái mới nhất
+    _panelPopover.contentSize = [_panelVC panelContentSize];
+}
+
+// Hiện menu cũ (mọi mục còn lại) — dùng chung cho bấm phải icon và nút gear ⋯ trong panel.
+// popUpMenuPositioningItem:atLocation:inView: (KHÔNG deprecated như popUpStatusItemMenu:).
+- (void)showLegacyMenu {
+    if (_panelPopover.isShown) [_panelPopover close];
+    [theMenu popUpMenuPositioningItem:nil atLocation:NSZeroPoint inView:statusItem.button];
 }
 
 -(void)setQuickConvertString {

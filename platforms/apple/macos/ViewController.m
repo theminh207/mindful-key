@@ -10,8 +10,6 @@
 #import "OpenKeyManager.h"
 #import "AppDelegate.h"
 #import "MyTextField.h"
-#import "GatekeeperCardView.h"   // [MINDFUL] Story 1.4 (lát cắt dọc — treo card lên đầu panel)
-#import "BellSettingsView.h"     // [MINDFUL] Story 1.5 — card Chuông treo dưới Gác cổng (xem chú thích mount)
 #import "BrandColors.h"          // [MINDFUL] Story 1.7 — [Brand teal]/[Brand charcoal]/[Brand divider]
 
 extern AppDelegate* appDelegate;
@@ -53,11 +51,6 @@ extern int vPerformLayoutCompat;
     NSArray* tabviews, *tabbuttons;
     NSRect tabViewRect;
     NSView* tabButtonBackground;
-    GatekeeperCardView* gatekeeperCard;   // [MINDFUL] Story 1.4
-    BellSettingsView* bellCard;           // [MINDFUL] Story 1.5 — card Chuông treo dưới Gác cổng
-    BOOL gatekeeperMounted;
-    CGFloat baseContentHeight;            // chiều cao content TRƯỚC khi treo card (để tính lại khi disclosure đổi)
-    CGFloat baseWindowHeight;            // chiều cao window TRƯỚC khi treo card
 }
 
 - (void)viewDidLoad {
@@ -119,67 +112,8 @@ extern int vPerformLayoutCompat;
     [super viewDidAppear];
     NSString* str = @"Mindful Keyboard %@ - Bộ gõ Tiếng Việt";
     self.view.window.title = [NSString stringWithFormat:str, [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"]];
-    [self mountFloatingCardsIfNeeded];
-    [gatekeeperCard refresh];
-    [bellCard refresh];
-    [self layoutFloatingCards];   // preferredHeight của Chuông có thể đổi sau refresh (disclosure)
-}
-
-// [MINDFUL] Story 1.4/1.5 — lát cắt dọc: treo card Gác cổng + card Chuông lên đầu panel HIỆN TẠI,
-// KHÔNG đập storyboard. Cửa sổ cao thêm 1 dải ở trên; nội dung 4-tab cũ neo đáy (autoresizing
-// mặc định) nên giữ nguyên vị trí, 2 card nằm vào dải mới ở trên cùng.
-//
-// Lưu ý phạm vi: story 1.5 owned-scope KHÔNG gồm ViewController.m (việc ráp vốn thuộc story 1.6,
-// nay SUPERSEDED — xem decision-log 2026-07-10). Chủ dự án đã CHỐT treo card Chuông "giống 1.4"
-// (phiên 2026-07-10), nên phần mount này là mở rộng có kiểm soát của lát cắt dọc 1.4, được duyệt.
-- (void)mountFloatingCardsIfNeeded {
-    if (gatekeeperMounted) return;
-    NSWindow* window = self.view.window;
-    if (!window) return;
-
-    baseContentHeight = self.view.frame.size.height;
-    baseWindowHeight = window.frame.size.height;
-
-    const CGFloat margin = 16.0;
-    CGFloat w = self.view.bounds.size.width;
-
-    gatekeeperCard = [[GatekeeperCardView alloc] initWithFrame:NSMakeRect(margin, 0, w - 2 * margin, 92.0)];
-    gatekeeperCard.autoresizingMask = NSViewWidthSizable | NSViewMinYMargin;  // bám mép trên, giãn ngang
-    [self.view addSubview:gatekeeperCard];
-
-    bellCard = [[BellSettingsView alloc] initWithFrame:NSMakeRect(margin, 0, w - 2 * margin, 240.0)];
-    bellCard.autoresizingMask = NSViewWidthSizable | NSViewMinYMargin;
-    __weak ViewController* weakSelf = self;
-    bellCard.onLayoutChanged = ^{ [weakSelf layoutFloatingCards]; };  // disclosure đổi chiều cao → nới cửa sổ
-    [self.view addSubview:bellCard];
-
-    gatekeeperMounted = YES;
-    [self layoutFloatingCards];
-}
-
-// Tính lại dải trên đỉnh theo chiều cao THẬT của card Chuông (đổi khi mở/đóng disclosure) và
-// đặt lại frame 2 card. Luôn tính từ base để không trôi kích thước qua nhiều lần gọi.
-- (void)layoutFloatingCards {
-    NSWindow* window = self.view.window;
-    if (!window || !gatekeeperMounted) return;
-
-    const CGFloat margin = 16.0;
-    const CGFloat gkH = 92.0;
-    const CGFloat gap = 12.0;
-    CGFloat bellH = [bellCard preferredHeight];
-    CGFloat strip = margin + gkH + gap + bellH + margin;   // topMargin + gác cổng + gap + chuông + bottomGap
-
-    NSSize contentSize = self.view.frame.size;
-    contentSize.height = baseContentHeight + strip;
-    NSRect frame = window.frame;
-    frame.size.height = baseWindowHeight + strip;   // giữ frame.origin → cạnh dưới cố định, mở thêm ở trên
-    [window setFrame:frame display:YES];
-    [window setContentSize:contentSize];
-
-    CGFloat w = self.view.bounds.size.width;
-    CGFloat h = self.view.bounds.size.height;
-    gatekeeperCard.frame = NSMakeRect(margin, h - margin - gkH, w - 2 * margin, gkH);
-    bellCard.frame = NSMakeRect(margin, h - margin - gkH - gap - bellH, w - 2 * margin, bellH);
+    // [MINDFUL] PHA 1 — card Gác cổng/Chuông KHÔNG còn treo lên cửa sổ này nữa; chúng sống trong
+    // popover panel (bấm trái icon menu-bar, xem PanelViewController). Cửa sổ này thuần cài đặt bộ gõ.
 }
 
 - (void)viewWillAppear {
