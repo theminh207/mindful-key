@@ -16,6 +16,27 @@ mới ở TRÊN CÙNG (mới nhất trước), không xoá/sửa entry cũ.
 
 ---
 
+### 2026-07-13 — Chốt 4 quyết định nhận diện mở khóa Round 2 (Q1/Q2/Q3/Q11)
+- **Decision:** Chủ dự án chốt (qua AskUserQuestion) 4 câu nhóm B/C của decision queue — mở khóa
+  lớp cảm xúc Round 2:
+  - **Q1 — map send-risk→biên độ sóng:** **ngưỡng chết + dâng mượt.** Mặt hồ PHẲNG LẶNG khi
+    `send-risk` dưới ~0.3 (vùng chết), rồi biên độ dâng MƯỢT (không bậc thang) theo risk. Không
+    gợn vặt khi bình thường — đúng "mặt hồ phẳng lặng ↔ gợn sóng" (hiến chương §2.3).
+  - **Q2 — câu quan sát:** **CHỈ con sóng, KHÔNG chữ.** Không hiện câu "Mặt hồ đang gợn sóng".
+    Thanh gợi ý chật; để sóng tự nói, ít làm phiền nhất.
+  - **Q3 — tiếng chuông:** **chuông nhắc nghỉ sau N câu căng liên tiếp** (mô hình `BellMac`/
+    `NudgeCoordinator` macOS: rung/âm nhẹ + cooldown chống dồn dập). KHÔNG phải preset-âm-khi-gõ.
+  - **Q11 — model send-risk:** **lexicon on-device trước, PhoBERT ONNX sau** (nhẹ RAM, an toàn
+    trần jetsam ~48–60MB; nâng model sau nếu RAM cho phép).
+- **Rationale:** Đây là nút thắt duy nhất chặn "linh hồn" R2 (con sóng + chuông). Cả 4 theo phương
+  án khuyến nghị, bám hiến chương (biên độ mang nghĩa, không màu valence, không gamify, quan sát
+  không phán xét). Chủ dự án uỷ quyền tự hoàn thành R2 theo các chốt này.
+- **Hệ quả:** Track B (render sóng FR-A08 + chuông FR-A10) hết vướng quyết định — spec + code được.
+  Track A (nền kỹ thuật: MoodBridge tính risk, lõi bàn phím, cài đặt, macro) vốn không chặn, làm song song.
+  CÒN mở: **Q10b** (glyph/wordmark/giọng copy chính thức) — placeholder đang chạy, không chặn dev.
+- **Made by:** chủ dự án (qua AskUserQuestion), ghi bởi agent phân tích.
+- **Supersedes:** đóng Q1/Q2/Q3/Q11 (nhóm B/C) trong `analysis/09-bmad-reconcile.md`.
+
 ### 2026-07-11 — Audit đồng bộ 3 nguồn + chốt tiering "gõ tắt" (tách FR-A15)
 - **Decision:** Quét chéo khung L (Laban) · gói `analysis/` · specs (`EXPERIENCE.md`/`DESIGN.md`) tìm
   xung đột. Kết luận: KHÔNG có xung đột nền tảng (3 nguồn nhất trí phần hồn). Xử lý:
