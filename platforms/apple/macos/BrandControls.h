@@ -51,6 +51,18 @@ NS_ASSUME_NONNULL_BEGIN
 /// container view bất kỳ (NSView hoặc subclass, kể cả NSBox khi đã tắt fill/border gốc).
 @interface NSView (BrandCard)
 - (void)applyBrandCardStyle;
+
+/// [MINDFUL] Áo mới v2 (2026-07-13, popover 3-tab kiểu Haynoi) — thẻ MỎNG: nền trắng + viền
+/// `Brand.divider` 1px + bo góc 11px, KHÔNG bóng đổ (khác `applyBrandCardStyle`, dành cho card
+/// lớn/nổi bật hơn). Dùng cho các nhóm thẻ trong popover: Gác cổng, dòng sông, Nhận diện, Âm
+/// thanh, Yên lặng, Kiểu gõ, Tùy chọn — khớp `.card` trong mockup-v2-tabbed.html.
+- (void)applyThinCardStyle;
+@end
+
+/// [MINDFUL] Áo mới v2 — nhãn "EYEBROW" nhóm thẻ (uppercase, 10.5pt semibold, màu stone, letter-
+/// spacing rộng) — đặt NGAY TRÊN 1 thẻ `applyThinCardStyle`. Khớp `.eb` trong mockup-v2-tabbed.html.
+@interface NSTextField (BrandEyebrow)
++ (instancetype)mk_eyebrowLabelWithTitle:(NSString *)title;
 @end
 
 NS_ASSUME_NONNULL_END

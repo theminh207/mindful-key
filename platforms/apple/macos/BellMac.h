@@ -33,8 +33,21 @@ void BellMac_Snooze(int minutes);
 // vBellSoundName / vBellVolume). Dùng cho "nghe thử khi chọn" ở BellSettingsView (EXPERIENCE Journey B).
 void BellMac_PreviewSound(void);
 
+// [MINDFUL] Áo mới v2 (2026-07-13) — số phút còn lại tới lần chuông kế tiếp, đọc TRỰC TIẾP từ
+// NSTimer đang chạy thật (KHÔNG suy đoán/ước lượng). Trả -1 khi: chuông tắt, đang tạm hoãn
+// (snooze), hoặc chưa có timer nào — panel dùng -1 để hiện text thật thà ("—") thay vì đếm
+// ngược giả (HIẾN CHƯƠNG §2.2: không dữ liệu giả).
+int BellMac_MinutesUntilNextRing(void);
+
 #ifdef __cplusplus
 }
+#endif
+
+#ifdef __OBJC__
+#import <Foundation/Foundation.h>
+// [MINDFUL] Áo mới v2 — "Im" trong Bộ tiếng segmented (BellSettingsView). KHÔNG phải tên NSSound
+// thật; playBellSound() nhận sentinel này và không phát gì (không rơi về "Glass" mặc định).
+extern NSString * const kBellSoundMuteName;
 #endif
 
 #endif /* BellMac_h */

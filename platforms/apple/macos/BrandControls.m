@@ -355,4 +355,30 @@ static const CGFloat kDisabledAlpha = 0.4; // 40% opacity khi disabled
     CGPathRelease(shadowPath);
 }
 
+// [MINDFUL] Áo mới v2 — xem BrandControls.h. Viền mảnh, KHÔNG bóng (khác applyBrandCardStyle).
+- (void)applyThinCardStyle {
+    self.wantsLayer = YES;
+    self.layer.backgroundColor = [NSColor whiteColor].CGColor;
+    self.layer.borderWidth = 1.0;
+    self.layer.borderColor = [Brand divider].CGColor;
+    self.layer.cornerRadius = 11.0;
+    self.layer.masksToBounds = YES;
+}
+
+@end
+
+#pragma mark - NSTextField (BrandEyebrow)
+
+@implementation NSTextField (BrandEyebrow)
+
++ (instancetype)mk_eyebrowLabelWithTitle:(NSString *)title {
+    NSTextField *l = [NSTextField labelWithString:title];
+    l.font = [NSFont systemFontOfSize:10.5 weight:NSFontWeightSemibold];
+    l.textColor = [Brand stone];
+    l.backgroundColor = [NSColor clearColor];
+    l.bordered = NO;
+    l.editable = NO;
+    return l;
+}
+
 @end

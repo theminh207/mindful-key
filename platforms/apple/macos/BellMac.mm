@@ -15,6 +15,9 @@ int vBellInterval = 60;
 int vBellFrom = 8;
 int vBellTo = 22;
 
+// [MINDFUL] Áo mới v2 — xem BellMac.h cho hợp đồng.
+NSString * const kBellSoundMuteName = @"__silent__";
+
 static NSTimer *g_bellTimer = nil;
 static NSTimeInterval g_snoozeUntil = 0; // [MINDFUL] "dễ tắt tạm" — bước 7
 
@@ -49,6 +52,7 @@ static void playBellSound(void) {
     NSUserDefaults *d = [NSUserDefaults standardUserDefaults];
     NSString *name = [d stringForKey:@"vBellSoundName"];
     if (name.length == 0) name = @"Glass";           // mặc định = "Tiếng chuông"
+    if ([name isEqualToString:kBellSoundMuteName]) return;   // "Im" — không phát gì, có chủ đích.
     float vol = [d objectForKey:@"vBellVolume"] ? (float)[d doubleForKey:@"vBellVolume"] : 0.6f;
     if (vol < 0) vol = 0;
     if (vol > 1) vol = 1;                            // user kéo về 0 = im lặng (có chủ đích)
@@ -127,6 +131,16 @@ void BellMac_Snooze(int minutes) {
 // đây là hành động chủ động của người dùng, không phải chuông tự reo).
 void BellMac_PreviewSound(void) {
     playBellSound();
+}
+
+// [MINDFUL] Áo mới v2 — xem BellMac.h cho hợp đồng. Đọc fireDate CỦA CHÍNH g_bellTimer đang chạy
+// (không tự tính lại theo interval — timer là nguồn sự thật duy nhất về "khi nào tick kế tiếp").
+int BellMac_MinutesUntilNextRing(void) {
+    if (!vBell || isSnoozed() || g_bellTimer == nil)
+        return -1;
+    NSTimeInterval secs = [g_bellTimer.fireDate timeIntervalSinceNow];
+    if (secs < 0) secs = 0;
+    return (int)((secs + 59.0) / 60.0);   // làm tròn LÊN phút (còn <1 phút vẫn hiện "1 phút", không hiện "0")
 }
 
 void BellMac_ApplySettings() {

@@ -3,13 +3,20 @@
 //  Mindful Keyboard — based on OpenKey
 //
 //  [MINDFUL] "Áo mới" Bước 1 — xem PanelViewController.h.
+//  [MINDFUL] Áo mới v2 (2026-07-13, decision-log "Diện mạo mới v2") — header đổi từ chrome teal
+//  đặc sang TRẮNG liền mạch với panel (khớp mockup-v2-tabbed.html .top); pill "VN" nhị phân thay
+//  chấm+chữ trạng thái cũ. Tab "Hôm nay" giờ có 2 nhóm: "NGAY BÂY GIỜ" (thẻ Gác cổng) + "HÔM NAY"
+//  (thẻ dòng sông, khung trống — Bước 3 sẽ đổ dữ liệu thật) + dòng "Chuông tỉnh thức kế tiếp".
 //
 
 #import "PanelViewController.h"
 #import "GatekeeperCardView.h"
+#import "EmotionRiverView.h"
 #import "BellSettingsView.h"
 #import "InputMethodCardView.h"
 #import "BrandColors.h"
+#import "BrandControls.h"
+#import "BellMac.h"
 
 static const CGFloat kPanelW  = 360.0;
 static const CGFloat kMargin  = 16.0;
@@ -24,8 +31,14 @@ static const CGFloat kTabBarH      = 34.0;
 static const CGFloat kTabGapTop    = 12.0;   // đáy header → đỉnh tab bar
 static const CGFloat kTabGapBottom = 14.0;   // đáy tab bar → đỉnh nội dung
 
+// [MINDFUL] Áo mới v2 — nhịp dọc riêng cho tab "Hôm nay" (2 nhóm eyebrow+thẻ + 1 dòng chuông).
+static const CGFloat kEbH        = 13.0;
+static const CGFloat kEbGap      = 8.0;
+static const CGFloat kSectionGap = 16.0;
+static const CGFloat kBellLineH  = 16.0;
+
 typedef NS_ENUM(NSInteger, MKPanelTab) {
-    MKPanelTabToday = 0,   // "Hôm nay" — GatekeeperCardView
+    MKPanelTabToday = 0,   // "Hôm nay" — GatekeeperCardView + EmotionRiverView
     MKPanelTabBell  = 1,   // "Chuông"  — BellSettingsView
     MKPanelTabInput = 2,   // "Bộ gõ"   — InputMethodCardView
 };
@@ -145,17 +158,23 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
 #pragma mark - PanelViewController
 
 @implementation PanelViewController {
-    // Header (chrome teal)
+    // Header — [MINDFUL] Áo mới v2: TRẮNG liền mạch (không còn chrome teal đặc).
     NSView             *_header;
-    NSView             *_hdrDot;       // chấm trắng: bộ gõ Việt đang bật
-    NSTextField        *_hdrStatus;    // "Tiếng Việt đang bật"
-    NSButton           *_gear;         // ⋯ → menu cũ
+    NSTextField        *_vnPill;      // "VN" — CHỈ báo bộ gõ Việt bật/tắt (nhị phân teal), KHÔNG BAO GIỜ báo cảm xúc
+    NSButton           *_gear;        // ⋯ → menu cũ
 
-    MKTabBar           *_tabBar;       // "Hôm nay · Chuông · Bộ gõ"
+    MKTabBar           *_tabBar;      // "Hôm nay · Chuông · Bộ gõ"
 
+    // Tab "Hôm nay"
+    NSTextField        *_ebNow;       // "NGAY BÂY GIỜ"
     GatekeeperCardView *_gatekeeper;
-    BellSettingsView   *_bell;
-    InputMethodCardView*_input;
+    NSTextField        *_ebToday;     // "HÔM NAY"
+    EmotionRiverView   *_river;
+    NSTextField        *_bellLine;    // "Chuông tỉnh thức kế tiếp: còn X phút"
+
+    BellSettingsView    *_bell;
+    InputMethodCardView *_input;
+
     NSView             *_footerDiv;    // đường kẻ mảnh trước chân trang (kiểu Haynoi)
     NSTextField        *_privacy;
 
@@ -177,15 +196,29 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
     _tabBar.onSelect = ^(NSInteger index) { (void)index; [weakSelf reflow]; };
     [root addSubview:_tabBar];
 
+    _ebNow = [NSTextField mk_eyebrowLabelWithTitle:@"Ngay bây giờ"];
+    [root addSubview:_ebNow];
+
     _gatekeeper = [[GatekeeperCardView alloc] initWithFrame:NSMakeRect(kMargin, 0, kCardW, 96)];
     [root addSubview:_gatekeeper];
 
-    // [MINDFUL] Bell/Input mặc định thu gọn (dùng cho bản scroll-list cũ, xếp chung 1 danh sách).
-    // Trong tab riêng thì KHÔNG cần disclosure nữa — tab đã tự phân tách rồi — nên bung sẵn qua
-    // API cộng thêm expandForTabPresentation (KHÔNG đổi logic đọc/ghi UserDefaults bên trong).
+    _ebToday = [NSTextField mk_eyebrowLabelWithTitle:@"Hôm nay"];
+    [root addSubview:_ebToday];
+
+    // [MINDFUL] Áo mới v2 mục 5 — khung "dòng sông", TRẠNG THÁI TRỐNG (Bước 3 chưa có nguồn dữ
+    // liệu thật). KHÔNG gọi setSamples: ở đây — mặc định nil = trống thật thà. Bước 3/4 sẽ đổ dữ
+    // liệu thật vào bằng đúng API này, không cần sửa layout.
+    _river = [[EmotionRiverView alloc] initWithFrame:NSMakeRect(kMargin, 0, kCardW, 100)];
+    [root addSubview:_river];
+
+    _bellLine = [NSTextField labelWithString:@""];
+    _bellLine.backgroundColor = [NSColor clearColor];
+    _bellLine.bordered = NO;
+    _bellLine.editable = NO;
+    [root addSubview:_bellLine];
+
     _bell = [[BellSettingsView alloc] initWithFrame:NSMakeRect(kMargin, 0, kCardW, 100)];
-    [_bell expandForTabPresentation];
-    _bell.onLayoutChanged = ^{ [weakSelf reflow]; };   // đổi cao khi 1 mục con trong Chuông bung (vd Nâng cao)
+    _bell.onLayoutChanged = ^{ [weakSelf reflow]; };   // đổi cao khi 1 mục con trong Chuông bung (vd giải thích Focus)
     [root addSubview:_bell];
 
     _input = [[InputMethodCardView alloc] initWithFrame:NSMakeRect(kMargin, 0, kCardW, 48)];
@@ -213,41 +246,43 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
 }
 
 - (void)buildHeader {
+    // [MINDFUL] Áo mới v2 — header giờ TRẮNG liền mạch với nền panel (khớp mockup-v2-tabbed.html
+    // .top), KHÔNG còn chrome teal đặc. "〜" giữ màu teal, "mindful-key" chữ charcoal.
     _header = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, kPanelW, kHeaderH)];
-    _header.wantsLayer = YES;
-    _header.layer.backgroundColor = [Brand teal].CGColor;   // chrome ngọc bích
     [self.view addSubview:_header];
 
-    NSTextField *title = [NSTextField labelWithString:@"〜 mindful-key"];
-    title.font = [NSFont systemFontOfSize:15 weight:NSFontWeightBold];
-    title.textColor = [NSColor whiteColor];
-    title.backgroundColor = [NSColor clearColor];
-    title.bordered = NO;
-    [_header addSubview:title];
-    title.frame = NSMakeRect(kMargin, (kHeaderH - 20) / 2.0, 160, 20);
+    NSMutableAttributedString *title = [[NSMutableAttributedString alloc] initWithString:@"〜 "
+        attributes:@{ NSForegroundColorAttributeName:[Brand teal],
+                      NSFontAttributeName:[NSFont systemFontOfSize:17 weight:NSFontWeightBold] }];
+    [title appendAttributedString:[[NSAttributedString alloc] initWithString:@"mindful-key"
+        attributes:@{ NSForegroundColorAttributeName:[Brand charcoal],
+                      NSFontAttributeName:[NSFont systemFontOfSize:14 weight:NSFontWeightSemibold] }]];
+    NSTextField *titleField = [NSTextField labelWithString:@""];
+    titleField.attributedStringValue = title;
+    titleField.backgroundColor = [NSColor clearColor];
+    titleField.bordered = NO;
+    [_header addSubview:titleField];
+    titleField.frame = NSMakeRect(kMargin, (kHeaderH - 20) / 2.0, 160, 20);
 
     _gear = [NSButton buttonWithTitle:@"⋯" target:self action:@selector(onGear:)];
     _gear.bordered = NO;
     ((NSButtonCell *)_gear.cell).backgroundColor = [NSColor clearColor];
     _gear.attributedTitle = [[NSAttributedString alloc] initWithString:@"⋯"
-        attributes:@{ NSForegroundColorAttributeName:[NSColor whiteColor],
+        attributes:@{ NSForegroundColorAttributeName:[Brand muted],
                       NSFontAttributeName:[NSFont systemFontOfSize:16 weight:NSFontWeightBold] }];
     [_header addSubview:_gear];
     _gear.frame = NSMakeRect(kPanelW - kMargin - 24, (kHeaderH - 24) / 2.0, 24, 24);
 
-    _hdrStatus = [NSTextField labelWithString:@"Tiếng Việt đang bật"];
-    _hdrStatus.font = [NSFont systemFontOfSize:11 weight:NSFontWeightRegular];
-    _hdrStatus.textColor = [NSColor whiteColor];
-    _hdrStatus.backgroundColor = [NSColor clearColor];
-    _hdrStatus.bordered = NO;
-    _hdrStatus.alignment = NSTextAlignmentRight;
-    [_header addSubview:_hdrStatus];
-
-    _hdrDot = [[NSView alloc] initWithFrame:NSZeroRect];
-    _hdrDot.wantsLayer = YES;
-    _hdrDot.layer.backgroundColor = [NSColor whiteColor].CGColor;
-    _hdrDot.layer.cornerRadius = 3.5;
-    [_header addSubview:_hdrDot];
+    // [MINDFUL] Áo mới v2 mục 1 — pill "VN": CHỈ báo bộ gõ Việt bật/tắt (nhị phân, 1 màu teal),
+    // KHÔNG BAO GIỜ báo cảm xúc. Bật = tô đặc teal + chữ trắng; tắt = viền divider không tô +
+    // chữ muted (cùng ngôn ngữ nhị phân với StatusDot — xem BrandControls.h).
+    _vnPill = [NSTextField labelWithString:@"VN"];
+    _vnPill.alignment = NSTextAlignmentCenter;
+    _vnPill.bordered = NO;
+    _vnPill.editable = NO;
+    _vnPill.drawsBackground = NO;
+    _vnPill.wantsLayer = YES;
+    [_header addSubview:_vnPill];
 }
 
 #pragma mark - Refresh + reflow
@@ -258,14 +293,54 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
     [_input refresh];
 
     BOOL vnOn = ([[NSUserDefaults standardUserDefaults] integerForKey:@"InputMethod"] == 1);
-    _hdrStatus.stringValue = vnOn ? @"Tiếng Việt đang bật" : @"Đang gõ tiếng Anh";
-    _hdrDot.hidden = !vnOn;
+    [self styleVNPill:vnOn];
+    [self updateBellLine];
 
     [self reflow];
 }
 
-// Header → tab bar → ĐÚNG 1 thẻ đang chọn → chân trang. view = đúng chiều cao nội dung tab đó
-// (popover co theo tab, không phải tổng 3 thẻ như bản scroll-list cũ).
+// [MINDFUL] Áo mới v2 — xem buildHeader. Nhị phân 1 màu teal: bật = tô đặc, tắt = viền không tô.
+- (void)styleVNPill:(BOOL)on {
+    NSDictionary *attrs = @{
+        NSForegroundColorAttributeName : (on ? [NSColor whiteColor] : [Brand muted]),
+        NSFontAttributeName : [NSFont systemFontOfSize:10.5 weight:NSFontWeightSemibold],
+        NSKernAttributeName : @(0.3)
+    };
+    _vnPill.attributedStringValue = [[NSAttributedString alloc] initWithString:@"VN" attributes:attrs];
+    if (on) {
+        _vnPill.layer.backgroundColor = [Brand teal].CGColor;
+        _vnPill.layer.borderWidth = 0;
+    } else {
+        _vnPill.layer.backgroundColor = [NSColor clearColor].CGColor;
+        _vnPill.layer.borderWidth = 1.0;
+        _vnPill.layer.borderColor = [Brand divider].CGColor;
+    }
+}
+
+// [MINDFUL] Áo mới v2 mục 6 — "Chuông tỉnh thức kế tiếp". Đọc lịch chuông THẬT
+// (BellMac_MinutesUntilNextRing — timer đang chạy thật, xem BellMac.mm). Chuông tắt hoặc không rõ
+// (đang tạm hoãn / chưa có timer) → text thật thà, KHÔNG đếm ngược giả (HIẾN CHƯƠNG §2.2).
+- (void)updateBellLine {
+    NSDictionary *leadAttrs = @{ NSForegroundColorAttributeName:[Brand muted],
+                                 NSFontAttributeName:[NSFont systemFontOfSize:12.5 weight:NSFontWeightRegular] };
+    if (!vBell) {
+        _bellLine.attributedStringValue = [[NSAttributedString alloc] initWithString:@"Chuông đang tắt" attributes:leadAttrs];
+        return;
+    }
+
+    int minutes = BellMac_MinutesUntilNextRing();
+    NSMutableAttributedString *s = [[NSMutableAttributedString alloc]
+        initWithString:@"Chuông tỉnh thức kế tiếp: " attributes:leadAttrs];
+    NSString *value = (minutes >= 0) ? [NSString stringWithFormat:@"còn %d phút", minutes] : @"—";
+    [s appendAttributedString:[[NSAttributedString alloc] initWithString:value attributes:@{
+        NSForegroundColorAttributeName:[Brand charcoal],
+        NSFontAttributeName:[NSFont systemFontOfSize:12.5 weight:NSFontWeightSemibold]
+    }]];
+    _bellLine.attributedStringValue = s;
+}
+
+// Header → tab bar → ĐÚNG 1 tab đang chọn → chân trang. Tab "Hôm nay" xếp 2 nhóm eyebrow+thẻ +
+// 1 dòng chuông; tab "Chuông"/"Bộ gõ" mỗi tab vẫn đúng 1 view như trước.
 - (void)reflow {
     CGFloat y = 0;
     _header.frame = NSMakeRect(0, y, kPanelW, kHeaderH);
@@ -277,27 +352,41 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
     y += kTabBarH + kTabGapBottom;
 
     MKPanelTab tab = (MKPanelTab)_tabBar.selectedIndex;
-    _gatekeeper.hidden = (tab != MKPanelTabToday);
-    _bell.hidden       = (tab != MKPanelTabBell);
-    _input.hidden      = (tab != MKPanelTabInput);
+    BOOL isToday = (tab == MKPanelTabToday);
+    _ebNow.hidden = !isToday;
+    _gatekeeper.hidden = !isToday;
+    _ebToday.hidden = !isToday;
+    _river.hidden = !isToday;
+    _bellLine.hidden = !isToday;
+    _bell.hidden  = (tab != MKPanelTabBell);
+    _input.hidden = (tab != MKPanelTabInput);
 
-    CGFloat contentH;
-    switch (tab) {
-        case MKPanelTabBell:
-            contentH = [_bell preferredHeight];
-            _bell.frame = NSMakeRect(kMargin, y, kCardW, contentH);
-            break;
-        case MKPanelTabInput:
-            contentH = [_input preferredHeight];
-            _input.frame = NSMakeRect(kMargin, y, kCardW, contentH);
-            break;
-        case MKPanelTabToday:
-        default:
-            contentH = [_gatekeeper preferredHeight];
-            _gatekeeper.frame = NSMakeRect(kMargin, y, kCardW, contentH);
-            break;
+    if (isToday) {
+        _ebNow.frame = NSMakeRect(kMargin, y, kCardW, kEbH);
+        y += kEbH + kEbGap;
+
+        CGFloat gkH = [_gatekeeper preferredHeight];
+        _gatekeeper.frame = NSMakeRect(kMargin, y, kCardW, gkH);
+        y += gkH + kSectionGap;
+
+        _ebToday.frame = NSMakeRect(kMargin, y, kCardW, kEbH);
+        y += kEbH + kEbGap;
+
+        CGFloat riverH = [_river preferredHeight];
+        _river.frame = NSMakeRect(kMargin, y, kCardW, riverH);
+        y += riverH + kSectionGap;
+
+        _bellLine.frame = NSMakeRect(kMargin, y, kCardW, kBellLineH);
+        y += kBellLineH;
+    } else if (tab == MKPanelTabBell) {
+        CGFloat contentH = [_bell preferredHeight];
+        _bell.frame = NSMakeRect(kMargin, y, kCardW, contentH);
+        y += contentH;
+    } else {
+        CGFloat contentH = [_input preferredHeight];
+        _input.frame = NSMakeRect(kMargin, y, kCardW, contentH);
+        y += contentH;
     }
-    y += contentH;
 
     _footerDiv.frame = NSMakeRect(0, y, kPanelW, 1.0);  y += 1.0;
     y += 10.0;
@@ -309,11 +398,10 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
 }
 
 - (void)layoutHeaderChildren {
-    NSSize ss = _hdrStatus.intrinsicContentSize;
-    CGFloat statusW = ss.width + 6.0;                   // +6 để không cụt chữ cuối
-    CGFloat statusRight = kPanelW - kMargin - 24 - 8;   // 8px trước gear
-    _hdrStatus.frame = NSMakeRect(statusRight - statusW, (kHeaderH - ss.height) / 2.0, statusW, ss.height);
-    _hdrDot.frame = NSMakeRect(NSMinX(_hdrStatus.frame) - 12, (kHeaderH - 7) / 2.0, 7, 7);
+    CGFloat pillH = 18.0, pillW = 30.0;
+    CGFloat gearX = kPanelW - kMargin - 24;
+    _vnPill.frame = NSMakeRect(gearX - 8.0 - pillW, (kHeaderH - pillH) / 2.0, pillW, pillH);
+    _vnPill.layer.cornerRadius = pillH / 2.0;
 }
 
 - (NSSize)panelContentSize { return NSMakeSize(kPanelW, _lastHeight); }

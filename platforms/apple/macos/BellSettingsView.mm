@@ -2,12 +2,12 @@
 //  BellSettingsView.mm
 //  Mindful Keyboard — based on OpenKey
 //
-//  [MINDFUL] Story 1.5 — xem BellSettingsView.h cho hợp đồng + ràng buộc hiến chương.
+//  [MINDFUL] Story 1.5 / Áo mới v2 — xem BellSettingsView.h cho hợp đồng + ràng buộc hiến chương.
 //
 //  Gate "mô tả hay phán xét?" (HIẾN CHƯƠNG §5.8) — mọi copy trong file này đã tự soi:
 //    "Ít nhạy/Vừa/Nhạy", "Giờ yên lặng", "Khoảng giờ chưa hợp lệ", "Đồng bộ Chế độ Tập trung",
-//    "…cần cấp quyền, mặc định tắt", "câu căng liên tiếp trước khi chuông rung" — đều MÔ TẢ
-//    thiết lập/hành vi, KHÔNG khiển trách/thúc ép người dùng. ✅
+//    "…cần cấp quyền, mặc định tắt", ghi chú độ nhạy — đều MÔ TẢ thiết lập/hành vi, KHÔNG khiển
+//    trách/thúc ép người dùng. ✅
 //
 
 #import "BellSettingsView.h"
@@ -15,38 +15,40 @@
 #import "BrandColors.h"
 #import "EmotionWaveView.h"
 #import "NudgeCoordinatorMac.h"
-#import "BellMac.h"   // [MINDFUL] Story 1.5 — BellMac_PreviewSound() cho "nghe thử khi chọn"
+#import "BellMac.h"   // [MINDFUL] Story 1.5 — BellMac_PreviewSound() / kBellSoundMuteName
 
 // UserDefaults keys (story 1.5). Đặt cạnh nhau để không rải magic-string.
 static NSString *const kKeySensitivity = @"vBellSensitivity"; // int 1..3
-static NSString *const kKeySoundName   = @"vBellSoundName";    // NSString (tên NSSound hệ thống)
+static NSString *const kKeySoundName   = @"vBellSoundName";    // NSString (tên NSSound hệ thống, hoặc kBellSoundMuteName)
 static NSString *const kKeyVolume      = @"vBellVolume";       // float 0..1
 static NSString *const kKeyFocusSync   = @"vBellFocusSync";    // bool
 static NSString *const kKeyBellFrom    = @"vBellFrom";         // int giờ — chuông ĐƯỢC PHÉP reo (từ)
 static NSString *const kKeyBellTo      = @"vBellTo";           // int giờ — chuông ĐƯỢC PHÉP reo (đến)
 
-// Layout (điểm). Lưới 8px NOW BRAND OS; label cột trái 74px như DESIGN §1.4 / mockup .field.
-static const CGFloat kPad       = 16.0;
-static const CGFloat kLabelW    = 74.0;
-static const CGFloat kLC        = 10.0;   // gap label↔control
-static const CGFloat kFieldGap  = 12.0;   // gap giữa các field
-static const CGFloat kTitleH    = 20.0;
-static const CGFloat kSegH      = 28.0;
-static const CGFloat kDemoH     = 20.0;
-static const CGFloat kRowH      = 26.0;   // sound/volume/quiet row
-static const CGFloat kToggleH   = 22.0;
-static const CGFloat kAdvBtnH   = 18.0;
-static const CGFloat kExplainH  = 44.0;
-static const CGFloat kAdvPanelH = 46.0;
-static const CGFloat kInvalidH  = 16.0;
+// Layout (điểm) — kiểu Haynoi: mỗi nhóm = 1 eyebrow + 1 thẻ trắng viền mảnh (mockup .card: padding
+// 13px 14px, bo góc 11px, margin-bottom 16px giữa các nhóm).
+static const CGFloat kEbH        = 13.0;   // chiều cao dòng eyebrow
+static const CGFloat kEbGap      = 8.0;    // eyebrow → đỉnh thẻ
+static const CGFloat kSectionGap = 16.0;   // đáy 1 thẻ → eyebrow nhóm kế tiếp
+static const CGFloat kCardPadX   = 14.0;
+static const CGFloat kCardPadY   = 13.0;
+static const CGFloat kRowH       = 20.0;
+static const CGFloat kSegH       = 28.0;
+static const CGFloat kGapSm      = 9.0;
+static const CGFloat kGapMd      = 12.0;
+static const CGFloat kNoteH      = 32.0;   // ghi chú tối đa 2 dòng
+static const CGFloat kSwitchH    = 24.0;
+static const CGFloat kExplainH   = 44.0;
+static const CGFloat kInvalidH   = 16.0;
+static const CGFloat kLabelWQ    = 90.0;   // cột nhãn cho hàng "Giờ yên lặng"
 
-// Ánh xạ nhãn thân thiện (mockup) → tên NSSound hệ thống thật (dùng khi nối audio ở việc kế).
+// Ánh xạ nhãn thân thiện (mockup "Bộ tiếng") → tên NSSound hệ thống thật (hoặc sentinel "Im").
 static NSString *SoundNameForIndex(NSInteger i) {
-    switch (i) { case 1: return @"Tink"; case 2: return @"Pop"; default: return @"Glass"; }
+    switch (i) { case 1: return @"Tink"; case 2: return kBellSoundMuteName; default: return @"Glass"; }
 }
 static NSInteger IndexForSoundName(NSString *name) {
     if ([name isEqualToString:@"Tink"]) return 1;
-    if ([name isEqualToString:@"Pop"])  return 2;
+    if ([name isEqualToString:kBellSoundMuteName]) return 2;
     return 0;
 }
 
@@ -135,28 +137,26 @@ static NSInteger ParseHour(NSString *s) {
 @end
 
 @implementation BellSettingsView {
-    NSTextField *_title;
-    NSTextField *_headerChevron;   // ▸ thu gọn / ▾ mở
-    NSButton    *_headerHit;        // vùng bấm trong suốt phủ hàng tiêu đề
-    BOOL         _collapsed;        // mặc định YES — không phình cửa sổ (giống card Bộ gõ thu gọn trong mockup)
-    BOOL         _hideHeaderRow;    // [MINDFUL] popover 3-tab: ẩn hàng "Chuông ▸/▾" khi đã có tab label riêng
-
-    // Độ nhạy
+    // Nhận diện
+    NSTextField *_ebIdentify;
+    NSView      *_cardIdentify;
     NSTextField *_lblSensitivity;
     MKSegmented *_seg;
     NSInteger    _sensitivity;          // 1..3
     EmotionWaveView *_demoWave;
-    NSTextField *_demoCap;
+    NSTextField *_noteIdentify;
 
     // Âm thanh
-    NSTextField  *_lblSound;
-    NSPopUpButton *_soundPopup;
-
-    // Âm lượng
+    NSTextField *_ebSound;
+    NSView      *_cardSound;
+    NSTextField *_lblSound;
+    MKSegmented *_soundSeg;
     NSTextField *_lblVolume;
     NSSlider    *_volume;
 
-    // Giờ yên lặng
+    // Yên lặng
+    NSTextField *_ebQuiet;
+    NSView      *_cardQuiet;
     NSTextField *_lblQuiet;
     NSTextField *_quietFrom;   // giờ bắt đầu yên lặng
     NSTextField *_arrow;
@@ -165,35 +165,18 @@ static NSInteger ParseHour(NSString *s) {
     NSInteger    _quietFromHour;
     NSInteger    _quietToHour;
     BOOL         _quietInvalid;
-
-    // Focus sync
     NSTextField *_lblFocus;
     PillSwitch  *_focusSwitch;
     NSTextField *_focusExplain;
-
-    // Nâng cao
-    NSButton    *_advBtn;
-    NSTextField *_advChevron;
-    NSTextField *_advNumber;
-    NSTextField *_advNote;
-    BOOL         _advExpanded;
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect {
     if ((self = [super initWithFrame:frameRect])) {
-        // [MINDFUL] Compact (như Haynoi): KHÔNG vỏ card — mục nằm trên nền panel trắng, phân tách
-        // bằng divider mảnh. Nhẹ & gọn hơn kiểu hộp-viền cũ.
         self.wantsLayer = YES;
 
-        _collapsed = YES;   // mặc định thu gọn
-
-        [self buildTitle];
-        [self buildSensitivity];
-        [self buildSound];
-        [self buildVolume];
-        [self buildQuietHours];
-        [self buildFocusSync];
-        [self buildAdvanced];
+        [self buildIdentifySection];
+        [self buildSoundSection];
+        [self buildQuietSection];
 
         [self refresh];
     }
@@ -213,70 +196,51 @@ static NSInteger ParseHour(NSString *s) {
     return l;
 }
 
-- (NSFont *)fBody     { return [NSFont systemFontOfSize:13 weight:NSFontWeightRegular]; }
 - (NSFont *)fFieldLbl { return [NSFont systemFontOfSize:12 weight:NSFontWeightRegular]; }
-- (NSFont *)fSemibold { return [NSFont systemFontOfSize:12 weight:NSFontWeightSemibold]; }
-- (NSFont *)fCaption  { return [NSFont systemFontOfSize:11 weight:NSFontWeightRegular]; }
+- (NSFont *)fCaption  { return [NSFont systemFontOfSize:11.5 weight:NSFontWeightRegular]; }
+
+- (NSView *)addCard {
+    NSView *v = [[NSView alloc] initWithFrame:NSZeroRect];
+    [v applyThinCardStyle];
+    [self addSubview:v];
+    return v;
+}
 
 #pragma mark - Build subviews
 
-- (void)buildTitle {
-    _title = [self label:@"Chuông"
-                    font:[NSFont systemFontOfSize:14 weight:NSFontWeightSemibold]
-                   color:[Brand charcoal]];
-    _headerChevron = [self label:@"▸" font:[self fSemibold] color:[Brand muted]];
-    // Nút trong suốt phủ hàng tiêu đề: bấm đâu trên hàng "Chuông" cũng thu gọn/mở.
-    _headerHit = [NSButton buttonWithTitle:@"" target:self action:@selector(toggleCollapsed:)];
-    _headerHit.bordered = NO;
-    ((NSButtonCell *)_headerHit.cell).backgroundColor = [NSColor clearColor];
-    [self addSubview:_headerHit];
-}
+- (void)buildIdentifySection {
+    _ebIdentify = [NSTextField mk_eyebrowLabelWithTitle:@"Nhận diện"];
+    [self addSubview:_ebIdentify];
+    _cardIdentify = [self addCard];
 
-- (void)toggleCollapsed:(id)sender {
-    _collapsed = !_collapsed;
-    [self applyCollapsedState];
-    [self notifyLayoutChanged];
-}
-
-// Ẩn/hiện toàn bộ control theo trạng thái thu gọn. Khi mở lại, khôi phục đúng trạng thái
-// điều kiện của caption (giải thích quyền / lỗi giờ / số nâng cao).
-- (void)applyCollapsedState {
-    BOOL c = _collapsed;
-    _headerChevron.stringValue = c ? @"▸" : @"▾";
-    NSArray<NSView *> *fields = @[_lblSensitivity, _seg, _demoWave, _demoCap,
-                                  _lblSound, _soundPopup, _lblVolume, _volume,
-                                  _lblQuiet, _quietFrom, _arrow, _quietTo,
-                                  _lblFocus, _focusSwitch, _advBtn, _advChevron];
-    for (NSView *v in fields) v.hidden = c;
-    _focusExplain.hidden = c || !_focusSwitch.isOn;
-    _quietError.hidden   = c || !_quietInvalid;
-    _advNumber.hidden    = c || !_advExpanded;
-    _advNote.hidden      = c || !_advExpanded;
-}
-
-- (void)buildSensitivity {
     _lblSensitivity = [self label:@"Độ nhạy" font:[self fFieldLbl] color:[Brand muted]];
+    _demoWave = [[EmotionWaveView alloc] initWithFrame:NSZeroRect];   // xem thử mức, thu gọn
+    [self addSubview:_demoWave];
+
     _seg = [[MKSegmented alloc] initWithFrame:NSZeroRect];
     _seg.titles = @[@"Ít nhạy", @"Vừa", @"Nhạy"];
     _seg.target = self;
     _seg.action = @selector(onSensitivity:);
     [self addSubview:_seg];
 
-    _demoWave = [[EmotionWaveView alloc] initWithFrame:NSZeroRect]; // thu gọn
-    [self addSubview:_demoWave];
-    _demoCap = [self label:@"xem thử mức" font:[self fCaption] color:[Brand muted]];
+    _noteIdentify = [self label:@"Quyết định khi nào mặt hồ được coi là gợn — dùng chung cho gác cổng gửi tin và chuông."
+                            font:[self fCaption] color:[Brand muted]];
+    _noteIdentify.lineBreakMode = NSLineBreakByWordWrapping;
+    _noteIdentify.maximumNumberOfLines = 3;
 }
 
-- (void)buildSound {
-    _lblSound = [self label:@"Âm thanh" font:[self fFieldLbl] color:[Brand muted]];
-    _soundPopup = [[NSPopUpButton alloc] initWithFrame:NSZeroRect pullsDown:NO];
-    [_soundPopup addItemsWithTitles:@[@"Tiếng chuông", @"Chuông gió", @"Giọt nước"]];
-    _soundPopup.target = self;
-    _soundPopup.action = @selector(onSound:);
-    [self addSubview:_soundPopup];
-}
+- (void)buildSoundSection {
+    _ebSound = [NSTextField mk_eyebrowLabelWithTitle:@"Âm thanh"];
+    [self addSubview:_ebSound];
+    _cardSound = [self addCard];
 
-- (void)buildVolume {
+    _lblSound = [self label:@"Bộ tiếng" font:[self fFieldLbl] color:[Brand muted]];
+    _soundSeg = [[MKSegmented alloc] initWithFrame:NSZeroRect];
+    _soundSeg.titles = @[@"Chuông chùa", @"Chuông gió", @"Im"];
+    _soundSeg.target = self;
+    _soundSeg.action = @selector(onSound:);
+    [self addSubview:_soundSeg];
+
     _lblVolume = [self label:@"Âm lượng" font:[self fFieldLbl] color:[Brand muted]];
     _volume = [NSSlider sliderWithValue:0.6 minValue:0.0 maxValue:1.0
                                  target:self action:@selector(onVolume:)];
@@ -288,13 +252,29 @@ static NSInteger ParseHour(NSString *s) {
     [self addSubview:_volume];
 }
 
-- (void)buildQuietHours {
+- (void)buildQuietSection {
+    _ebQuiet = [NSTextField mk_eyebrowLabelWithTitle:@"Yên lặng"];
+    [self addSubview:_ebQuiet];
+    _cardQuiet = [self addCard];
+
     _lblQuiet = [self label:@"Giờ yên lặng" font:[self fFieldLbl] color:[Brand muted]];
     _quietFrom = [self timeChip];
     _arrow = [self label:@"→" font:[self fFieldLbl] color:[Brand muted]];
     _quietTo = [self timeChip];
     _quietError = [self label:@"Khoảng giờ chưa hợp lệ" font:[self fCaption] color:[Brand muted]];
     _quietError.hidden = YES;   // ẩn khi hợp lệ; caption trung tính, KHÔNG đỏ
+
+    _lblFocus = [self label:@"Đồng bộ Chế độ Tập trung" font:[NSFont systemFontOfSize:12 weight:NSFontWeightSemibold] color:[Brand charcoal]];
+    _focusSwitch = [[PillSwitch alloc] initWithFrame:NSZeroRect];
+    _focusSwitch.target = self;
+    _focusSwitch.action = @selector(onFocusSwitch:);
+    [self addSubview:_focusSwitch];
+
+    _focusExplain = [self label:@"Ứng dụng sẽ đọc trạng thái Chế độ Tập trung của macOS để tự áp giờ yên lặng — cần cấp quyền, mặc định tắt."
+                           font:[self fCaption] color:[Brand muted]];
+    _focusExplain.lineBreakMode = NSLineBreakByWordWrapping;
+    _focusExplain.maximumNumberOfLines = 3;
+    _focusExplain.hidden = YES;   // chỉ hiện khi bật (giải thích quyền hiện SAU khi bật)
 }
 
 - (NSTextField *)timeChip {
@@ -314,37 +294,6 @@ static NSInteger ParseHour(NSString *s) {
     return f;
 }
 
-- (void)buildFocusSync {
-    _lblFocus = [self label:@"Đồng bộ Chế độ Tập trung" font:[self fSemibold] color:[Brand charcoal]];
-    _focusSwitch = [[PillSwitch alloc] initWithFrame:NSZeroRect];
-    _focusSwitch.target = self;
-    _focusSwitch.action = @selector(onFocusSwitch:);
-    [self addSubview:_focusSwitch];
-
-    _focusExplain = [self label:@"Ứng dụng sẽ đọc trạng thái Chế độ Tập trung của macOS để tự áp giờ yên lặng — cần cấp quyền, mặc định tắt."
-                           font:[self fCaption] color:[Brand muted]];
-    _focusExplain.lineBreakMode = NSLineBreakByWordWrapping;
-    _focusExplain.maximumNumberOfLines = 3;
-    _focusExplain.hidden = YES;   // chỉ hiện khi bật (giải thích quyền hiện SAU khi bật)
-}
-
-- (void)buildAdvanced {
-    _advBtn = [NSButton buttonWithTitle:@"Tùy chỉnh nâng cao" target:self action:@selector(onAdvanced:)];
-    _advBtn.bordered = NO;
-    _advBtn.font = [self fSemibold];
-    ((NSButtonCell *)_advBtn.cell).backgroundColor = [NSColor clearColor];
-    _advBtn.attributedTitle = [[NSAttributedString alloc] initWithString:@"Tùy chỉnh nâng cao"
-        attributes:@{ NSForegroundColorAttributeName:[Brand muted], NSFontAttributeName:[self fSemibold] }];
-    [self addSubview:_advBtn];
-    _advChevron = [self label:@"▸" font:[self fSemibold] color:[Brand muted]];
-
-    _advNumber = [self label:@"" font:[self fBody] color:[Brand charcoal]];
-    _advNote = [self label:@"(giá trị đang áp dụng — chỉnh sâu hơn ở phần sau)"
-                      font:[self fCaption] color:[Brand muted]];
-    _advNumber.hidden = YES;
-    _advNote.hidden = YES;
-}
-
 #pragma mark - State load / persist
 
 - (void)refresh {
@@ -357,7 +306,7 @@ static NSInteger ParseHour(NSString *s) {
 
     // Âm thanh
     NSString *sound = [d stringForKey:kKeySoundName] ?: SoundNameForIndex(0);
-    [_soundPopup selectItemAtIndex:IndexForSoundName(sound)];
+    _soundSeg.selectedIndex = IndexForSoundName(sound);
 
     // Âm lượng
     double vol = [d objectForKey:kKeyVolume] ? [d doubleForKey:kKeyVolume] : 0.6;
@@ -378,20 +327,6 @@ static NSInteger ParseHour(NSString *s) {
     [_focusSwitch setOn:focus animated:NO];
     _focusExplain.hidden = !focus;
 
-    [self syncAdvancedNumber];
-    [self applyCollapsedState];
-    self.needsLayout = YES;
-}
-
-// [MINDFUL] popover 3-tab — xem BellSettingsView.h. Gọi 1 lần lúc tạo view; không đổi logic
-// đọc/ghi UserDefaults (refresh/setSensitivity/onFocusSwitch... nguyên vẹn).
-- (void)expandForTabPresentation {
-    _hideHeaderRow = YES;
-    _collapsed = NO;
-    _title.hidden = YES;
-    _headerChevron.hidden = YES;
-    _headerHit.hidden = YES;
-    [self applyCollapsedState];
     self.needsLayout = YES;
 }
 
@@ -404,7 +339,6 @@ static NSInteger ParseHour(NSString *s) {
 
     if (persist) {
         [[NSUserDefaults standardUserDefaults] setInteger:s forKey:kKeySensitivity];
-        [self syncAdvancedNumber];
     }
 }
 
@@ -413,21 +347,16 @@ static NSInteger ParseHour(NSString *s) {
     _quietTo.stringValue   = [NSString stringWithFormat:@"%02ld:00", (long)_quietToHour];
 }
 
-- (void)syncAdvancedNumber {
-    int trigger = NudgeCoordinatorMac_TenseStreakTrigger();
-    _advNumber.stringValue = [NSString stringWithFormat:@"%d câu căng liên tiếp trước khi chuông rung", trigger];
-}
-
 #pragma mark - Actions
 
 - (void)onSensitivity:(MKSegmented *)sender {
     [self setSensitivity:sender.selectedIndex + 1 persist:YES];
 }
 
-- (void)onSound:(NSPopUpButton *)sender {
-    [[NSUserDefaults standardUserDefaults] setObject:SoundNameForIndex(sender.indexOfSelectedItem)
+- (void)onSound:(MKSegmented *)sender {
+    [[NSUserDefaults standardUserDefaults] setObject:SoundNameForIndex(sender.selectedIndex)
                                               forKey:kKeySoundName];
-    BellMac_PreviewSound();   // nghe thử ngay âm vừa chọn (EXPERIENCE Journey B)
+    BellMac_PreviewSound();   // nghe thử ngay âm vừa chọn ("Im" tự im lặng — xem BellMac.mm)
 }
 
 - (void)onVolume:(NSSlider *)sender {
@@ -443,15 +372,6 @@ static NSInteger ParseHour(NSString *s) {
     // Giải thích quyền hiện NGAY khi bật (không có đường tự bật ngầm); giá trị đổi cùng lúc user chủ động bật.
     _focusExplain.hidden = !on;
     [[NSUserDefaults standardUserDefaults] setBool:on forKey:kKeyFocusSync];
-    [self notifyLayoutChanged];
-}
-
-- (void)onAdvanced:(NSButton *)sender {
-    _advExpanded = !_advExpanded;
-    _advChevron.stringValue = _advExpanded ? @"▾" : @"▸";
-    _advNumber.hidden = !_advExpanded;
-    _advNote.hidden = !_advExpanded;
-    if (_advExpanded) [self syncAdvancedNumber];
     [self notifyLayoutChanged];
 }
 
@@ -502,93 +422,87 @@ static NSInteger ParseHour(NSString *s) {
     [self relayout:YES];
 }
 
-// Đi từ ĐỈNH card xuống (top = khoảng cách tính từ mép trên). Khi apply=YES thì set frame, dùng
+// Đi từ ĐỈNH view xuống (top = khoảng cách tính từ mép trên). Khi apply=YES thì set frame, dùng
 // self.bounds.height để đổi sang toạ độ AppKit (gốc dưới-trái). Trả về tổng chiều cao cần.
 - (CGFloat)relayout:(BOOL)apply {
     CGFloat W = NSWidth(self.bounds);
     CGFloat H = NSHeight(self.bounds);
-    CGFloat ctlX = kPad + kLabelW + kLC;
-    CGFloat ctlW = MAX(40.0, W - ctlX - kPad);
-    CGFloat top = kPad;
+    CGFloat top = 0;
 
-#define FRAMEAT(v, x, w, h, t) if (apply) { (v).frame = NSMakeRect((x), H - (t) - (h), (w), (h)); }
+#define SET(v, x, t, w, h) if (apply) { (v).frame = NSMakeRect((x), H - (t) - (h), (w), (h)); }
 
-    if (_hideHeaderRow) {
-        // [MINDFUL] popover 3-tab: tab đã có nhãn "Chuông" rồi, bỏ hàng tiêu đề + luôn bung
-        // (expandForTabPresentation đã ép _collapsed = NO).
-    } else {
-        // Hàng tiêu đề: "Chuông" + chevron (phải); cả hàng bấm được để thu gọn/mở.
-        FRAMEAT(_title, kPad, W - 2 * kPad - 20, kTitleH, top);
-        FRAMEAT(_headerChevron, W - kPad - 14, 14, kTitleH, top);
-        FRAMEAT(_headerHit, 0, W, kTitleH + 8, top - 4);
-        if (_collapsed) {
-            top += kTitleH + kPad;   // thu gọn: chỉ hàng tiêu đề
-            return top;
-        }
-        top += kTitleH + kFieldGap;
-    }
+    // ---- Nhận diện ----
+    SET(_ebIdentify, 0, top, W, kEbH);
+    top += kEbH + kEbGap;
+    CGFloat identifyTop = top;
+    CGFloat cy = kCardPadY;
 
-    // Độ nhạy: label (căn giữa hàng segmented) + segmented + hàng sóng demo dưới.
-    FRAMEAT(_lblSensitivity, kPad, kLabelW, 16.0, top + (kSegH - 16.0) / 2.0);
-    FRAMEAT(_seg, ctlX, ctlW, kSegH, top);
-    CGFloat demoTop = top + kSegH + 6.0;
-    FRAMEAT(_demoWave, ctlX, 64.0, kDemoH, demoTop);
-    FRAMEAT(_demoCap, ctlX + 72.0, ctlW - 72.0, 14.0, demoTop + (kDemoH - 14.0) / 2.0);
-    top += kSegH + 6.0 + kDemoH + kFieldGap;
+    SET(_lblSensitivity, kCardPadX, identifyTop + cy, 90.0, kRowH);
+    CGFloat waveW = 64.0, waveH = 18.0;
+    SET(_demoWave, W - kCardPadX - waveW, identifyTop + cy + (kRowH - waveH) / 2.0, waveW, waveH);
+    cy += kRowH + kGapSm;
+    SET(_seg, kCardPadX, identifyTop + cy, W - 2 * kCardPadX, kSegH);
+    cy += kSegH + kGapSm;
+    SET(_noteIdentify, kCardPadX, identifyTop + cy, W - 2 * kCardPadX, kNoteH);
+    cy += kNoteH + kCardPadY;
+    SET(_cardIdentify, 0, identifyTop, W, cy);
+    top = identifyTop + cy + kSectionGap;
 
-    // Âm thanh
-    FRAMEAT(_lblSound, kPad, kLabelW, 16.0, top + (kRowH - 16.0) / 2.0);
-    FRAMEAT(_soundPopup, ctlX, ctlW, kRowH, top);
-    top += kRowH + kFieldGap;
+    // ---- Âm thanh ----
+    SET(_ebSound, 0, top, W, kEbH);
+    top += kEbH + kEbGap;
+    CGFloat soundTop = top;
+    cy = kCardPadY;
 
-    // Âm lượng
-    FRAMEAT(_lblVolume, kPad, kLabelW, 16.0, top + (kRowH - 16.0) / 2.0);
-    FRAMEAT(_volume, ctlX, ctlW, 20.0, top + (kRowH - 20.0) / 2.0);
-    top += kRowH + kFieldGap;
+    SET(_lblSound, kCardPadX, soundTop + cy, 90.0, kRowH);
+    cy += kRowH + kGapSm;
+    SET(_soundSeg, kCardPadX, soundTop + cy, W - 2 * kCardPadX, kSegH);
+    cy += kSegH + kGapMd;
+    SET(_lblVolume, kCardPadX, soundTop + cy, 74.0, kRowH);
+    CGFloat volX = kCardPadX + 74.0 + 10.0;
+    SET(_volume, volX, soundTop + cy + (kRowH - 20.0) / 2.0, W - kCardPadX - volX, 20.0);
+    cy += kRowH + kCardPadY;
+    SET(_cardSound, 0, soundTop, W, cy);
+    top = soundTop + cy + kSectionGap;
 
-    // Giờ yên lặng: 2 chip + mũi tên
-    FRAMEAT(_lblQuiet, kPad, kLabelW, 16.0, top + (kRowH - 16.0) / 2.0);
+    // ---- Yên lặng ----
+    SET(_ebQuiet, 0, top, W, kEbH);
+    top += kEbH + kEbGap;
+    CGFloat quietTop = top;
+    cy = kCardPadY;
+
+    SET(_lblQuiet, kCardPadX, quietTop + cy, kLabelWQ, kRowH);
+    CGFloat ctlX = kCardPadX + kLabelWQ + 10.0;
     if (apply) {
         CGFloat chipW = 62.0, arrowW = 18.0;
-        _quietFrom.frame = NSMakeRect(ctlX, H - top - kRowH, chipW, kRowH);
-        _arrow.frame = NSMakeRect(ctlX + chipW + 6.0, H - top - kRowH / 2.0 - 8.0, arrowW, 16.0);
-        _quietTo.frame = NSMakeRect(ctlX + chipW + 6.0 + arrowW + 6.0, H - top - kRowH, chipW, kRowH);
+        CGFloat rowY = H - (quietTop + cy) - kRowH;
+        _quietFrom.frame = NSMakeRect(ctlX, rowY, chipW, kRowH);
+        _arrow.frame = NSMakeRect(ctlX + chipW + 6.0, rowY + (kRowH - 16.0) / 2.0, arrowW, 16.0);
+        _quietTo.frame = NSMakeRect(ctlX + chipW + 6.0 + arrowW + 6.0, rowY, chipW, kRowH);
     }
-    top += kRowH;
+    cy += kRowH;
     if (!_quietError.hidden) {
-        top += 4.0;
-        FRAMEAT(_quietError, ctlX, ctlW, kInvalidH, top);
-        top += kInvalidH;
+        cy += 4.0;
+        SET(_quietError, ctlX, quietTop + cy, W - kCardPadX - ctlX, kInvalidH);
+        cy += kInvalidH;
     }
-    top += kFieldGap;
+    cy += kGapMd;
 
-    // Focus sync: label trái + PillSwitch phải
+    SET(_lblFocus, kCardPadX, quietTop + cy, W - kCardPadX - 60.0, kRowH);
     if (apply) {
-        _focusSwitch.frame = NSMakeRect(W - kPad - 40.0, H - top - kToggleH + (kToggleH - 24.0) / 2.0, 40.0, 24.0);
+        _focusSwitch.frame = NSMakeRect(W - kCardPadX - 40.0, H - (quietTop + cy) - kRowH + (kRowH - kSwitchH) / 2.0, 40.0, kSwitchH);
     }
-    FRAMEAT(_lblFocus, kPad, W - 2 * kPad - 48.0, 16.0, top + (kToggleH - 16.0) / 2.0);
-    top += kToggleH;
+    cy += kRowH;
     if (!_focusExplain.hidden) {
-        top += 6.0;
-        FRAMEAT(_focusExplain, kPad, W - 2 * kPad, kExplainH, top);
-        top += kExplainH;
+        cy += 6.0;
+        SET(_focusExplain, kCardPadX, quietTop + cy, W - 2 * kCardPadX, kExplainH);
+        cy += kExplainH;
     }
-    top += kFieldGap;
+    cy += kCardPadY;
+    SET(_cardQuiet, 0, quietTop, W, cy);
+    top = quietTop + cy;
 
-    // Nâng cao
-    FRAMEAT(_advChevron, kPad, 12.0, kAdvBtnH, top);
-    FRAMEAT(_advBtn, kPad + 14.0, 160.0, kAdvBtnH, top);
-    top += kAdvBtnH;
-    if (_advExpanded) {
-        top += 8.0;
-        FRAMEAT(_advNumber, kPad, W - 2 * kPad, 18.0, top);
-        top += 18.0 + 2.0;
-        FRAMEAT(_advNote, kPad, W - 2 * kPad, 14.0, top);
-        top += 14.0 + (kAdvPanelH - 34.0);
-    }
-
-    top += kPad;
-#undef FRAMEAT
+#undef SET
     return top;
 }
 

@@ -1,0 +1,35 @@
+//
+//  EmotionRiverView.h
+//  Mindful Keyboard — based on OpenKey
+//
+//  [MINDFUL] Áo mới v2 (2026-07-13, decision-log "Diện mạo mới v2" mục 3/4) — thẻ "dòng sông":
+//  mở rộng con sóng ~ (EmotionWaveView) theo THỜI GIAN trong ngày — 1 đường teal lượn theo biên
+//  độ mỗi "nhịp lấy mẫu" (Bước 3 sẽ ghi 1 điểm mỗi lần chuông ngân, xem decision-log mục 4/6).
+//
+//  View NÀY chỉ là cái KHUNG + trạng thái TRỐNG thật thà — Bước 3 (nguồn dữ liệu thật) CHƯA làm.
+//  `setSamples:` là chỗ cắm để bước sau đổ dữ liệu thật vào mà KHÔNG cần sửa layout/host.
+//
+//  Ràng buộc HIẾN CHƯƠNG khoá trong file này (docs/AGENT-BRIEF.md §2.2/2.3, decision-log dec.4):
+//    - 1 hue teal, chỉ đổi biên độ. KHÔNG valence-color (tốt/xấu), KHÔNG số/chuỗi-ngày-liên-tục/heatmap.
+//    - CHƯA có mẫu (samples nil/rỗng) → KHÔNG vẽ đường sông/chấm giả. Hiện trạng thái trống
+//      THẬT THÀ (vd "Hồ chưa đủ nét — ngày mới bắt đầu"), không giả vờ "phẳng lặng".
+//
+
+#import <Cocoa/Cocoa.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface EmotionRiverView : NSView
+
+/// Biên độ mỗi nhịp lấy mẫu trong ngày (0.0..1.0), theo thứ tự thời gian tăng dần. nil hoặc rỗng
+/// = CHƯA có dữ liệu → view hiện trạng thái trống thật thà (KHÔNG vẽ đường/chấm giả). Bước 3/4
+/// gọi hàm này khi có nguồn thật (mỗi nhịp chuông ghi 1 điểm lên dòng sông).
+- (void)setSamples:(nullable NSArray<NSNumber *> *)samples;
+
+/// Chiều cao cần để hiện đủ thẻ (vùng vẽ + nhãn trục Sáng/Trưa/Chiều/Tối + caption) — host popover
+/// dùng để xếp layout.
+- (CGFloat)preferredHeight;
+
+@end
+
+NS_ASSUME_NONNULL_END
