@@ -11,12 +11,9 @@
 
 ---
 
-## Chuẩn bị (1 lần)
+## Chuẩn bị (1 lệnh)
 
-- [ ] Boot Simulator: `xcrun simctl boot "iPhone 17"` (hoặc mở qua Xcode)
-- [ ] `cd platforms/apple && xcodegen generate`
-- [ ] Build + cài container: `xcodebuild -project MindfulKey.xcodeproj -scheme MindfulKeyiOS -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17' -configuration Debug CODE_SIGNING_ALLOWED=NO build`, rồi `xcrun simctl install booted <path-tới-.app>`
-- [ ] Mở app: `xcrun simctl launch booted vn.gnh.mindfulkey.ios`
+- [ ] `make run-ios` — build + boot Simulator + cài + mở app + in hướng dẫn. (Đổi máy: `make run-ios IOS_SIM="iPhone 15"`.)
 
 ---
 
@@ -27,6 +24,7 @@
 - [ ] **A1.** Mở app lần đầu → thấy **Màn 01** với 3 bước đánh số đúng thứ tự ("① Mở Cài đặt › Cài đặt chung › Bàn phím ② ... ③ ..."), nút "Mở Cài đặt" cam. _(AC 1.7 #1)_
 - [ ] **A2.** Chạm "Chưa thấy Mindful Key?" → hiện hướng dẫn tĩnh, giọng bình thản, **KHÔNG** icon đỏ / chữ "Lỗi". _(AC 1.7 #2)_
 - [ ] **A3.** Chạm "Mở Cài đặt" → vào đúng trang Cài đặt của app (`openSettingsURLString`) → tự bật bàn phím Mindful Key trong Cài đặt hệ thống chung (thủ công ngoài app) → quay lại app.
+- [ ] **A3b. (lối tiến thủ công — fix 2026-07-13)** Nếu quay lại app mà **vẫn ở Màn 01** (App Group heartbeat không nhảy — thường gặp trên Simulator), sẽ thấy nút mới **"Đã thêm xong — tiếp tục"** hé ra dưới "Chưa thấy?" → chạm để sang Màn 02. (Trên máy thật heartbeat chạy → tự nhảy, không cần nút này.)
 - [ ] **A4.** Thấy **Màn 02** — cặp biên độ "Bật lên để" (sóng) / "Không bao giờ" (đường phẳng), nghĩa nằm ở CHỮ chứ không chỉ màu/hình. Có nút "Để sau". _(AC 1.7 #3, #4)_
 - [ ] **A5.** Chạm "Để sau" → vào thẳng **Home**, không bị ép bật Full Access. _(AC 1.7 #5)_
 - [ ] **A6.** (Tùy chọn) Bật VoiceOver → duyệt qua Màn 01/02 → xác nhận đọc đúng thứ tự: tiêu đề → nội dung → CTA. _(AC 1.7 #6)_
