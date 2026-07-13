@@ -48,7 +48,16 @@
 #pragma mark - Dựng màn + nối điều hướng
 
 - (UIViewController *)mk_makeActivation {
-    return [[ActivationViewController alloc] init];
+    ActivationViewController *vc = [[ActivationViewController alloc] init];
+    __weak typeof(self) weakSelf = self;
+    // Lối tiến thủ công (chỉ hiện sau khi rời-về Cài đặt mà heartbeat không nhảy) → sang Màn 02,
+    // đúng đích như nhánh heartbeat tự động. Tránh kẹt vĩnh viễn nếu App Group hụt.
+    vc.onContinueAnyway = ^{
+        if ([weakSelf.nav.topViewController isKindOfClass:[ActivationViewController class]]) {
+            [weakSelf.nav pushViewController:[weakSelf mk_makeFullAccess] animated:YES];
+        }
+    };
+    return vc;
 }
 
 - (UIViewController *)mk_makeFullAccess {

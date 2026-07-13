@@ -13,7 +13,9 @@
 
 @interface ActivationViewController ()
 @property (nonatomic, strong) BrandMarkView *brandMark;
-@property (nonatomic, strong) UILabel *fallbackLabel;   // hướng dẫn "Chưa thấy?" — ẩn mặc định
+@property (nonatomic, strong) UILabel *fallbackLabel;    // hướng dẫn "Chưa thấy?" — ẩn mặc định
+@property (nonatomic, strong) UIButton *continueButton;  // lối tiến thủ công — ẩn tới khi rời-về Cài đặt
+@property (nonatomic, assign) BOOL didLeaveForSettings;  // đã bấm "Mở Cài đặt" và rời app chưa
 @end
 
 @implementation ActivationViewController
@@ -27,6 +29,12 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self.brandMark startWaveAnimationIfAllowed];
+    // Quay lại màn này SAU KHI đã rời sang Cài đặt mà AppDelegate không tự chuyển Màn 02
+    // (heartbeat chưa/không nhảy) → hé lối tiến thủ công để người dùng không kẹt.
+    if (self.didLeaveForSettings && self.continueButton.hidden) {
+        self.continueButton.hidden = NO;
+        UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, self.continueButton);
+    }
 }
 
 - (void)mk_buildUI {
@@ -72,6 +80,13 @@
         @"Có thể iOS cần vài giây để hiện. Mở app Cài đặt › Cài đặt chung › Bàn phím để thêm Mindful Key, rồi thử lại."];
     self.fallbackLabel.hidden = YES;
     [stack addArrangedSubview:self.fallbackLabel];
+
+    // — Lối tiến thủ công (ẩn tới khi rời-về Cài đặt): tránh kẹt vĩnh viễn nếu heartbeat App
+    //   Group không nhảy. Giọng bình thản, không nài, không "Bỏ qua". —
+    self.continueButton = [OnboardingUI ghostButton:@"Đã thêm xong — tiếp tục"];
+    [self.continueButton addTarget:self action:@selector(mk_continueAnyway) forControlEvents:UIControlEventTouchUpInside];
+    self.continueButton.hidden = YES;
+    [stack addArrangedSubview:self.continueButton];
 
     UILayoutGuide *cg = scroll.contentLayoutGuide;
     UILayoutGuide *fg = scroll.frameLayoutGuide;
@@ -147,7 +162,12 @@
     return row;
 }
 
+- (void)mk_continueAnyway {
+    if (self.onContinueAnyway) { self.onContinueAnyway(); }
+}
+
 - (void)mk_openSettings {
+    self.didLeaveForSettings = YES;   // đánh dấu để khi quay lại (nếu heartbeat không nhảy) hé lối tiến thủ công
     NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];   // API CÔNG KHAI (không App-Prefs private)
     UIApplication *app = [UIApplication sharedApplication];
     if (url && [app canOpenURL:url]) {
