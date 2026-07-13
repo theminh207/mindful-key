@@ -24,13 +24,32 @@
     [super viewDidLoad];
     self.view.backgroundColor = [BrandColorsUIKit surfacePage];
     [self mk_buildUI];
+    // Rời sang Cài đặt = app xuống nền; lúc quay lại iOS KHÔNG gọi lại viewDidAppear: (view chưa
+    // bao giờ bị gỡ khỏi màn, chỉ app thức dậy) → phải nghe UIApplicationDidBecomeActive mới hé
+    // được lối tiến thủ công đúng lúc. Trước đây đặt nhầm ở viewDidAppear: nên nút không bao giờ hiện.
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(mk_appDidBecomeActive)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)mk_appDidBecomeActive {
+    [self mk_revealContinueIfReturned];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self.brandMark startWaveAnimationIfAllowed];
-    // Quay lại màn này SAU KHI đã rời sang Cài đặt mà AppDelegate không tự chuyển Màn 02
-    // (heartbeat chưa/không nhảy) → hé lối tiến thủ công để người dùng không kẹt.
+    [self mk_revealContinueIfReturned];
+}
+
+// Quay lại màn này SAU KHI đã rời sang Cài đặt mà AppDelegate không tự chuyển Màn 02
+// (heartbeat chưa/không nhảy) → hé lối tiến thủ công để người dùng không kẹt.
+- (void)mk_revealContinueIfReturned {
     if (self.didLeaveForSettings && self.continueButton.hidden) {
         self.continueButton.hidden = NO;
         UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, self.continueButton);
@@ -85,7 +104,14 @@
     //   Group không nhảy. Giọng bình thản, không nài, không "Bỏ qua". —
     self.continueButton = [OnboardingUI ghostButton:@"Đã thêm xong — tiếp tục"];
     [self.continueButton addTarget:self action:@selector(mk_continueAnyway) forControlEvents:UIControlEventTouchUpInside];
+#if TARGET_OS_SIMULATOR
+    // Simulator KHÔNG nhúng được App Group entitlement (bản ad-hoc) → heartbeat "bàn phím đã chạy"
+    // đứng im vĩnh viễn, onboarding không bao giờ tự qua Màn 02. Để test được trên máy giả lập, hé
+    // lối tiến thủ công ngay từ đầu. Máy thật (#else) giữ nguyên: chỉ hiện sau khi rời-về Cài đặt.
+    self.continueButton.hidden = NO;
+#else
     self.continueButton.hidden = YES;
+#endif
     [stack addArrangedSubview:self.continueButton];
 
     UILayoutGuide *cg = scroll.contentLayoutGuide;

@@ -28,11 +28,13 @@
 		<string>KeyboardViewController</string>
 		<key>NSExtensionAttributes</key>
 		<dict>
-			<!-- Mốc A/B: chưa cần Full Access — UITextDocumentProxy chèn/xoá ký tự không đòi
-			     quyền này. Full Access chỉ bật ở Mốc C khi cần App Group (xem tech-spec §NFR
-			     Accessibility). -->
+			<!-- Round 2 (Mốc C) BẬT open access: bàn phím cần App Group (đọc macro + cài đặt
+			     Telex/VNI từ container app) và đọc câu vừa gõ để con sóng ~ phản chiếu nhịp gõ.
+			     TẤT CẢ xử lý ngay trên máy — không gửi/không lưu/không ai đọc (xem docs/PRIVACY-NOTE.md +
+			     copy màn FullAccess). Không có open access thì iOS ẩn cả nút "Allow Full Access" trong
+			     Cài đặt và bàn phím không mở được App Group (đã kiểm chứng 2026-07-13). -->
 			<key>RequestsOpenAccess</key>
-			<false/>
+			<true/>
 			<key>IsASCIICapable</key>
 			<false/>
 			<key>PrefersRightToLeft</key>

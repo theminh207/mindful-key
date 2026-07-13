@@ -45,9 +45,20 @@ run: build       ## Build rồi mở app dev
 	open "$(DERIVED)/Build/Products/$(CONFIG)/"*.app
 
 run-ios: generate  ## Build + cài + mở container app iOS trên Simulator (IOS_SIM="iPhone 17")
+	# KÝ AD-HOC ("-") + KÈM entitlements — KHÔNG dùng CODE_SIGNING_ALLOWED=NO. Lý do: App Group
+	# group.vn.gnh.mindfulkey (kho chung app<->keyboard: macro, settings, heartbeat onboarding) chỉ
+	# được Simulator cấp phát khi app có chữ ký MANG theo entitlements. Tắt ký hẳn = không có kho
+	# chung = macro/onboarding/settings gãy im lặng (đã kiểm chứng 2026-07-13). Ad-hoc đủ cho
+	# Simulator, KHÔNG cần Apple Developer Program.
+	# ENABLE_DEBUG_DYLIB=NO — Xcode 16+ mặc định tách executable thành vỏ mỏng + .debug.dylib ở
+	# Debug. App thường ổn, nhưng tiện ích BÀN PHÍM (app-extension) hay KHÔNG nạp được kiểu tách này
+	# → iOS lặng lẽ nhả về bàn phím hệ thống (đã kiểm chứng 2026-07-13). Ép build 1 khối liền.
 	xcodebuild -project "$(XCODEPROJ)" -scheme MindfulKeyiOS -configuration "$(CONFIG)" \
 	  -sdk iphonesimulator -destination 'platform=iOS Simulator,name=$(IOS_SIM)' \
-	  -derivedDataPath "$(IOS_DD)" CODE_SIGNING_ALLOWED=NO build
+	  -derivedDataPath "$(IOS_DD)" \
+	  CODE_SIGNING_ALLOWED=YES CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="-" CODE_SIGN_STYLE=Manual \
+	  ENABLE_DEBUG_DYLIB=NO \
+	  build
 	-xcrun simctl boot "$(IOS_SIM)"
 	xcrun simctl bootstatus "$(IOS_SIM)" -b
 	xcrun simctl install "$(IOS_SIM)" "$$(find $(IOS_DD)/Build/Products -name 'MindfulKeyiOS.app' -maxdepth 3 | head -1)"
