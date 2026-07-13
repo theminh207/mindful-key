@@ -16,6 +16,39 @@ mới ở TRÊN CÙNG (mới nhất trước), không xoá/sửa entry cũ.
 
 ---
 
+### 2026-07-13 — Chốt 3 quyết định Round 3 (Q4/Q5/Q6) + kiến trúc nhật ký iOS
+- **Decision:** Chủ dự án chốt (qua AskUserQuestion) 3 câu mở khóa Round 3 (nhật ký + soi lại + theme):
+  - **Q4 — nhật ký hiện gì:** **câu phản chiếu là trọng tâm + bối cảnh SỐ nhỏ** (số lần "mặt hồ gợn
+    sóng" hôm nay + giờ dễ căng nhất), cỡ nhỏ, đặt dưới câu hỏi — ngang bản macOS `FetchTodaySummary`.
+    **KHÔNG biểu đồ, không streak, không điểm.**
+  - **Q5 — soi lại là màn hay notification:** **màn trong tab "Mặt hồ" + 1 thông báo đẩy nhẹ cuối
+    ngày**, MẶC ĐỊNH TẮT, opt-in, tối đa 1 lần/ngày, giờ chỉnh được, tắt được. Copy quan sát không phán xét.
+  - **Q6 — theme cá nhân hóa:** **vài preset trung tính chốt sẵn** (2–4 bảng màu trong palette NOW
+    BRAND, đều trung tính), live-preview, **KHÔNG cho tự chọn màu tự do** (chặn user tạo tông đỏ/xanh
+    mã hóa cảm xúc).
+- **Kiến trúc đã chốt (sau khi grounding code thật R2 + tiền lệ macOS):**
+  - Nhật ký iOS **CHỈ ghi "khoảnh khắc căng" (send-risk ≥ ngưỡng chết ~0.3)**, KHÔNG ghi mọi câu —
+    mirror mô hình "sự kiện" của macOS (`MoodStoreMac` log event, không log liên tục), tối thiểu hóa
+    dữ liệu. Schema: `timestamp + send-risk`, TUYỆT ĐỐI không văn bản gốc (như `MoodStoreMac` schema).
+  - Kho sống ở **`platforms/apple/shared/`** (cùng chỗ `BellReminderSettingsBridge`), Foundation +
+    CommonCrypto + Security → host-testable. **AES-256-CBC + khóa Keychain** (mirror `MoodStoreMac.mm`),
+    **KHÔNG SQLite** (tránh dependency nặng cho extension chật RAM ~48–60MB) — dùng file sự kiện mã hóa gọn.
+  - **Extension GHI** (gọi trong callback `MoodBridge.mm`, ngay cạnh `NudgeCoordinatorIOS`, SAU cổng
+    ô-bảo-mật), **container ĐỌC** (màn soi lại). Khóa AES chia sẻ qua **keychain-access-groups** — 2
+    entitlements hiện CHỈ có App Group, phải THÊM.
+  - Consent gate hỏi trong container (tab Mặt hồ / Cài đặt), KHÔNG hỏi giữa lúc gõ; extension không
+    ghi gì tới khi có consent (cache cờ consent qua App Group, như macOS check `HasConsent`).
+- **Rationale:** Nút thắt chặn "linh hồn" R3. Q4/Q6 bám hiến chương (số liệu = bối cảnh phụ, màu trung
+  tính, không gamify). Q5 là **nới lỏng CÓ Ý THỨC** so với mandate iOS "nhắc THỤ ĐỘNG" (2026-07-10):
+  notification là "nhắc chủ động", nhưng chủ dự án chọn với rào chắn cứng (mặc định TẮT + opt-in + 1
+  lần/ngày + tắt được) → ghi `docs/FRICTION-LOG.md`. Kiến trúc "log tense-event, no SQLite, shared store,
+  extension ghi/container đọc" chọn để tối thiểu hóa dữ liệu + nhẹ RAM + đúng "1 kho on-device mã hóa".
+- **Hệ quả:** R3 shard thành **4 story** (3.1 kho + consent, 3.2 theme, 3.3 màn soi lại, 3.4 notification).
+  R3 khiến câu hỏi **Full Access** (còn `mở`, FRICTION-LOG 2026-07-13) NẶNG KÝ hơn — giờ PERSIST dữ liệu
+  phái sinh (không chỉ sóng tức thời) → khuyến nghị chủ dự án chính thức đóng/khẳng định dòng friction đó.
+- **Made by:** chủ dự án (qua AskUserQuestion), ghi bởi agent đội iOS (plan phase, Opus).
+- **Supersedes:** đóng B2/B3 open questions trong `EXPERIENCE.md` Future (Round 3); mở tech-spec-r3.md.
+
 ### 2026-07-13 — Chốt 4 quyết định nhận diện mở khóa Round 2 (Q1/Q2/Q3/Q11)
 - **Decision:** Chủ dự án chốt (qua AskUserQuestion) 4 câu nhóm B/C của decision queue — mở khóa
   lớp cảm xúc Round 2:
