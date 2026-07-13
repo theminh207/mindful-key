@@ -100,6 +100,20 @@
     [self.settingsButton addTarget:self action:@selector(mk_openSettings) forControlEvents:UIControlEventTouchUpInside];
     [stack addArrangedSubview:self.settingsButton];
 
+    // Round 3: 3 lối vào màn mới — cùng idiom ghost-button, luôn hiện. Chưa đổi sang tab bar (bản
+    // thiết kế), đây là lối vào tối thiểu từ Home.
+    UIButton *moodLakeButton = [OnboardingUI ghostButton:@"Mặt hồ hôm nay…"];
+    [moodLakeButton addTarget:self action:@selector(mk_openMoodLake) forControlEvents:UIControlEventTouchUpInside];
+    [stack addArrangedSubview:moodLakeButton];
+
+    UIButton *bellButton = [OnboardingUI ghostButton:@"Chuông tỉnh thức…"];
+    [bellButton addTarget:self action:@selector(mk_openBell) forControlEvents:UIControlEventTouchUpInside];
+    [stack addArrangedSubview:bellButton];
+
+    UIButton *backgroundButton = [OnboardingUI ghostButton:@"Nền bàn phím…"];
+    [backgroundButton addTarget:self action:@selector(mk_openBackground) forControlEvents:UIControlEventTouchUpInside];
+    [stack addArrangedSubview:backgroundButton];
+
     // Nút quay lại hướng dẫn — chỉ hiện khi "chưa bật".
     self.returnButton = [OnboardingUI ghostButton:@"Quay lại hướng dẫn kích hoạt"];
     [self.returnButton addTarget:self action:@selector(mk_returnToActivation) forControlEvents:UIControlEventTouchUpInside];
@@ -137,6 +151,18 @@
 
 - (void)mk_openSettings {
     if (self.onOpenSettings) { self.onOpenSettings(); }
+}
+
+- (void)mk_openMoodLake {
+    if (self.onOpenMoodLake) { self.onOpenMoodLake(); }
+}
+
+- (void)mk_openBell {
+    if (self.onOpenBell) { self.onOpenBell(); }
+}
+
+- (void)mk_openBackground {
+    if (self.onOpenBackground) { self.onOpenBackground(); }
 }
 
 @end

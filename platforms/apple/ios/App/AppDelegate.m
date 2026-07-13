@@ -13,6 +13,9 @@
 #import "HomeViewController.h"
 #import "MacroManagerViewController.h"
 #import "SettingsViewController.h"
+#import "MoodLakeViewController.h"
+#import "BellSettingsViewController.h"
+#import "KeyboardBackgroundViewController.h"
 #import "AppGroupBridge.h"
 
 @interface AppDelegate ()
@@ -86,6 +89,17 @@
     // Story 2.3: push màn Cài đặt bàn phím — lối vào riêng, độc lập với onOpenMacroManager ở trên.
     vc.onOpenSettings = ^{
         [weakSelf.nav pushViewController:[weakSelf mk_makeSettings] animated:YES];
+    };
+    // Round 3: push 3 màn mới (Mặt hồ / Chuông / Nền bàn phím) — cùng pattern push, mỗi màn tự vẽ
+    // header "‹ Quay lại" (nav bar hệ thống ẩn toàn app).
+    vc.onOpenMoodLake = ^{
+        [weakSelf.nav pushViewController:[[MoodLakeViewController alloc] init] animated:YES];
+    };
+    vc.onOpenBell = ^{
+        [weakSelf.nav pushViewController:[[BellSettingsViewController alloc] init] animated:YES];
+    };
+    vc.onOpenBackground = ^{
+        [weakSelf.nav pushViewController:[[KeyboardBackgroundViewController alloc] init] animated:YES];
     };
     return vc;
 }

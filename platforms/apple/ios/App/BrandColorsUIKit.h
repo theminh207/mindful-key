@@ -28,4 +28,9 @@
 + (UIColor *)stoneStrong;    // đường phẳng "không bao giờ" mang nghĩa — phái sinh
 + (UIColor *)divider;        // step indicator đoạn tắt / đường ngăn (trang trí)
 
+// Thang "mặt hồ tâm" (Round 3): 5 mức 1..5 (An/Nhẹ/Gợn/Sóng/Cuộn). Sắc độ trung tính đậm dần theo
+// BIÊN ĐỘ — KHÔNG mã hoá cảm xúc bằng đỏ/xanh. Cùng màu ở cả 2 theme (đã trung tính sẵn). Ngoài
+// 1..5 trả về teal (an toàn). Nguồn: BrandPalette.h moodScale = brand/tokens.json.
++ (UIColor *)moodLevel:(NSInteger)level;
+
 @end

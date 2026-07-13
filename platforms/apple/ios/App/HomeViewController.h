@@ -24,4 +24,11 @@
 // từ Home qua đúng 1 chạm).
 @property (nonatomic, copy) void (^onOpenSettings)(void);
 
+// Round 3: lối vào 3 màn mới (Mặt hồ / Chuông / Nền bàn phím). Cùng pattern ghost-button + block
+// như 2.3/2.4 — AppDelegate gán để push VC tương ứng. Giữ nguyên cấu trúc push hiện tại (chưa đổi
+// sang tab bar như bản thiết kế); đây là lối vào TỐI THIỂU, không restyle Home.
+@property (nonatomic, copy) void (^onOpenMoodLake)(void);    // màn "Mặt hồ" (soi lại + thang)
+@property (nonatomic, copy) void (^onOpenBell)(void);        // màn "Chuông tỉnh thức"
+@property (nonatomic, copy) void (^onOpenBackground)(void);  // màn "Nền bàn phím"
+
 @end

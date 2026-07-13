@@ -50,4 +50,16 @@ static UIColor *mk_dynamic(UInt32 lightHex, UInt32 darkHex) {
 + (UIColor *)stoneStrong  { return mk_dynamic(kMkStoneStrongLight, kMkStoneStrongDark); }
 + (UIColor *)divider      { return mk_dynamic(kBrandPaletteDivider, kMkDividerDark); }
 
++ (UIColor *)moodLevel:(NSInteger)level {
+    // Trung tính ở cả 2 theme — không đổi theo Light/Dark (không phải màu ngữ nghĩa cần tương phản).
+    switch (level) {
+        case 1:  return mk_colorFromHex(kBrandPaletteMood1);
+        case 2:  return mk_colorFromHex(kBrandPaletteMood2);
+        case 3:  return mk_colorFromHex(kBrandPaletteMood3);
+        case 4:  return mk_colorFromHex(kBrandPaletteMood4);
+        case 5:  return mk_colorFromHex(kBrandPaletteMood5);
+        default: return mk_colorFromHex(kBrandPaletteTeal);
+    }
+}
+
 @end
