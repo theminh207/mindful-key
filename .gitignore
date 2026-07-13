@@ -19,3 +19,6 @@ tests/core/test_engine
 
 # Build artifact của tests/ios
 tests/ios/bridge_test
+
+# iOS host-test compiled binaries (không commit — chỉ commit .mm nguồn)
+tests/ios/*_test

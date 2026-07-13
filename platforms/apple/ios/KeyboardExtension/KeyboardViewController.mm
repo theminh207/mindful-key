@@ -18,6 +18,15 @@
 #import "MoodBridge.h"
 #import "MacroBridge.h"
 #import "Macro.h"   // story 2.4: addMacro() — file này (.mm) đã link core/engine, gọi C++ trực tiếp
+#import "EmotionWaveAmplitude.h"   // story 2.5: hàm thuần risk -> biên độ sóng (Q1)
+
+// Story 2.5 (AC#1/#4): nhịp poll giá trị send-risk từ MoodBridge để cập nhật con sóng ambient.
+// 300ms — đủ thấp để KHÔNG chạm mạch xử lý phím (chỉ đọc 1 std::atomic<double> + 1 hàm thuần mỗi
+// tick, không có I/O/khoá), đủ nhanh để sóng cảm thấy "sống" trong 1 câu đang gõ. Giá trị cụ thể
+// không bị khoá bởi AC nào — [Inference] chọn theo tinh thần "ambient, không chặn" (NFR-11),
+// KHÔNG đồng bộ với debounce cuối câu bên trong MoodBridge (đọc độc lập, luôn đọc giá trị mới
+// nhất đã có, không chờ).
+static const NSTimeInterval kEmotionWavePollInterval = 0.3;
 
 typedef NS_ENUM(NSInteger, KVCShiftState) {
     KVCShiftOff = 0,   // chữ thường
@@ -43,6 +52,7 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
 @property (nonatomic, assign) KVCShiftState shiftState;
 @property (nonatomic, assign) BOOL numberLayer;           // NO = chữ, YES = số/ký hiệu
 @property (nonatomic, assign) NSTimeInterval lastShiftTapAt;
+@property (nonatomic, strong) NSTimer *emotionWaveTimer;  // story 2.5: poll MoodBridge -> con sóng
 @end
 
 @implementation KeyboardViewController
@@ -59,6 +69,11 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
     self.numberLayer = NO;
     self.lastShiftTapAt = 0;
     [self buildKeyboardUI];
+    [self mk_startEmotionWavePolling];   // story 2.5: bắt đầu SAU khi suggestionBar đã dựng xong
+}
+
+- (void)dealloc {
+    [self.emotionWaveTimer invalidate];
 }
 
 #pragma mark - Story 2.4: nạp macro đã lưu vào engine
@@ -336,6 +351,53 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
 // App Group (khi story 1.6 nối) chỉ được chứa timestamp/bool vận hành, TUYỆT ĐỐI không nội dung gõ.
 - (BOOL)mk_isSecureField {
     return self.textDocumentProxy.secureTextEntry;
+}
+
+#pragma mark - Story 2.5: con sóng ambient (FR-A08) — wiring risk (2.2) -> suggestionBar (2.1)
+
+// AC#7: chỉ khởi động vòng poll khi ĐANG có Full Access lúc bàn phím mở lên. `hasFullAccess`
+// (thuộc tính hệ thống UIInputViewController) chỉ đổi giá trị thật khi người dùng bật/tắt trong
+// Settings rồi MỞ LẠI bàn phím (extension bị huỷ + khởi tạo lại) — không đổi sống giữa 1 phiên
+// đang chạy, nên kiểm 1 lần ở đây là đủ, không cần tự poll lại cờ này mỗi tick.
+- (void)mk_startEmotionWavePolling {
+    if (!self.hasFullAccess) return;   // AC#7: chưa Full Access -> giữ nguyên trạng thái rỗng Round 1, KHÔNG gọi setWaveAmplitude:
+    NSTimer *timer = [NSTimer timerWithTimeInterval:kEmotionWavePollInterval
+                                               target:self
+                                             selector:@selector(mk_updateEmotionWave)
+                                             userInfo:nil
+                                              repeats:YES];
+    // NSRunLoopCommonModes: tick vẫn chạy trong lúc UIKit đang ở tracking mode (vd đang giữ 1
+    // phím) — con sóng là ambient thuần túy, không được phép "đứng hình" chỉ vì người dùng đang
+    // tương tác. Không liên quan/không chặn mạch xử lý phím (AC#4): timer chỉ ĐỌC risk + vẽ, đi
+    // trên main run loop nhưng tách hoàn toàn khỏi các action gõ (letterKeyTapped:/spaceKeyTapped:).
+    [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
+    self.emotionWaveTimer = timer;
+}
+
+// Mỗi tick: tự kiểm cổng ô bảo mật NGAY TẠI THỜI ĐIỂM VẼ (không tin risk đã tính từ trước — xem
+// Dev Notes story 2.5 "race giữa debounce async và chuyển field"), rồi đọc risk mới nhất + hàm
+// biên độ thuần, rồi giao cho view VẼ. Không đọc/không phân tích nội dung gõ ở đây — chỉ đọc 1
+// giá trị đã tính sẵn (MoodBridge_LastSendRisk(), atomic, không side-effect).
+- (void)mk_updateEmotionWave {
+    if (!self.hasFullAccess) {
+        // Edge case Testing story 2.5: mất Full Access GIỮA phiên gõ (hiếm nhưng có thể) — dừng
+        // poll hẳn (đỡ phí CPU/battery) và dập sóng về phẳng, không crash, không đứng hình ở biên
+        // độ cũ. Không cần tự khởi động lại poll — extension của phiên bị thu hồi quyền thường bị
+        // huỷ/khởi động lại, mk_startEmotionWavePolling sẽ tự kiểm lại từ đầu ở lần chạy sau.
+        [self.emotionWaveTimer invalidate];
+        self.emotionWaveTimer = nil;
+        [self.suggestionBar setWaveAmplitude:0.0];
+        return;
+    }
+    if ([self mk_isSecureField]) {
+        // AC#6: ô bảo mật -> không đọc risk, không cập nhật theo giá trị cũ — dập hẳn về 0 (chứ
+        // không phải "đứng yên ở giá trị risk trước đó", đúng "không hiện hoạt động sóng nào").
+        [self.suggestionBar setWaveAmplitude:0.0];
+        return;
+    }
+    double risk = MoodBridge_LastSendRisk();
+    double amplitude = EmotionWaveAmplitude(risk);
+    [self.suggestionBar setWaveAmplitude:amplitude];
 }
 
 #pragma mark - Gõ qua core/engine (KeyboardBridge)
