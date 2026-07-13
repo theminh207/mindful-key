@@ -31,6 +31,15 @@ Nhật ký này được **mã hóa** và **chỉ lưu trên máy bạn** — kh
 
 App chỉ "nghe" được khi bộ gõ đang bật **và** bạn đang gõ tiếng Việt. Nếu bạn đang ở chế độ gõ tiếng Anh, đang gõ trong ô mật khẩu, hoặc tắt bộ gõ đi — app không thấy gì cả. Tính năng "gác cổng trước khi gửi" hiện chỉ hoạt động trong một số ứng dụng nhắn tin cụ thể (không phải mọi nơi bạn gõ chữ).
 
+## Trên iPhone: vì sao bàn phím xin "Full Access"
+
+Khi bạn thêm Mindful Key trên iPhone, iOS sẽ hỏi bạn bật **"Allow Full Access"**. Nghe thì "mở toang", nên chúng tôi nói thẳng nó dùng để làm gì:
+
+- **Đọc câu bạn vừa gõ** để con sóng `~` phản chiếu nhịp gõ — tính ngay trên máy, không gửi đi đâu.
+- **Đọc gõ tắt (macro) và cài đặt** bạn đặt trong app — hai bên (app và bàn phím) chia nhau một ngăn lưu chung trên chính máy bạn.
+
+iOS bắt buộc phải có "Full Access" thì bàn phím mới đọc được hai thứ trên. **Nó KHÔNG dùng để gửi chữ của bạn ra internet** — Mindful Key không có máy chủ nào để gửi tới. Bạn vẫn gõ bình thường mà chưa cần bật; bật khi nào bạn muốn có con sóng và gõ tắt.
+
 ## Vì sao chúng tôi làm vậy
 
 Mindful Keyboard là bộ gõ — nghĩa là nó *thấy được* mọi phím bạn bấm. Đó là lý do chúng tôi coi quyền riêng tư là điều kiện sống còn, không phải một tính năng phụ: nếu bạn không tin tưởng được rằng câu chữ của mình an toàn, mọi tính năng chánh niệm khác đều vô nghĩa.
