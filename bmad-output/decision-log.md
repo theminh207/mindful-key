@@ -19,7 +19,61 @@ or delete past entries — supersede them with a new entry that references the o
 
 ---
 
-### 2026-07-10 — Reconciliation: huỷ 1.3/1.6 (bỏ 4-tab), chốt "card nổi + thay áo tab" là kiến trúc cuối
+### 2026-07-13 — Diện mạo mới v2: popover chia tab + hợp nhất chuông↔cảm xúc + thuật toán Soi lại
+- **Decision:** Chốt 9 điểm sau một phiên brainstorm nhiều vòng (chủ dự án điều hướng, có 3 file mockup duyệt tận mắt):
+  1. **Popover chia 3 tab** (Hôm nay · Chuông · Bộ gõ) kiểu Haynoi (segmented trắng-active + thẻ nhóm eyebrow), **bỏ scroll-list dài**. Refactor `PanelViewController`, **tái dùng nguyên** `GatekeeperCardView` / `BellSettingsView` / `InputMethodCardView` + wiring sẵn có — chỉ đổi cách sắp thành tab.
+  2. **Cửa sổ quản lý 6 mục nav trái**: Hôm nay · Chuông · Bộ gõ (Kiểu gõ/Gõ tắt/Chuyển mã) · Riêng tư · **Hệ thống (mục thứ 6 mới)** · Giới thiệu — gộp cửa sổ 4-tab + macro + convert + about; menu tray co gọn (Bảng điều khiển/Gõ tắt/Chuyển mã/Giới thiệu biến khỏi menu).
+  3. **Nhận diện cảm xúc theo thời gian = "dòng sông"** (1 trục phẳng↔gợn, 1 hue teal, đổi biên độ). KHÔNG tích cực/tiêu cực, KHÔNG streak/heatmap/số.
+  4. **Lấy mẫu**: để ý liên tục trong bộ nhớ, ghi 1 số trung bình mỗi nhịp chuông (30/60'); quãng không gõ để **trống** (không vẽ phẳng lặng giả).
+  5. **Chuông ↔ cảm xúc hợp nhất**: chuông = nhịp lấy mẫu (mỗi ngân = 1 điểm lên sông); **độ nhạy dùng chung** gác cổng + chuông; **icon menu-bar chỉ báo VN bật/tắt, KHÔNG báo cảm xúc** (giữ riêng tư ở mặt công khai).
+  6. **Ba chân kiềng dữ liệu**: sóng chữ (auto) + khoảnh khắc gác cổng (giờ/app/lựa chọn) + **check-in 1 chạm** khi chuông (3 mức sóng, tự nguyện, tự ẩn, bỏ qua vẫn ghi tự động) — dùng lại 2 cột `checkin` sẵn có trong `MoodStoreMac`.
+  7. **Độ nhạy = lớp diễn giải, không phải cái cân**: điểm gợn thô ghi nhật ký KHÔNG đổi khi đổi độ nhạy (đo tách khỏi diễn giải); gác cổng có **sàn**, không bao giờ tắt hẳn. Bảng khởi hành 3 mức: câu "gợn" khi điểm ≥ 0.6/0.5/0.4; chuông ngân sau 5/3/2 câu gợn liên tiếp; gác cổng hỏi khi ≥ 0.6/0.5/0.45.
+  8. **Màn Soi lại**: 4 phép tính (dòng sông · đỉnh gợn [cần ≥2 câu/nhịp] · quãng lặng dài nhất · "lặng lại" kể-thành-câu-không-thành-số) + 4 nhịp trình bày (Nhận ra → Cho phép → Soi → Nuôi dưỡng); **câu hỏi là trung tâm** (bộ câu hỏi xoay vòng không lặp 2 ngày liền, tối đa 1 gợi ý hành động); ngày gõ ít → nói thật "hồ chưa đủ nét", không bịa.
+  9. **Thi công = 6 bước tuần tự**, mỗi bước qua cổng chất lượng + chủ dự án duyệt kết quả thật; agent chạy "tự động có người gác" — **dừng-hỏi khi chạm nhận diện/pháp lý/riêng tư, xong một bước, hoặc phát sinh quyết định ngoài plan**.
+- **⚠️ Hai điểm chạm CỘT TRỤ RIÊNG TƯ (chủ dự án đã đồng thuận có ghi nhận):** (4) ghi nhật ký **nhiều hơn hiện tại** — nhưng CHỈ con số điểm gợn + mốc giờ, **không bao giờ lưu chữ đã gõ**, vẫn mã hoá + có nút xoá + tự xoá định kỳ; (6) check-in phơi thêm một mẩu tự-thuật của người dùng — tự nguyện hoàn toàn.
+- **Rationale:** Chủ dự án chạy thật bản popover scroll-list (2 entry 2026-07-11) + đối chiếu app Haynoi → muốn "chia tab từng module cho gọn". Và muốn chuông + cảm xúc thành **một hệ thống logic** để người dùng nhận ra trạng thái hiện tại (không phải 2 tính năng rời). Chốt "chuông là nhịp lấy mẫu" giải bài toán đó bằng một khái niệm chung. Mọi quyết định lọc qua HIẾN CHƯƠNG §2.2/2.3 — **cố ý bác** việc bê nguyên "Insights + BEST STREAK + activity-grid + đếm chữ" của Haynoi (vi phạm 2.2). Cách "dòng sông theo giờ" giữ được ý "theo dõi nhịp cảm xúc" mà KHÔNG thành bảng điểm.
+- **Made by:** phiên "brainstorm diện mạo mới v2" (chủ dự án điều hướng qua nhiều vòng AskUserQuestion + mockup). Verify tầng ý tưởng = 3 artifact mockup duyệt tận mắt (plan chốt / popover v2 chia tab / vòng Soi lại) + soát HIẾN CHƯƠNG. Thi công dispatch riêng theo 6 bước.
+- **Supersedes:**
+  - Phần "popover = **scroll-list**" của 2 entry 2026-07-11 → nay **chia 3 tab** (nội dung + wiring các thẻ GIỮ NGUYÊN, chỉ đổi cách sắp xếp).
+  - **Nới ranh** "KHÔNG biểu đồ theo thời gian" của `EXPERIENCE-macos-control-panel.md §3/§6`: **cho phép "dòng sông theo giờ"** như phần mở rộng của con sóng nhận diện (1 hue, biên độ, KHÔNG phải chart cột/đường) — điều kiện cứng: không số, không streak, không valence-color; kèm lấy mẫu tối thiểu + check-in tự nguyện. Đây là amendment CÓ CHỦ ĐÍCH, chủ dự án chốt.
+
+### 2026-07-11 — Compact redesign popover (kiểu danh sách Haynoi, bỏ "hộp card xếp chồng")
+- **Decision:** Đổi popover từ "nhiều card viền + nền xám" sang **danh sách nhẹ kiểu Haynoi**: nền panel
+  TRẮNG liền mạch; **bỏ vỏ card** (nền/viền) của thẻ Chuông + Bộ gõ → thành hàng danh sách phân tách
+  bằng **divider mảnh** (`Brand divider` 1px); **Gác cổng thành DẢI nền `tealLight` full-width** (điểm
+  nhấn Feature #1 bằng sắc nền, không phải hộp viền teal) — canh lề thẳng với các mục dưới; header
+  mảnh hơn (44→38); siết khoảng cách. File: `PanelViewController.mm` (nền trắng + 3 divider + full-width),
+  `GatekeeperCardView.mm` (bỏ viền/bo góc, giữ nền tealLight), `BellSettingsView.mm` + `InputMethodCardView.mm`
+  (bỏ nền/viền card).
+- **Rationale:** Chủ dự án chạy thật + so với app Haynoi → nhận xét bản card-hộp "to & nặng", yêu cầu
+  "nhỏ gọn phù hợp hơn". Bản danh sách nhẹ hơn nhiều, popover collapsed ~319pt (trước ~370+), canh lề
+  đẹp. Giữ đúng HIẾN CHƯƠNG: Gác cổng vẫn nổi nhất (dải tealLight trên đỉnh + sóng), teal chrome, sóng ~,
+  không gamification, "mô tả không phán xét".
+- **Made by:** phiên "cải tiến giao diện" (chủ dự án chỉ đạo, có ảnh Haynoi tham chiếu). Verify build/test/
+  brand-lint sạch + chụp popover compact (compact1.png / compact-expanded.png).
+- **Supersedes:** phần "component = card viền bo góc" của `DESIGN-macos-control-panel.md §2.1/§2.3` (cho
+  Chuông/Bộ gõ). Tinh thần Feature-#1-nổi-bật giữ nguyên (đổi cách thể hiện: dải tint thay hộp viền).
+
+### 2026-07-11 — PHA 2 b1: thẻ "Bộ gõ" bung được trong panel (Kiểu gõ / Bảng mã / Gõ tiếng Việt)
+- **Decision:** `InputMethodCardView` từ 1 hàng "mở cửa sổ" → thành thẻ BUNG ĐƯỢC (thu gọn mặc định) chứa 3 control gõ dùng-hằng-ngày: Kiểu gõ (dropdown), Bảng mã (dropdown `[OpenKeyManager getTableCodes]`), Gõ tiếng Việt (PillSwitch). Wiring nối vào **đúng hàm sẵn có** của `AppDelegate` (`onInputTypeSelectedIndex:`, `onCodeTableChanged:`, `onInputMethodSelected`) — chính path menu/ViewController đang dùng, KHÔNG tự chế xử lý engine (tránh gãy gõ). Phần còn lại (toggle chính tả/hoa/thông minh, macro, hệ thống, về) mở qua link "Cài đặt đầy đủ ▸" (cửa sổ 4-tab, chưa gộp).
+- **Rationale:** Bước đầu của "gộp hết vào panel" (Q2) làm AN TOÀN theo plan (từng nhóm). Chọn 3 control cốt lõi + reuse hàm proven → rủi ro gãy gõ tiếng Việt ~0. Verify build/test/brand-lint sạch + chụp popover cả 2 trạng thái (thu gọn / bung — panel-inputexpanded.png).
+- **Cập nhật (cùng ngày):** đã thêm luôn 5 toggle gõ hằng ngày vào thẻ Bộ gõ (Kiểm tra chính tả → `vCheckSpelling`+`OnSpellCheckingChanged`; Đặt dấu oà·uý → `vUseModernOrthography`; Viết hoa đầu câu → `vUpperCaseFirstChar`; Chuyển chế độ thông minh → `vUseSmartSwitchKey`; Gõ tắt → `vUseMacro`) — data-driven, map key→global đúng chuẩn IBAction. `OnSpellCheckingChanged` khai báo `extern "C"` trong `.mm` (định nghĩa C ở OpenKey.mm).
+- **Made by:** phiên "cải tiến giao diện" (chủ dự án chốt "triển pha 2").
+- **PHA 2 còn lại (chưa làm):** macro editor / convert / về vào panel; rồi khai tử cửa sổ 4-tab. Mỗi nhóm 1 bước, verify từng bước.
+
+### 2026-07-11 — Re-quyết định: menu-bar POPOVER panel (như Haynoi/mockup), bỏ "thẻ nổi trên cửa sổ 4-tab"
+- **Decision:** Bấm TRÁI icon menu-bar → mở **NSPopover panel trạng thái gọn 360px** (header "〜 mindful-key" + chấm trạng thái + gear ⋯ → thẻ Gác cổng → thẻ Chuông thu gọn → thẻ Bộ gõ → chân trang riêng tư). Bấm PHẢI (hoặc gear) → menu cũ (giữ nguyên `theMenu`). Thẻ Gác cổng/Chuông **chuyển từ cửa sổ 4-tab vào popover**; gỡ `mountFloatingCardsIfNeeded`/`layoutFloatingCards` khỏi `ViewController.m`. File mới: `PanelViewController.{h,mm}`, `InputMethodCardView.{h,mm}`; thêm `-preferredHeight` cho `GatekeeperCardView`; sửa `AppDelegate.m` (status item → popover). PHA 1: gear/thẻ Bộ gõ tạm mở cửa sổ 4-tab làm "cài đặt đầy đủ".
+- **Rationale:** Hướng "thẻ nổi trên cửa sổ 4-tab" (reconciliation 2026-07-10) chạy thật ra kết quả rối — đọc thành "danh sách tính năng" dài, tràn khi bung. Chủ dự án chỉ rõ trải nghiệm đúng = popover trạng thái (có app Haynoi + mockup `49824db2` làm chuẩn — chính là hướng `DESIGN/EXPERIENCE-macos-control-panel.md` gốc). Chốt phiên này: bấm trái = popover; menu cũ dồn vào gear ⋯ (Q1); mục tiêu cuối = gộp hết vào panel, bỏ cửa sổ 4-tab (Q2) — **chia pha** để an rủi ro (option Q2 tự cảnh báo 2.281 dòng storyboard). Verify: build/test/brand-lint sạch + chụp popover window thật (popover3.png) khớp mockup.
+- **Made by:** phiên "cải tiến giao diện" (chủ dự án điều hướng), plan approved (plan mode).
+- **Supersedes:** phần layout "thẻ nổi trên cửa sổ 4-tab" của reconciliation 2026-07-10 + entry "Story 1.5 … gắn nổi trên cửa sổ" (bên dưới) — `BellSettingsView`/`GatekeeperCardView` giữ nguyên, chỉ đổi CHỖ gắn (cửa sổ → popover).
+- **PHA 2 (chưa làm):** dời dần settings OpenKey từ cửa sổ 4-tab vào panel rồi khai tử cửa sổ; từng nhóm, verify từng bước.
+
+### 2026-07-10 — Story 1.5 (Card Chuông) dựng + gắn "nổi, thu gọn mặc định" trên cửa sổ 4-tab
+- **Decision:** Dựng `BellSettingsView.h/.mm` đúng khối "Chuông" trong mockup DESIGN/EXPERIENCE-macos-control-panel (segmented 3 mức chữ tự vẽ teal+chữ trắng, sound dropdown, volume track teal 1 màu, giờ yên lặng 2 chip **map đảo chiều** vào `vBellFrom/vBellTo`, PillSwitch Focus off mặc định + caption quyền, disclosure nâng cao). Thêm getter `NudgeCoordinatorMac_TenseStreakTrigger()` đọc `vBellSensitivity`. **Gắn card lên cửa sổ 4-tab (đụng `ViewController.m`) — nối dài lát cắt dọc 1.4** vì 1.6 đã superseded và chủ dự án chốt "treo giống 1.4" (phiên này). **Card THU GỌN mặc định** ("Chuông ▸", bung khi bấm) + kẹp cửa sổ trong `visibleFrame`.
+- **Rationale:** Treo card Chuông bung-sẵn kiểu 1.4 làm cửa sổ cao ~1058pt (lọt ra ngoài màn hình) và che 4-tab — phát hiện khi chạy thật + chụp màn hình. Chủ dự án chọn "thu gọn mặc định" (trong 3 phương án: thu gọn / cửa sổ cuộn / đưa vào tab) để giữ "nổi trên cùng" mà cửa sổ vừa màn hình và không che 4-tab. Segmented ban đầu dựng bằng NSButton viền-off KHÔNG render → thay bằng NSControl tự vẽ (cùng kỹ thuật PillSwitch).
+- **Phạm vi còn lại (chưa làm, đã báo):** (1) nối `vBellSoundName`/`vBellVolume` vào lúc chuông phát thật (đổi cơ chế phát âm ở `BellMac.mm:51` sang NSSound/AVAudioPlayer) — rủi ro hơn, không hiện trên ảnh; (2) nối `NudgeCoordinatorMac_TenseStreakTrigger()` vào `MoodWatchMac.mm` (mood-layer, ngoài scope 1.5) để mức nhạy đổi hành vi rung thật; (3) cosmetic: nội dung 4-tab hơi lấn quanh card nổi (bản chất cách "float trên storyboard", giải sạch = việc kiểu 1.6 đã superseded).
+- **Made by:** phiên "thợ dựng UI theo bản vẽ" (chủ dự án điều hướng), verify bằng `make build`/`make test` + chụp cửa sổ thật.
+- **Supersedes:** phần layout của story `1.6.panel-integration-states` (đã superseded) cho riêng việc gắn card Chuông.
 - **Decision:** Trong 1 phiên làm việc khác (chat riêng, không biết epic-1 đã tồn tại), chủ dự
   án được hỏi lại từ đầu và chốt **giữ nguyên 4 tab, chỉ thay áo** cho cả màn Điều khiển lẫn 3
   cửa sổ legacy khác (Gõ tắt/Chuyển mã/Thông tin) — mâu thuẫn trực tiếp với goal gốc của epic-1

@@ -1,6 +1,6 @@
 # BMAD Sprint Status — Sequencing System-of-Record
 # Generated: 2026-07-09T08:53:46Z
-# Last reconciled: 2026-07-10 (xem decision-log.md "Reconciliation: huỷ 1.3/1.6")
+# Last reconciled: 2026-07-13 (xem decision-log.md "Diện mạo mới v2: popover chia tab" + note bên dưới)
 # Project: mindful-key — Epic 1: Hiện đại hóa Bảng điều khiển macOS
 #
 # STATUS LIFECYCLE (chỉ là VIEW thứ tự — không phải metric):
@@ -21,11 +21,20 @@
 # có chủ đích — xem decision-log). 1.4 hiện IN-PROGRESS ngoài quy trình sprint bình thường
 # (lát cắt dọc, chưa commit) — đi trước 1.1/1.2 "done" dù dependency yêu cầu chờ chúng, vì
 # thực tế 1.1/1.2 đã done trước khi lát cắt dọc bắt đầu.
+#
+# ⚠️ RECONCILIATION 2026-07-13 (Diện mạo mới v2 — CHÍNH THỨC, xem decision-log entry 2026-07-13):
+# Hướng "card nổi trên cửa sổ 4-tab" (2026-07-10 ở trên) đã CHẠY THẬT → đọc thành "danh sách tính
+# năng" rối. Chốt lại v2: bấm TRÁI icon menu-bar → NSPopover panel chia 3 TAB (Hôm nay·Chuông·Bộ gõ);
+# cửa sổ quản lý gộp thành 6 mục nav trái. "Ý panel" mà 1.3/1.6 từng mô tả nay ĐƯỢC HIỆN THỰC dưới
+# dạng popover (KHÔNG phải panel-cuộn-trong-cửa-sổ như 1.3 mô tả) → 1.3/1.6 GIỮ superseded cho đúng
+# nghĩa chữ, nhưng hướng-panel giờ là chính thức. Nền móng đã commit: df31657 (container 3-tab) +
+# 3651a25 (wiring popover + gỡ card-nổi khỏi ViewController.m). Lát cắt dọc 1.4/1.5 "treo card trên
+# cửa sổ" đã bị GỠ (card về sống trong popover). 6 bước thi công v2: xem khối "v2_roadmap" cuối file.
 
 project_name: "mindful-key — Bảng điều khiển macOS"
 track: "BMad Method"
 generated_at: "2026-07-09T08:53:46Z"
-last_updated: "2026-07-10"
+last_updated: "2026-07-13"
 
 # ---------------------------------------------------------------------------
 # EPICS
@@ -34,10 +43,12 @@ epics:
   - id: "epic-1"
     title: "Hiện đại hóa Bảng điều khiển macOS"
     description: >
-      Card mới (Gatekeeper/Bell) nổi trên đỉnh cửa sổ 4-tab hiện có; 4 tab bên dưới CHỈ thay áo
-      NOW BRAND OS (không đập). Feature #1 (gác cổng) nổi bật nhất trên cùng, chuông cấu hình
-      được, trạng thái cảm xúc hiển thị rõ nhưng tôn trọng riêng tư + hiến chương.
-      [REVISE 2026-07-10 — bản gốc là "thay 4-tab bằng 1 panel cuộn dọc", xem decision-log]
+      [REVISE 2026-07-13 — v2 CHÍNH THỨC] Diện mạo macOS = NSPopover panel chia 3 TAB (Hôm nay·Chuông·
+      Bộ gõ) bấm từ icon menu-bar + cửa sổ quản lý gộp 6 mục nav trái. Feature #1 (gác cổng) là dải
+      tealLight nổi nhất trên tab "Hôm nay"; chuông = nhịp lấy mẫu cảm xúc; nhận diện cảm xúc = "dòng
+      sông" 1-hue-biên-độ (KHÔNG số/streak/valence-color). Tôn trọng riêng tư + hiến chương.
+      [Lịch sử: bản gốc "panel cuộn dọc" → 2026-07-10 "card nổi trên 4-tab" → 2026-07-13 "popover
+      3-tab + cửa sổ 6 mục" (chính thức). Xem decision-log.]
     status: in-progress
     story_ids:
       - "1.1.brand-ui-primitives"
@@ -100,7 +111,7 @@ stories:
   - id: "1.4.gatekeeper-card"
     title: "GatekeeperCardView — Card Gác cổng (Feature #1) full-width trên cùng"
     epic_id: "epic-1"
-    status: in-progress          # lát cắt dọc: card mounted qua viewDidAppear, CHƯA COMMIT
+    status: done                 # GatekeeperCardView build + wired vào popover tab "Hôm nay"; dải tealLight compact + preferredHeight. Commit 3651a25 (df31657 tạo container). Card KHÔNG còn treo trên ViewController (đã gỡ). Build-verified; CHỜ chủ dự án xác nhận bằng mắt (bấm icon 〜).
     file: "bmad-output/macos/stories/1.4.gatekeeper-card.story.md"
     parallel_set: 2
     dependencies:
@@ -114,7 +125,7 @@ stories:
   - id: "1.5.bell-settings-card"
     title: "BellSettingsView — cấu hình chuông đọc UserDefaults thay hardcode"
     epic_id: "epic-1"
-    status: ready-for-dev        # chờ 1.1 (done) — dispatch được; cách gắn UI CHƯA chốt, hỏi trước khi làm
+    status: done                 # BellSettingsView build + wired vào popover tab "Chuông" (commit 4befdde tạo; df31657 bung sẵn cho tab; 3651a25 nối BellMac_PreviewSound phát âm+âm lượng đã chọn). Build-verified; CHỜ chủ dự án xác nhận bằng mắt.
     file: "bmad-output/macos/stories/1.5.bell-settings-card.story.md"
     parallel_set: 2
     dependencies:
@@ -200,25 +211,52 @@ stories:
 # ---------------------------------------------------------------------------
 sequencing_summary:
   total_epics: 1
-  total_stories: 10
-  superseded: 2                  # 1.3, 1.6 — không tính vào waves còn lại
-  total_waves: 3                 # Wave 1 (done) · Wave 2/2b (hiện tại) · Wave 3 (superseded, không còn)
-  wave_widths: [2, "1 in-progress + 4 ready (2b)", 0]
-  ready_for_dev:
-    count: 4
-    story_ids:
-      - "1.5.bell-settings-card"
-      - "1.7.legacy-tabs-reskin"
-      - "1.8.macro-window-reskin"
-      - "1.9.convert-window-reskin"
-      - "1.10.about-window-reskin"
+  total_stories: 10              # 1.1-1.10; trong đó 1.3/1.6 superseded (không thi công)
+  done: 8                        # 1.1, 1.2, 1.4, 1.5, 1.7, 1.8, 1.9, 1.10 — committed + build-verified
+  superseded: 2                  # 1.3, 1.6
+  epic1_original_scope: "đóng về CODE — chờ 1 lần chủ dự án xác nhận popover bằng mắt (bấm icon 〜)"
   handoff_notes: >
-    2026-07-10 reconciliation: 1.1/1.2 done + committed. 1.4 in-progress (lát cắt dọc, chưa
-    commit — card nổi trên đỉnh 4-tab, KHÔNG đập storyboard). 1.3/1.6 superseded (goal "bỏ
-    4-tab" không còn). Dispatch được ngay: 1.7-1.10 (thay áo 4 cửa sổ legacy, disjoint file,
-    song song an toàn với nhau) + 1.5 (bell settings, cách gắn UI để ngỏ — hỏi chủ dự án
-    trước khi mount). DUY NHẤT 1.7 cần cẩn thận: cùng file ViewController.m với 1.4 đang
-    chưa commit — đọc state hiện tại trước, sửa thêm chứ không đè khối mountGatekeeperCardIfNeeded.
-    Giao code qua skill mindful-key:mindful-keyboard-harness: platform-shell-agent cho
-    1.4/1.7/1.8/1.9/1.10, mood-layer-agent cho 1.2 (done)/1.5. KHÔNG đụng core/engine — giữ
-    make test xanh.
+    [2026-07-13] Reconcile v2: nền móng popover 3-tab đã commit (df31657 container + 3651a25 wiring),
+    build sạch · test-core PASS · brand-lint 0. Lát cắt dọc "card nổi trên cửa sổ 4-tab" (1.4/1.5 cũ)
+    đã GỠ — card về sống trong popover. Epic-1 (10 story gốc) coi như đóng về code. Việc TIẾP THEO
+    KHÔNG còn là story 1.x mà là "Diện mạo mới v2" — 6 bước tuần tự, xem v2_roadmap. Định tuyến:
+    platform-shell-agent (UI vỏ) + mood-layer-agent (nhật ký/độ nhạy/dòng sông). KHÔNG đụng
+    core/engine — giữ make test xanh.
+
+# ---------------------------------------------------------------------------
+# v2 ROADMAP — "Diện mạo mới" (decision-log 2026-07-13, 9 quyết định). 6 bước tuần tự; mỗi bước
+# qua cổng chất lượng + chủ dự án duyệt kết quả THẬT mới sang bước kế. MỘT người lái.
+# ---------------------------------------------------------------------------
+v2_roadmap:
+  official_since: "2026-07-13"
+  source_of_truth: "bmad-output/decision-log.md#2026-07-13 — Diện mạo mới v2"
+  driver_mode: "từng bước, 1 người lái; dừng-hỏi khi chạm nhận diện/pháp lý/riêng tư, xong 1 bước, hoặc phát sinh quyết định ngoài plan"
+  steps:
+    - n: 1
+      title: "Nền móng popover 3-tab + reconcile"
+      status: done                 # df31657 + 3651a25; build/test/brand-lint sạch. CHỜ xác nhận bằng mắt.
+      owner: platform-shell-agent
+    - n: 2
+      title: "Dời Bộ gõ/Gõ tắt/Chuyển mã/Hệ thống vào cửa sổ 6 mục nav + trim menu chuột phải"
+      status: backlog
+      owner: platform-shell-agent
+    - n: 3
+      title: "Kho nhật ký lấy mẫu theo nhịp chuông + check-in 3 sóng + độ nhạy 3 mức (gác cổng có sàn; nối NudgeCoordinator_TenseStreakTrigger đang hardcode '3')"
+      status: backlog
+      owner: mood-layer-agent
+      privacy_touch: true          # ghi nhật ký nhiều hơn + check-in — chủ dự án ĐÃ đồng thuận (decision-log 2026-07-13 dec.4/6); vẫn tái xác nhận lúc thi công
+    - n: 4
+      title: "Dòng sông cảm xúc + màn Soi lại 4 nhịp (câu hỏi là trung tâm)"
+      status: backlog
+      owner: mood-layer-agent
+      note: "soát lại asset thang màu teal→cam theo HIẾN CHƯƠNG §2.3 (friction (a)) khi làm bước này"
+    - n: 5
+      title: "Chuông chi tiết + chọn/tải tiếng"
+      status: backlog
+      owner: platform-shell-agent
+    - n: 6
+      title: "Riêng tư: xuất CSV + tự xoá định kỳ"
+      status: backlog
+      owner: mood-layer-agent
+      privacy_touch: true
+  out_of_scope_this_round: "PhoBERT + tín hiệu 'gõ thế nào' (lộ trình xa); iOS + hợp nhất lexicon (đội khác)"
