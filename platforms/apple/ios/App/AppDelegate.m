@@ -12,6 +12,7 @@
 #import "FullAccessViewController.h"
 #import "HomeViewController.h"
 #import "MacroManagerViewController.h"
+#import "SettingsViewController.h"
 #import "AppGroupBridge.h"
 
 @interface AppDelegate ()
@@ -82,11 +83,19 @@
     vc.onOpenMacroManager = ^{
         [weakSelf.nav pushViewController:[weakSelf mk_makeMacroManager] animated:YES];
     };
+    // Story 2.3: push màn Cài đặt bàn phím — lối vào riêng, độc lập với onOpenMacroManager ở trên.
+    vc.onOpenSettings = ^{
+        [weakSelf.nav pushViewController:[weakSelf mk_makeSettings] animated:YES];
+    };
     return vc;
 }
 
 - (UIViewController *)mk_makeMacroManager {
     return [[MacroManagerViewController alloc] init];
+}
+
+- (UIViewController *)mk_makeSettings {
+    return [[SettingsViewController alloc] init];
 }
 
 @end

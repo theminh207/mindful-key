@@ -19,4 +19,9 @@
 // (xem story 2.4 Dev Notes "Lối vào từ Home — CONTENDED với story 2.3").
 @property (nonatomic, copy) void (^onOpenMacroManager)(void);
 
+// Story 2.3: gọi khi người dùng chạm nút "Cài đặt bàn phím…" — AppDelegate gán để push
+// SettingsViewController. Lối vào riêng, độc lập với onOpenMacroManager ở trên (AC #6: reachable
+// từ Home qua đúng 1 chạm).
+@property (nonatomic, copy) void (^onOpenSettings)(void);
+
 @end

@@ -17,8 +17,9 @@
 @property (nonatomic, strong) UILabel *statusTitle;
 @property (nonatomic, strong) UILabel *statusBody;
 @property (nonatomic, strong) UITextField *testField;
-@property (nonatomic, strong) UIButton *returnButton;   // chỉ hiện ở nhánh "chưa bật"
-@property (nonatomic, strong) UIButton *macroButton;    // story 2.4: lối vào màn Gõ tắt, luôn hiện
+@property (nonatomic, strong) UIButton *returnButton;    // chỉ hiện ở nhánh "chưa bật"
+@property (nonatomic, strong) UIButton *macroButton;     // story 2.4: lối vào màn Gõ tắt, luôn hiện
+@property (nonatomic, strong) UIButton *settingsButton;  // story 2.3: lối vào màn Cài đặt bàn phím, luôn hiện
 @end
 
 @implementation HomeViewController
@@ -93,6 +94,12 @@
     [self.macroButton addTarget:self action:@selector(mk_openMacroManager) forControlEvents:UIControlEventTouchUpInside];
     [stack addArrangedSubview:self.macroButton];
 
+    // Story 2.3: lối vào màn Cài đặt bàn phím — luôn hiện, độc lập với macroButton ở trên
+    // (AC #6: reachable từ Home qua đúng 1 chạm).
+    self.settingsButton = [OnboardingUI ghostButton:@"Cài đặt bàn phím…"];
+    [self.settingsButton addTarget:self action:@selector(mk_openSettings) forControlEvents:UIControlEventTouchUpInside];
+    [stack addArrangedSubview:self.settingsButton];
+
     // Nút quay lại hướng dẫn — chỉ hiện khi "chưa bật".
     self.returnButton = [OnboardingUI ghostButton:@"Quay lại hướng dẫn kích hoạt"];
     [self.returnButton addTarget:self action:@selector(mk_returnToActivation) forControlEvents:UIControlEventTouchUpInside];
@@ -126,6 +133,10 @@
 
 - (void)mk_openMacroManager {
     if (self.onOpenMacroManager) { self.onOpenMacroManager(); }
+}
+
+- (void)mk_openSettings {
+    if (self.onOpenSettings) { self.onOpenSettings(); }
 }
 
 @end
