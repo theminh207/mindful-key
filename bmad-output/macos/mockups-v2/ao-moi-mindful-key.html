@@ -1,0 +1,308 @@
+<title>Áo mới cho Mindful-key — Ý tưởng + Plan thực thi</title>
+<style>
+  :root{
+    --teal:#1D7C91; --teal-deep:#0F5566; --teal-light:#E8F2F4; --orange:#FF7A1A;
+    --ink:#22302F; --muted:#5C6B6E; --stone:#8A9BA0;
+    --bg:#F5F8F8; --card:#FFFFFF; --divider:#E3EAEA; --shadow:0 10px 34px rgba(29,124,145,.09);
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    --disp:'Montserrat',var(--sans);
+    --measure:70ch;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{ --teal:#54B6C8; --teal-deep:#9FDCE6; --teal-light:#14312F; --ink:#E7EEEE;
+      --muted:#9AAFB1; --bg:#0E1B1D; --card:#15282B; --divider:#25393B; --shadow:0 10px 34px rgba(0,0,0,.35);}
+  }
+  :root[data-theme="dark"]{ --teal:#54B6C8; --teal-deep:#9FDCE6; --teal-light:#14312F; --ink:#E7EEEE;
+    --muted:#9AAFB1; --bg:#0E1B1D; --card:#15282B; --divider:#25393B; --shadow:0 10px 34px rgba(0,0,0,.35);}
+  :root[data-theme="light"]{ --teal:#1D7C91; --teal-deep:#0F5566; --teal-light:#E8F2F4; --ink:#22302F;
+    --muted:#5C6B6E; --bg:#F5F8F8; --card:#FFFFFF; --divider:#E3EAEA; --shadow:0 10px 34px rgba(29,124,145,.09);}
+  *{box-sizing:border-box}
+  body{margin:0}
+  .page{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.65;
+    -webkit-font-smoothing:antialiased;padding:0 20px 96px}
+  .wrap{max-width:820px;margin:0 auto}
+  .lede{max-width:var(--measure)}
+  h1,h2,h3{font-family:var(--disp);font-weight:700;text-wrap:balance;line-height:1.2;color:var(--ink)}
+  h1{font-size:clamp(28px,5vw,42px);letter-spacing:-.01em;margin:0 0 6px}
+  h2{font-size:clamp(21px,3.2vw,27px);margin:0 0 4px}
+  h3{font-size:17px;font-weight:600;margin:0 0 6px}
+  p{margin:0 0 14px}
+  a{color:var(--teal-deep)}
+  .eyebrow{font-family:var(--disp);font-weight:600;font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--teal);margin:0 0 10px}
+  .muted{color:var(--muted)}
+  .head{padding:64px 0 26px}
+  .head .kk{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+  .mark{font-family:var(--disp);font-weight:700;font-size:26px;color:var(--teal);line-height:1}
+  .mark b{color:var(--orange);font-weight:700}
+  .sub{font-size:18px;color:var(--muted);max-width:var(--measure)}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+  .chip{font-size:12.5px;padding:4px 12px;border-radius:999px;background:var(--teal-light);
+    color:var(--teal-deep);font-weight:500}
+  section{padding:38px 0;border-top:1px solid var(--divider)}
+  .grid2{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .card{background:var(--card);border:1px solid var(--divider);border-radius:16px;padding:20px 22px;box-shadow:var(--shadow)}
+  .card h3{margin-top:0}
+  .pill{display:inline-block;font-size:11.5px;font-weight:600;letter-spacing:.03em;padding:3px 10px;border-radius:999px;text-transform:uppercase}
+  .p-have{background:var(--teal-light);color:var(--teal-deep)}
+  .p-new{background:#FFF2E8;color:#9A4A12}
+  .p-soul{background:rgba(138,155,160,.18);color:var(--muted)}
+  :root[data-theme="dark"] .p-new,@media(prefers-color-scheme:dark){}
+  ul.clean{margin:0;padding:0;list-style:none}
+  ul.clean li{position:relative;padding:6px 0 6px 22px}
+  ul.clean li::before{content:"~";position:absolute;left:0;top:6px;color:var(--teal);font-weight:700;font-family:var(--disp)}
+  .tbl{width:100%;border-collapse:collapse;font-size:14px}
+  .tbl th,.tbl td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--divider);vertical-align:top}
+  .tbl th{font-family:var(--disp);font-weight:600;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+  .scroll{overflow-x:auto}
+  .divider-wave{height:26px;margin:6px 0;color:var(--teal);opacity:.5}
+  .note{font-size:13.5px;color:var(--muted);display:flex;gap:8px;align-items:flex-start;margin-top:10px}
+  .flag{border-left:3px solid var(--orange);background:#FFF7F0;padding:12px 16px;border-radius:0 10px 10px 0;font-size:14px}
+  :root[data-theme="dark"] .flag{background:#2A1D12}
+  @media (prefers-color-scheme:dark){.flag{background:#2A1D12}}
+  .phase{display:grid;grid-template-columns:38px 1fr;gap:16px;padding:16px 0;border-bottom:1px solid var(--divider)}
+  .phase:last-child{border-bottom:0}
+  .pnum{font-family:var(--disp);font-weight:700;font-size:20px;color:var(--teal);line-height:1.3}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .foot{font-size:13px;color:var(--muted);text-align:center;padding-top:30px}
+  /* embedded app screen — always light, depicts real app */
+  .screen{background:#F8F8F8;border:1px solid #E0E6E6;border-radius:14px;overflow:hidden;
+    box-shadow:0 10px 30px rgba(29,124,145,.12);color:#2A2A2A;font-family:var(--sans)}
+  .screen .bar{display:flex;align-items:center;gap:7px;padding:9px 13px;background:#EDF0F0;border-bottom:1px solid #E0E6E6}
+  .screen .d{width:11px;height:11px;border-radius:50%}
+  .screen .row{display:flex;min-height:250px}
+  .screen .nav{width:150px;flex:0 0 150px;background:#fff;border-right:1px solid #E0E6E6;padding:12px 8px;display:flex;flex-direction:column;gap:1px}
+  .screen .ni{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:8px;font-size:12.5px;color:#2A2A2A}
+  .screen .ni.on{background:#E8F2F4;color:#0F5566;font-weight:500}
+  .screen .ni .g{width:6px;height:6px;border-radius:50%;background:#8A9BA0}
+  .screen .ni.on .g{background:#1D7C91}
+  .screen .gear{margin-top:auto;border-top:1px solid #EDF0F0;padding-top:6px}
+  .screen .main{flex:1;padding:16px 18px}
+  .screen .gk{background:#F4FAFB;border:1.5px solid #1D7C91;border-radius:12px;padding:14px}
+  .screen .lnk{color:#FF7A1A;font-size:12.5px}
+  .seg{display:inline-flex;background:#EDF0F0;border-radius:999px;padding:3px;font-size:12.5px;cursor:pointer;user-select:none}
+  .seg span{padding:4px 14px;border-radius:999px;color:#666}
+  .seg span.on{background:#1D7C91;color:#fff}
+  button.seg-btn{font:inherit;border:0;background:none;cursor:pointer}
+  :focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+  @media (prefers-reduced-motion:no-preference){.riverline{transition:none}}
+</style>
+<div class="page">
+<div class="wrap">
+
+  <header class="head">
+    <div class="kk"><span class="mark">~<b>&#816;</b></span><span style="font-family:var(--disp);font-weight:600">mindful-key</span></div>
+    <p class="eyebrow">macOS · Ý tưởng giao diện + Plan thực thi</p>
+    <h1>Áo mới cho Mindful-key</h1>
+    <p class="sub">Gom những cửa sổ rời rạc về một căn nhà tĩnh lặng — nơi con sóng <span style="color:var(--teal);font-weight:600">~</span> vẫn là linh hồn, không phải cái bảng điểm.</p>
+    <div class="meta">
+      <span class="chip">6 mục điều hướng</span>
+      <span class="chip">2 tính năng lõi</span>
+      <span class="chip">Dòng sông cảm xúc</span>
+      <span class="chip">Riêng tư mặc định</span>
+    </div>
+  </header>
+
+  <section>
+    <p class="eyebrow">Hồn không đổi</p>
+    <h2>Ba vạch sơn giữ nguyên</h2>
+    <p class="lede muted">Mọi thứ khác có thể vẽ lại. Ba điều này thì không — đổi diện mạo kiểu gì cũng phải nằm trong đây.</p>
+    <div class="grid2" style="margin-top:18px">
+      <div class="card"><h3>Con sóng, không đèn màu</h3><p class="muted" style="margin:0;font-size:14px">Cảm xúc thể hiện bằng <b>biên độ sóng</b> — một sắc teal duy nhất. Không đỏ/xanh, không mặt cười, không điểm số.</p></div>
+      <div class="card"><h3>Cam chỉ để hành động</h3><p class="muted" style="margin:0;font-size:14px">Màu cam dành riêng cho nút bấm. Không bao giờ dùng cam để "chấm" cảm xúc.</p></div>
+      <div class="card"><h3>Quan sát, không phán xét</h3><p class="muted" style="margin:0;font-size:14px">"Mặt hồ đang gợn sóng" — mô tả. Không "bạn đang quá nóng nảy" — phán xét.</p></div>
+    </div>
+  </section>
+
+  <svg class="divider-wave" width="100%" height="26" viewBox="0 0 800 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 13 Q 25 3 50 13 T 100 13 T 150 13 T 200 13 T 250 13 T 300 13 T 350 13 T 400 13 T 450 13 T 500 13 T 550 13 T 600 13 T 650 13 T 700 13 T 750 13 T 800 13" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+
+  <section>
+    <p class="eyebrow">Hướng nhìn</p>
+    <h2>Một căn nhà, hai linh hồn</h2>
+    <p class="lede">Bỏ kiểu bốn cửa sổ bay lung tung. Thay bằng <b>một cửa sổ quản lý</b> có thanh điều hướng bên trái. Hai linh hồn — <b>Chuông tỉnh thức</b> và <b>nhịp cảm xúc khi gõ</b> — đứng ngang hàng với phần cấu hình bộ gõ.</p>
+    <div class="card" style="padding:16px;margin-top:8px">
+      <div class="screen">
+        <div class="bar"><span class="d" style="background:#F0655B"></span><span class="d" style="background:#F5BE4F"></span><span class="d" style="background:#68C452"></span><span style="margin-left:8px;font-size:12px;color:#666">mindful-key</span></div>
+        <div class="row">
+          <div class="nav">
+            <div class="ni on"><span class="g"></span>Hôm nay</div>
+            <div class="ni"><span class="g"></span>Chuông</div>
+            <div class="ni"><span class="g"></span>Bộ gõ</div>
+            <div class="ni"><span class="g"></span>Riêng tư</div>
+            <div class="gear"><div class="ni"><span class="g"></span>Hệ thống</div>
+            <div class="ni"><span class="g"></span>Giới thiệu</div></div>
+          </div>
+          <div class="main">
+            <div style="font-family:var(--disp);font-weight:600;font-size:14px;margin-bottom:12px">Hôm nay</div>
+            <div class="gk">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                <div style="font-family:var(--disp);font-weight:700;font-size:16px">Gác cổng gửi tin</div>
+                <span class="lnk">Soi lại &rarr;</span>
+              </div>
+              <svg width="150" height="30" viewBox="0 0 150 30" style="margin:10px 0 4px" aria-hidden="true"><path d="M2 15 Q 14 12 26 15 T 50 15 T 74 15 T 98 15 T 122 15 T 148 15" fill="none" stroke="#8A9BA0" stroke-width="2.2" stroke-linecap="round"/></svg>
+              <div style="font-size:12px;color:#666;line-height:1.45">Mặt hồ đang phẳng lặng. Khi sóng gợn nhiều, mình sẽ dừng lại hỏi trước khi gửi.</div>
+            </div>
+            <div style="font-size:11px;color:#8A9BA0;margin-top:12px">Xử lý trên máy · không gửi nội dung gõ đi đâu</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll" style="margin-top:20px">
+    <table class="tbl">
+      <thead><tr><th>Mục</th><th>Chứa gì</th><th>Trạng thái</th></tr></thead>
+      <tbody>
+        <tr><td><b>Hôm nay</b></td><td>Card gác cổng · dòng sông cảm xúc · link "Soi lại"</td><td><span class="pill p-new">Mới</span></td></tr>
+        <tr><td><b>Chuông</b></td><td>Chuông lớn/nhỏ · Định kỳ · Ngẫu nhiên · Nhắc · Mỗi giờ · chọn tiếng</td><td><span class="pill p-have">Phần lớn đã có</span></td></tr>
+        <tr><td><b>Bộ gõ</b></td><td>Kiểu gõ · Gõ tắt · Chuyển mã (gộp 3 cửa sổ cũ)</td><td><span class="pill p-have">Đã reskin</span></td></tr>
+        <tr><td><b>Riêng tư</b></td><td>Bật/tắt nhật ký · xuất CSV · tự xoá định kỳ · xoá toàn bộ</td><td><span class="pill p-new">Mới một phần</span></td></tr>
+        <tr><td><b>Hệ thống</b></td><td>Khởi động cùng máy · icon Dock/menu · kiểm tra bản mới · đặt mặc định</td><td><span class="pill p-have">Chỉ dời chỗ</span></td></tr>
+        <tr><td><b>Giới thiệu</b></td><td>Logo · phiên bản · credit Mai Vũ Tuyên (GPL v3)</td><td><span class="pill p-have">Đã reskin</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="note">~ <span><b>Đã có sẵn một bản nháp:</b> <code>PanelViewController</code> (popover bấm icon menu-bar) đã gộp sẵn Gác cổng &rarr; Chuông &rarr; Bộ gõ &rarr; chân trang riêng tư. Dùng lại làm điểm khởi đầu cho cửa sổ này.</span></div>
+  </section>
+
+  <svg class="divider-wave" width="100%" height="26" viewBox="0 0 800 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 13 Q 25 3 50 13 T 100 13 T 150 13 T 200 13 T 250 13 T 300 13 T 350 13 T 400 13 T 450 13 T 500 13 T 550 13 T 600 13 T 650 13 T 700 13 T 750 13 T 800 13" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+
+  <section>
+    <p class="eyebrow">Con sóng</p>
+    <h2>Dòng sông của một ngày</h2>
+    <p class="lede">Thay cho "Insights" kiểu dashboard: một <b>trục duy nhất — phẳng lặng &harr; gợn sóng</b>, một màu teal, chỉ đổi biên độ. Không nhãn tốt/xấu, không con số, không streak. Số liệu biến thành một câu hỏi soi lại.</p>
+    <div class="card" style="margin-top:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div style="font-family:var(--disp);font-weight:600;color:var(--ink)">Soi lại</div>
+        <div class="seg" id="seg"><button class="seg-btn on" data-v="day">Hôm nay</button><button class="seg-btn" data-v="week">7 ngày</button></div>
+      </div>
+      <div id="q" style="font-family:var(--disp);font-weight:600;color:var(--ink);margin-bottom:14px">Hôm nay, khi nào mặt hồ trong con gợn sóng?</div>
+      <div id="river"></div>
+      <div id="lab" style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--stone);margin-top:6px"></div>
+      <div id="obs" class="muted" style="font-size:14px;margin-top:14px"></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Thuật toán</p>
+    <h2>App "đọc" cảm xúc thế nào</h2>
+    <p class="lede">App không đọc trộm anh viết gì. Nó để ý hai thứ, gộp thành một điểm "độ gợn" từ 0 đến 1 — chạy ở cuối câu, ngoài luồng gõ, và mù hoàn toàn khi tắt bộ gõ hoặc gõ tiếng Anh.</p>
+    <div class="grid2" style="margin-top:16px">
+      <div class="card"><span class="pill p-have">Đã có</span><h3 style="margin-top:10px">Gõ <em>cái gì</em></h3><p class="muted" style="font-size:14px;margin:0">Từ điển ~40 từ mang cảm xúc + ~11 từ nặng. Đường nâng cấp: thay bằng một "mũi ngửi văn" nhỏ (PhoBERT) chạy trên máy — hiểu cả câu, đỡ oan.</p></div>
+      <div class="card"><span class="pill p-new">Đề xuất thêm</span><h3 style="margin-top:10px">Gõ <em>thế nào</em></h3><p class="muted" style="font-size:14px;margin:0">Nhịp gõ dồn, xoá đi xoá lại, VIẾT HOA cả cụm, chấm than dồn (!!!). Không cần biết nội dung — cực kỳ riêng tư. Hiện <b>chưa có</b> trong code.</p></div>
+    </div>
+
+    <h3 style="margin:26px 0 8px">Cách lấy mẫu để vẽ dòng sông <span class="pill p-have" style="vertical-align:middle">đã chốt</span></h3>
+    <p class="lede">Điểm mấu chốt: hôm nay app <b>chỉ ghi lúc gác cổng bật</b> (chỉ mấy đỉnh bão trong app chat) — chưa đủ để vẽ cả ngày. Cách đã chốt:</p>
+    <ul class="clean lede">
+      <li><b>Để ý liên tục</b> trong suốt mỗi nhịp chuông (30 hoặc 60 phút) — chỉ giữ trong bộ nhớ tạm, không lưu câu chữ.</li>
+      <li>Tới nhịp chuông, ghi xuống <b>đúng một con số trung bình</b> của cả quãng, rồi xoá bộ nhớ tạm. Cả ngày chỉ ~24&ndash;48 chấm.</li>
+      <li>Quãng <b>không gõ</b> (hoặc gõ tiếng Anh/mật khẩu) &rarr; để <b>trống</b>, không vẽ thành phẳng lặng giả.</li>
+    </ul>
+    <div class="flag" style="margin-top:12px"><b>Chạm cột trụ riêng tư.</b> Đây là ghi nhiều hơn hiện tại (dù chỉ là con số, không bao giờ là chữ). Nhật ký vẫn mã hoá, có nút xoá + tự xoá định kỳ. Đã có sự đồng thuận của chủ dự án — sẽ ghi vào <code>decision-log</code>.</div>
+    <h3 style="margin:26px 0 8px">Ba chân kiềng dữ liệu <span class="pill p-have" style="vertical-align:middle">đã chốt</span></h3>
+    <ul class="clean lede">
+      <li><b>Sóng chữ (tự động):</b> điểm trung bình mỗi nhịp chuông — máy đo <em>biểu hiện</em>.</li>
+      <li><b>Khoảnh khắc gác cổng:</b> giờ, app, và lựa chọn của anh (đợi / sửa / vẫn gửi) — cơn sóng thật hay giả.</li>
+      <li><b>Check-in một chạm (mới):</b> khi chuông điểm, hỏi nhỏ "Mặt hồ đang thế nào?" với 3 mức sóng — tự nguyện, tự ẩn sau vài giây, bỏ qua vẫn ghi tự động. Là "điểm chuẩn" để app dần học ngưỡng riêng của anh. Dùng lại 2 cột <code>checkin</code> có sẵn trong kho nhật ký.</li>
+    </ul>
+
+    <h3 style="margin:26px 0 8px">Màn "Soi lại" — 4 phép tính, 4 nhịp</h3>
+    <p class="lede">Bốn phép tính minh bạch như công thức nấu ăn: <b>dòng sông</b> (trung bình mỗi nhịp, quãng không gõ để trống) · <b>đỉnh gợn</b> (nhịp cao nhất, cần ≥ 2 câu mới tính) · <b>quãng lặng</b> (chuỗi có-gõ-mà-êm dài nhất — chỉ cả chỗ hồ đứng yên, chống thiên kiến tiêu cực) · <b>lặng lại</b> (từ đỉnh tới lúc êm — kể thành câu, không thành số).</p>
+    <p class="lede">Trình bày theo 4 nhịp: <b>Nhận ra</b> (sông + một quan sát) → <b>Cho phép</b> (giọng trung tính, không phán xét) → <b>Soi</b> (MỘT câu hỏi — chữ to nhất màn, chọn theo "chuyện nổi bật của ngày", bộ câu hỏi xoay vòng không lặp hai ngày liền) → <b>Nuôi dưỡng</b> (tối đa một gợi ý, vd "đặt chuông 15–17h" một chạm). Ngày gõ ít → nói thật "hồ chưa đủ nét", không vẽ sông giả.</p>
+
+    <h3 style="margin:26px 0 8px">Độ nhạy — lớp diễn giải, không phải cái cân</h3>
+    <div class="scroll">
+    <table class="tbl">
+      <thead><tr><th></th><th>Ít nhạy</th><th>Vừa</th><th>Nhạy</th></tr></thead>
+      <tbody>
+        <tr><td>Câu được coi là "gợn" khi điểm ≥</td><td>0.6</td><td>0.5</td><td>0.4</td></tr>
+        <tr><td>Chuông ngân sớm sau chuỗi câu gợn liên tiếp</td><td>5 câu</td><td>3 câu</td><td>2 câu</td></tr>
+        <tr><td>Gác cổng hỏi khi điểm ≥</td><td>0.6</td><td>0.5</td><td>0.45</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <ul class="clean lede" style="margin-top:10px">
+      <li>Điểm thô ghi nhật ký <b>không đổi</b> — đổi độ nhạy không viết lại lịch sử sông (đo lường tách khỏi diễn giải).</li>
+      <li>Gác cổng có <b>sàn</b>, không bao giờ tắt hẳn — Feature #1 không bán rẻ cho sự dễ chịu.</li>
+      <li>Về lâu dài, check-in giúp app <b>học ngưỡng riêng</b> của từng người, ngay trên máy.</li>
+    </ul>
+    <div class="note">~ <span>Số trong bảng là điểm khởi hành, chạy thật rồi tinh chỉnh. Đây cũng là spec để nối nốt đoạn dây đang bỏ dở trong code: <code>NudgeCoordinator</code> đã có hàm đọc độ nhạy nhưng chưa được dùng (đang đóng cứng "3 câu").</span></div>
+  </section>
+
+  <svg class="divider-wave" width="100%" height="26" viewBox="0 0 800 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 13 Q 25 3 50 13 T 100 13 T 150 13 T 200 13 T 250 13 T 300 13 T 350 13 T 400 13 T 450 13 T 500 13 T 550 13 T 600 13 T 650 13 T 700 13 T 750 13 T 800 13" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+
+  <section>
+    <p class="eyebrow">Dọn nhà</p>
+    <h2>Nút cũ về chỗ ở mới</h2>
+    <p class="lede">Đã soi code thật của 4 cửa sổ cũ. Tin tốt: gần hết nút gọn về <b>Bộ gõ</b> và <b>Giới thiệu</b>. Vài chỗ trùng lặp sẽ gộp làm một khi ráp — không mất dữ liệu.</p>
+    <div class="scroll">
+    <table class="tbl">
+      <thead><tr><th>Cửa sổ cũ</th><th>Về đâu</th><th>Ghi chú</th></tr></thead>
+      <tbody>
+        <tr><td>Điều khiển ▸ tab Bộ gõ</td><td>Bộ gõ ▸ Kiểu gõ</td><td>~14 công tắc, dời thẳng</td></tr>
+        <tr><td>Điều khiển ▸ tab Gõ tắt</td><td>Bộ gõ ▸ Gõ tắt</td><td>Nút "Bảng gõ tắt…" biến mất (nội dung vào thẳng mục con)</td></tr>
+        <tr><td>Điều khiển ▸ tab Hệ thống</td><td>Hệ thống (mục thứ 6)</td><td>Icon Dock/menu, khởi động cùng máy…</td></tr>
+        <tr><td>Điều khiển ▸ tab Thông tin</td><td>Giới thiệu</td><td>Trùng cửa sổ About — hợp nhất</td></tr>
+        <tr><td>Cửa sổ Gõ tắt (macro)</td><td>Bộ gõ ▸ Gõ tắt</td><td>Bảng + Nạp/Xuất file</td></tr>
+        <tr><td>Cửa sổ Chuyển mã</td><td>Bộ gõ ▸ Chuyển mã</td><td>Dời nguyên</td></tr>
+        <tr><td>Cửa sổ Giới thiệu</td><td>Giới thiệu</td><td>Giữ credit GPL v3</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <h3 style="margin:22px 0 6px">Còn cần anh quyết (khi bắt tay làm)</h3>
+    <ul class="clean lede">
+      <li>Ba cặp nút <b>trùng UserDefaults</b> ("tự viết hoa", "kiểm tra bản mới", About nhân đôi) — chọn giữ một bộ UI.</li>
+      <li>Nhóm "Gõ nhanh cc=ch, gg=gi…" thực ra là <b>luật ghép vần Telex</b>, không phải macro người dùng — để ở <em>Kiểu gõ</em> hay <em>Gõ tắt</em>?</li>
+      <li>Nút <b>"Đặt mặc định"</b> (reset) và <b>"Thoát"</b> — đưa vào Hệ thống hay menu thanh trạng thái?</li>
+      <li>Một khối UI cấp quyền cũ gần như <b>code chết</b> + một <b>bug outlet</b> có sẵn (nút "Tắt tiếng Việt khi…") — vá riêng, không lẫn vào việc dọn nhà.</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="eyebrow">Plan thực thi</p>
+    <h2>Sáu bước, dễ trước khó sau</h2>
+    <p class="lede">Mỗi bước build ra xem thật rồi mới sang bước kế. <span class="pill p-have">Đã có</span> = code sẵn, chỉ dời/nối. <span class="pill p-new">Mới</span> = viết thêm. <span class="pill p-soul">Chạm hồn</span> = qua cổng hiến chương/riêng tư.</p>
+    <div style="margin-top:14px">
+      <div class="phase"><div class="pnum">1</div><div><h3>Khung nhà: popover chia tab + cửa sổ 6 mục</h3><p class="muted" style="font-size:14px;margin:0">Popover mới 3 tab (Hôm nay · Chuông · Bộ gõ) từ bản nháp <code>PanelViewController</code>; cửa sổ quản lý dựng hành lang + phòng trống. Chưa nhồi tính năng.</p><div class="tags"><span class="pill p-have">Phần lớn đã có</span><span class="pill p-soul">nhận diện</span></div></div></div>
+      <div class="phase"><div class="pnum">2</div><div><h3>Dời Bộ gõ · Gõ tắt · Chuyển mã · Hệ thống vào nhà</h3><p class="muted" style="font-size:14px;margin:0">Theo bảng dọn nhà. Gộp các nút trùng. An toàn — không chạm hồn, chỉ đổi chỗ ở.</p><div class="tags"><span class="pill p-have">Đã reskin</span></div></div></div>
+      <div class="phase"><div class="pnum">3</div><div><h3>Kho nhật ký lấy mẫu + check-in + độ nhạy</h3><p class="muted" style="font-size:14px;margin:0">Bộ tích luỹ trong bộ nhớ, ghi 1 số trung bình mỗi nhịp chuông, để trống quãng không gõ. Check-in 3 sóng hiện cùng chuông (dùng cột <code>checkin</code> sẵn có). Nối độ nhạy 3 mức theo bảng spec.</p><div class="tags"><span class="pill p-new">Mới</span><span class="pill p-soul">riêng tư</span></div></div></div>
+      <div class="phase"><div class="pnum">4</div><div><h3>Dòng sông + màn "Soi lại" (Hôm nay)</h3><p class="muted" style="font-size:14px;margin:0">Vẽ sông từ dữ liệu lấy mẫu, dải mờ đánh dấu quãng gợn/lặng. Bốn nhịp Nhận ra → Cho phép → Soi → Nuôi dưỡng, bộ câu hỏi xoay vòng, gợi ý đặt chuông một chạm.</p><div class="tags"><span class="pill p-new">Mới</span><span class="pill p-soul">nhận diện</span></div></div></div>
+      <div class="phase"><div class="pnum">5</div><div><h3>Chuông chi tiết + chọn tiếng</h3><p class="muted" style="font-size:14px;margin:0">Chọn/tải tiếng chuông, xem trước. Không chạm hồn nên làm sâu thoải mái.</p><div class="tags"><span class="pill p-have">Phần lớn đã có</span></div></div></div>
+      <div class="phase"><div class="pnum">6</div><div><h3>Riêng tư: xuất CSV + tự xoá định kỳ</h3><p class="muted" style="font-size:14px;margin:0">Anh tự cầm dữ liệu của mình (vẫn trên máy). "Quên có chủ đích" sau N ngày — càng riêng tư.</p><div class="tags"><span class="pill p-new">Mới</span><span class="pill p-soul">riêng tư</span></div></div></div>
+    </div>
+    <div class="note" style="margin-top:16px">~ <span><b>Lộ trình xa (chưa làm ngay):</b> thay từ điển bằng PhoBERT chạy trên máy; thêm tín hiệu "gõ thế nào" (nhịp/xoá/HOA). Cần dataset tiếng Việt + đo tốc độ trước.</span></div>
+  </section>
+
+  <svg class="divider-wave" width="100%" height="26" viewBox="0 0 800 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 13 Q 25 3 50 13 T 100 13 T 150 13 T 200 13 T 250 13 T 300 13 T 350 13 T 400 13 T 450 13 T 500 13 T 550 13 T 600 13 T 650 13 T 700 13 T 750 13 T 800 13" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+
+  <section>
+    <p class="eyebrow">Chốt</p>
+    <h2>Đã chốt &amp; bước tiếp</h2>
+    <div class="grid2" style="margin-top:8px">
+      <div class="card"><h3>Đã chốt trong buổi này</h3><ul class="clean" style="font-size:14px"><li>Diện mạo: một cửa sổ, 6 mục điều hướng</li><li>Popover chia 3 tab (Hôm nay · Chuông · Bộ gõ), hết cuộn dài</li><li>Cảm xúc = dòng sông (biến thể 1)</li><li>Một trục phẳng &harr; gợn, không tốt/xấu</li><li>Lấy mẫu: để ý liên tục, ghi trung bình mỗi nhịp chuông</li><li>Check-in 3 sóng hiện cùng chuông, tự ẩn, bỏ qua được</li><li>Độ nhạy = lớp diễn giải; gác cổng có sàn, không tắt hẳn</li><li>Soi lại = 4 nhịp, câu hỏi là trung tâm</li><li>Cụm Hệ thống = mục thứ 6</li></ul></div>
+      <div class="card"><h3>Bước tiếp</h3><p class="muted" style="font-size:14px;margin:0 0 10px">Anh duyệt file này &rarr; em ghi các quyết định vào <code>decision-log</code>, rồi tách thành story giao cho <code>platform-shell-agent</code> + <code>mood-layer-agent</code> theo đúng 6 bước trên.</p><p class="muted" style="font-size:14px;margin:0">Bắt đầu từ Bước 1 (khung nhà) — rủi ro thấp, thấy kết quả sớm.</p></div>
+    </div>
+  </section>
+
+  <p class="foot">mindful-key · NOW BRAND OS · GPL v3 — dựa trên OpenKey (Mai Vũ Tuyên) · "Chánh niệm trước, tính năng sau"</p>
+
+</div>
+</div>
+<script>
+(function(){
+  var teal="#1D7C91",stone="#8A9BA0";
+  function isDark(){var t=document.documentElement.getAttribute("data-theme");if(t)return t==="dark";return window.matchMedia&&window.matchMedia("(prefers-color-scheme:dark)").matches;}
+  function col(){return isDark()?"#54B6C8":teal;}
+  function river(amps,w,h,sw){var mid=h/2,pts=[],k=amps.length;for(var x=0;x<=w;x+=3){var f=x/w*(k-1),i=Math.floor(f),fr=f-i;var a=amps[i]+((amps[Math.min(i+1,k-1)]||amps[i])-amps[i])*fr;var y=mid-a*Math.sin(x*0.17);pts.push(x.toFixed(1)+","+y.toFixed(1));}return '<svg width="100%" height="'+h+'" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" aria-hidden="true"><polyline points="'+pts.join(" ")+'" fill="none" stroke="'+col()+'" stroke-width="'+(sw||2.2)+'" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
+  var W=740;
+  var today=[3,2,4,3,6,10,8,5,3];
+  var week={"T2":[2,3,5,4,6,5,3],"T3":[3,4,4,5,7,6,4],"T4":[2,2,3,4,5,4,3],"T5":[4,5,7,8,10,7,5],"T6":[3,4,5,6,8,6,4],"T7":[2,2,3,3,4,3,2],"CN":[2,3,3,4,4,3,2]};
+  var rv=document.getElementById("river"),lb=document.getElementById("lab"),ob=document.getElementById("obs"),q=document.getElementById("q");
+  function day(){q.textContent="Hôm nay, khi nào mặt hồ trong con gợn sóng?";rv.innerHTML=river(today,W,90);lb.style.display="flex";lb.innerHTML="<span>Sáng</span><span>Trưa</span><span>Chiều</span><span>Tối</span>";ob.innerHTML="Mặt hồ gợn nhiều nhất vào <b style='font-weight:600;color:var(--ink)'>cuối chiều</b>. Lúc đó có điều gì đang diễn ra không?";}
+  function wk(){q.textContent="Bảy ngày qua, mặt hồ chảy thế nào?";lb.style.display="none";var h="";for(var d in week){h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:2px"><span style="width:26px;font-size:11.5px;color:'+stone+'">'+d+'</span><div style="flex:1">'+river(week[d],W-40,24,1.8)+'</div></div>';}rv.innerHTML=h;ob.innerHTML="Buổi tối thường gợn hơn ban ngày. Một điều nhỏ có thể làm dịu buổi tối của anh?";}
+  var cur="day";function render(){cur==="day"?day():wk();}
+  render();
+  document.querySelectorAll("#seg .seg-btn").forEach(function(s){s.addEventListener("click",function(){document.querySelectorAll("#seg .seg-btn").forEach(function(x){x.classList.remove("on");});s.classList.add("on");cur=s.getAttribute("data-v");render();});});
+  if(window.matchMedia){window.matchMedia("(prefers-color-scheme:dark)").addEventListener("change",render);}
+  var mo=new MutationObserver(render);mo.observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+})();
+</script>

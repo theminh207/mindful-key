@@ -1,0 +1,149 @@
+<title>Mindful-key — Vòng Soi lại (chuông → sông → câu hỏi)</title>
+<style>
+  :root{--ink:#1D2A2C;--muted:#66767A;--stone:#8A9BA0;--teal:#1D7C91;--teal-deep:#0F5566;
+    --teal-light:#E8F2F4;--orange:#FF7A1A;--track:#EEF1F1;--border:#E6ECEC;--bg:#E7EEEE;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;}
+  @media (prefers-color-scheme:dark){:root{--bg:#101E20}}
+  :root[data-theme="dark"]{--bg:#101E20}:root[data-theme="light"]{--bg:#E7EEEE}
+  *{box-sizing:border-box}body{margin:0}
+  .page{background:var(--bg);font-family:var(--sans);padding:28px 16px 70px;min-height:100vh}
+  .wrap{max-width:900px;margin:0 auto}
+  .intro{max-width:62ch;margin:0 auto 8px;text-align:center;color:var(--muted);font-size:14px;line-height:1.6}
+  .intro b{color:var(--teal-deep)}
+  @media (prefers-color-scheme:dark){.intro b{color:#7ECBDA}}
+  :root[data-theme="dark"] .intro b{color:#7ECBDA}
+  .flow{display:flex;justify-content:center;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0 26px;font-size:12px;color:var(--muted)}
+  .flow .step{background:#FDFEFE;border:1px solid var(--border);border-radius:999px;padding:5px 13px;color:#3C4A4C}
+  .flow .arr{color:var(--stone)}
+  .cols{display:flex;gap:24px;justify-content:center;align-items:flex-start;flex-wrap:wrap}
+  .col{display:flex;flex-direction:column;gap:10px}
+  .eb{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--stone);margin:0;text-align:center}
+  .panel{background:#fff;border-radius:15px;box-shadow:0 14px 40px rgba(20,50,58,.20);border:1px solid #E4EAEA;color:var(--ink);overflow:hidden}
+  .cap{font-size:11.5px;color:var(--muted);text-align:center;max-width:340px;margin:0 auto;line-height:1.5}
+  /* bell toast */
+  .toast{width:330px;padding:15px 16px}
+  .toast .h{display:flex;align-items:center;gap:8px;font-weight:600;font-size:13.5px}
+  .toast .h .w{color:var(--teal);font-weight:700;font-size:16px}
+  .toast .h .t{margin-left:auto;font-weight:400;font-size:11.5px;color:var(--stone)}
+  .toast .breath{font-size:12.5px;color:var(--muted);margin:5px 0 13px}
+  .toast .q{font-size:13.5px;font-weight:500;margin-bottom:10px}
+  .choices{display:flex;gap:8px}
+  .ch{flex:1;border:1px solid var(--border);border-radius:10px;padding:9px 4px 7px;text-align:center;cursor:pointer;background:#fff}
+  .ch:hover{background:#F7FAFA}
+  .ch.on{border-color:var(--teal);background:var(--teal-light)}
+  .ch .lb{font-size:11px;color:#3C4A4C;margin-top:3px}
+  .skip{display:block;text-align:center;font-size:12px;color:var(--stone);margin-top:12px;cursor:pointer}
+  /* reflection window */
+  .refl{width:430px}
+  .bar{display:flex;align-items:center;gap:7px;padding:10px 14px;background:#EDF0F0;border-bottom:1px solid #E0E6E6}
+  .d{width:11px;height:11px;border-radius:50%}
+  .bar .ti{margin-left:6px;font-size:12.5px;color:#666}
+  .rbody{padding:16px 18px}
+  .sect{font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--stone);margin:0 0 8px}
+  .obs{font-size:13px;color:#3C4A4C;line-height:1.55;margin-top:10px}
+  .gkline{font-size:12px;color:var(--muted);margin-top:6px}
+  .axis{display:flex;justify-content:space-between;font-size:10.5px;color:var(--stone);margin-top:4px}
+  .qbig{font-size:17.5px;font-weight:600;line-height:1.45;color:#12292C;margin:2px 0 6px}
+  .qcap{font-size:12px;color:var(--stone)}
+  .divid{height:1px;background:#EFF2F2;margin:16px -18px}
+  .sug{background:#FBF8F5;border:1px solid #F2E7DC;border-radius:11px;padding:12px 14px}
+  .sug .st{font-size:13px;color:#3C4A4C;line-height:1.5;margin-bottom:10px}
+  .cta{background:var(--orange);color:#2A2A2A;border:0;border-radius:8px;padding:7px 14px;font:500 12.5px var(--sans);cursor:pointer}
+  .ghost{background:none;border:0;color:var(--stone);font:500 12.5px var(--sans);cursor:pointer;padding:7px 10px}
+  .rfoot{padding:10px 16px;font-size:10.5px;color:var(--stone);border-top:1px solid #EFF2F2;text-align:center}
+  /* low data */
+  .low{width:330px;padding:15px 16px}
+  .low .t{font-size:13.5px;font-weight:500;margin-bottom:4px}
+  .low .s{font-size:12.5px;color:var(--muted);line-height:1.55}
+  button:focus-visible,.ch:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+</style>
+<div class="page"><div class="wrap">
+  <p class="intro">Vòng khép kín của một ngày: <b>chuông neo khoảnh khắc</b> → app chấm một điểm lên sông (anh chạm thêm nếu muốn) → <b>cuối ngày sông được kể lại thành một câu hỏi</b>, không phải một bảng điểm.</p>
+  <div class="flow">
+    <span class="step">Chuông điểm</span><span class="arr">&rarr;</span>
+    <span class="step">Một chấm lên dòng sông</span><span class="arr">&rarr;</span>
+    <span class="step">Cuối ngày: quan sát + câu hỏi + một gợi ý</span>
+  </div>
+
+  <div class="cols">
+    <div class="col">
+      <p class="eb">1 · Khoảnh khắc chuông — 15:30</p>
+      <div class="panel toast">
+        <div class="h"><span class="w">~</span>Chuông đã điểm<span class="t">15:30</span></div>
+        <div class="breath">Một hơi thở nhé.</div>
+        <div class="q">Mặt hồ đang thế nào?</div>
+        <div class="choices" id="choices">
+          <div class="ch" tabindex="0">
+            <svg width="52" height="16" viewBox="0 0 52 16" aria-hidden="true"><path d="M2 8 Q 8 6.5 14 8 T 26 8 T 38 8 T 50 8" fill="none" stroke="#8A9BA0" stroke-width="2" stroke-linecap="round"/></svg>
+            <div class="lb">Phẳng</div>
+          </div>
+          <div class="ch on" tabindex="0">
+            <svg width="52" height="16" viewBox="0 0 52 16" aria-hidden="true"><path d="M2 8 Q 8 4 14 8 T 26 8 T 38 8 T 50 8" fill="none" stroke="#1D7C91" stroke-width="2.1" stroke-linecap="round"/></svg>
+            <div class="lb">Gợn nhẹ</div>
+          </div>
+          <div class="ch" tabindex="0">
+            <svg width="52" height="16" viewBox="0 0 52 16" aria-hidden="true"><path d="M2 8 Q 8 1 14 8 T 26 8 T 38 8 T 50 8" fill="none" stroke="#1D7C91" stroke-width="2.2" stroke-linecap="round"/></svg>
+            <div class="lb">Gợn nhiều</div>
+          </div>
+        </div>
+        <span class="skip">Bỏ qua — app vẫn tự ghi nhịp này</span>
+      </div>
+      <p class="cap">Một chạm, tự nguyện, 3 mức đều là <b>con sóng</b> — không mặt cười, không điểm. Mỗi lần chạm là một "điểm chuẩn" giúp app dần hiểu giọng gõ của riêng anh.</p>
+    </div>
+
+    <div class="col">
+      <p class="eb">2 · Cuối ngày — màn Soi lại</p>
+      <div class="panel refl">
+        <div class="bar"><span class="d" style="background:#F0655B"></span><span class="d" style="background:#F5BE4F"></span><span class="d" style="background:#68C452"></span><span class="ti">Soi lại · Thứ Hai 13·07</span></div>
+        <div class="rbody">
+          <p class="sect">Nhận ra</p>
+          <div id="rv"></div>
+          <div class="axis"><span>Sáng</span><span>Trưa</span><span>Chiều</span><span>Tối</span></div>
+          <div class="obs">Mặt hồ gợn nhiều nhất <b>quãng 15–17h</b>. Sau cơn gợn, hồ lặng lại trước 18h. Buổi sáng là quãng lặng dài nhất.</div>
+          <div class="gkline">Gác cổng đã cùng anh dừng lại 3 lần — 2 lần anh chọn đợi.</div>
+          <div class="divid"></div>
+          <p class="sect">Soi</p>
+          <div class="qbig">Khoảng giữa chiều, điều gì thường kéo mặt hồ động?</div>
+          <div class="qcap">Không cần trả lời ngay — mang câu hỏi theo cũng đủ.</div>
+          <div class="divid"></div>
+          <p class="sect">Nuôi dưỡng</p>
+          <div class="sug">
+            <div class="st">Ngày mai, thử để chuông điểm nhịp 30 phút trong khung 15–17h?</div>
+            <button class="cta">Đặt chuông 15–17h</button>
+            <button class="ghost">Để sau</button>
+          </div>
+        </div>
+        <div class="rfoot">Xử lý trên máy · Câu hỏi mỗi ngày một khác · Không điểm số, không chuỗi ngày</div>
+      </div>
+      <p class="cap">Bốn nhịp của màn: <b>Nhận ra → Cho phép → Soi → Nuôi dưỡng</b>. Câu hỏi là chữ to nhất — số liệu chỉ đứng nép làm bối cảnh.</p>
+    </div>
+
+    <div class="col">
+      <p class="eb">3 · Ngày gõ ít — nói thật</p>
+      <div class="panel low">
+        <div class="t">Hôm nay bàn phím nghỉ nhiều.</div>
+        <div class="s">Mặt hồ chưa đủ nét để vẽ — và điều đó cũng chẳng sao. Hôm nay anh đã ở đâu nhiều hơn, ngoài bàn phím?</div>
+      </div>
+      <p class="cap">Thiếu dữ liệu thì nói thiếu — không vẽ sông giả, không trách "sao hôm nay không dùng app".</p>
+    </div>
+  </div>
+</div></div>
+<script>
+(function(){
+  var teal="#1D7C91";
+  var W=392,H=86,amps=[3,2,4,3,6,11,8,4,3];
+  var mid=H/2,pts=[];
+  for(var x=0;x<=W;x+=3){var f=x/W*(amps.length-1),i=Math.floor(f),fr=f-i;
+    var a=amps[i]+((amps[Math.min(i+1,amps.length-1)]||amps[i])-amps[i])*fr;
+    pts.push([x,mid-a*Math.sin(x*0.19)]);}
+  var band='<rect x="'+(W*0.56)+'" y="4" width="'+(W*0.2)+'" height="'+(H-8)+'" rx="8" fill="#1D7C91" opacity="0.08"/>';
+  var calm='<text x="'+(W*0.12)+'" y="14" font-size="9.5" fill="#8A9BA0">lặng</text>';
+  var poly='<polyline points="'+pts.map(function(p){return p[0].toFixed(1)+","+p[1].toFixed(1);}).join(" ")+'" fill="none" stroke="'+teal+'" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>';
+  var dots="";var n=7;
+  for(var m=0;m<n;m++){var mx=(m+0.5)/n*W;var idx=Math.round(mx/3);var pt=pts[Math.min(idx,pts.length-1)];
+    dots+='<circle cx="'+pt[0].toFixed(1)+'" cy="'+pt[1].toFixed(1)+'" r="2.7" fill="#fff" stroke="'+teal+'" stroke-width="1.6"/>';}
+  document.getElementById("rv").innerHTML='<svg width="100%" height="'+H+'" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true">'+band+calm+poly+dots+'</svg>';
+  document.querySelectorAll("#choices .ch").forEach(function(c){c.addEventListener("click",function(){
+    document.querySelectorAll("#choices .ch").forEach(function(x){x.classList.remove("on");});c.classList.add("on");});});
+})();
+</script>
