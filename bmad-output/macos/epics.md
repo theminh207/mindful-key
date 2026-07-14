@@ -84,6 +84,67 @@ thái cảm xúc hiển thị rõ nhưng tôn trọng riêng tư + hiến chươ
 
 ---
 
+## Epic 2: Áo mới v2 — diện mạo macOS
+
+> **Nguồn:** `decision-log.md` entry 2026-07-13 "Diện mạo mới v2" (9 quyết định) +
+> `mockups-v2/ao-moi-mindful-key.html` (plan 6 bước + bảng "Nút cũ về chỗ ở mới" + thuật toán
+> lấy mẫu/độ nhạy/Soi lại) + `mockups-v2/mockup-v2-tabbed.html` (popover 3 tab) +
+> `mockups-v2/soi-lai-mockup.html` (vòng Soi lại).
+> **SUPERSEDE** hướng "card nổi trên 4-tab" của Epic 1 (reconciliation 2026-07-10).
+
+**Goal:** Gom các cửa sổ rời rạc về **một căn nhà tĩnh lặng** — popover menu-bar chia 3 tab
+(Hôm nay·Chuông·Bộ gõ) + cửa sổ quản lý 6 mục nav trái — nơi cảm xúc là **dòng sông** 1-hue
+biên độ (KHÔNG bảng điểm), chuông là **nhịp lấy mẫu**, câu hỏi Soi lại là trung tâm.
+
+**In scope (cited):**
+- Popover 3 tab thay scroll-list dài [Source: decision-log#2026-07-13-dec1 + mockup-v2-tabbed.html]
+- Cửa sổ quản lý 6 mục nav trái (gộp 4 cửa sổ cũ + Hệ thống mục thứ 6) [Source: decision-log#dec2 + ao-moi#một-căn-nhà]
+- Dòng sông cảm xúc: 1 trục phẳng↔gợn, 1 hue, đổi biên độ [Source: decision-log#dec3 + ao-moi#dòng-sông]
+- Lấy mẫu theo nhịp chuông (1 số trung bình/nhịp, quãng không gõ để TRỐNG) [Source: decision-log#dec4 + ao-moi#cách-lấy-mẫu]
+- Chuông ↔ cảm xúc hợp nhất; độ nhạy dùng chung; icon menu-bar chỉ báo VN [Source: decision-log#dec5]
+- Ba chân kiềng: sóng chữ + khoảnh khắc gác cổng + check-in 1 chạm [Source: decision-log#dec6 + ao-moi#ba-chân-kiềng]
+- Độ nhạy = lớp diễn giải (điểm thô bất biến); gác cổng có SÀN [Source: decision-log#dec7 + ao-moi#độ-nhạy]
+- Màn Soi lại: 4 phép tính + 4 nhịp, câu hỏi trung tâm [Source: decision-log#dec8 + soi-lai-mockup.html]
+- Thi công 6 bước tuần tự, mỗi bước qua cổng + chủ dự án duyệt [Source: decision-log#dec9]
+
+**Architecture touchpoints:** `PanelViewController` (popover 3 tab), `SettingsWindowController`
+(MỚI — cửa sổ 6 mục), tái dùng `ViewController`/`MacroViewController`/`ConvertToolViewController`/
+`AboutViewController` làm pane; `MoodStoreMac` (schema lấy mẫu + check-in), `MoodWatchMac` (vòng
+lấy mẫu), `NudgeCoordinatorMac` (độ nhạy 3 mức), `BellMac`/`BellSettingsView` (chuông), `EmotionRiverView`
+(dòng sông), `ReflectionScreenMac` (Soi lại 4 nhịp), `AppDelegate.m` (tray + wiring). KHÔNG đụng `core/`.
+
+**Out of scope (Epic riêng / lộ trình xa):**
+- PhoBERT thay lexicon + tín hiệu "gõ thế nào" (nhịp/xoá/HOA) — lộ trình xa, cần dataset + đo tốc độ.
+- Mọi thay đổi trong `core/engine` / `core/mood` (bộ não dùng chung — iOS đóng băng cùng).
+- iOS (đội riêng) + hợp nhất lexicon về core — ghi ở `_shared/`, ngoài Epic 2 macOS.
+
+**Stories (6 bước tuần tự — build-xem-thật rồi mới sang bước kế):**
+
+| ID | Slug | Intent | Owner | Status |
+|----|------|--------|-------|--------|
+| 2.1 | popover-3tab-foundation | Popover 3 tab: thẻ trắng, sóng nhỏ 150px, segmented, khung dòng sông TRỐNG thật thà | platform-shell | **done** (df31657+3651a25+0de1216+6df6cb4; duyệt bằng mắt 2026-07-13) |
+| 2.2 | six-nav-settings-window | Cửa sổ 6 mục nav trái, tái dùng ViewController/Macro/Convert/About làm pane; trim menu tray; Hôm nay/Chuông/Riêng tư = phòng trống | platform-shell | backlog |
+| 2.3 | sampling-journal-sensitivity | Kho nhật ký lấy mẫu theo nhịp chuông + check-in 3 sóng + độ nhạy 3 mức (nối NudgeCoordinator hardcode "3"). **CHẠM RIÊNG TƯ** | mood-layer | backlog |
+| 2.4 | emotion-river-reflection | Vẽ dòng sông từ dữ liệu lấy mẫu + màn Soi lại 4 nhịp (Nhận ra→Cho phép→Soi→Nuôi dưỡng), câu hỏi trung tâm | mood-layer | backlog |
+| 2.5 | bell-detail-sounds | Chuông chi tiết + chọn/tải tiếng chuông, nghe thử | platform-shell | backlog |
+| 2.6 | privacy-export-autopurge | Xuất CSV + tự xoá định kỳ ("quên có chủ đích") | mood-layer | backlog |
+
+> **Sizing note:** 2.3 và 2.4 mỗi cái CÓ THỂ vượt 1 dev-day (2.3 = store schema + lấy mẫu +
+> check-in UI + độ nhạy; 2.4 = river render + 4 phép tính + màn Soi lại 4 nhịp). Khi compile
+> story, nếu vượt → CHẺ đôi (vd 2.3a store+lấy-mẫu / 2.3b check-in+độ-nhạy). Giữ 6 ở epic map
+> để khớp 6 bước roadmap; chẻ ở tầng story.
+
+**Scope-conflict / thứ tự:** các story CHỦ Ý **tuần tự** (không song song) vì chồng file nhau:
+`BellSettingsView` (2.1→2.3 độ-nhạy→2.5 chuông), `MoodStoreMac` (2.3→2.6), `EmotionRiverView`
+(2.1 tạo→2.4 nhồi), cửa sổ 6 mục (2.2→2.4 pane Hôm nay→2.6 pane Riêng tư). Chạy đúng thứ tự
+2.2→2.3→2.4→2.5→2.6, mỗi bước 1 commit + chủ dự án duyệt.
+
+**Cross-epic dependencies:**
+- Blocked by: Epic 1 (brand primitives 1.1 + EmotionWaveView 1.2 + reskin 1.7–1.10 — đã done).
+- Blocks: none.
+
+---
+
 ## Delivery Tracking (count-based)
 
 - Total stories: 10 (6 gốc + 4 thêm 2026-07-10; 2 trong 6 gốc đã superseded)

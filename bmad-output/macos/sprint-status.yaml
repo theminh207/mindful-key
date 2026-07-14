@@ -230,6 +230,7 @@ sequencing_summary:
 v2_roadmap:
   official_since: "2026-07-13"
   source_of_truth: "bmad-output/decision-log.md#2026-07-13 — Diện mạo mới v2"
+  sharded_to: "macos/stories/2.1–2.6 (Epic 2, shard 2026-07-14 — xem epics.md + decision-log 2026-07-14). 6 bước dưới = 6 story; story là bản thi công chi tiết. Scope-conflict: 8 overlap (chủ ý tuần tự, không song song)."
   driver_mode: "từng bước, 1 người lái; dừng-hỏi khi chạm nhận diện/pháp lý/riêng tư, xong 1 bước, hoặc phát sinh quyết định ngoài plan"
   steps:
     - n: 1
@@ -238,7 +239,7 @@ v2_roadmap:
       owner: platform-shell-agent
     - n: 2
       title: "Dời Bộ gõ/Gõ tắt/Chuyển mã/Hệ thống vào cửa sổ 6 mục nav + trim menu chuột phải"
-      status: in-progress          # 2026-07-13 dispatch platform-shell-agent (shell-nav-window): dựng SettingsWindowController nav-trái 6 mục, tái dùng ViewController/MacroVC/ConvertVC/AboutVC làm pane, trim tray. Hôm nay/Chuông/Riêng tư = phòng trống (Bước 3-6).
+      status: ready-for-dev        # 2026-07-14: agent thi công (shell-nav-window) bị DỪNG giữa chừng → re-plan thành story 2.2.six-nav-settings-window (ready-for-dev). ⚠ chốt "chỗ ở" cho tabviewMacro/tabviewInfo/Đặt-mặc-định/Thoát trước khi code (decision-log 2026-07-14 điểm 2).
       owner: platform-shell-agent
     - n: 3
       title: "Kho nhật ký lấy mẫu theo nhịp chuông + check-in 3 sóng + độ nhạy 3 mức (gác cổng có sàn; nối NudgeCoordinator_TenseStreakTrigger đang hardcode '3')"

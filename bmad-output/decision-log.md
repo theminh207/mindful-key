@@ -19,6 +19,19 @@ or delete past entries — supersede them with a new entry that references the o
 
 ---
 
+### 2026-07-14 — Epic 2 "Áo mới v2" sharded thành 6 story (đội macOS)
+- **Decision:** Chuẩn hoá roadmap 6 bước v2 (entry 2026-07-13) thành **Epic 2** trong `macos/epics.md` + 6 story context-object đầy đủ (`macos/stories/2.1–2.6.*.story.md`), giống đội iOS đã shard Round 2/3. Status: **2.1 done · 2.2 ready-for-dev · 2.3–2.6 backlog** (tuần tự). Compile qua 6 agent story-author song song; context chung ở `macos/context/sharding-context-epic2.md`.
+- **Scope-conflict-check:** 8 overlap, 0 thiếu-scope — ĐÚNG THIẾT KẾ: Epic 2 chủ ý **TUẦN TỰ** (2.2→2.3→2.4→2.5→2.6), KHÔNG song song, vì story cố ý chồng file (`SettingsWindowController`, `BellSettingsView`, `MoodStoreMac`, `EmotionRiverView`, `PanelViewController`). Không dispatch parallel.
+- **5 điểm gai lộ ra khi shard — CẦN CHỦ DỰ ÁN CHỐT (trước/khi thi công story tương ứng):**
+  1. **[2.3 — chạm "1 bộ não"]** Dòng "gác cổng hỏi khi điểm ≥ 0.6/0.5/0.45" (bảng độ nhạy dec7) cần sửa `kBreathingPauseRiskThreshold` trong `core/mood/BreathingPause.cpp` — mà `core/` ĐÓNG BĂNG (dùng chung iOS). ⟹ phần "độ nhạy điều khiển GÁC CỔNG" không làm được trong 2.3 mà không phạm core. Chọn: (a) 2.3 chỉ nối độ nhạy cho CHUÔNG + câu-gợn, tách gác-cổng-sensitivity thành quyết định/story riêng; (b) đưa ngưỡng ra khỏi core (đội core quyết); (c) gác cổng giữ ngưỡng cố định. 2.3 ghi gap, KHÔNG tự phạm core.
+  2. **[2.2 — UX]** Gỡ menu tray "Bảng điều khiển…" làm vài control cũ khó với tới: `tabviewMacro` (thực ra là cài phím tắt/switch-key), `tabviewInfo` (trùng About), nút "Đặt mặc định"/"Thoát". Cần chốt chỗ ở mới (pane Hệ thống? giữ 1 mục tray?).
+  3. **[2.6 — riêng tư]** Cột xuất CSV: sao y hết (có `app_bundle_id`/`choice`) hay hẹp (chỉ điểm gợn + giờ)? + N-ngày tự xoá mặc định (đề xuất 90).
+  4. **[2.5 — pháp lý]** Thêm file âm thanh chuông chùa/gió = asset nhị phân mới trong dự án GPL v3 → xác nhận nguồn/license trước khi bundle.
+  5. **[2.3↔2.4 — API]** Hàm đọc dữ liệu nhịp-trong-ngày từ `MoodStoreMac`: 2.3 định nghĩa, 2.4 tiêu thụ — 2 agent đề xuất chữ ký `[Inference]`, phải khớp khi code 2.3.
+- **Rationale:** Chủ dự án chọn "chuẩn hoá thành story trước" (sau khi dừng agent thi công BƯỚC 2 giữa chừng) để có bản-vẽ-thi-công từng phòng, đỡ lạc. Router `bmad-help` báo sai ("chạy bmad-prd") vì cấu trúc 2-đội lồng thư mục — bỏ qua, nhắm đúng workspace `macos/`.
+- **Made by:** bmad-epics-and-stories (skill) + 6 agent story-author.
+- **Supersedes:** none (bổ sung Epic 2, không đụng Epic 1); nâng roadmap 6-bước (`sprint-status` v2_roadmap) từ block nhẹ → story chuẩn.
+
 ### 2026-07-13 — Diện mạo mới v2: popover chia tab + hợp nhất chuông↔cảm xúc + thuật toán Soi lại
 - **Decision:** Chốt 9 điểm sau một phiên brainstorm nhiều vòng (chủ dự án điều hướng, có 3 file mockup duyệt tận mắt):
   1. **Popover chia 3 tab** (Hôm nay · Chuông · Bộ gõ) kiểu Haynoi (segmented trắng-active + thẻ nhóm eyebrow), **bỏ scroll-list dài**. Refactor `PanelViewController`, **tái dùng nguyên** `GatekeeperCardView` / `BellSettingsView` / `InputMethodCardView` + wiring sẵn có — chỉ đổi cách sắp thành tab.
