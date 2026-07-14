@@ -21,6 +21,7 @@
 #import "MoodStoreMac.h"
 #import "ReflectionScreenMac.h"
 #import "PanelViewController.h"   // [MINDFUL] PHA 1 — popover panel trạng thái
+#import "SettingsWindowController.h"   // [MINDFUL] Story 2.2 — cửa sổ quản lý nav-trái 6 mục
 
 AppDelegate* appDelegate;
 extern ViewController* viewController;
@@ -75,7 +76,8 @@ extern bool convertToolDontAlertWhenCompleted;
     NSWindowController *_macroWC;
     NSWindowController *_convertWC;
     NSWindowController *_aboutWC;
-    
+    SettingsWindowController *_settingsWC;   // [MINDFUL] Story 2.2 — cửa sổ quản lý nav-trái 6 mục
+
     NSStatusItem *statusItem;
     NSMenu *theMenu;
 
@@ -276,9 +278,10 @@ extern bool convertToolDontAlertWhenCompleted;
 
     [theMenu addItem:[NSMenuItem separatorItem]];
     
-    [theMenu addItemWithTitle:@"Bảng điều khiển..." action:@selector(onControlPanelSelected) keyEquivalent:@""];
-    [theMenu addItemWithTitle:@"Gõ tắt..." action:@selector(onMacroSelected) keyEquivalent:@""];
-    [theMenu addItemWithTitle:@"Giới thiệu" action:@selector(onAboutSelected) keyEquivalent:@""];
+    // [MINDFUL] Story 2.2 — "Bảng điều khiển…"/"Gõ tắt…"/"Giới thiệu" gộp vào cửa sổ quản lý mới
+    // (SettingsWindowController, nav trái 6 mục). onMacroSelected/onAboutSelected/onControlPanelSelected
+    // KHÔNG bị xoá — vẫn được gọi từ nút "Bảng gõ tắt..." trong tabviewMacro + 3 đường fallback khởi động.
+    [theMenu addItemWithTitle:@"Cài đặt…" action:@selector(onSettingsSelected) keyEquivalent:@""];
     [theMenu addItem:[NSMenuItem separatorItem]];
     
     [theMenu addItemWithTitle:@"Thoát" action:@selector(terminate:) keyEquivalent:@"q"];
@@ -291,7 +294,8 @@ extern bool convertToolDontAlertWhenCompleted;
     // panel trạng thái; bấm PHẢI (hoặc gear trong panel) → menu cũ. Menu 'theMenu' giữ nguyên.
     _panelVC = [[PanelViewController alloc] init];
     __weak AppDelegate *weakSelf = self;
-    _panelVC.onOpenFullSettings = ^{ [weakSelf onControlPanelSelected]; };
+    // [MINDFUL] Story 2.2 — link "Cài đặt đầy đủ ▸" mở cửa sổ quản lý mới (KHÔNG còn cửa sổ 4-tab cũ).
+    _panelVC.onOpenFullSettings = ^{ [weakSelf onSettingsSelected]; };
     _panelVC.onShowMenu = ^(NSView *anchor) { [weakSelf showLegacyMenu]; };
 
     _panelPopover = [[NSPopover alloc] init];
@@ -629,6 +633,24 @@ extern bool convertToolDontAlertWhenCompleted;
     }
     [_mainWC.window makeKeyAndOrderFront:nil];
     [_mainWC.window setLevel:NSFloatingWindowLevel];
+}
+
+// [MINDFUL] Story 2.2 — mở cửa sổ quản lý DUY NHẤT (nav trái 6 mục), thay 4 cửa sổ rời rạc cũ.
+// Cùng pattern lazy-instantiate + visible-check-return như onControlPanelSelected/onMacroSelected/
+// onAboutSelected bên dưới, cộng showWindow:/activateIgnoringOtherApps: để bảo đảm cửa sổ lên
+// trước khi mở từ status item (app chạy accessory, không có Dock icon theo mặc định).
+-(void) onSettingsSelected {
+    if (_settingsWC == nil) {
+        _settingsWC = [[SettingsWindowController alloc] init];
+    }
+    if ([_settingsWC.window isVisible]) {
+        [NSApp activateIgnoringOtherApps:YES];
+        return;
+    }
+    [_settingsWC showWindow:nil];
+    [_settingsWC.window makeKeyAndOrderFront:nil];
+    [_settingsWC.window setLevel:NSFloatingWindowLevel];
+    [NSApp activateIgnoringOtherApps:YES];
 }
 
 -(void) onMacroSelected {
