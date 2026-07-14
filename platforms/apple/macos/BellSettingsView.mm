@@ -137,6 +137,13 @@ static NSInteger ParseHour(NSString *s) {
 @end
 
 @implementation BellSettingsView {
+    // Nhịp (Interval)
+    NSTextField *_ebInterval;
+    NSView      *_cardInterval;
+    NSTextField *_lblInterval;
+    MKSegmented *_intervalSeg;
+    NSTextField *_noteInterval;
+
     // Nhận diện
     NSTextField *_ebIdentify;
     NSView      *_cardIdentify;
@@ -174,6 +181,7 @@ static NSInteger ParseHour(NSString *s) {
     if ((self = [super initWithFrame:frameRect])) {
         self.wantsLayer = YES;
 
+        [self buildIntervalSection];
         [self buildIdentifySection];
         [self buildSoundSection];
         [self buildQuietSection];
@@ -207,6 +215,25 @@ static NSInteger ParseHour(NSString *s) {
 }
 
 #pragma mark - Build subviews
+
+- (void)buildIntervalSection {
+    _ebInterval = [NSTextField mk_eyebrowLabelWithTitle:@"Nhịp"];
+    [self addSubview:_ebInterval];
+    _cardInterval = [self addCard];
+
+    _lblInterval = [self label:@"Chuông định kỳ mỗi" font:[self fFieldLbl] color:[Brand muted]];
+    
+    _intervalSeg = [[MKSegmented alloc] initWithFrame:NSZeroRect];
+    _intervalSeg.titles = @[@"15", @"30", @"60"];
+    _intervalSeg.target = self;
+    _intervalSeg.action = @selector(onInterval:);
+    [self addSubview:_intervalSeg];
+
+    _noteInterval = [self label:@"Cứ mỗi nhịp chuông, app ghi một điểm lên dòng sông cảm xúc ở tab Hôm nay. Một nhịp, hai vai."
+                           font:[self fCaption] color:[Brand muted]];
+    _noteInterval.lineBreakMode = NSLineBreakByWordWrapping;
+    _noteInterval.maximumNumberOfLines = 3;
+}
 
 - (void)buildIdentifySection {
     _ebIdentify = [NSTextField mk_eyebrowLabelWithTitle:@"Nhận diện"];
@@ -299,6 +326,17 @@ static NSInteger ParseHour(NSString *s) {
 - (void)refresh {
     NSUserDefaults *d = [NSUserDefaults standardUserDefaults];
 
+    // Nhịp
+    extern int vBellInterval;
+    int curInterval = vBellInterval > 0 ? vBellInterval : (int)[d integerForKey:@"vBellInterval"];
+    if (curInterval <= 0) curInterval = 60; // Mặc định 60
+    
+    NSInteger bestIdx = 2; // "60"
+    if (abs(curInterval - 15) < abs(curInterval - 30) && abs(curInterval - 15) < abs(curInterval - 60)) bestIdx = 0;
+    else if (abs(curInterval - 30) < abs(curInterval - 60)) bestIdx = 1;
+    
+    _intervalSeg.selectedIndex = bestIdx;
+
     // Độ nhạy — default 2 (Vừa) = ngưỡng 3 hiện hành (edge case story: cài mới ≈ hành vi cũ).
     NSInteger sens = [d objectForKey:kKeySensitivity] ? [d integerForKey:kKeySensitivity] : 2;
     if (sens < 1 || sens > 3) sens = 2;
@@ -348,6 +386,17 @@ static NSInteger ParseHour(NSString *s) {
 }
 
 #pragma mark - Actions
+
+- (void)onInterval:(MKSegmented *)sender {
+    int minutes = 60;
+    if (sender.selectedIndex == 0) minutes = 15;
+    else if (sender.selectedIndex == 1) minutes = 30;
+    
+    extern int vBellInterval;
+    vBellInterval = minutes;
+    [[NSUserDefaults standardUserDefaults] setInteger:minutes forKey:@"vBellInterval"];
+    BellMac_ApplySettings();
+}
 
 - (void)onSensitivity:(MKSegmented *)sender {
     [self setSensitivity:sender.selectedIndex + 1 persist:YES];
@@ -430,6 +479,21 @@ static NSInteger ParseHour(NSString *s) {
     CGFloat top = 0;
 
 #define SET(v, x, t, w, h) if (apply) { (v).frame = NSMakeRect((x), H - (t) - (h), (w), (h)); }
+
+    // ---- Nhịp ----
+    SET(_ebInterval, 0, top, W, kEbH);
+    top += kEbH + kEbGap;
+    CGFloat intervalTop = top;
+    CGFloat cy = kCardPadY;
+
+    SET(_lblInterval, kCardPadX, intervalTop + cy, W - 2 * kCardPadX, kRowH);
+    cy += kRowH + kGapSm;
+    SET(_intervalSeg, kCardPadX, intervalTop + cy, W - 2 * kCardPadX, kSegH);
+    cy += kSegH + kGapSm;
+    SET(_noteInterval, kCardPadX, intervalTop + cy, W - 2 * kCardPadX, kNoteH);
+    cy += kNoteH + kCardPadY;
+    SET(_cardInterval, 0, intervalTop, W, cy);
+    top = intervalTop + cy + kSectionGap;
 
     // ---- Nhận diện ----
     SET(_ebIdentify, 0, top, W, kEbH);
