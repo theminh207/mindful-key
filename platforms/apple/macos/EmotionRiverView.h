@@ -21,10 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EmotionRiverView : NSView
 
-/// Biên độ mỗi nhịp lấy mẫu trong ngày (0.0..1.0), theo thứ tự thời gian tăng dần. nil hoặc rỗng
-/// = CHƯA có dữ liệu → view hiện trạng thái trống thật thà (KHÔNG vẽ đường/chấm giả). Bước 3/4
-/// gọi hàm này khi có nguồn thật (mỗi nhịp chuông ghi 1 điểm lên dòng sông).
-- (void)setSamples:(nullable NSArray<NSNumber *> *)samples;
+/// Biên độ mỗi nhịp lấy mẫu trong ngày (0.0..1.0), hoặc NSNull cho quãng trống (chưa/không gõ).
+/// nil hoặc rỗng = CHƯA có dữ liệu → view hiện trạng thái trống thật thà (KHÔNG vẽ đường/chấm giả).
+- (void)setSamples:(nullable NSArray *)samples;
 
 /// Chiều cao cần để hiện đủ thẻ (vùng vẽ + nhãn trục Sáng/Trưa/Chiều/Tối + caption) — host popover
 /// dùng để xếp layout.

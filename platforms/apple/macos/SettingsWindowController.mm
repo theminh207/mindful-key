@@ -33,6 +33,8 @@
 #import "ConvertToolViewController.h"
 #import "AboutViewController.h"
 #import "BrandColors.h"
+#import "EmotionRiverView.h"
+#import "MoodStoreMac.h"
 
 // [MINDFUL] `ConvertToolViewController -fillData` tồn tại thật (ConvertToolViewController.mm:64)
 // nhưng là method PRIVATE (không khai trong .h) — forward-declare tại đây (KHÔNG sửa
@@ -147,6 +149,7 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     NSMutableArray<NSButton *> *_subNavButtons;
 
     NSView *_paneToday;
+    EmotionRiverView *_settingsRiver;
     NSView *_paneBell;
     NSView *_panePrivacy;
 
@@ -295,7 +298,7 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     [_rootVC addChildViewController:_aboutVC];
 
     // 3 pane rỗng thật thà (AC5) — chỉ 1 tiêu đề đúng tên mục, không nội dung khác.
-    _paneToday   = [self mk_buildEmptyPaneWithTitle:@"Hôm nay"];
+    _paneToday   = [self mk_buildTodayPane];
     _paneBell    = [self mk_buildEmptyPaneWithTitle:@"Chuông"];
     _panePrivacy = [self mk_buildEmptyPaneWithTitle:@"Riêng tư"];
 }
@@ -316,6 +319,13 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     return pane;
 }
 
+- (NSView *)mk_buildTodayPane {
+    NSView *pane = [self mk_buildEmptyPaneWithTitle:@"Hôm nay"];
+    _settingsRiver = [[EmotionRiverView alloc] initWithFrame:NSMakeRect(0, kMaxPaneH - 180, kMaxPaneW, 140)];
+    [pane addSubview:_settingsRiver];
+    return pane;
+}
+
 #pragma mark - Chọn mục / sub-mục
 
 - (void)selectSectionAtIndex:(NSInteger)index {
@@ -330,6 +340,7 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
 
     switch ((MKSettingsSection)index) {
         case MKSettingsSectionToday:
+            [self mk_refreshTodayPane];
             [self mk_showPaneInHost:_paneToday];
             break;
         case MKSettingsSectionBell:
@@ -375,6 +386,24 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
             [_convertVC fillData];
             break;
     }
+}
+
+- (void)mk_refreshTodayPane {
+    extern int vBellInterval;
+    int intervalMins = vBellInterval > 0 ? vBellInterval : 60;
+    NSArray<NSDictionary *> *raw = MoodStoreMac_FetchTodaySamples();
+    NSMutableArray *samples = [NSMutableArray array];
+    for (int i = 0; i < raw.count; i++) {
+        [samples addObject:raw[i][@"value"]];
+        if (i < raw.count - 1) {
+            long long ts1 = [raw[i][@"ts"] longLongValue];
+            long long ts2 = [raw[i+1][@"ts"] longLongValue];
+            if (ts2 - ts1 > intervalMins * 60.0 * 1.5) {
+                [samples addObject:[NSNull null]];
+            }
+        }
+    }
+    [_settingsRiver setSamples:samples.count > 0 ? samples : nil];
 }
 
 - (void)mk_styleSubNavButton:(NSButton *)button selected:(BOOL)selected {

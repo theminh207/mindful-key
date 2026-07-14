@@ -378,6 +378,23 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
     [self styleVNPill:vnOn];
     [self updateBellLine];
 
+    // [MINDFUL] Cập nhật dòng sông
+    extern int vBellInterval;
+    int intervalMins = vBellInterval > 0 ? vBellInterval : 60;
+    NSArray<NSDictionary *> *raw = MoodStoreMac_FetchTodaySamples();
+    NSMutableArray *samples = [NSMutableArray array];
+    for (int i = 0; i < raw.count; i++) {
+        [samples addObject:raw[i][@"value"]];
+        if (i < raw.count - 1) {
+            long long ts1 = [raw[i][@"ts"] longLongValue];
+            long long ts2 = [raw[i+1][@"ts"] longLongValue];
+            if (ts2 - ts1 > intervalMins * 60.0 * 1.5) {
+                [samples addObject:[NSNull null]];
+            }
+        }
+    }
+    [_river setSamples:samples.count > 0 ? samples : nil];
+
     [self reflow];
 }
 

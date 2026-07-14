@@ -22,12 +22,12 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
 // Tách riêng phần vẽ khỏi EmotionRiverView để giữ đúng 1 trách nhiệm: view cha lo layout/nhãn,
 // canvas này chỉ lo vẽ — và tự khoá luật "không mẫu = không vẽ gì" ngay tại nguồn.
 @interface MKRiverCanvas : NSView
-@property (nonatomic, copy, nullable) NSArray<NSNumber *> *samples;
+@property (nonatomic, copy, nullable) NSArray *samples;
 @end
 
 @implementation MKRiverCanvas
 
-- (void)setSamples:(NSArray<NSNumber *> *)samples {
+- (void)setSamples:(NSArray *)samples {
     _samples = samples;
     [self setNeedsDisplay:YES];
 }
@@ -49,27 +49,56 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
     path.lineJoinStyle = NSLineJoinStyleRound;
 
     NSMutableArray<NSValue *> *points = [NSMutableArray arrayWithCapacity:(NSUInteger)(w / 3.0) + 1];
+    BOOL lastWasGap = YES;
     for (CGFloat x = 0; x <= w; x += 3.0) {
         CGFloat f = (k > 1) ? (x / w) * (CGFloat)(k - 1) : 0;
         NSUInteger i = (NSUInteger)floor(f);
         CGFloat fr = f - (CGFloat)i;
-        CGFloat a0 = _samples[i].doubleValue;
-        CGFloat a1 = _samples[MIN(i + 1, k - 1)].doubleValue;
+        
+        id val0 = _samples[i];
+        id val1 = _samples[MIN(i + 1, k - 1)];
+        
+        if (val0 == [NSNull null] || (fr > 0 && val1 == [NSNull null])) {
+            lastWasGap = YES;
+            continue;
+        }
+        
+        CGFloat a0 = [val0 doubleValue];
+        CGFloat a1 = [val1 doubleValue];
         CGFloat amp = a0 + (a1 - a0) * fr;
         CGFloat y = midY - amp * maxWaveH * sin(x * 0.19);
         NSPoint p = NSMakePoint(x, y);
         [points addObject:[NSValue valueWithPoint:p]];
-        if (x == 0) [path moveToPoint:p]; else [path lineToPoint:p];
+        
+        if (lastWasGap) {
+            [path moveToPoint:p];
+            lastWasGap = NO;
+        } else {
+            [path lineToPoint:p];
+        }
     }
     [teal setStroke];
     [path stroke];
 
     // Chấm trắng-viền-teal đúng vị trí mỗi mẫu (1 nhịp chuông = 1 điểm ghi lên dòng sông).
     for (NSUInteger m = 0; m < k; m++) {
+        if (_samples[m] == [NSNull null]) continue;
         CGFloat mx = (k == 1) ? w / 2.0 : (CGFloat)m / (CGFloat)(k - 1) * w;
-        NSUInteger idx = MIN((NSUInteger)llround(mx / 3.0), points.count - 1);
-        NSPoint p = points[idx].pointValue;
-        NSRect dot = NSMakeRect(p.x - 2.6, p.y - 2.6, 5.2, 5.2);
+        
+        // Find closest drawn point to mx
+        NSPoint closestP = NSZeroPoint;
+        CGFloat minDiff = CGFLOAT_MAX;
+        for (NSValue *val in points) {
+            NSPoint p = val.pointValue;
+            if (fabs(p.x - mx) < minDiff) {
+                minDiff = fabs(p.x - mx);
+                closestP = p;
+            }
+        }
+        
+        if (minDiff > 5.0) continue; // Should not happen, but safeguard
+        
+        NSRect dot = NSMakeRect(closestP.x - 2.6, closestP.y - 2.6, 5.2, 5.2);
         NSBezierPath *dotPath = [NSBezierPath bezierPathWithOvalInRect:dot];
         [[NSColor whiteColor] setFill];
         [dotPath fill];
@@ -129,12 +158,25 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
     return l;
 }
 
-- (void)setSamples:(nullable NSArray<NSNumber *> *)samples {
+- (void)setSamples:(nullable NSArray *)samples {
     _samples = samples.count > 0 ? [samples copy] : nil;
     _riverArea.samples = _samples;
-    _caption.stringValue = _samples
-        ? @"Mỗi vòng tròn là một nhịp chuông — lúc app lặng lẽ ghi một điểm."
-        : @"Hồ chưa đủ nét — ngày mới bắt đầu.";
+    
+    // Đếm số mẫu có dữ liệu thật (bỏ qua NSNull)
+    NSInteger validCount = 0;
+    if (_samples) {
+        for (id val in _samples) {
+            if (val != [NSNull null]) validCount++;
+        }
+    }
+    
+    // Nếu dưới 3 mẫu, coi như chưa đủ nét
+    if (validCount < 3) {
+        _riverArea.samples = nil;
+        _caption.stringValue = @"Hồ chưa đủ nét — ngày mới bắt đầu.";
+    } else {
+        _caption.stringValue = @"Mỗi vòng tròn là một nhịp chuông — lúc app lặng lẽ ghi một điểm.";
+    }
     self.needsLayout = YES;
 }
 
