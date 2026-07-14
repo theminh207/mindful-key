@@ -34,6 +34,7 @@
 #import "AboutViewController.h"
 #import "BrandColors.h"
 #import "EmotionRiverView.h"
+#import "PrivacyPaneView.h"
 #import "MoodStoreMac.h"
 
 // [MINDFUL] `ConvertToolViewController -fillData` tồn tại thật (ConvertToolViewController.mm:64)
@@ -297,10 +298,15 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     _aboutVC = (AboutViewController *)aboutWC.contentViewController;
     [_rootVC addChildViewController:_aboutVC];
 
-    // 3 pane rỗng thật thà (AC5) — chỉ 1 tiêu đề đúng tên mục, không nội dung khác.
+    // Các pane khác
     _paneToday   = [self mk_buildTodayPane];
     _paneBell    = [self mk_buildEmptyPaneWithTitle:@"Chuông"];
-    _panePrivacy = [self mk_buildEmptyPaneWithTitle:@"Riêng tư"];
+    
+    PrivacyPaneView *pv = [[PrivacyPaneView alloc] initWithFrame:NSMakeRect(0, 0, kMaxPaneW, kMaxPaneH)];
+    CGFloat ph = [pv preferredHeight];
+    pv.frame = NSMakeRect(0, kMaxPaneH - ph, kMaxPaneW, ph);
+    _panePrivacy = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, kMaxPaneW, kMaxPaneH)];
+    [_panePrivacy addSubview:pv];
 }
 
 - (NSView *)mk_buildEmptyPaneWithTitle:(NSString *)title {
@@ -350,6 +356,9 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
             [self mk_selectBoGoSub:_boGoSubIndex];
             break;
         case MKSettingsSectionPrivacy:
+            if (_panePrivacy.subviews.count > 0 && [_panePrivacy.subviews[0] isKindOfClass:[PrivacyPaneView class]]) {
+                [(PrivacyPaneView *)_panePrivacy.subviews[0] refresh];
+            }
             [self mk_showPaneInHost:_panePrivacy];
             break;
         case MKSettingsSectionSystem:

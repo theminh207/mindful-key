@@ -448,3 +448,74 @@ void MoodStoreMac_DeleteAll(void) {
         (__bridge id)kSecAttrAccount: kKeychainAccount,
     });
 }
+
+#pragma mark - Riêng tư (Export & Auto-purge)
+
+BOOL MoodStoreMac_ExportCSVToURL(NSURL *url) {
+    NSString *tempPath = nil;
+    sqlite3 *db = OpenWorkingDB(&tempPath);
+    if (!db) return NO;
+    
+    NSMutableString *csv = [NSMutableString stringWithString:@"ts,event_type,send_risk,mood_label,intensity\n"];
+    
+    sqlite3_stmt *stmt = NULL;
+    // Xuất hẹp: chỉ lấy các cột này, bỏ qua app_bundle_id và choice
+    const char *sql = "SELECT ts, event_type, send_risk, mood_label, intensity FROM mood_events ORDER BY ts ASC;";
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
+            sqlite3_int64 ts = sqlite3_column_int64(stmt, 0);
+            const unsigned char *typeC = sqlite3_column_text(stmt, 1);
+            double risk = sqlite3_column_type(stmt, 2) == SQLITE_NULL ? 0.0 : sqlite3_column_double(stmt, 2);
+            const unsigned char *labelC = sqlite3_column_text(stmt, 3);
+            sqlite3_int64 intensity = sqlite3_column_type(stmt, 4) == SQLITE_NULL ? 0 : sqlite3_column_int64(stmt, 4);
+            
+            NSString *type = typeC ? [NSString stringWithUTF8String:(const char *)typeC] : @"";
+            NSString *label = labelC ? [NSString stringWithUTF8String:(const char *)labelC] : @"";
+            
+            [csv appendFormat:@"%lld,%@,%.2f,%@,%lld\n", ts, type, risk, label, intensity];
+        }
+        sqlite3_finalize(stmt);
+    }
+    
+    FlushAndCloseDB(db, tempPath);
+    
+    NSError *err = nil;
+    [csv writeToURL:url atomically:YES encoding:NSUTF8StringEncoding error:&err];
+    return err == nil;
+}
+
+static NSString *const kAutoPurgeDaysKey = @"MoodStoreAutoPurgeDays";
+
+void MoodStoreMac_SetAutoPurgeDays(NSInteger days) {
+    [[NSUserDefaults standardUserDefaults] setInteger:days forKey:kAutoPurgeDaysKey];
+}
+
+NSInteger MoodStoreMac_AutoPurgeDays(void) {
+    NSUserDefaults *d = [NSUserDefaults standardUserDefaults];
+    if ([d objectForKey:kAutoPurgeDaysKey]) {
+        return [d integerForKey:kAutoPurgeDaysKey];
+    }
+    return 90; // Mặc định 90 ngày
+}
+
+void MoodStoreMac_RunAutoPurgeIfNeeded(void) {
+    NSInteger days = MoodStoreMac_AutoPurgeDays();
+    if (days <= 0) return;
+    
+    sqlite3_int64 threshold = (sqlite3_int64)([[NSDate date] timeIntervalSince1970] - days * 24 * 3600);
+    
+    NSString *tempPath = nil;
+    sqlite3 *db = OpenWorkingDB(&tempPath);
+    if (!db) return;
+    
+    sqlite3_stmt *stmt = NULL;
+    const char *sql = "DELETE FROM mood_events WHERE ts < ?;";
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_int64(stmt, 1, threshold);
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
+            NSLog(@"[MoodStoreMac] xóa tự động lỗi: %s", sqlite3_errmsg(db));
+        }
+        sqlite3_finalize(stmt);
+    }
+    FlushAndCloseDB(db, tempPath);
+}

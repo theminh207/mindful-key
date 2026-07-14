@@ -46,6 +46,12 @@ void MoodStoreMac_LogSampleEvent(double avgAmplitude);
 NSArray<NSDictionary *> *MoodStoreMac_FetchTodaySamples(void);
 void MoodStoreMac_LogCheckinEvent(NSInteger waveLevel);
 
+// [MINDFUL] Story 2.6 — Riêng tư
+BOOL MoodStoreMac_ExportCSVToURL(NSURL *url);
+void MoodStoreMac_SetAutoPurgeDays(NSInteger days);
+NSInteger MoodStoreMac_AutoPurgeDays(void);
+void MoodStoreMac_RunAutoPurgeIfNeeded(void);
+
 #ifdef __cplusplus
 }
 #endif
