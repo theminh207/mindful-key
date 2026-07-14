@@ -148,8 +148,8 @@ static void EnsureSchema(sqlite3 *db) {
         "CREATE TABLE IF NOT EXISTS mood_events ("
         "  id INTEGER PRIMARY KEY AUTOINCREMENT,"
         "  ts INTEGER NOT NULL,"
-        "  event_type TEXT NOT NULL,"     // 'gatekeeper' | 'checkin' (bước 7/8)
-        "  send_risk REAL,"               // 0..1, NULL nếu event_type != 'gatekeeper'
+        "  event_type TEXT NOT NULL,"     // 'gatekeeper' | 'checkin' | 'sample'
+        "  send_risk REAL,"               // 0..1, cho gatekeeper (risk 1 câu) hoặc sample (risk trung bình)
         "  app_bundle_id TEXT,"           // vd 'com.vng.zalo'
         "  choice TEXT,"                  // 'send_anyway' | 'wait' | 'dismissed'
         "  mood_label TEXT,"              // cho 'checkin' (bước 7/8)
@@ -233,10 +233,10 @@ void MoodStoreMac_AskConsentIfNeeded(void) {
     NSAlert *alert = [[NSAlert alloc] init];
     alert.messageText = @"Bật nhật ký cảm xúc (local, mã hóa)?";
     alert.informativeText =
-        @"Mindful Keyboard có thể ghi lại các lần \"gác cổng\" (điểm rủi ro, ứng dụng, lựa chọn "
-         "của bạn) để sau này cho bạn xem thống kê. CÂU CHỮ BẠN GÕ KHÔNG BAO GIỜ được lưu — chỉ "
-         "1 con số rủi ro + thời điểm + tên ứng dụng. Dữ liệu chỉ lưu trên máy này, mã hóa, "
-         "không gửi lên mạng. Bạn có thể xóa toàn bộ hoặc tắt bất cứ lúc nào.";
+        @"Mindful Keyboard có thể ghi lại một điểm gợn trung bình mỗi nhịp chuông, các lượt \"gác cổng\" (điểm rủi ro, "
+         "ứng dụng, lựa chọn) và check-in tự nguyện để vẽ lại dòng sông cảm xúc của bạn. CÂU CHỮ BẠN GÕ KHÔNG BAO GIỜ "
+         "được lưu — chỉ 1 con số mức độ + thời điểm. Dữ liệu chỉ lưu trên máy này, mã hóa, không gửi lên mạng. Bạn có thể "
+         "xóa toàn bộ hoặc tắt bất cứ lúc nào.";
     [alert addButtonWithTitle:@"Đồng ý"];
     [alert addButtonWithTitle:@"Không, cảm ơn"];
     alert.window.level = NSStatusWindowLevel;
@@ -271,6 +271,59 @@ void MoodStoreMac_LogGatekeeperEvent(double sendRisk, NSString *appBundleID, NSS
         sqlite3_finalize(stmt);
     }
 
+    FlushAndCloseDB(db, tempPath);
+}
+
+void MoodStoreMac_LogSampleEvent(double avgAmplitude) {
+    if (!MoodStoreMac_HasConsent())
+        return;
+
+    NSString *tempPath = nil;
+    sqlite3 *db = OpenWorkingDB(&tempPath);
+    if (!db)
+        return;
+
+    sqlite3_stmt *stmt = NULL;
+    const char *sql =
+        "INSERT INTO mood_events (ts, event_type, send_risk) "
+        "VALUES (?, 'sample', ?);";
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_int64(stmt, 1, (sqlite3_int64)[[NSDate date] timeIntervalSince1970]);
+        sqlite3_bind_double(stmt, 2, avgAmplitude);
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
+            NSLog(@"[MoodStoreMac] ghi sample lỗi: %s", sqlite3_errmsg(db));
+        }
+        sqlite3_finalize(stmt);
+    }
+    FlushAndCloseDB(db, tempPath);
+}
+
+void MoodStoreMac_LogCheckinEvent(NSInteger waveLevel) {
+    if (!MoodStoreMac_HasConsent())
+        return;
+    
+    NSString *label = @"calm";
+    if (waveLevel == 2) label = @"ripple";
+    else if (waveLevel == 3) label = @"wave";
+
+    NSString *tempPath = nil;
+    sqlite3 *db = OpenWorkingDB(&tempPath);
+    if (!db)
+        return;
+
+    sqlite3_stmt *stmt = NULL;
+    const char *sql =
+        "INSERT INTO mood_events (ts, event_type, mood_label, intensity) "
+        "VALUES (?, 'checkin', ?, ?);";
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_int64(stmt, 1, (sqlite3_int64)[[NSDate date] timeIntervalSince1970]);
+        sqlite3_bind_text(stmt, 2, label.UTF8String, -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int64(stmt, 3, waveLevel);
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
+            NSLog(@"[MoodStoreMac] ghi checkin lỗi: %s", sqlite3_errmsg(db));
+        }
+        sqlite3_finalize(stmt);
+    }
     FlushAndCloseDB(db, tempPath);
 }
 
@@ -346,6 +399,43 @@ NSDictionary *MoodStoreMac_FetchTodaySummary(void) {
     summary[@"peakHour"] = @(peakHour);
     if (topApp) summary[@"topAppBundleID"] = topApp;
     return summary;
+}
+
+NSArray<NSDictionary *> *MoodStoreMac_FetchTodaySamples(void) {
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDate *now = [NSDate date];
+    NSDate *startOfDay = [cal startOfDayForDate:now];
+    NSDate *startOfTomorrow = [cal dateByAddingUnit:NSCalendarUnitDay value:1 toDate:startOfDay options:0];
+    sqlite3_int64 tsFrom = (sqlite3_int64)[startOfDay timeIntervalSince1970];
+    sqlite3_int64 tsTo   = (sqlite3_int64)[startOfTomorrow timeIntervalSince1970];
+
+    NSMutableArray<NSDictionary *> *samples = [NSMutableArray array];
+
+    NSString *tempPath = nil;
+    sqlite3 *db = OpenWorkingDB(&tempPath);
+    if (db) {
+        sqlite3_stmt *stmt = NULL;
+        const char *sql =
+            "SELECT ts, send_risk FROM mood_events "
+            "WHERE event_type = 'sample' AND ts >= ? AND ts < ? "
+            "ORDER BY ts ASC;";
+        if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+            sqlite3_bind_int64(stmt, 1, tsFrom);
+            sqlite3_bind_int64(stmt, 2, tsTo);
+            while (sqlite3_step(stmt) == SQLITE_ROW) {
+                sqlite3_int64 ts = sqlite3_column_int64(stmt, 0);
+                double risk = sqlite3_column_double(stmt, 1);
+                [samples addObject:@{
+                    @"ts": @(ts),
+                    @"value": @(risk)
+                }];
+            }
+            sqlite3_finalize(stmt);
+        }
+        FlushAndCloseDB(db, tempPath);
+    }
+    
+    return samples;
 }
 
 void MoodStoreMac_DeleteAll(void) {

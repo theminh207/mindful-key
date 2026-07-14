@@ -27,9 +27,10 @@ void NudgeCoordinatorMac_MarkNudged(void);
 //   1 = Ít nhạy  → ngưỡng CAO hơn (khó rung hơn)
 //   2 = Vừa      → 3 (giữ hành vi hiện hành khi chưa từng lưu)
 //   3 = Nhạy     → ngưỡng THẤP hơn (dễ rung hơn)
-// Lưu ý: story 1.5 chỉ dựng getter này. Việc gọi nó THAY cho hằng số kTenseStreakTrigger hardcode
-// trong MoodWatchMac.mm (mood-layer) là 1 việc riêng, NGOÀI phạm vi 1.5 (xem story Dev Notes #2).
 int NudgeCoordinatorMac_TenseStreakTrigger(void);
+
+// [MINDFUL] Story 2.3 — ngưỡng "gợn" để tính 1 câu là căng thẳng
+double NudgeCoordinatorMac_RippleThreshold(void);
 
 #ifdef __cplusplus
 }

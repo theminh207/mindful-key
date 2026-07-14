@@ -41,6 +41,11 @@ void MoodStoreMac_DeleteAll(void);
 //   "peakHour" (NSNumber int, -1 nếu chưa có dữ liệu), "topAppBundleID" (NSString hoặc nil).
 NSDictionary *MoodStoreMac_FetchTodaySummary(void);
 
+// [MINDFUL] Story 2.3 — lấy mẫu định kỳ và check-in tự nguyện
+void MoodStoreMac_LogSampleEvent(double avgAmplitude);
+NSArray<NSDictionary *> *MoodStoreMac_FetchTodaySamples(void);
+void MoodStoreMac_LogCheckinEvent(NSInteger waveLevel);
+
 #ifdef __cplusplus
 }
 #endif

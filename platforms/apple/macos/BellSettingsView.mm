@@ -223,7 +223,7 @@ static NSInteger ParseHour(NSString *s) {
     _seg.action = @selector(onSensitivity:);
     [self addSubview:_seg];
 
-    _noteIdentify = [self label:@"Quyết định khi nào mặt hồ được coi là gợn — dùng chung cho gác cổng gửi tin và chuông."
+    _noteIdentify = [self label:@"Quyết định khi nào mặt hồ được coi là gợn — dùng chung cho nhật ký lấy mẫu và chuông."
                             font:[self fCaption] color:[Brand muted]];
     _noteIdentify.lineBreakMode = NSLineBreakByWordWrapping;
     _noteIdentify.maximumNumberOfLines = 3;

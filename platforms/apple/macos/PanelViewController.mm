@@ -17,6 +17,10 @@
 #import "BrandColors.h"
 #import "BrandControls.h"
 #import "BellMac.h"
+#import "MoodStoreMac.h"
+
+static NSTimeInterval g_checkinLastTime = 0;
+static dispatch_source_t g_checkinTimer = nil;
 
 static const CGFloat kPanelW  = 360.0;
 static const CGFloat kMargin  = 16.0;
@@ -243,6 +247,84 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
     [root addSubview:_privacy];
 
     [self refreshAll];
+
+    // [MINDFUL] Cluster B: Check-in timer
+    if (g_checkinTimer == nil) {
+        g_checkinTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+        dispatch_source_set_timer(g_checkinTimer, dispatch_time(DISPATCH_TIME_NOW, 60 * NSEC_PER_SEC), 60 * NSEC_PER_SEC, 1 * NSEC_PER_SEC);
+        dispatch_source_set_event_handler(g_checkinTimer, ^{
+            NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
+            if (g_checkinLastTime == 0) g_checkinLastTime = now;
+            
+            extern int vBellInterval;
+            int intervalMins = vBellInterval > 0 ? vBellInterval : 60;
+            if (now - g_checkinLastTime >= intervalMins * 60.0) {
+                [self showCheckinOverlay];
+                g_checkinLastTime = now;
+            }
+        });
+        dispatch_resume(g_checkinTimer);
+    }
+}
+
+- (void)showCheckinOverlay {
+    if (!MoodStoreMac_HasConsent()) return;
+
+    NSRect screenRect = [NSScreen mainScreen].visibleFrame;
+    CGFloat w = 320;
+    CGFloat h = 90;
+    NSRect frame = NSMakeRect(screenRect.origin.x + screenRect.size.width - w - 20,
+                              screenRect.origin.y + screenRect.size.height - h - 40,
+                              w, h);
+
+    NSPanel *panel = [[NSPanel alloc] initWithContentRect:frame
+                                                styleMask:(NSWindowStyleMaskBorderless | NSWindowStyleMaskNonactivatingPanel)
+                                                  backing:NSBackingStoreBuffered
+                                                    defer:NO];
+    panel.level = NSStatusWindowLevel;
+    panel.backgroundColor = [NSColor clearColor];
+    panel.hasShadow = NO;
+    panel.opaque = NO;
+
+    NSVisualEffectView *vev = [[NSVisualEffectView alloc] initWithFrame:panel.contentView.bounds];
+    vev.material = NSVisualEffectMaterialPopover;
+    vev.state = NSVisualEffectStateActive;
+    vev.blendingMode = NSVisualEffectBlendingModeBehindWindow;
+    vev.wantsLayer = YES;
+    vev.layer.cornerRadius = 12.0;
+    vev.layer.masksToBounds = YES;
+    panel.contentView = vev;
+
+    NSTextField *label = [NSTextField labelWithString:@"Mặt hồ đang thế nào?"];
+    label.font = [NSFont systemFontOfSize:14 weight:NSFontWeightSemibold];
+    label.textColor = [Brand charcoal];
+    label.frame = NSMakeRect(20, h - 35, w - 40, 20);
+    [vev addSubview:label];
+
+    NSArray *titles = @[@"Phẳng lặng", @"Gợn nhẹ", @"Gợn sóng"];
+    CGFloat btnW = (w - 40 - 20) / 3.0;
+    for (int i = 0; i < 3; i++) {
+        NSButton *btn = [NSButton buttonWithTitle:titles[i] target:self action:@selector(onCheckin:)];
+        btn.tag = i + 1; // 1, 2, 3
+        btn.frame = NSMakeRect(20 + i * (btnW + 10), 15, btnW, 30);
+        btn.bezelStyle = NSBezelStyleRounded;
+        [vev addSubview:btn];
+    }
+
+    [panel orderFront:nil];
+    
+    // Tự đóng sau 8s
+    __weak NSPanel *weakPanel = panel;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 8 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        if (weakPanel && weakPanel.isVisible) {
+            [weakPanel close];
+        }
+    });
+}
+
+- (void)onCheckin:(NSButton *)sender {
+    MoodStoreMac_LogCheckinEvent(sender.tag);
+    [sender.window close];
 }
 
 - (void)buildHeader {

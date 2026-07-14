@@ -16,6 +16,7 @@
 #include "MoodWatchMac.h"
 #include "BellMac.h"
 #include "NudgeCoordinatorMac.h"
+#import "MoodStoreMac.h"
 
 using namespace std;
 
@@ -44,9 +45,12 @@ static const double kSendRiskThreshold = 0.5;
 // [MINDFUL] Bước 7 — chuông data-driven: rung sau 1 CHUỖI câu căng thẳng liên tiếp, không chỉ
 // theo lịch cố định. Ngưỡng thấp hơn kSendRiskThreshold có chủ đích — đây là phát hiện "đang
 // dồn nén dần", không phải "chuẩn bị gửi thứ gây hại", nên bắt sớm hơn hợp lý.
-static const double kTenseStreakThreshold = 0.35;
-static const int kTenseStreakTrigger = 3;
 static int g_tenseStreak = 0;
+
+static double g_sampleSum = 0.0;
+static int g_sampleCount = 0;
+static NSTimeInterval g_sampleLastTime = 0;
+static dispatch_source_t g_sampleTimer = nil;
 
 static double categoryWeight(const wstring& cat) {
     if (cat == L"giận") return 1.0;
@@ -216,14 +220,17 @@ static void analyzeRecentTextAsync(const wstring& word) {
         if (risk > 1.0) risk = 1.0;
         g_lastSendRisk = risk;
 
+        g_sampleSum += risk;
+        g_sampleCount++;
+
         // [MINDFUL] Bước 7 — đếm chuỗi câu căng thẳng liên tiếp, độc lập với ngưỡng cảnh báo
         // thụ động bên dưới. Câu dịu lại (risk thấp) reset chuỗi — "chuỗi" nghĩa là LIÊN TỤC.
-        if (risk >= kTenseStreakThreshold) {
+        if (risk >= NudgeCoordinatorMac_RippleThreshold()) {
             g_tenseStreak++;
         } else {
             g_tenseStreak = 0;
         }
-        if (g_tenseStreak >= kTenseStreakTrigger) {
+        if (g_tenseStreak >= NudgeCoordinatorMac_TenseStreakTrigger()) {
             g_tenseStreak = 0; // reset ngay để không rung lại liên tục cho cùng 1 đợt căng thẳng
             dispatch_async(dispatch_get_main_queue(), ^{
                 BellMac_RingForTenseStreak();
@@ -266,6 +273,28 @@ void MoodWatchMac_Init() {
     if (g_moodQueue == nil)
         g_moodQueue = dispatch_queue_create("mindful.keyboard.moodwatch", DISPATCH_QUEUE_SERIAL);
     vOnWordCommitted = MoodWatchMac_OnWord;
+
+    if (g_sampleTimer == nil) {
+        g_sampleTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, g_moodQueue);
+        dispatch_source_set_timer(g_sampleTimer, dispatch_time(DISPATCH_TIME_NOW, 60 * NSEC_PER_SEC), 60 * NSEC_PER_SEC, 1 * NSEC_PER_SEC);
+        dispatch_source_set_event_handler(g_sampleTimer, ^{
+            NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
+            if (g_sampleLastTime == 0) g_sampleLastTime = now;
+            
+            extern int vBellInterval;
+            int intervalMins = vBellInterval > 0 ? vBellInterval : 60;
+            if (now - g_sampleLastTime >= intervalMins * 60.0) {
+                if (g_sampleCount > 0) {
+                    double avg = g_sampleSum / g_sampleCount;
+                    MoodStoreMac_LogSampleEvent(avg);
+                    g_sampleSum = 0.0;
+                    g_sampleCount = 0;
+                }
+                g_sampleLastTime = now;
+            }
+        });
+        dispatch_resume(g_sampleTimer);
+    }
 }
 
 void MoodWatchMac_SetEnabled(int enabled) {
