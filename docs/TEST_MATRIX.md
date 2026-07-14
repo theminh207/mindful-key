@@ -59,6 +59,7 @@ Ký hiệu ô: `✅` có bằng chứng · `⚠️` một phần/gián tiếp ·
 | Kho nhật ký lấy mẫu (Story 2.3) | — | ✅ | ❌ | build sạch (0 warning mới) + `make test` xanh + `make brand-lint` 0 lỗi. Tự động tích lũy sum/count qua `analyzeRecentTextAsync` và gọi `MoodStoreMac_LogSampleEvent`. `git diff core/` rỗng. CHƯA ai nhìn app thật. Commit `b35fb2b` | implemented |
 | UI Check-in 1 chạm (Story 2.3) | — | ✅ | ❌ | Cấu hình heartbeat timer nội bộ trên Main Queue trong `PanelViewController` hiện `NSPanel` sau thời gian `vBellInterval`, lưu 3 mức sóng `MoodStoreMac_LogCheckinEvent`. Commit `b35fb2b` | implemented |
 | Đổi độ nhạy 3 mức (Story 2.3) | ✅ | ✅ | ❌ | `make test` test C++ (`NudgeCoordinatorIOS` tương đương) xanh. macOS đọc trực tiếp biến cài đặt (thay vì hằng số cứng). Tự test "bật/tắt" qua test shell. CHƯA gõ thật xem E2E có đúng 5/3/2 câu không. Commit `b35fb2b` | implemented |
+| Cửa sổ quản lý 6 mục nav trái (Story 2.2) | — | ✅ | ❌ | build sạch, `make test` xanh, `make brand-lint` 0 lỗi. Instantiate các VC thành phần qua `SettingsWindowController` và chuyển tab. AppDelegate gọi đúng hàm mở cửa sổ mới. Commit `66cce8b` | implemented |
 > **Vì sao macOS=⚠️ chứ không phải ✅ cho 3/4 cửa sổ trên:** sandbox agent không có quyền
 > Accessibility → không tự động click được, và gọi thẳng AppKit qua `lldb` từng gây deadlock 1 lần
 > (thử ở story 1.8) nên các story sau tránh dùng — verify bằng build sạch + `make test` + `ibtool`

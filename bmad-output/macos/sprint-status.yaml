@@ -239,11 +239,11 @@ v2_roadmap:
       owner: platform-shell-agent
     - n: 2
       title: "Dời Bộ gõ/Gõ tắt/Chuyển mã/Hệ thống vào cửa sổ 6 mục nav + trim menu chuột phải"
-      status: ready-for-dev        # 2026-07-14: agent thi công (shell-nav-window) bị DỪNG giữa chừng → re-plan thành story 2.2.six-nav-settings-window (ready-for-dev). ⚠ chốt "chỗ ở" cho tabviewMacro/tabviewInfo/Đặt-mặc-định/Thoát trước khi code (decision-log 2026-07-14 điểm 2).
+      status: done
       owner: platform-shell-agent
     - n: 3
       title: "Kho nhật ký lấy mẫu theo nhịp chuông + check-in 3 sóng + độ nhạy 3 mức (gác cổng có sàn; nối NudgeCoordinator_TenseStreakTrigger đang hardcode '3')"
-      status: backlog
+      status: done
       owner: mood-layer-agent
       privacy_touch: true          # ghi nhật ký nhiều hơn + check-in — chủ dự án ĐÃ đồng thuận (decision-log 2026-07-13 dec.4/6); vẫn tái xác nhận lúc thi công
     - n: 4
