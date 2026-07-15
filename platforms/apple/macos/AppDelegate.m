@@ -73,7 +73,6 @@ extern bool convertToolDontAlertWhenCompleted;
 
 
 @implementation AppDelegate {
-    NSWindowController *_mainWC;
     NSWindowController *_macroWC;
     NSWindowController *_convertWC;
     NSWindowController *_aboutWC;
@@ -188,12 +187,18 @@ extern bool convertToolDontAlertWhenCompleted;
 
     //init
     dispatch_async(dispatch_get_main_queue(), ^{
+        // [MINDFUL] 2026-07-16 — 3 đường fallback này từng mở cửa sổ storyboard CŨ (identifier
+        // "OpenKey", class ViewController) — off-brand hoàn toàn so với cửa sổ quản lý mới, và
+        // nút "Kết thúc" của nó gọi thẳng onTerminateApp: ([NSApp terminate:0]) chứ không phải
+        // đóng riêng cửa sổ đó, nên bấm nhầm là tắt LUÔN CẢ APP. Đổi sang mở cửa sổ quản lý mới
+        // (onSettingsSelected) — vẫn giữ đúng ý định "có gì đó hiện lên nếu event tap lỗi", chỉ
+        // đổi ĐÚNG cửa sổ mà Story 2.2 đã chốt là bản chính.
         if (![OpenKeyManager initEventTap]) {
-            [self onControlPanelSelected];
+            [self onSettingsSelected];
         } else {
             NSInteger showui = [[NSUserDefaults standardUserDefaults] integerForKey:@"ShowUIOnStartup"];
             if (showui == 1) {
-                [self onControlPanelSelected];
+                [self onSettingsSelected];
             }
         }
         [self setQuickConvertString];
@@ -241,7 +246,7 @@ extern bool convertToolDontAlertWhenCompleted;
 }
 
 - (BOOL)applicationShouldHandleReopen:(NSApplication *)sender hasVisibleWindows:(BOOL)flag {
-    [self onControlPanelSelected];
+    [self onSettingsSelected];
     return YES;
 }
 
@@ -695,18 +700,6 @@ extern bool convertToolDontAlertWhenCompleted;
     [alert runModal];
 }
 #endif
-
--(void) onControlPanelSelected {
-    if (_mainWC == nil) {
-        _mainWC = [[NSStoryboard storyboardWithName:@"Main" bundle:nil] instantiateControllerWithIdentifier:@"OpenKey"];
-    }
-    //[OpenKeyManager showDockIcon:YES];
-    if ([_mainWC.window isVisible]) {
-        return;
-    }
-    [_mainWC.window makeKeyAndOrderFront:nil];
-    [_mainWC.window setLevel:NSFloatingWindowLevel];
-}
 
 // [MINDFUL] Story 2.2 — mở cửa sổ quản lý DUY NHẤT (nav trái 6 mục), thay 4 cửa sổ rời rạc cũ.
 // Cùng pattern lazy-instantiate + visible-check-return như onControlPanelSelected/onMacroSelected/
