@@ -626,8 +626,13 @@ extern bool convertToolDontAlertWhenCompleted;
     }
 }
 
+// [MINDFUL] Epic 3 Chặng 2 (F13) — trước đây gọi BellMac_ShowSettings() (NSAlert đời cũ, đã xoá):
+// 2 UI cùng ghi UserDefaults "vBell*" nhưng khác hẳn nhau (không Độ nhạy/Âm thanh, không sàn 15
+// phút cho nhịp tuỳ chỉnh). Giờ mở thẳng mục "Chuông" (index 1 = MKSettingsSectionBell, xem enum
+// trong SettingsWindowController.mm) của cửa sổ Cài đặt — đúng 1 UI chuông duy nhất trong app.
 -(void)onBellSettingsSelected {
-    BellMac_ShowSettings();
+    [self onSettingsSelected];
+    [_settingsWC selectSectionAtIndex:1];
 }
 
 -(void)onSnoozeBellSelected {

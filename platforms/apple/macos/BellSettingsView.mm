@@ -414,16 +414,20 @@ static NSString *StringFromHotkey(int hotkey) {
     
     // Nút hình ảnh (3 loại chuông)
     _btnBell1 = [self createBellButtonWithTag:0 image:@"bell_temple"];
-    _btnBell2 = [self createBellButtonWithTag:1 image:@"bell_wind"];
-    _btnBell3 = [self createBellButtonWithTag:2 image:@"bell_chime"];
+    _btnBell2 = [self createBellButtonWithTag:1 image:@"bell_chime"];
+    _btnBell3 = [self createBellButtonWithTag:2 image:@"bell_wind"];
     [self addSubview:_btnBell1];
     [self addSubview:_btnBell2];
     [self addSubview:_btnBell3];
 
     // Dấu chấm cam báo hiệu trạng thái được chọn
+    // [MINDFUL] Epic 3 G2 (F7) — trước đây [Brand orange]: chấm này di chuyển theo _bellSelectedIndex
+    // (xem dòng ~585-596), tức là chấm ĐÁNH DẤU ĐANG CHỌN, không phải CTA. DESIGN.md §5 điều 6:
+    // "Cam CHỈ ở CTA + link active. Không ở trạng thái ON/OFF" — đổi sang teal, khớp đúng cách
+    // MKSegmented (cùng file) đã tô ô-đang-chọn của Nhịp chuông, không phải quyết định nhận diện mới.
     _bellIndicator = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 12, 12)];
     _bellIndicator.wantsLayer = YES;
-    _bellIndicator.layer.backgroundColor = [Brand orange].CGColor;
+    _bellIndicator.layer.backgroundColor = [Brand teal].CGColor;
     _bellIndicator.layer.cornerRadius = 6.0;
     [self addSubview:_bellIndicator];
 

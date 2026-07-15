@@ -188,74 +188,9 @@ void BellMac_Init() {
     BellMac_ApplySettings();
 }
 
-static NSTextField *label(NSString *text, NSRect frame) {
-    NSTextField *field = [[NSTextField alloc] initWithFrame:frame];
-    field.stringValue = text;
-    field.editable = NO;
-    field.bezeled = NO;
-    field.drawsBackground = NO;
-    field.textColor = [Brand charcoal]; // [MINDFUL] NOW BRAND OS — chữ chính trong accessoryView tự vẽ
-    return field;
-}
-
-void BellMac_ShowSettings() {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSAlert *alert = [[NSAlert alloc] init];
-        alert.messageText = @"Chuông tỉnh thức";
-        alert.informativeText = @"Chọn lịch nhắc nghỉ và hít thở. Tất cả cài đặt nằm local trên máy.";
-        [alert addButtonWithTitle:@"Lưu"];
-        [alert addButtonWithTitle:@"Hủy"];
-
-        NSView *view = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 280, 118)];
-        view.wantsLayer = YES;
-        // [MINDFUL] Teal nhạt = brand chrome cho màn chuông tỉnh thức (nhắc thụ động, không
-        // phải khoảnh khắc gác cổng — cam dành riêng cho lớp nhịp thở, xem SendGatekeeperMac.mm).
-        view.layer.backgroundColor = [Brand tealLight].CGColor;
-        NSButton *enabled = [[NSButton alloc] initWithFrame:NSMakeRect(0, 88, 260, 22)];
-        enabled.buttonType = NSButtonTypeSwitch;
-        enabled.title = @"Bật chuông tỉnh thức";
-        enabled.state = vBell ? NSControlStateValueOn : NSControlStateValueOff;
-        [view addSubview:enabled];
-
-        [view addSubview:label(@"Nhắc mỗi", NSMakeRect(0, 58, 70, 20))];
-        NSTextField *interval = [[NSTextField alloc] initWithFrame:NSMakeRect(76, 56, 48, 24)];
-        interval.integerValue = vBellInterval;
-        [view addSubview:interval];
-        [view addSubview:label(@"phút", NSMakeRect(132, 58, 40, 20))];
-
-        [view addSubview:label(@"Từ", NSMakeRect(0, 22, 28, 20))];
-        NSTextField *from = [[NSTextField alloc] initWithFrame:NSMakeRect(34, 20, 48, 24)];
-        from.integerValue = vBellFrom;
-        [view addSubview:from];
-        [view addSubview:label(@"giờ đến", NSMakeRect(90, 22, 58, 20))];
-        NSTextField *to = [[NSTextField alloc] initWithFrame:NSMakeRect(154, 20, 48, 24)];
-        to.integerValue = vBellTo;
-        [view addSubview:to];
-        [view addSubview:label(@"giờ", NSMakeRect(210, 22, 40, 20))];
-
-        alert.accessoryView = view;
-        [alert.window setLevel:NSStatusWindowLevel];
-        NSModalResponse response = [alert runModal];
-        if (response != NSAlertFirstButtonReturn)
-            return;
-
-        int iv = (int)interval.integerValue;
-        int fr = (int)from.integerValue;
-        int tt = (int)to.integerValue;
-        if (iv < 1) iv = 60; if (iv > 240) iv = 240;
-        if (fr < 0) fr = 0; if (fr > 23) fr = 23;
-        if (tt < 0) tt = 0; if (tt > 23) tt = 23;
-
-        vBell = enabled.state == NSControlStateValueOn ? 1 : 0;
-        vBellInterval = iv;
-        vBellFrom = fr;
-        vBellTo = tt;
-
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        [defaults setInteger:vBell forKey:@"vBell"];
-        [defaults setInteger:vBellInterval forKey:@"vBellInterval"];
-        [defaults setInteger:vBellFrom forKey:@"vBellFrom"];
-        [defaults setInteger:vBellTo forKey:@"vBellTo"];
-        BellMac_ApplySettings();
-    });
-}
+// [MINDFUL] Epic 3 Chặng 2 (F13) — BellMac_ShowSettings() (NSAlert đời cũ: input số thô, KHÔNG
+// sàn/trần, không Độ nhạy/Âm thanh) đã XOÁ 2026-07-15. Nó ghi CHUNG UserDefaults key với
+// BellSettingsView (vBell/vBellInterval/vBellFrom/vBellTo) → 2 UI đá nhau, và bản cũ không hề
+// chặn sàn 15 phút vừa chốt cho ô "Tùy chỉnh" (chỉ có `if (iv<1) iv=60`, không có sàn thật) —
+// mở lại bằng chính bản cũ là lách thẳng qua quyết định riêng tư vừa chốt cùng ngày. Menu tray
+// giờ mở thẳng "Chuông" trong cửa sổ Cài đặt (xem AppDelegate.m onBellSettingsSelected).

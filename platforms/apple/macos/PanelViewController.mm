@@ -189,6 +189,42 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
     CGFloat             _lastHeight;   // chiều cao nội dung lần reflow gần nhất
 }
 
+// [MINDFUL] Epic 3 Chặng 1 (F12) — timer check-in trước đây dựng bên trong -loadView, nên CHỈ
+// tồn tại nếu người dùng đã bấm-trái icon 〜 mở popover ít nhất 1 lần trong phiên chạy app đó
+// (NSViewController nạp -view lười biếng, chỉ khi contentViewController thật sự cần hiện —
+// AppDelegate chỉ gán `_panelPopover.contentViewController = _panelVC`, không ép .view load).
+// Với ai chạy app cả ngày mà không đụng icon, "check-in 3 sóng" — 1 trong 3 chân kiềng dữ liệu
+// đã chốt 2026-07-13 — chưa từng tồn tại, không phải im lặng vì không có gì để hỏi.
+// Đây là timer LỊCH TRÌNH (model), không phải mối bận tâm của VIEW, nên chuyển sang -init: chạy
+// đúng 1 lần ngay lúc AppDelegate tạo _panelVC (applicationDidFinishLaunching), không phụ thuộc
+// việc popover có được mở hay không. showCheckinOverlay tự dựng NSPanel riêng (không cần self.view);
+// updateBellLine ghi vào _bellLine — nil an toàn (no-op) nếu view chưa nạp, không crash.
+- (instancetype)init {
+    if ((self = [super init])) {
+        [self mk_startCheckinTimerIfNeeded];
+    }
+    return self;
+}
+
+- (void)mk_startCheckinTimerIfNeeded {
+    if (g_checkinTimer != nil) return;
+    g_checkinTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+    dispatch_source_set_timer(g_checkinTimer, dispatch_time(DISPATCH_TIME_NOW, 60 * NSEC_PER_SEC), 60 * NSEC_PER_SEC, 1 * NSEC_PER_SEC);
+    dispatch_source_set_event_handler(g_checkinTimer, ^{
+        NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
+        if (g_checkinLastTime == 0) g_checkinLastTime = now;
+
+        extern int vBellInterval;
+        int intervalMins = vBellInterval > 0 ? vBellInterval : 60;
+        if (now - g_checkinLastTime >= intervalMins * 60.0) {
+            [self showCheckinOverlay];
+            g_checkinLastTime = now;
+        }
+        [self updateBellLine];
+    });
+    dispatch_resume(g_checkinTimer);
+}
+
 - (void)loadView {
     MKFlippedView *root = [[MKFlippedView alloc] initWithFrame:NSMakeRect(0, 0, kPanelW, 400)];
     root.wantsLayer = YES;
@@ -275,25 +311,6 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
                                              selector:@selector(refreshAll)
                                                  name:@"BellStateChangedNotification"
                                                object:nil];
-
-    // [MINDFUL] Cluster B: Check-in timer
-    if (g_checkinTimer == nil) {
-        g_checkinTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
-        dispatch_source_set_timer(g_checkinTimer, dispatch_time(DISPATCH_TIME_NOW, 60 * NSEC_PER_SEC), 60 * NSEC_PER_SEC, 1 * NSEC_PER_SEC);
-        dispatch_source_set_event_handler(g_checkinTimer, ^{
-            NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
-            if (g_checkinLastTime == 0) g_checkinLastTime = now;
-            
-            extern int vBellInterval;
-            int intervalMins = vBellInterval > 0 ? vBellInterval : 60;
-            if (now - g_checkinLastTime >= intervalMins * 60.0) {
-                [self showCheckinOverlay];
-                g_checkinLastTime = now;
-            }
-            [self updateBellLine];
-        });
-        dispatch_resume(g_checkinTimer);
-    }
 }
 
 - (void)dealloc {

@@ -20,7 +20,6 @@ extern int vBellHotkey;
 
 void BellMac_Init();
 void BellMac_ApplySettings();
-void BellMac_ShowSettings();
 
 // [MINDFUL] Bước 7 — chuông data-driven. Gọi từ MoodWatchMac khi phát hiện 1 chuỗi câu căng
 // thẳng liên tiếp (không chờ tới lịch cố định). Tự tôn trọng cooldown dùng chung với nhắc thụ

@@ -111,12 +111,27 @@ epics:
       Nặng nhất: mục "Hệ thống" trắng trơn (F1), pane "Hôm nay" thiếu hẳn card Gác cổng =
       Feature #1 (F2), nội dung bị cắt đáy vì cửa sổ không cuộn (F5), chấm cam đánh dấu bộ tiếng
       đang chọn — nghi phạm hiến chương §5 điều 6 (F7). KHÔNG đụng core/engine.
-    status: backlog
+    status: in-progress          # gate 1/2/5 review, gate 3/4 backlog — xem epic3_acceptance
     story_ids:
       - "3.1.window-scroll-and-labels"
       - "3.2.orange-dot-charter-audit"
       - "3.3.today-pane-gatekeeper-river-reflection"
       - "3.4.system-pane-investigation"
+
+  - id: "epic-4"
+    title: "Chặng 1 — Vòng lặp lõi có sống không? (2026-07-15)"
+    description: >
+      [MỚI 2026-07-15] Trước khi sửa nốt diện mạo (Epic 3): chứng minh Feature #1 (gác cổng gửi
+      tin) thật sự chạy — TEST_MATRIX.md ghi thẳng "chưa có bằng chứng E2E" dù code đã tồn tại 7
+      tháng. Nguồn sự thật: `bmad-output/macos/ROADMAP-hoan-thien-v1.md` §2 Chặng 1. Phạm vi đợt
+      này CỐ Ý hẹp — Chặng 3 (đủ app chat như PRD hứa) + Chặng 5 (bản người khác cài được) HOÃN,
+      xem khối "PHẠM VI ĐỢT NÀY" đầu file roadmap. KHÔNG đụng core/engine.
+    status: in-progress          # 1.2/1.3 review, 1.1/1.4 blocked_on_owner (cần tay/thời gian thật)
+    story_ids:
+      - "4.1.e2e-gatekeeper-zalo-handtest"
+      - "4.2.checkin-timer-lifecycle-bug"
+      - "4.3.reflection-summary-wire-and-placeholder-fix"
+      - "4.4.reflection-real-data-handtest"
 
 # ---------------------------------------------------------------------------
 # STORIES — order: epic trước, rồi topological theo dependency
@@ -380,14 +395,26 @@ epic3_acceptance:
     - g: 2
       title: "Soát nhận diện: chấm CAM đánh dấu 'Bộ tiếng' đang chọn ở tab Chuông"
       findings: ["F7"]
-      status: backlog
+      status: review               # code xong; CHỜ chủ dự án nhìn app thật
       owner: platform-shell-agent
       identity_touch: true
-      note: "§5 điều 6 (bất khả xâm phạm): cam CHỈ ở CTA + link active, KHÔNG ở trạng thái ON/OFF. 'Đang chọn' là trạng thái. Soát trước: đây là chấm chọn hay là một phần glyph icon? Nếu là chấm chọn → đổi sang teal. Mơ hồ → hỏi chủ dự án + ghi FRICTION-LOG."
+      note: >
+        [2026-07-15] SOÁT XONG — xác nhận vi phạm thật, không phải nghi ngờ: `_bellIndicator`
+        (BellSettingsView.mm:424) di chuyển theo `_bellSelectedIndex` (dòng ~585-596), đúng nghĩa
+        "chấm đánh dấu đang chọn" — không phải glyph icon tĩnh. §5 điều 6: cam CHỈ ở CTA + link
+        active. ĐÃ VÁ: đổi `[Brand orange]` → `[Brand teal]`, khớp đúng cách `MKSegmented` (cùng
+        file, dòng 119) đã tô ô-đang-chọn của Nhịp chuông — không phải quyết định nhận diện mới,
+        chỉ sửa lệch cho khớp luật + control anh em cùng file.
+        Đã soát thêm 3 chỗ dùng `[Brand orange]` còn lại trong toàn bộ `platforms/apple/macos/`:
+        `GatekeeperCardView.mm:71` (link "Soi lại →" — link active, ĐÚNG luật) ·
+        `SendGatekeeperMac.mm:167` (nút "Đợi chút" — CTA thật, có comment giải thích chủ đích "khẽ
+        hướng về phía dừng lại", ĐÚNG luật) · `BrandControls.m:206` (chính component CTAButton gốc
+        — ĐÚNG luật, đây là nơi định nghĩa). Không sửa gì thêm ở 3 chỗ này.
+      evidence: "build sạch · make test xanh · brand-lint 0 · `git diff core/` rỗng. CHƯA ai nhìn app thật."
     - g: 3
       title: "Hồn của 'Hôm nay': mount card Gác cổng + lối vào Soi lại + copy rỗng có câu hỏi phản chiếu"
       findings: ["F2", "F3", "F4"]
-      status: backlog
+      status: backlog               # HẾT CHẶN, sẵn sàng thi công — chưa bắt đầu
       owner: "mood-layer-agent + platform-shell-agent"
       identity_touch: true
       depends_on_gate: 1
@@ -396,8 +423,17 @@ epic3_acceptance:
         chỉ dựng tiêu đề + EmotionRiverView, chưa bao giờ dựng theo mockup A2. GatekeeperCardView
         đã có sẵn và đã chạy trong popover (3651a25) — tái dùng, đừng viết lại.
         Chạm §5 điều 10 (Feature #1 luôn nổi nhất) → phải qua cổng hiến chương.
-        CHỜ chốt: "Hôm nay" trong cửa sổ = bản đầy đủ của "Hôm nay" trong popover, hay cố ý khác?
-        (FRICTION-LOG 2026-07-15 — hỏi trước khi code gói này.)
+        [2026-07-15 — HẾT CHẶN] Chủ dự án ĐÃ chốt (decision-log "Chốt 3 câu chặn Epic 3"):
+        "Hôm nay" trong cửa sổ = BẢN ĐẦY ĐỦ của popover (card Gác cổng + sông + lối vào Soi lại).
+        ⚠️ [2026-07-15 — PHÌNH SCOPE, đọc trước khi bắt đầu] Đích "Soi lại" nặng hơn tưởng lúc mở
+        gate này: đã đọc kỹ `ReflectionScreenMac.mm` (màn này CÓ bấm tới được qua menu tray "Soi lại
+        hôm nay...", dù chưa có lối vào từ cửa sổ) — nó là bản NHÁP THÔ, không giống mockup A1: vẽ
+        bằng NSTextField phẳng (comment tự thừa nhận "không có library, ta vẽ text mô tả"), KHÔNG
+        vẽ sông thật, KHÔNG có trục Sáng/Trưa/Chiều/Tối, và hiện SỐ THÔ không che ("Đỉnh gợn hôm
+        nay: 0.73") — giống dạng vi phạm DESIGN.md §2.2 ("KHÔNG nhãn số") dù không đúng chữ y hệt
+        rule chấm-sóng. Đã vá 2 bug xác nhận riêng (xem epic-4 story 1.3), NHƯNG việc vẽ lại sông
+        thật + trục giờ + gate số liệu theo mockup A1 vẫn CÒN NGUYÊN cho gate này — to hơn "chỉ
+        thêm 1 link" như roadmap ban đầu hình dung.
     - g: 4
       title: "Điều tra: mục 'Hệ thống' trắng trơn hoàn toàn"
       findings: ["F1"]
@@ -409,16 +445,98 @@ epic3_acceptance:
         bị giải phóng → outlet nil → hiện nil = trắng. NHƯNG giả thuyết CHƯA giải thích được vì sao
         'Bộ gõ ▸ Kiểu gõ' (tabviewPrimary, y hệt cơ chế) lại hiện bình thường → còn mắt xích chưa
         hiểu. Điều tra tới nơi rồi mới sửa (CLAUDE.md §Think Before Coding — CẤM đoán).
-  blocked_on_owner:
-    - f: "F9"
-      q: "Tên sản phẩm: tiêu đề cửa sổ đang là 'Cài đặt Mindful Keyboard', nhưng artifact + repo + DMG đều gọi 'mindful-key'/'MindfulKey'. Chốt tên hiển thị nào?"
-    - f: "F10"
-      q: "Nhịp chuông 15 phút: A2 chốt nhịp lấy mẫu là 30 HOẶC 60 (~24-48 chấm/ngày). Mức 15 → ~96 chấm/ngày, gấp đôi trần đã chốt. Giữ 15 (và sửa lại spec), hay bỏ 15?"
-    - f: "F2"
-      q: "'Hôm nay' trong cửa sổ quản lý có phải bản đầy đủ của 'Hôm nay' trong popover không, hay 2 chỗ cố ý khác nhau?"
+    - g: 5
+      title: "Gỡ 2 UI Chuông đá nhau (F13, phát hiện mới lúc audit code 2026-07-15)"
+      findings: ["F13"]
+      status: review
+      owner: platform-shell-agent
+      note: >
+        [2026-07-15] Audit "cái gì chưa nối dây" phát hiện: menu tray "Cài đặt Chuông tỉnh thức..."
+        mở `BellMac_ShowSettings()` — NSAlert đời cũ (input số thô cho interval/from/to), TRONG KHI
+        `BellSettingsView` mới (đủ Độ nhạy/Âm thanh/Yên lặng, khớp mockup) đã tồn tại và đang chạy ở
+        cả popover lẫn cửa sổ Cài đặt. Cả 2 UI ghi CHUNG UserDefaults key (`vBell*`) → đá nhau.
+        Nghiêm trọng hơn: bản cũ KHÔNG hề chặn sàn (chỉ `if (iv<1) iv=60`, không có sàn 15 thật) —
+        mở lại nó là lách thẳng qua quyết định riêng tư (F10) vừa chốt CÙNG NGÀY.
+        ĐÃ VÁ: xoá hẳn `BellMac_ShowSettings()` + helper `label()` riêng của nó (0 nơi khác gọi,
+        rác do đúng việc dọn của mình tạo ra) khỏi `BellMac.h`/`.mm`. `onBellSettingsSelected`
+        (AppDelegate.m) giờ mở thẳng mục "Chuông" (index 1) của cửa sổ Cài đặt — 1 UI chuông duy
+        nhất trong app.
+      evidence: "build sạch · make test xanh · brand-lint 0 · `git diff core/` rỗng. CHƯA ai nhìn app thật."
+  blocked_on_owner: []   # F9/F10/F2 đã chốt 2026-07-15 (xem decision-log.md "Chốt 3 câu chặn Epic 3" +
+                          # "Có thể để 30/60 và thêm ô tùy chỉnh...") — record vĩnh viễn nằm ở decision-log,
+                          # không lặp lại ở đây để tránh 2 nguồn lệch nhau (đúng bài học epics.md/status).
   not_covered_yet: >
     Nghiệm thu 2026-07-15 CHƯA phủ: mục 'Giới thiệu' (chưa ai xem — credit Mai Vũ Tuyên + GPL v3
     nằm ở đây, hệ trọng pháp lý) · popover 3 tab (đợt này chỉ xem cửa sổ) · luồng động (chuông reo
     thật, check-in 3 sóng, gác cổng nuốt Enter trong Zalo, sông có dữ liệu thật — mọi ảnh đều chụp
     lúc sông rỗng) · a11y (VoiceOver/Tab/Giảm chuyển động). Đừng suy diễn "không nhắc = đã đạt".
 
+
+# ---------------------------------------------------------------------------
+# EPIC 4 — Chặng 1 "Vòng lặp lõi có sống không?" (mở 2026-07-15). Cùng khuôn epic3_acceptance:
+# item nào cần TAY chủ dự án (thử trong Zalo thật, hay 1 ngày dùng thật) được đánh dấu rõ —
+# KHÔNG tự động hoá bằng cách gõ hộ vào Zalo thật của chủ dự án (rủi ro gửi nhầm tin cho người
+# thật), việc đó luôn cần tay người, agent chỉ chuẩn bị sẵn để bấm-là-thử-được.
+# ---------------------------------------------------------------------------
+epic4_core_loop:
+  opened: "2026-07-15"
+  source_of_truth: "bmad-output/macos/ROADMAP-hoan-thien-v1.md"
+  trigger: "TEST_MATRIX.md ghi thẳng gác cổng 'chưa có bằng chứng E2E' dù code tồn tại 7 tháng — chủ dự án chốt đảo thứ tự, chứng minh Feature #1 trước khi sửa nốt diện mạo"
+  scope_note: "Đợt này KHÔNG làm Chặng 3 (đủ app chat) + Chặng 5 (bản người khác cài được) — hoãn có chủ đích, xem roadmap khối 'PHẠM VI ĐỢT NÀY'"
+  items:
+    - id: 1.1
+      title: "E2E gác cổng thật trong Zalo — gõ câu giận, panel hiện, 'Vẫn gửi' gửi lại được"
+      status: blocked_on_owner
+      owner: "chủ dự án (tay thật)"
+      note: >
+        KHÔNG tự động hoá bằng cách điều khiển Zalo thật qua script — rủi ro gửi nhầm tin cho
+        1 người thật nếu tự động chạy sai. Cần chủ dự án tự gõ. App đã build sạch, sẵn sàng thử
+        (`make run` rồi mở Zalo, gõ 1 câu có từ trong lexicon MoodWatchMac, bấm Enter không Shift).
+      evidence: none
+    - id: 1.2
+      title: "Điều tra + vá: check-in 3 sóng có phải code chết theo điều kiện không"
+      status: review
+      owner: platform-shell-agent
+      note: >
+        [2026-07-15] XÁC NHẬN BẰNG ĐỌC CODE (không cần chạy thử để biết — code tự chứng minh):
+        timer check-in trước đây dựng bên trong `PanelViewController -loadView`, mà KHÔNG có gì
+        ép `.view` nạp trước khi user bấm-trái icon 〜 (AppDelegate.m chỉ gán
+        `_panelPopover.contentViewController = _panelVC`, không ép load; comment cũ tại dòng gọi
+        `showRelativeToRect:` còn tự thừa nhận "view đã load" chỉ SAU đó). Ai chạy app cả ngày mà
+        không đụng icon → check-in (1 trong 3 chân kiềng dữ liệu đã chốt 2026-07-13) KHÔNG BAO GIỜ
+        tồn tại trong phiên đó. Đây là timer LỊCH TRÌNH (model), không phải mối bận tâm của VIEW.
+        ĐÃ VÁ: chuyển sang `-init` (chạy đúng 1 lần lúc AppDelegate tạo `_panelVC`, độc lập việc mở
+        popover). `showCheckinOverlay` tự dựng NSPanel riêng (không cần self.view) — an toàn.
+        `updateBellLine` ghi `_bellLine` — nil an toàn (no-op) nếu view chưa nạp, không crash.
+      evidence: "build sạch · make test xanh · brand-lint 0 · `git diff core/` rỗng. CHƯA ai chạy app cả ngày không đụng icon để tận mắt xác nhận check-in giờ có nổ ra."
+    - id: 1.3
+      title: "F14 — MoodStoreMac_FetchTodaySummary(): xoá hay nối? + vá placeholder lộ ra người dùng"
+      status: review
+      owner: mood-layer-agent
+      note: >
+        [2026-07-15] QUYẾT: NỐI, không xoá — khớp đúng ý định gốc (header comment của
+        ReflectionScreenMac.h từ đầu đã ghi dùng hàm này), khớp mockup A1 đã duyệt ("Gác cổng đã
+        cùng anh dừng lại N lần — M lần anh chọn đợi"), tái dùng SQL đã test sẵn thay vì viết mới.
+        PHÁT HIỆN THÊM lúc đọc kỹ: `maxQuietStart`/`maxQuietEnd` (ReflectionScreenMac.mm) đã TÍNH
+        ĐÚNG (đúng công thức "quãng lặng" đã chốt — loại quãng không gõ) nhưng dòng hiển thị
+        HARDCODE placeholder `"(đã tính theo code)"` — một câu ghi-chú-cho-dev bị lộ thẳng ra
+        người dùng thật, y hệt lớp bug F1 (code đúng, hiển thị sai/rỗng). ĐÃ VÁ CẢ HAI: gọi
+        `MoodStoreMac_FetchTodaySummary()`, hiện dòng gác cổng (gate copy: mô tả, không phán xét
+        — kể cả câu "0 lần" cũng chỉ nói sự thật); thay placeholder bằng phút thật tính từ
+        maxQuietStart/End.
+        ⚠️ QUAN TRỌNG cho G3 (Epic 3 gate 3): màn Soi lại NÓI CHUNG vẫn là bản nháp thô (NSTextField
+        phẳng, không vẽ sông, không trục giờ, số thô "Đỉnh gợn hôm nay: 0.73" không che) — xem note
+        đầy đủ ở `epic3_acceptance.gates[2]` (g:3). CHỈ 2 bug cụ thể này được vá ở đây, KHÔNG phải
+        toàn bộ màn đã khớp mockup A1.
+      evidence: "build sạch · make test xanh · brand-lint 0 · `git diff core/` rỗng. CHƯA ai bấm 'Soi lại hôm nay...' từ menu tray để tận mắt xác nhận 2 dòng mới hiện đúng."
+    - id: 1.4
+      title: "Soi lại có dữ liệu thật — chạy app 1 ngày, cuối ngày xem sông + câu hỏi lên đúng không"
+      status: blocked_on_owner
+      owner: "chủ dự án (thời gian thật)"
+      note: "Mọi ảnh nghiệm thu 2026-07-15 đều chụp lúc sông rỗng — chưa ai thấy sông có dữ liệu thật. Cần chạy app xuyên 1 ngày làm việc thật, không rút ngắn được bằng cách giả lập."
+      evidence: none
+  q7_pending_before_windows: >
+    [CHƯA LÀM — cần chốt cùng đội iOS trước khi mở vỏ Windows] Roadmap §1c: lexicon send-risk
+    đang sống trong vỏ macOS (MoodWatchMac.mm), KHÔNG ở core/mood (FRICTION-LOG 2026-07-13, còn
+    `mở`). Windows sẽ là bản analyzer THỨ 3 nếu không dọn trước. Phiên này CHƯA đụng core/ — đúng
+    ý cổng an toàn (chạm core/ đang đóng băng với đội iOS → phải hỏi trước, không tự quyết).

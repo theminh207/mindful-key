@@ -79,7 +79,12 @@ void ReflectionScreenMac_Show(void) {
         extern int vBellInterval;
         int intervalMins = vBellInterval > 0 ? vBellInterval : 60;
         NSArray<NSDictionary *> *raw = MoodStoreMac_FetchTodaySamples();
-        
+        // [MINDFUL] Epic 3 Chặng 1 (F14) — trước đây hàm này KHÔNG được gọi ở đâu cả (0 nơi gọi
+        // toàn repo, dù header comment của file này từ đầu đã ghi "Đọc MoodStoreMac_FetchTodaySummary()").
+        // Quyết: NỐI (không xoá) — khớp đúng ý định gốc + mockup đã duyệt ("Gác cổng đã cùng anh
+        // dừng lại N lần — M lần anh chọn đợi"), tái dùng SQL đã có sẵn thay vì viết mới.
+        NSDictionary *summary = MoodStoreMac_FetchTodaySummary();
+
         if (raw.count < 3) {
             NSAlert *alert = [[NSAlert alloc] init];
             alert.window.level = NSStatusWindowLevel;
@@ -124,7 +129,31 @@ void ReflectionScreenMac_Show(void) {
                 }
             }
         }
-        
+
+        // [MINDFUL] Epic 3 Chặng 1 (F14) — maxQuietStart/maxQuietEnd đã tính đúng ở vòng lặp trên
+        // (loại quãng không gõ, đúng công thức "quãng lặng" đã chốt) nhưng trước đây KHÔNG BAO GIỜ
+        // được hiển thị — l4 bên dưới hardcode chuỗi "(đã tính theo code)", một placeholder lộ ra
+        // với người dùng thật. Vá bằng giá trị đã tính sẵn, không viết logic mới.
+        NSString *quietStreakText;
+        if (maxQuietStart >= 0 && maxQuietEnd > maxQuietStart) {
+            long long quietMins = (maxQuietEnd - maxQuietStart) / 60;
+            quietStreakText = [NSString stringWithFormat:@"Quãng lặng dài nhất: %lld phút", quietMins];
+        } else {
+            quietStreakText = @"Quãng lặng dài nhất: chưa đủ dữ liệu để thấy rõ hôm nay.";
+        }
+
+        // [MINDFUL] Epic 3 Chặng 1 (F14) — dòng thống kê gác cổng, khớp mockup A1 đã duyệt
+        // ("Gác cổng đã cùng anh dừng lại 3 lần — 2 lần anh chọn đợi."). Gate copy: mô tả, không
+        // phán xét — kể cả câu 0 lần cũng chỉ nói sự thật, không khen/chê.
+        int gkCount = [summary[@"gatekeeperCount"] intValue];
+        int gkWait = [summary[@"waitCount"] intValue];
+        NSString *gkLine;
+        if (gkCount <= 0) {
+            gkLine = @"Gác cổng chưa cần dừng anh lần nào hôm nay.";
+        } else {
+            gkLine = [NSString stringWithFormat:@"Gác cổng đã cùng anh dừng lại %d lần — %d lần anh chọn đợi.", gkCount, gkWait];
+        }
+
         // Tạo cửa sổ
         NSRect frame = NSMakeRect(0, 0, 480, 500);
         NSWindow *win = [[NSWindow alloc] initWithContentRect:frame
@@ -153,15 +182,21 @@ void ReflectionScreenMac_Show(void) {
         NSTextField *l2 = [NSTextField labelWithString:[NSString stringWithFormat:@"Đỉnh gợn hôm nay: %.2f", peakAmp]];
         l2.frame = NSMakeRect(20, y+80, 440, 20);
         [content addSubview:l2];
-        
+
+        // [MINDFUL] Epic 3 Chặng 1 (F14) — dòng gác cổng, nối MoodStoreMac_FetchTodaySummary
+        NSTextField *lgk = [NSTextField labelWithString:gkLine];
+        lgk.textColor = [NSColor secondaryLabelColor];
+        lgk.frame = NSMakeRect(20, y+58, 440, 18);
+        [content addSubview:lgk];
+
         // Nhịp 2: Cho phép
-        y -= 80;
+        y -= 104;
         NSTextField *l3 = [NSTextField labelWithString:@"2. Cho phép"];
         l3.font = [NSFont systemFontOfSize:12 weight:NSFontWeightSemibold];
         l3.frame = NSMakeRect(20, y+40, 440, 20);
         [content addSubview:l3];
         
-        NSTextField *l4 = [NSTextField labelWithString:@"Quãng lặng dài nhất: (đã tính theo code)"];
+        NSTextField *l4 = [NSTextField labelWithString:quietStreakText];
         l4.frame = NSMakeRect(20, y+20, 440, 20);
         [content addSubview:l4];
         
