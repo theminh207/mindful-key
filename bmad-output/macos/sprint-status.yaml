@@ -41,10 +41,18 @@
 # CAPACITY MODEL: wave width (số story chạy song song mỗi đợt), KHÔNG points.
 # KHÔNG velocity/burndown/points trong file này.
 #
-# GHI CHÚ 2 nghĩa của "ready-for-dev" (tránh nhầm):
+# GHI CHÚ 2 nghĩa của "ready-for-dev" (tránh nhầm) — CHỈ mô tả Epic 1, xem bổ sung ngay dưới:
 #   - Trong TỪNG file story (.story.md): nghĩa "story đã BIÊN DỊCH xong, đủ mọi mục" — cả 6 đều vậy.
 #   - Trong file NÀY (sequencing): nghĩa "được DISPATCH ngay vì hết dependency" — chỉ Đợt 1.
 #   Story Đợt 2/3 để 'backlog' ở đây vì còn chờ story trước 'done', dù file đã biên dịch xong.
+#
+# ⚠️ BỔ SUNG 2026-07-15 — Status trong .story.md KHÔNG phải nguồn sự thật (áp cho MỌI epic):
+#   Ghi chú "2 nghĩa" ở trên chỉ đúng cho Epic 1. Epic 2 thực tế dùng field đó theo nghĩa CODE
+#   (2.1 tự ghi 'done'), trong khi 2.3-2.6 kẹt ở 'backlog' dù đã code xong + commit từ lâu →
+#   agent mở thẳng story sẽ tưởng chưa làm và LÀM LẠI việc đã xong. Đã đồng bộ 2.1-2.6 = 'done'
+#   + dán banner "BẢN CHÉP" vào cả 6 file (2026-07-15). LUẬT: hai bên lệch nhau → file NÀY
+#   thắng (đúng dòng 30). Và 'done' của Epic 2 = code xong + qua cổng tự động, KHÔNG phải đã
+#   nghiệm thu bằng mắt — phần đó nằm ở epic3_acceptance. Xem decision-log.md 2026-07-15.
 #
 # ⚠️ RECONCILIATION 2026-07-10: 1.3 và 1.6 (goal "bỏ 4-tab") bị SUPERSEDED — hướng thi công
 # thật giờ là "card nổi trên đỉnh 4-tab cũ, 4 tab chỉ thay áo". Thêm story 1.7-1.10 cho việc
@@ -352,9 +360,23 @@ epic3_acceptance:
     - g: 1
       title: "Cắt cụt + nhãn: bọc NSScrollView cho pane cửa sổ (kMaxPaneH=472 cố định, không có scroll) + nhãn cụt chữ ở Bộ gõ"
       findings: ["F5", "F6"]
-      status: backlog
+      status: review               # code xong + 4 cổng tự động xanh; CHỜ chủ dự án nhìn app thật (xem constraints)
       owner: platform-shell-agent
-      note: "Nguyên nhân F5 ĐÃ truy ra, không cần điều tra: SettingsWindowController.mm:55 + cả file không có NSScrollView. Popover đã chữa ở d377eaf, cửa sổ bị bỏ sót — cùng bệnh, mới chữa một nửa."
+      note: >
+        [2026-07-15] Nguyên nhân F5 ĐÃ truy ra từ đầu, không cần điều tra: SettingsWindowController.mm:55
+        + cả file không có NSScrollView. Popover đã chữa ở d377eaf, cửa sổ bị bỏ sót — cùng bệnh, mới
+        chữa một nửa. ĐÃ VÁ 2 lớp (bọc scroll KHÔNG đủ, phải vá cả 2): (1) `_paneHost` thành
+        documentView của NSScrollView mới, `mk_showPaneInHost:` cho docH = MAX(pane, khung nhìn) +
+        cuộn về đỉnh mỗi lần đổi mục; (2) pane hết bị đóng cứng kMaxPaneH — `_paneBell`/`_panePrivacy`
+        cao theo `preferredHeight` thật (trước đây nội dung dài hơn 472 bị đẩy xuống dưới y=0 rồi mất
+        hút, bọc scroll cũng không cứu vì pane vẫn khai chỉ cao 472).
+        F6: nhãn `MKCelTempOffOpenKey` ĐO ĐƯỢC cần 237.6pt mà chỉ có 191pt → cụt 47pt (khớp ảnh).
+        Đổi tên thành "Mindful Key" vẫn cần 202.4pt → VẪN cụt, không cứu được. Nới box thì đụng cửa
+        sổ legacy (`onControlPanelSelected` còn sống, 3 đường fallback khởi động ở AppDelegate.m
+        192/196/244) → BỎ hướng nới. Chọn: đổi copy thành "Tạm tắt bộ gõ bằng phím ⌘" (166pt, vừa) —
+        đúng cặp song sinh với nhãn ngay trên ("Tạm tắt chính tả bằng phím ⌃") và dùng đúng chữ
+        "Bộ gõ" app tự đặt cho mục nav. 5 nhãn còn lại đo ra đều vừa, không đụng.
+      evidence: "build sạch (1 warning linker `duplicate -lc++` = baseline) · make test xanh (Telex→Unicode toàn PASS) · brand-lint 0 · `git diff core/` rỗng. CHƯA ai nhìn app thật — đúng luật Epic 3, chưa được lên `done`."
     - g: 2
       title: "Soát nhận diện: chấm CAM đánh dấu 'Bộ tiếng' đang chọn ở tab Chuông"
       findings: ["F7"]

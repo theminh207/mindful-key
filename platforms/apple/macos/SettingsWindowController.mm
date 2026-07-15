@@ -145,7 +145,8 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     NSViewController *_rootVC;               // window.contentViewController — chỉ là điểm neo containment
     NSView *_navContainer;
     NSView *_contentContainer;
-    NSView *_paneHost;                        // nơi hiện ĐÚNG 1 pane tại 1 thời điểm
+    NSScrollView *_paneScroll;                // [MINDFUL] Epic 3 G1 (F5) — khung nhìn cuộn bọc _paneHost
+    NSView *_paneHost;                        // documentView của _paneScroll; hiện ĐÚNG 1 pane tại 1 thời điểm
     NSView *_subNavBar;                       // 3 nút "Kiểu gõ/Gõ tắt/Chuyển mã", chỉ hiện ở mục "Bộ gõ"
     NSMutableArray<MKSettingsNavRow *> *_navRows;
     NSMutableArray<NSButton *> *_subNavButtons;
@@ -218,8 +219,24 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     [self mk_buildNavRows];
     [self mk_buildBoGoSubNav];
 
-    _paneHost = [[NSView alloc] initWithFrame:NSMakeRect(kContentPad, kContentPad, kMaxPaneW, kMaxPaneH)];
-    [_contentContainer addSubview:_paneHost];
+    // [MINDFUL] Epic 3 G1 (F5) — trước đây `_paneHost` là NSView phẳng cắm thẳng vào
+    // `_contentContainer`, cao ĐÓNG CỨNG kMaxPaneH: pane nào cao hơn thì phần dưới bị cắt mất,
+    // không có đường xuống (nghiệm thu 2026-07-15 thấy "Chuông" cụt ở Âm lượng, "Riêng tư" cụt
+    // giữa nút "Xóa toàn bộ nhật ký"). Nay `_paneHost` thành documentView của 1 NSScrollView —
+    // pane cao hơn khung nhìn thì cuộn được. Popover đã chữa y hệt ở commit d377eaf; đây là
+    // nửa còn lại (cửa sổ) bị bỏ sót lần đó.
+    _paneScroll = [[NSScrollView alloc] initWithFrame:NSMakeRect(kContentPad, kContentPad, kMaxPaneW, kMaxPaneH)];
+    _paneScroll.hasVerticalScroller = YES;
+    _paneScroll.hasHorizontalScroller = NO;
+    _paneScroll.autohidesScrollers = YES;
+    _paneScroll.borderType = NSNoBorder;
+    // Nền trong suốt: giữ nguyên nền trắng của root — nếu để NSScrollView tự vẽ, macOS ở chế độ
+    // Sáng vẫn cho ra xám nhạt, lệch khỏi nền card đã khoá ở AppDelegate (NSAppearanceNameAqua).
+    _paneScroll.drawsBackground = NO;
+    [_contentContainer addSubview:_paneScroll];
+
+    _paneHost = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, kMaxPaneW, kMaxPaneH)];
+    _paneScroll.documentView = _paneHost;
 
     self.window.contentViewController = _rootVC;
 
@@ -301,21 +318,34 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
 
     // Các pane khác
     _paneToday   = [self mk_buildTodayPane];
-    _paneBell    = [self mk_buildEmptyPaneWithTitle:@"Chuông"];
+
+    // [MINDFUL] Epic 3 G1 (F5) — pane cao THEO NỘI DUNG (40pt chừa cho tiêu đề "Chuông", giữ đúng
+    // khoảng cách của bản cũ). Trước đây pane đóng cứng kMaxPaneH nên `bh` lớn hơn (kMaxPaneH-40)
+    // là đẩy bellView xuống dưới y=0 → mất hút, không cuộn tới được.
     BellSettingsView *bellView = [[BellSettingsView alloc] initWithFrame:NSMakeRect(0, 0, kMaxPaneW, kMaxPaneH - 40)];
     CGFloat bh = [bellView preferredHeight];
-    bellView.frame = NSMakeRect(0, kMaxPaneH - 40 - bh, kMaxPaneW, bh);
+    _paneBell = [self mk_buildEmptyPaneWithTitle:@"Chuông" height:(40.0 + bh)];
+    bellView.frame = NSMakeRect(0, NSHeight(_paneBell.frame) - 40.0 - bh, kMaxPaneW, bh);
     [_paneBell addSubview:bellView];
-    
+
+    // Riêng tư cố ý KHÔNG có tiêu đề lớn (PrivacyPaneView tự mở đầu bằng section "Nhật ký cảm xúc")
+    // — giữ nguyên như bản cũ, chỉ bỏ trần cứng kMaxPaneH.
     PrivacyPaneView *pv = [[PrivacyPaneView alloc] initWithFrame:NSMakeRect(0, 0, kMaxPaneW, kMaxPaneH)];
     CGFloat ph = [pv preferredHeight];
-    pv.frame = NSMakeRect(0, kMaxPaneH - ph, kMaxPaneW, ph);
-    _panePrivacy = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, kMaxPaneW, kMaxPaneH)];
+    _panePrivacy = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, kMaxPaneW, MAX(ph, kMaxPaneH))];
+    pv.frame = NSMakeRect(0, NSHeight(_panePrivacy.frame) - ph, kMaxPaneW, ph);
     [_panePrivacy addSubview:pv];
 }
 
 - (NSView *)mk_buildEmptyPaneWithTitle:(NSString *)title {
-    NSView *pane = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, kMaxPaneW, kMaxPaneH)];
+    return [self mk_buildEmptyPaneWithTitle:title height:kMaxPaneH];
+}
+
+// [MINDFUL] Epic 3 G1 (F5) — `height` kẹp tối thiểu bằng kMaxPaneH: pane ngắn vẫn lấp đầy khung
+// nhìn (tiêu đề nằm đúng đỉnh, không trôi xuống giữa), pane dài thì NSScrollView lo phần cuộn.
+- (NSView *)mk_buildEmptyPaneWithTitle:(NSString *)title height:(CGFloat)height {
+    CGFloat paneH = MAX(height, kMaxPaneH);
+    NSView *pane = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, kMaxPaneW, paneH)];
     // Không có Montserrat thật đăng ký trong app (không file font bundle, không fontWithName: ở
     // đâu trong codebase) — dùng systemFont+weight đúng quy ước đã áp dụng cho mọi tiêu đề khác
     // (GatekeeperCardView/PanelViewController), KHÔNG bịa ra 1 font family không tồn tại.
@@ -441,10 +471,24 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
         [v removeFromSuperview];
     }
     if (paneView == nil) return;
+
+    // [MINDFUL] Epic 3 G1 (F5) — documentView cao bằng MAX(pane, khung nhìn):
+    //  - pane thấp hơn khung nhìn  → docH = khung nhìn, không sinh thanh cuộn thừa cho pane ngắn;
+    //  - pane cao hơn khung nhìn   → docH = pane, cuộn tới được dòng cuối.
+    // KHÔNG đổi KÍCH THƯỚC pane (chỉ đặt lại origin) — 2 NSBox tái dùng từ storyboard tính
+    // shadowPath theo self.bounds lúc viewDidLoad, resize ở đây là bóng đổ lệch (xem đầu file).
+    const CGFloat viewportH = NSHeight(_paneScroll.contentView.bounds);
+    const CGFloat docH = MAX(NSHeight(paneView.frame), viewportH);
+    _paneHost.frame = NSMakeRect(0.0, 0.0, kMaxPaneW, docH);
+
     NSRect f = paneView.frame;
-    f.origin = NSMakePoint(0.0, NSHeight(_paneHost.bounds) - NSHeight(f));
+    f.origin = NSMakePoint(0.0, docH - NSHeight(f));   // neo đỉnh (view KHÔNG lật, gốc ở dưới-trái)
     paneView.frame = f;
     [_paneHost addSubview:paneView];
+
+    // Đổi mục thì luôn bắt đầu từ đỉnh — không thừa hưởng vị trí cuộn của mục vừa xem.
+    [_paneScroll.contentView scrollToPoint:NSMakePoint(0.0, docH - viewportH)];
+    [_paneScroll reflectScrolledClipView:_paneScroll.contentView];
 }
 
 @end
