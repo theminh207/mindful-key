@@ -515,6 +515,97 @@ NSArray<NSDictionary *> *MoodStoreMac_FetchMonthSamples(void) {
     return FetchDailyAverages(30);
 }
 
+#if DEBUG
+// [MINDFUL] 2026-07-16 — xem MoodStoreMac.h cho bối cảnh đầy đủ. Đánh dấu bằng app_bundle_id vì
+// cột này KHÔNG dùng cho event_type='sample' (INSERT thật ở MoodStoreMac_LogSampleEvent phía
+// trên chỉ set ts/event_type/send_risk) — tái dùng cột có sẵn, không cần ALTER TABLE/migration
+// trên file mã hóa đang chạy thật của người dùng.
+static NSString *const kSeedFakeMarker = @"__mk_seed_fake__";
+
+void MoodStoreMac_SeedFakeSamplesForTesting(NSInteger numDays) {
+    if (!MoodStoreMac_HasConsent())
+        return;
+
+    NSString *tempPath = nil;
+    sqlite3 *db = OpenWorkingDB(&tempPath);
+    if (!db)
+        return;
+
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDate *now = [NSDate date];
+    const char *sql =
+        "INSERT INTO mood_events (ts, event_type, send_risk, app_bundle_id) "
+        "VALUES (?, 'sample', ?, ?);";
+
+    // Vài mẫu rải rác mỗi ngày trong khung giờ hợp lý (9h-21h), biên độ dao động ngẫu nhiên
+    // nhẹ — đủ để đường sông có hình dạng thay vì 1 đường phẳng giả tạo.
+    for (NSInteger d = 0; d < numDays; d++) {
+        NSDate *day = [cal dateByAddingUnit:NSCalendarUnitDay value:-d toDate:now options:0];
+        NSDateComponents *dayComps = [cal components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay) fromDate:day];
+        NSInteger samplesThisDay = 4 + (NSInteger)arc4random_uniform(3); // 4-6 mẫu/ngày
+
+        for (NSInteger s = 0; s < samplesThisDay; s++) {
+            NSDateComponents *tsComps = [dayComps copy];
+            tsComps.hour = 9 + (NSInteger)arc4random_uniform(13);   // 9h..21h
+            tsComps.minute = (NSInteger)arc4random_uniform(60);
+            NSDate *ts = [cal dateFromComponents:tsComps];
+            double risk = (arc4random_uniform(70) + 10) / 100.0;    // 0.10..0.79 — tránh giả 1.0 phi thực tế
+
+            sqlite3_stmt *stmt = NULL;
+            if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+                sqlite3_bind_int64(stmt, 1, (sqlite3_int64)[ts timeIntervalSince1970]);
+                sqlite3_bind_double(stmt, 2, risk);
+                sqlite3_bind_text(stmt, 3, kSeedFakeMarker.UTF8String, -1, SQLITE_TRANSIENT);
+                if (sqlite3_step(stmt) != SQLITE_DONE) {
+                    NSLog(@"[MoodStoreMac][SEED] ghi lỗi: %s", sqlite3_errmsg(db));
+                }
+                sqlite3_finalize(stmt);
+            }
+        }
+    }
+
+    FlushAndCloseDB(db, tempPath);
+    NSLog(@"[MoodStoreMac][SEED] Đã giả lập %ld ngày (đánh dấu, KHÔNG lẫn dữ liệu thật) — DEBUG-ONLY.", (long)numDays);
+}
+
+void MoodStoreMac_DeleteSimulatedData(void) {
+    NSString *tempPath = nil;
+    sqlite3 *db = OpenWorkingDB(&tempPath);
+    if (!db)
+        return;
+
+    sqlite3_stmt *stmt = NULL;
+    const char *sql = "DELETE FROM mood_events WHERE app_bundle_id = ?;";
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, kSeedFakeMarker.UTF8String, -1, SQLITE_TRANSIENT);
+        if (sqlite3_step(stmt) != SQLITE_DONE) {
+            NSLog(@"[MoodStoreMac][SEED] xóa lỗi: %s", sqlite3_errmsg(db));
+        }
+        sqlite3_finalize(stmt);
+    }
+    FlushAndCloseDB(db, tempPath);
+    NSLog(@"[MoodStoreMac][SEED] Đã xóa sạch dữ liệu giả lập — dữ liệu thật (nếu có) không đụng tới.");
+}
+
+BOOL MoodStoreMac_HasSimulatedData(void) {
+    NSString *tempPath = nil;
+    sqlite3 *db = OpenWorkingDB(&tempPath);
+    if (!db)
+        return NO;
+
+    BOOL has = NO;
+    sqlite3_stmt *stmt = NULL;
+    const char *sql = "SELECT 1 FROM mood_events WHERE app_bundle_id = ? LIMIT 1;";
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_text(stmt, 1, kSeedFakeMarker.UTF8String, -1, SQLITE_TRANSIENT);
+        has = (sqlite3_step(stmt) == SQLITE_ROW);
+        sqlite3_finalize(stmt);
+    }
+    FlushAndCloseDB(db, tempPath);
+    return has;
+}
+#endif
+
 void MoodStoreMac_DeleteAll(void) {
     [[NSFileManager defaultManager] removeItemAtURL:EncryptedFileURL() error:nil];
     // Xóa luôn khóa Keychain — lần ghi kế tiếp (nếu có) sẽ tạo khóa mới, dữ liệu cũ (nếu sót

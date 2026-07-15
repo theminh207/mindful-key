@@ -54,6 +54,18 @@ void MoodStoreMac_LogCheckinEvent(NSInteger waveLevel);
 NSArray<NSDictionary *> *MoodStoreMac_FetchWeekSamples(void);   // 7 ngày gần nhất, tính cả hôm nay
 NSArray<NSDictionary *> *MoodStoreMac_FetchMonthSamples(void);  // 30 ngày gần nhất, tính cả hôm nay
 
+#if DEBUG
+// [MINDFUL] 2026-07-16 — CHỈ tồn tại trong build Debug (biến mất hoàn toàn khỏi bản Release/phát
+// hành, xem project.yml GCC_PREPROCESSOR_DEFINITIONS). Giả lập dữ liệu sông để test hiển thị
+// Tuần/Tháng mà không cần chờ dùng thật nhiều ngày — chủ dự án đã chốt cách làm (2026-07-16):
+// ghi thẳng vào ĐÚNG kho thật (không có kho nháp riêng) nhưng đánh dấu ẩn ở cột app_bundle_id
+// (vốn không dùng cho event 'sample'), để tách biệt khỏi dữ liệu thật.
+// MoodStoreMac_DeleteSimulatedData() CHỈ xóa đúng phần đánh dấu này — dữ liệu thật không đụng tới.
+void MoodStoreMac_SeedFakeSamplesForTesting(NSInteger numDays);
+void MoodStoreMac_DeleteSimulatedData(void);
+BOOL MoodStoreMac_HasSimulatedData(void);
+#endif
+
 // [MINDFUL] Story 2.6 — Riêng tư
 BOOL MoodStoreMac_ExportCSVToURL(NSURL *url);
 void MoodStoreMac_SetAutoPurgeDays(NSInteger days);

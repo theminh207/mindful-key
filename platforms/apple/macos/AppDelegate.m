@@ -288,6 +288,16 @@ extern bool convertToolDontAlertWhenCompleted;
     [theMenu addItemWithTitle:@"Soi lại hôm nay..." action:@selector(onShowReflectionSelected) keyEquivalent:@""];
     [theMenu addItemWithTitle:@"Xóa nhật ký cảm xúc..." action:@selector(onDeleteMoodLogSelected) keyEquivalent:@""];
 
+#if DEBUG
+    // [MINDFUL] 2026-07-16 — CHỈ có trong build Debug (biến mất khỏi bản Release, xem
+    // MoodStoreMac.h). Giả lập 30 ngày dữ liệu (đủ cho cả Tuần lẫn Tháng) để test sông mà không
+    // cần chờ dùng thật nhiều ngày; "Xóa dữ liệu giả lập" chỉ xóa đúng phần đánh dấu, dữ liệu
+    // thật (nếu có) không bị đụng tới.
+    [theMenu addItem:[NSMenuItem separatorItem]];
+    [theMenu addItemWithTitle:@"[DEV] Giả lập 30 ngày dữ liệu sông" action:@selector(onSeedFakeMoodDataSelected) keyEquivalent:@""];
+    [theMenu addItemWithTitle:@"[DEV] Xóa dữ liệu giả lập" action:@selector(onDeleteSimulatedMoodDataSelected) keyEquivalent:@""];
+#endif
+
     [theMenu addItem:[NSMenuItem separatorItem]];
     
     // [MINDFUL] Story 2.2 — "Bảng điều khiển…"/"Gõ tắt…"/"Giới thiệu" gộp vào cửa sổ quản lý mới
@@ -655,6 +665,36 @@ extern bool convertToolDontAlertWhenCompleted;
         MoodStoreMac_DeleteAll();
     }
 }
+
+#if DEBUG
+-(void)onSeedFakeMoodDataSelected {
+    MoodStoreMac_SeedFakeSamplesForTesting(30);
+    NSAlert *alert = [[NSAlert alloc] init];
+    alert.messageText = @"Đã giả lập 30 ngày dữ liệu";
+    alert.informativeText = @"Mở Cài đặt ▸ Hôm nay ▸ Tuần/Tháng để xem. Dữ liệu này có đánh dấu riêng — dùng \"Xóa dữ liệu giả lập\" khi xong, không ảnh hưởng dữ liệu thật.";
+    [alert addButtonWithTitle:@"Đã hiểu"];
+    alert.window.level = NSStatusWindowLevel;
+    [alert runModal];
+}
+
+-(void)onDeleteSimulatedMoodDataSelected {
+    if (!MoodStoreMac_HasSimulatedData()) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        alert.messageText = @"Không có dữ liệu giả lập nào để xóa";
+        [alert addButtonWithTitle:@"Đã hiểu"];
+        alert.window.level = NSStatusWindowLevel;
+        [alert runModal];
+        return;
+    }
+    MoodStoreMac_DeleteSimulatedData();
+    NSAlert *alert = [[NSAlert alloc] init];
+    alert.messageText = @"Đã xóa dữ liệu giả lập";
+    alert.informativeText = @"Dữ liệu thật (nếu có) vẫn còn nguyên.";
+    [alert addButtonWithTitle:@"Đã hiểu"];
+    alert.window.level = NSStatusWindowLevel;
+    [alert runModal];
+}
+#endif
 
 -(void) onControlPanelSelected {
     if (_mainWC == nil) {
