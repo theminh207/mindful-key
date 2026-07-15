@@ -111,12 +111,20 @@ epics:
       Nặng nhất: mục "Hệ thống" trắng trơn (F1), pane "Hôm nay" thiếu hẳn card Gác cổng =
       Feature #1 (F2), nội dung bị cắt đáy vì cửa sổ không cuộn (F5), chấm cam đánh dấu bộ tiếng
       đang chọn — nghi phạm hiến chương §5 điều 6 (F7). KHÔNG đụng core/engine.
-    status: in-progress          # gate 1/2/5 review, gate 3/4 backlog — xem epic3_acceptance
+    status: in-progress          # gate 1/2/5/6/7 review, gate 3/4 backlog — xem epic3_acceptance
     story_ids:
-      - "3.1.window-scroll-and-labels"
-      - "3.2.orange-dot-charter-audit"
-      - "3.3.today-pane-gatekeeper-river-reflection"
-      - "3.4.system-pane-investigation"
+      - "3.1.window-scroll-and-labels"          # lightweight (gate 1), không có file .story.md
+      - "3.2.orange-dot-charter-audit"           # lightweight (gate 2), không có file .story.md
+      # "3.3.today-pane-gatekeeper-river-reflection" — SUPERSEDED 2026-07-15, xem epics.md.
+      # Thay bằng 4 story đầy đủ dưới đây (chủ dự án yêu cầu "lên kế hoạch triển khai", soát kỹ
+      # phát hiện việc lớn hơn 1 gate lightweight xứng đáng). PHẢI làm TUẦN TỰ, không song song —
+      # scope-conflict-check.sh xác nhận chồng lấn SettingsWindowController.mm (3.5/3.6/3.7/3.8)
+      # + MoodStoreMac.h/.mm (3.7/3.8).
+      - "3.5.gatekeeper-card-and-reflection-link"
+      - "3.6.reflection-screen-real-river"
+      - "3.7.week-river-view"
+      - "3.8.month-river-view"
+      - "3.4.system-pane-investigation"          # lightweight (gate 4), không có file .story.md
 
   - id: "epic-4"
     title: "Chặng 1 — Vòng lặp lõi có sống không? (2026-07-15)"
@@ -414,7 +422,20 @@ epic3_acceptance:
     - g: 3
       title: "Hồn của 'Hôm nay': mount card Gác cổng + lối vào Soi lại + copy rỗng có câu hỏi phản chiếu"
       findings: ["F2", "F3", "F4"]
-      status: backlog               # HẾT CHẶN, sẵn sàng thi công — chưa bắt đầu
+      status: sharded                # 2026-07-15 — đã tách thành 4 story đầy đủ, xem shard_into
+      shard_into:
+        - "3.5.gatekeeper-card-and-reflection-link"   # NHỎ — tái dùng 100% GatekeeperCardView
+        - "3.6.reflection-screen-real-river"          # VỪA — vẽ lại theo mockup A1
+        - "3.7.week-river-view"                        # LỚN — MoodStoreMac_FetchWeekSamples mới
+        - "3.8.month-river-view"                       # LỚN + rủi ro nhận diện cao nhất — DỪNG-HỎI trước khi code
+      shard_note: >
+        [2026-07-15] Chủ dự án yêu cầu "lên kế hoạch triển khai phát triển" cho gate này — dùng
+        skill bmad-epics-and-stories để shard đúng bài bản thay vì tiếp tục ghi note tự do ở
+        đây. 4 story PHẢI làm TUẦN TỰ (3.5→3.6→3.7→3.8) — `scope-conflict-check.sh` xác nhận
+        chồng lấn `SettingsWindowController.mm` (cả 4) + `MoodStoreMac.h/.mm` (3.7/3.8), khớp
+        đúng dự đoán lúc soát owned-scope. Trạng thái CHI TIẾT từng story: đọc file `.story.md`
+        tương ứng trong `bmad-output/macos/stories/`, KHÔNG đọc lại ở note này nữa (tránh 2 nguồn
+        lệch nhau — bài học "BẢN CHÉP" 2026-07-15 đã ghi ở đầu file).
       owner: "mood-layer-agent + platform-shell-agent"
       identity_touch: true
       depends_on_gate: 1
