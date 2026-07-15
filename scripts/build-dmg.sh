@@ -29,9 +29,13 @@ find_app() {
     return
   fi
 
+  # Thứ tự ưu tiên: bản universal (scripts/package_app.sh, đã lipo arm64+x86_64) -> bản
+  # xcodebuild thường (make build/run). Release trước Debug ở cùng một kiểu.
   local candidates=(
-    "$ROOT/platforms/apple/build/Release/MindfulKey.app"
-    "$ROOT/platforms/apple/build/Debug/MindfulKey.app"
+    "$ROOT/platforms/apple/build/Release/MindfulKey.app"                 # make universal
+    "$ROOT/platforms/apple/build/Debug/MindfulKey.app"                   # make universal debug
+    "$ROOT/platforms/apple/build/Build/Products/Release/MindfulKey.app"  # make build CONFIG=Release
+    "$ROOT/platforms/apple/build/Build/Products/Debug/MindfulKey.app"    # make build (mặc định)
   )
 
   local app
@@ -42,8 +46,10 @@ find_app() {
     fi
   done
 
-  # xcodebuild không dùng -derivedDataPath tùy chỉnh (make build mặc định) -> sản phẩm nằm ở
-  # ~/Library/Developer/Xcode/DerivedData/MindfulKey-<hash>/Build/Products/<config>/.
+  # Dự phòng cho bản build bằng Xcode GUI (Xcode luôn đổ vào DerivedData mặc định).
+  # `make build` KHÔNG còn đổ vào đây nữa — từ 2026-07-16 nó dùng -derivedDataPath
+  # platforms/apple/build (xem Makefile + docs/FRICTION-LOG.md). Bản nào còn nằm đây là
+  # TÀN DƯ cũ: đừng để nó âm thầm được đóng gói thay bản mới, nên xếp cuối cùng.
   local dd="$HOME/Library/Developer/Xcode/DerivedData"
   if [[ -d "$dd" ]]; then
     local found

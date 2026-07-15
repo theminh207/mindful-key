@@ -41,12 +41,10 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
     CGFloat w = NSWidth(b);
     CGFloat maxWaveH = NSHeight(b) * 0.42;
 
-    // [MINDFUL] Vá crash (2026-07-16): view chưa layout xong (vd frame đầu tiên lúc mới add vào
-    // hierarchy) có thể khiến bounds rộng 0 — (x/w) = 0/0 = NaN, ép NaN sang NSUInteger là hành
-    // vi không xác định, có thể ra chỉ số vượt quá _samples.count -> throw NSRangeException, crash
-    // CẢ APP (drawRect: chạy giữa chu kỳ vẽ của AppKit, không ai bắt exception hộ). Việc này luôn
-    // tồn tại nhưng CHƯA từng lộ vì trước nay k luôn = 0 (chưa có dữ liệu thật) nên return sớm ở
-    // trên — chỉ lộ ra tối nay khi seed dữ liệu giả lập làm k > 0 lần đầu.
+    // [MINDFUL] Chặn phòng ngừa (2026-07-16): bounds rộng 0 (vd 1 nhịp layout sớm) làm (x/w) =
+    // 0/0 = NaN; ép NaN sang NSUInteger là hành vi không xác định. Đây KHÔNG phải nguyên nhân
+    // crash tối 2026-07-16 (đó là [NSNull doubleValue], vá ở vòng lặp dưới) — chỉ là mối nguy
+    // tiềm tàng phát hiện lúc đọc code, giữ lại vì rẻ và chặn đúng gốc.
     if (w <= 0) return;
 
     NSColor *teal = [[Brand teal] colorUsingColorSpace:[NSColorSpace sRGBColorSpace]];
@@ -71,9 +69,17 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
             continue;
         }
         
+        // [MINDFUL] Vá crash (2026-07-16, xác nhận qua log hệ thống: "-[NSNull doubleValue]:
+        // unrecognized selector"). Guard phía trên CỐ Ý chỉ kiểm val1 khi fr > 0 — đúng, vì khi
+        // fr == 0 thì amp = a0 + (a1-a0)*0 = a0, val1 hoàn toàn vô nghĩa. Nhưng code cũ vẫn đọc
+        // [val1 doubleValue] VÔ ĐIỀU KIỆN → nổ ngay khi val1 là NSNull (quãng trống) và fr == 0
+        // (xảy ra ở x=0, tức NGAY vòng lặp đầu tiên, nếu mẫu thứ 2 là quãng trống).
+        // Nay chỉ đọc val1 đúng lúc cần nội suy — khớp lại với ý định của guard.
         CGFloat a0 = [val0 doubleValue];
-        CGFloat a1 = [val1 doubleValue];
-        CGFloat amp = a0 + (a1 - a0) * fr;
+        CGFloat amp = a0;
+        if (fr > 0) {
+            amp = a0 + ([val1 doubleValue] - a0) * fr;
+        }
         CGFloat y = midY - amp * maxWaveH * sin(x * 0.19);
         NSPoint p = NSMakePoint(x, y);
         [points addObject:[NSValue valueWithPoint:p]];

@@ -3,14 +3,25 @@ XCODEPROJ := platforms/apple/MindfulKey.xcodeproj
 SCHEME    := MindfulKey
 CONFIG    := Debug
 DERIVED   := platforms/apple/build
+
+# [MINDFUL] 2026-07-16 — MỘT nơi build, MỘT nơi cài. Trước đây `build` không kèm
+# -derivedDataPath (app rơi vào ~/Library/Developer/Xcode/DerivedData/MindfulKey-<hash>/)
+# còn `run` thì có (app rơi vào platforms/apple/build/) → 2 bản khác nhau ở 2 nơi, và
+# `make clean` chỉ dọn được 1. Hậu quả thật: vá lỗi bằng `make build` rồi mở bản ở đường
+# kia = chạy bản CŨ, tưởng đã vá. Xem docs/FRICTION-LOG.md 2026-07-16.
+APP_BUILT     := $(DERIVED)/Build/Products/$(CONFIG)/MindfulKey.app
+APP_INSTALLED := /Applications/MindfulKey.app
 IOS_SIM   ?= iPhone 17
 IOS_DD    := build/ios-dd
 IOS_APPID := vn.gnh.mindfulkey.ios
 VERSION   := $(shell . ./version.env >/dev/null 2>&1; grep '^VERSION=' version.env | cut -d= -f2)
 
-.PHONY: help generate test test-core test-macos test-ios build run run-ios universal brand public-brand brand-lint hooks version clean
+.PHONY: help generate test test-core test-macos test-ios build install run doctor run-ios universal brand public-brand brand-lint hooks version clean
 help:
-	@echo "make generate | test | build | run | run-ios | universal | brand | public-brand | brand-lint | hooks | version | clean   (v$(VERSION))"
+	@echo "make generate | test | build | install | run | doctor | run-ios | universal | brand | public-brand | brand-lint | hooks | version | clean   (v$(VERSION))"
+	@echo ""
+	@echo "  Vòng lặp dev macOS:  make run     (build → cài /Applications → mở)"
+	@echo "  Nghi ngờ chạy nhầm bản:  make doctor"
 
 generate:        ## Sinh .xcodeproj từ platforms/apple/project.yml (XcodeGen)
 	cd platforms/apple && xcodegen generate
@@ -39,12 +50,33 @@ test-ios:        ## Test riêng vỏ iOS: bridge Telex (host) + mood bridge (hos
 	./tests/ios/mood_journal_store_test
 	bash tests/ios/build_smoke.sh
 
-build: generate  ## Build app macOS (ký ad-hoc)
-	xcodebuild -project "$(XCODEPROJ)" -scheme "$(SCHEME)" -configuration "$(CONFIG)" build
-
-run: build       ## Build rồi mở app dev
+build: generate  ## Build app macOS (ký ad-hoc) → platforms/apple/build/ (make clean dọn được)
 	xcodebuild -project "$(XCODEPROJ)" -scheme "$(SCHEME)" -configuration "$(CONFIG)" -derivedDataPath "$(DERIVED)" build
-	open "$(DERIVED)/Build/Products/$(CONFIG)/"*.app
+
+install: build   ## Thay bản ở /Applications bằng bản vừa build — giữ máy chỉ có ĐÚNG 1 bản
+	@pkill -x MindfulKey 2>/dev/null || true
+	@sleep 1
+	rm -rf "$(APP_INSTALLED)"
+	ditto "$(APP_BUILT)" "$(APP_INSTALLED)"
+	@echo ""
+	@echo "✓ đã cài: $(APP_INSTALLED)  ($(CONFIG))"
+	@echo "  ⚠ Bản build mới = chữ ký mới → macOS coi như app lạ và THU HỒI quyền."
+	@echo "    Gõ không lên dấu? → System Settings › Privacy & Security ›"
+	@echo "    Accessibility + Input Monitoring: tắt/bật lại MindfulKey."
+
+run: install     ## Build + cài + mở — chạy ĐÚNG bản mà Spotlight/Finder sẽ mở
+	open "$(APP_INSTALLED)"
+
+doctor:          ## Quét bản MindfulKey.app lạc trên máy (thủ phạm kinh điển của "vá rồi vẫn lỗi")
+	@echo "== Bản app trên máy =="
+	@find /Applications "$(HOME)/Applications" /Volumes -maxdepth 3 -name "MindfulKey.app" -type d 2>/dev/null \
+	  | while read -r p; do printf "  %s\n    build lúc: %s\n" "$$p" "$$(stat -f '%Sm' -t '%Y-%m-%d %H:%M' "$$p/Contents/MacOS/MindfulKey" 2>/dev/null)"; done
+	@echo "== Kho build =="
+	@[ -d "$(APP_BUILT)" ] && printf "  %s\n    build lúc: %s\n" "$(APP_BUILT)" "$$(stat -f '%Sm' -t '%Y-%m-%d %H:%M' "$(APP_BUILT)/Contents/MacOS/MindfulKey" 2>/dev/null)" || echo "  (chưa build)"
+	@echo "== DerivedData lạc (đường build CŨ — có bản nào ở đây = tàn dư, xoá được) =="
+	@find "$(HOME)/Library/Developer/Xcode/DerivedData" -maxdepth 1 -name "MindfulKey-*" 2>/dev/null | sed 's/^/  /' || true
+	@echo "== Đang chạy =="
+	@if pgrep -x MindfulKey >/dev/null; then lsof -p $$(pgrep -x MindfulKey) 2>/dev/null | grep -m1 "MacOS/MindfulKey$$" | awk '{print "  "$$NF}'; else echo "  (không chạy)"; fi
 
 run-ios: generate  ## Build + cài + mở container app iOS trên Simulator (IOS_SIM="iPhone 17")
 	# KÝ AD-HOC ("-") + KÈM entitlements — KHÔNG dùng CODE_SIGNING_ALLOWED=NO. Lý do: App Group
