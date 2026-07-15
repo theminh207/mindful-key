@@ -8,9 +8,9 @@ IOS_DD    := build/ios-dd
 IOS_APPID := vn.gnh.mindfulkey.ios
 VERSION   := $(shell . ./version.env >/dev/null 2>&1; grep '^VERSION=' version.env | cut -d= -f2)
 
-.PHONY: help generate test test-core test-macos test-ios build run run-ios universal brand brand-lint hooks version clean
+.PHONY: help generate test test-core test-macos test-ios build run run-ios universal brand public-brand brand-lint hooks version clean
 help:
-	@echo "make generate | test | build | run | run-ios | universal | brand | brand-lint | hooks | version | clean   (v$(VERSION))"
+	@echo "make generate | test | build | run | run-ios | universal | brand | public-brand | brand-lint | hooks | version | clean   (v$(VERSION))"
 
 generate:        ## Sinh .xcodeproj từ platforms/apple/project.yml (XcodeGen)
 	cd platforms/apple && xcodegen generate
@@ -76,6 +76,9 @@ universal:       ## Build bản chạy được cả máy chip M lẫn Intel (ch
 
 brand:           ## Xuất lại brand-asset từ SVG nguồn
 	bash brand/export.sh
+
+public-brand:    ## Gói bộ nhận diện CÔNG KHAI (tier ③) → release-out/public-brand/ để copy sang repo public
+	bash scripts/pack-public-brand.sh
 
 brand-lint:      ## Ràng buộc nhận diện NOW BRAND OS (chặn đỏ/xanh cảm xúc, emoji chấm điểm, gamification, hardcode màu)
 	bash scripts/brand-lint.sh
