@@ -122,7 +122,9 @@ jobs:
 
       - name: Đăng GitHub Release
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          # Dùng PAT của theminh207 (secret RELEASE_PAT) thay vì github.token mặc định —
+          # để Release hiện tên chủ tài khoản thay vì bot "github-actions".
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PAT }}
         run: |
           PRERELEASE_FLAG=""
           if [[ "${{ steps.signing.outputs.available }}" != "true" ]]; then
