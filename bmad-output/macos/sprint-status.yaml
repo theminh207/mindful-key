@@ -422,20 +422,25 @@ epic3_acceptance:
     - g: 3
       title: "Hồn của 'Hôm nay': mount card Gác cổng + lối vào Soi lại + copy rỗng có câu hỏi phản chiếu"
       findings: ["F2", "F3", "F4"]
-      status: sharded                # 2026-07-15 — đã tách thành 4 story đầy đủ, xem shard_into
+      status: review                 # 2026-07-15 — 4/4 story con code xong CÙNG NGÀY, xem shard_into
       shard_into:
-        - "3.5.gatekeeper-card-and-reflection-link"   # NHỎ — tái dùng 100% GatekeeperCardView
-        - "3.6.reflection-screen-real-river"          # VỪA — vẽ lại theo mockup A1
-        - "3.7.week-river-view"                        # LỚN — MoodStoreMac_FetchWeekSamples mới
-        - "3.8.month-river-view"                       # LỚN + rủi ro nhận diện cao nhất — DỪNG-HỎI trước khi code
+        - "3.5.gatekeeper-card-and-reflection-link"   # done (build-verified) — mount GatekeeperCardView
+        - "3.6.reflection-screen-real-river"          # done (build-verified) — sông thật + gỡ số thô
+        - "3.7.week-river-view"                        # done (build-verified) — FetchWeekSamples + UI
+        - "3.8.month-river-view"                       # done (build-verified) — FetchMonthSamples + UI
       shard_note: >
         [2026-07-15] Chủ dự án yêu cầu "lên kế hoạch triển khai phát triển" cho gate này — dùng
-        skill bmad-epics-and-stories để shard đúng bài bản thay vì tiếp tục ghi note tự do ở
-        đây. 4 story PHẢI làm TUẦN TỰ (3.5→3.6→3.7→3.8) — `scope-conflict-check.sh` xác nhận
-        chồng lấn `SettingsWindowController.mm` (cả 4) + `MoodStoreMac.h/.mm` (3.7/3.8), khớp
-        đúng dự đoán lúc soát owned-scope. Trạng thái CHI TIẾT từng story: đọc file `.story.md`
-        tương ứng trong `bmad-output/macos/stories/`, KHÔNG đọc lại ở note này nữa (tránh 2 nguồn
-        lệch nhau — bài học "BẢN CHÉP" 2026-07-15 đã ghi ở đầu file).
+        skill bmad-epics-and-stories để shard đúng bài bản. NGAY SAU ĐÓ chủ dự án yêu cầu "triển
+        khai làm khắc phục luôn, không bị sót nữa" — hỏi chốt 2 câu hỏi thiết kế còn mở của 3.8
+        (xem decision-log), rồi code CẢ 4 STORY TRONG CÙNG LƯỢT, tuần tự 3.5→3.6→3.7→3.8 đúng
+        thứ tự `scope-conflict-check.sh` đã khoá (chồng lấn `SettingsWindowController.mm` cả 4 +
+        `MoodStoreMac.h/.mm` ở 3.7/3.8). Cả 4 build sạch + `make test` 16/16 + `brand-lint` 0 +
+        `git diff core/` rỗng sau mỗi story. Trạng thái CHI TIẾT + Dev Agent Record từng story:
+        đọc file `.story.md` tương ứng trong `bmad-output/macos/stories/`, KHÔNG đọc lại ở note
+        này nữa (tránh 2 nguồn lệch nhau — bài học "BẢN CHÉP" 2026-07-15 đã ghi ở đầu file).
+        **CHƯA có ai nhìn app thật** — đúng luật bằng chứng Epic 3, gate này `review` chứ không
+        `done` cho tới khi chủ dự án xác nhận bằng mắt (đặc biệt: dòng sông Tuần/Tháng cần vài
+        ngày dùng thật mới có đủ dữ liệu để thấy rõ, không thể verify ngay lập tức).
       owner: "mood-layer-agent + platform-shell-agent"
       identity_touch: true
       depends_on_gate: 1

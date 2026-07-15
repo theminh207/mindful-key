@@ -438,6 +438,83 @@ NSArray<NSDictionary *> *MoodStoreMac_FetchTodaySamples(void) {
     return samples;
 }
 
+#pragma mark - Story 3.7/3.8 — Tuần/Tháng (trung bình mỗi ngày, gap = NSNull thật)
+
+// [MINDFUL] Story 3.7/3.8 — hàm DÙNG CHUNG cho cả Tuần (numDays=7) và Tháng (numDays=30), thay
+// vì viết 2 bản SQL gần giống hệt nhau (bài học ghi trong story 3.8 Dev Notes "Tái dùng SQL
+// pattern của 3.7"). Trả ĐỦ numDays phần tử theo thứ tự cũ→mới, TỰ chèn NSNull cho ngày SQL
+// không trả về hàng nào (0 mẫu hôm đó) — caller không cần tự phát hiện gap như FetchTodaySamples
+// từng bắt caller làm (2 nơi từng lặp lại cùng 1 logic gap-detection, không lặp lại lần 3 ở đây).
+static NSArray<NSDictionary *> *FetchDailyAverages(NSInteger numDays) {
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDate *now = [NSDate date];
+    NSDate *startOfToday = [cal startOfDayForDate:now];
+    NSDate *rangeStart = [cal dateByAddingUnit:NSCalendarUnitDay value:-(numDays - 1) toDate:startOfToday options:0];
+    NSDate *rangeEnd = [cal dateByAddingUnit:NSCalendarUnitDay value:1 toDate:startOfToday options:0]; // đầu ngày mai
+    sqlite3_int64 tsFrom = (sqlite3_int64)[rangeStart timeIntervalSince1970];
+    sqlite3_int64 tsTo   = (sqlite3_int64)[rangeEnd timeIntervalSince1970];
+
+    // day-key ("yyyy-MM-dd") tính bằng NSCalendar (Objective-C side), KHÔNG dùng SQLite
+    // date('unixepoch','localtime') — tránh 2 nơi tính "ngày local" theo 2 cách khác nhau có thể
+    // lệch múi giờ; FetchTodaySamples cũng dùng NSCalendar cho cùng mục đích (dòng ~405-410).
+    NSDateFormatter *dayFmt = [[NSDateFormatter alloc] init];
+    dayFmt.dateFormat = @"yyyy-MM-dd";
+    dayFmt.timeZone = [NSTimeZone localTimeZone];
+
+    NSMutableDictionary<NSString *, NSMutableArray<NSNumber *> *> *byDay = [NSMutableDictionary dictionary];
+
+    NSString *tempPath = nil;
+    sqlite3 *db = OpenWorkingDB(&tempPath);
+    if (db) {
+        sqlite3_stmt *stmt = NULL;
+        const char *sql =
+            "SELECT ts, send_risk FROM mood_events "
+            "WHERE event_type = 'sample' AND ts >= ? AND ts < ? "
+            "ORDER BY ts ASC;";
+        if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+            sqlite3_bind_int64(stmt, 1, tsFrom);
+            sqlite3_bind_int64(stmt, 2, tsTo);
+            while (sqlite3_step(stmt) == SQLITE_ROW) {
+                sqlite3_int64 ts = sqlite3_column_int64(stmt, 0);
+                double risk = sqlite3_column_double(stmt, 1);
+                NSString *dayKey = [dayFmt stringFromDate:[NSDate dateWithTimeIntervalSince1970:ts]];
+                NSMutableArray<NSNumber *> *bucket = byDay[dayKey];
+                if (!bucket) { bucket = [NSMutableArray array]; byDay[dayKey] = bucket; }
+                [bucket addObject:@(risk)];
+            }
+            sqlite3_finalize(stmt);
+        }
+        FlushAndCloseDB(db, tempPath);
+    }
+
+    // Duyệt đủ numDays ngày theo thứ tự cũ->mới, kể cả ngày SQL không có hàng nào — chèn NSNull
+    // thật (quãng trống), KHÔNG suy diễn/nội suy (đúng nguyên tắc dec4 áp lại ở mức NGÀY).
+    NSMutableArray<NSDictionary *> *result = [NSMutableArray arrayWithCapacity:(NSUInteger)numDays];
+    for (NSInteger i = 0; i < numDays; i++) {
+        NSDate *dayDate = [cal dateByAddingUnit:NSCalendarUnitDay value:i toDate:rangeStart options:0];
+        NSString *dayKey = [dayFmt stringFromDate:dayDate];
+        NSArray<NSNumber *> *bucket = byDay[dayKey];
+        id value;
+        if (bucket.count > 0) {
+            double sum = 0;
+            for (NSNumber *n in bucket) sum += n.doubleValue;
+            value = @(sum / (double)bucket.count);
+        } else {
+            value = [NSNull null];
+        }
+        [result addObject:@{ @"day": dayKey, @"value": value }];
+    }
+    return result;
+}
+
+NSArray<NSDictionary *> *MoodStoreMac_FetchWeekSamples(void) {
+    return FetchDailyAverages(7);
+}
+
+NSArray<NSDictionary *> *MoodStoreMac_FetchMonthSamples(void) {
+    return FetchDailyAverages(30);
+}
+
 void MoodStoreMac_DeleteAll(void) {
     [[NSFileManager defaultManager] removeItemAtURL:EncryptedFileURL() error:nil];
     // Xóa luôn khóa Keychain — lần ghi kế tiếp (nếu có) sẽ tạo khóa mới, dữ liệu cũ (nếu sót

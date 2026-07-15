@@ -25,6 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// nil hoặc rỗng = CHƯA có dữ liệu → view hiện trạng thái trống thật thà (KHÔNG vẽ đường/chấm giả).
 - (void)setSamples:(nullable NSArray *)samples;
 
+/// [MINDFUL] Story 3.7 — đổi 4 nhãn trục (mặc định "Sáng"/"Trưa"/"Chiều"/"Tối" khi không gọi
+/// method này). Dùng khi 1 điểm không còn nghĩa là "1 nhịp trong ngày" mà là "1 ngày trong
+/// tuần/tháng" — KHÔNG đổi setSamples:/preferredHeight đã khoá từ 2.4. Cần ĐÚNG 4 phần tử.
+- (void)setAxisLabels:(NSArray<NSString *> *)labels;
+
 /// Chiều cao cần để hiện đủ thẻ (vùng vẽ + nhãn trục Sáng/Trưa/Chiều/Tối + caption) — host popover
 /// dùng để xếp layout.
 - (CGFloat)preferredHeight;

@@ -46,6 +46,14 @@ void MoodStoreMac_LogSampleEvent(double avgAmplitude);
 NSArray<NSDictionary *> *MoodStoreMac_FetchTodaySamples(void);
 void MoodStoreMac_LogCheckinEvent(NSInteger waveLevel);
 
+// [MINDFUL] Story 3.7/3.8 — dòng sông theo Tuần/Tháng. Mỗi phần tử: {"day": NSString "yyyy-MM-dd",
+// "value": NSNumber 0..1 (trung bình send_risk trong ngày) HOẶC NSNull (ngày đó 0 mẫu — quãng
+// trống thật, KHÔNG nội suy)}. Luôn trả đủ N phần tử theo thứ tự cũ→mới (kể cả ngày thiếu dữ
+// liệu) — caller KHÔNG cần tự phát hiện gap như FetchTodaySamples (bài học: gap-detection từng
+// bị lặp lại ở 2 caller khác nhau cho FetchTodaySamples, story 3.7 tránh lặp lại lần 3).
+NSArray<NSDictionary *> *MoodStoreMac_FetchWeekSamples(void);   // 7 ngày gần nhất, tính cả hôm nay
+NSArray<NSDictionary *> *MoodStoreMac_FetchMonthSamples(void);  // 30 ngày gần nhất, tính cả hôm nay
+
 // [MINDFUL] Story 2.6 — Riêng tư
 BOOL MoodStoreMac_ExportCSVToURL(NSURL *url);
 void MoodStoreMac_SetAutoPurgeDays(NSInteger days);

@@ -146,6 +146,16 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
     return self;
 }
 
+// [MINDFUL] Story 3.7 — không đổi tên/chữ ký setSamples:/preferredHeight đã khoá từ 2.4, chỉ
+// thêm method MỚI. Không gọi method này → giữ nguyên "Sáng/Trưa/Chiều/Tối" như trước giờ.
+- (void)setAxisLabels:(NSArray<NSString *> *)labels {
+    if (labels.count != 4) return;
+    _axisMorning.stringValue   = labels[0];
+    _axisNoon.stringValue      = labels[1];
+    _axisAfternoon.stringValue = labels[2];
+    _axisEvening.stringValue   = labels[3];
+}
+
 - (NSTextField *)axisLabel:(NSString *)s align:(NSTextAlignment)align {
     NSTextField *l = [NSTextField labelWithString:s];
     l.font = [NSFont systemFontOfSize:10.5 weight:NSFontWeightRegular];

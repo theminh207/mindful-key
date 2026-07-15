@@ -34,6 +34,7 @@
 #import "AboutViewController.h"
 #import "BrandColors.h"
 #import "EmotionRiverView.h"
+#import "GatekeeperCardView.h"
 #import "PrivacyPaneView.h"
 #import "MoodStoreMac.h"
 #import "BellSettingsView.h"
@@ -63,6 +64,14 @@ static const CGFloat kWindowH     = kContentH;
 
 static const CGFloat kNavRowH     = 36.0;
 static const CGFloat kNavTopPad   = 20.0;
+
+// [MINDFUL] Story 3.5 — pane "Hôm nay": khoảng cách giữa tiêu đề/card/sông, theo lưới 8px
+// (DESIGN.md §1.4: 4·8·12·16·24·32). 40.0 khớp đúng quy ước "title reserve" Bell/Privacy đã
+// dùng trong file này (mk_instantiateEmbeddedViewControllers, dòng ~322-328).
+static const CGFloat kTodayTitleReserve = 40.0;
+static const CGFloat kTodaySectionGap   = 16.0;
+static const CGFloat kTodayRiverH       = 140.0;
+static const CGFloat kDateRangeSegH     = 28.0;   // [MINDFUL] Story 3.7/3.8 — "Ngày/Tuần/Tháng"
 
 typedef NS_ENUM(NSInteger, MKSettingsSection) {
     MKSettingsSectionToday    = 0,
@@ -139,6 +148,73 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
 
 @end
 
+#pragma mark - MKDateRangeSeg (Story 3.7/3.8 — "Ngày / Tuần / Tháng")
+
+// [MINDFUL] Story 3.7 — segmented control riêng cho SettingsWindowController.mm, KHÔNG tái dùng
+// `MKSegmented` (nội bộ BellSettingsView.mm) — file đó đang có thay đổi chưa ổn định từ 1 phiên
+// song song (xem docs/TEST_MATRIX.md 2026-07-15 mục F16), tránh đụng vào tránh xung đột merge.
+// Cùng ngôn ngữ hình ảnh: pill teal cho mục đang chọn, chữ trắng; các mục khác chữ muted.
+@interface MKDateRangeSeg : NSControl
+@property (nonatomic, copy) NSArray<NSString *> *titles;
+@property (nonatomic, assign) NSInteger selectedIndex;
+@end
+
+@implementation MKDateRangeSeg
+
+- (instancetype)initWithFrame:(NSRect)f {
+    if ((self = [super initWithFrame:f])) { _selectedIndex = 0; self.wantsLayer = YES; }
+    return self;
+}
+- (void)setTitles:(NSArray<NSString *> *)t { _titles = [t copy]; [self setNeedsDisplay:YES]; }
+- (void)setSelectedIndex:(NSInteger)i { if (_selectedIndex == i) return; _selectedIndex = i; [self setNeedsDisplay:YES]; }
+
+- (void)mouseDown:(NSEvent *)e {
+    NSInteger n = (NSInteger)self.titles.count;
+    if (n == 0) return;
+    NSPoint p = [self convertPoint:e.locationInWindow fromView:nil];
+    NSInteger idx = (NSInteger)(p.x / (NSWidth(self.bounds) / n));
+    if (idx < 0) idx = 0;
+    if (idx >= n) idx = n - 1;
+    if (idx != _selectedIndex) {
+        _selectedIndex = idx;
+        [self setNeedsDisplay:YES];
+        [self sendAction:self.action to:self.target];
+    }
+}
+
+- (void)drawRect:(NSRect)dirty {
+    NSRect b = self.bounds;
+    CGFloat rad = NSHeight(b) / 2.0;
+    [[Brand softWhite] setFill];
+    [[NSBezierPath bezierPathWithRoundedRect:b xRadius:rad yRadius:rad] fill];
+
+    NSInteger n = (NSInteger)self.titles.count;
+    if (n == 0) return;
+    CGFloat segW = NSWidth(b) / n;
+    CGFloat inset = 3.0;
+    NSFont *font = [NSFont systemFontOfSize:12 weight:NSFontWeightSemibold];
+    for (NSInteger i = 0; i < n; i++) {
+        BOOL sel = (i == _selectedIndex);
+        NSColor *tc = [Brand muted];
+        if (sel) {
+            NSRect seg = NSMakeRect(i * segW + inset, inset, segW - 2 * inset, NSHeight(b) - 2 * inset);
+            CGFloat sr = NSHeight(seg) / 2.0;
+            [[Brand teal] setFill];
+            [[NSBezierPath bezierPathWithRoundedRect:seg xRadius:sr yRadius:sr] fill];
+            tc = [NSColor whiteColor];
+        }
+        NSDictionary *attrs = @{ NSForegroundColorAttributeName:tc, NSFontAttributeName:font };
+        NSAttributedString *s = [[NSAttributedString alloc] initWithString:self.titles[i] attributes:attrs];
+        NSSize sz = [s size];
+        NSRect full = NSMakeRect(i * segW, 0, segW, NSHeight(b));
+        [s drawAtPoint:NSMakePoint(NSMidX(full) - sz.width / 2.0, NSMidY(full) - sz.height / 2.0)];
+    }
+}
+
+- (NSAccessibilityRole)accessibilityRole { return NSAccessibilityRadioGroupRole; }
+
+@end
+
 #pragma mark - SettingsWindowController
 
 @implementation SettingsWindowController {
@@ -152,6 +228,8 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     NSMutableArray<NSButton *> *_subNavButtons;
 
     NSView *_paneToday;
+    GatekeeperCardView *_gatekeeperCard;       // [MINDFUL] Story 3.5 — Feature #1, luôn trên cùng
+    MKDateRangeSeg *_dateRangeSeg;             // [MINDFUL] Story 3.7/3.8 — "Ngày / Tuần / Tháng"
     EmotionRiverView *_settingsRiver;
     NSView *_paneBell;
     NSView *_panePrivacy;
@@ -360,9 +438,37 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     return pane;
 }
 
+// [MINDFUL] Story 3.5 — "Hôm nay" giờ là BẢN ĐẦY ĐỦ của popover (decision-log 2026-07-15 "Chốt
+// 3 câu chặn Epic 3" mục 1): card Gác cổng (Feature #1) LUÔN đầu tiên/trên cùng (HIẾN CHƯƠNG §5
+// điều 10), rồi tới dòng sông. Card + link "Soi lại hôm nay →" TÁI DÙNG nguyên GatekeeperCardView
+// đã chạy tốt trong popover (PanelViewController.mm) — không viết lại, link tự gọi
+// ReflectionScreenMac_Show() bên trong, không cần wiring thêm.
 - (NSView *)mk_buildTodayPane {
-    NSView *pane = [self mk_buildEmptyPaneWithTitle:@"Hôm nay"];
-    _settingsRiver = [[EmotionRiverView alloc] initWithFrame:NSMakeRect(0, kMaxPaneH - 180, kMaxPaneW, 140)];
+    // Instantiate trước để đọc preferredHeight thật, dùng tính tổng chiều cao pane.
+    _gatekeeperCard = [[GatekeeperCardView alloc] initWithFrame:NSMakeRect(0, 0, kMaxPaneW, 96)];
+    CGFloat cardH = [_gatekeeperCard preferredHeight];
+
+    // [MINDFUL] Story 3.7/3.8 — thêm 1 hàng cho segmented "Ngày/Tuần/Tháng" + khoảng cách, chèn
+    // giữa card Gác cổng và dòng sông.
+    CGFloat totalH = kTodayTitleReserve + cardH + kTodaySectionGap + kDateRangeSegH + kTodaySectionGap + kTodayRiverH;
+    NSView *pane = [self mk_buildEmptyPaneWithTitle:@"Hôm nay" height:totalH];
+
+    CGFloat cardTop = NSHeight(pane.frame) - kTodayTitleReserve;
+    _gatekeeperCard.frame = NSMakeRect(0, cardTop - cardH, kMaxPaneW, cardH);
+    [pane addSubview:_gatekeeperCard];
+
+    CGFloat segTop = cardTop - cardH - kTodaySectionGap;
+    // [MINDFUL] Story 3.7/3.8 — segmented rộng vừa phải (180pt), neo trái khớp phong cách card
+    // Gác cổng/sông bên trên (đều full-width, neo trái) — không căn giữa tách biệt.
+    CGFloat segW = 180.0;
+    _dateRangeSeg = [[MKDateRangeSeg alloc] initWithFrame:NSMakeRect(0, segTop - kDateRangeSegH, segW, kDateRangeSegH)];
+    _dateRangeSeg.titles = @[@"Ngày", @"Tuần", @"Tháng"];
+    _dateRangeSeg.target = self;
+    _dateRangeSeg.action = @selector(mk_onDateRangeChanged:);
+    [pane addSubview:_dateRangeSeg];
+
+    CGFloat riverTop = cardTop - cardH - kTodaySectionGap;
+    _settingsRiver = [[EmotionRiverView alloc] initWithFrame:NSMakeRect(0, riverTop - kTodayRiverH, kMaxPaneW, kTodayRiverH)];
     [pane addSubview:_settingsRiver];
     return pane;
 }
@@ -438,21 +544,58 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
 }
 
 - (void)mk_refreshTodayPane {
-    extern int vBellInterval;
-    int intervalMins = vBellInterval > 0 ? vBellInterval : 60;
-    NSArray<NSDictionary *> *raw = MoodStoreMac_FetchTodaySamples();
-    NSMutableArray *samples = [NSMutableArray array];
-    for (int i = 0; i < raw.count; i++) {
-        [samples addObject:raw[i][@"value"]];
-        if (i < raw.count - 1) {
-            long long ts1 = [raw[i][@"ts"] longLongValue];
-            long long ts2 = [raw[i+1][@"ts"] longLongValue];
-            if (ts2 - ts1 > intervalMins * 60.0 * 1.5) {
-                [samples addObject:[NSNull null]];
+    [_gatekeeperCard refresh];   // [MINDFUL] Story 3.5 (AC3) — không hiện trạng thái cũ từ lần mở trước
+    [self mk_reloadRiverForSelectedRange];
+}
+
+// [MINDFUL] Story 3.7/3.8 — action của MKDateRangeSeg: bấm đổi Ngày/Tuần/Tháng ngay lúc đang
+// xem "Hôm nay" (KHÔNG cần rời mục rồi quay lại mới thấy đổi).
+- (void)mk_onDateRangeChanged:(MKDateRangeSeg *)sender {
+    [self mk_reloadRiverForSelectedRange];
+}
+
+// [MINDFUL] Story 3.7/3.8 — 1 điểm nạp lại sông DUY NHẤT cho cả 3 chế độ, tránh 3 nơi tự fetch
+// khác nhau. Ngày dùng logic gap-detection sẵn có (FetchTodaySamples không tự lấp gap — xem
+// story 3.7 Dev Notes); Tuần/Tháng dùng FetchWeekSamples/FetchMonthSamples (đã lấp gap sẵn bằng
+// NSNull, chỉ cần rút field "value").
+- (void)mk_reloadRiverForSelectedRange {
+    switch (_dateRangeSeg.selectedIndex) {
+        case 1: { // Tuần
+            [_settingsRiver setAxisLabels:@[@"7 ngày trước", @"5 ngày trước", @"3 ngày trước", @"Hôm nay"]];
+            NSArray<NSDictionary *> *daily = MoodStoreMac_FetchWeekSamples();
+            NSMutableArray *samples = [NSMutableArray arrayWithCapacity:daily.count];
+            for (NSDictionary *d in daily) [samples addObject:d[@"value"]];
+            [_settingsRiver setSamples:samples];
+            break;
+        }
+        case 2: { // Tháng
+            [_settingsRiver setAxisLabels:@[@"30 ngày trước", @"20 ngày trước", @"10 ngày trước", @"Hôm nay"]];
+            NSArray<NSDictionary *> *daily = MoodStoreMac_FetchMonthSamples();
+            NSMutableArray *samples = [NSMutableArray arrayWithCapacity:daily.count];
+            for (NSDictionary *d in daily) [samples addObject:d[@"value"]];
+            [_settingsRiver setSamples:samples];
+            break;
+        }
+        default: { // Ngày — logic gốc, chưa đổi
+            [_settingsRiver setAxisLabels:@[@"Sáng", @"Trưa", @"Chiều", @"Tối"]];
+            extern int vBellInterval;
+            int intervalMins = vBellInterval > 0 ? vBellInterval : 60;
+            NSArray<NSDictionary *> *raw = MoodStoreMac_FetchTodaySamples();
+            NSMutableArray *samples = [NSMutableArray array];
+            for (int i = 0; i < raw.count; i++) {
+                [samples addObject:raw[i][@"value"]];
+                if (i < raw.count - 1) {
+                    long long ts1 = [raw[i][@"ts"] longLongValue];
+                    long long ts2 = [raw[i+1][@"ts"] longLongValue];
+                    if (ts2 - ts1 > intervalMins * 60.0 * 1.5) {
+                        [samples addObject:[NSNull null]];
+                    }
+                }
             }
+            [_settingsRiver setSamples:samples.count > 0 ? samples : nil];
+            break;
         }
     }
-    [_settingsRiver setSamples:samples.count > 0 ? samples : nil];
 }
 
 - (void)mk_styleSubNavButton:(NSButton *)button selected:(BOOL)selected {
