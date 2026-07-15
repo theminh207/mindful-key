@@ -441,6 +441,23 @@ epic3_acceptance:
         **CHƯA có ai nhìn app thật** — đúng luật bằng chứng Epic 3, gate này `review` chứ không
         `done` cho tới khi chủ dự án xác nhận bằng mắt (đặc biệt: dòng sông Tuần/Tháng cần vài
         ngày dùng thật mới có đủ dữ liệu để thấy rõ, không thể verify ngay lập tức).
+      first_look_note: >
+        [2026-07-16] Chủ dự án nhìn app thật LẦN ĐẦU (2 ảnh chụp: popover + cửa sổ Cài đặt) — đúng
+        như lo ngại ở shard_note, có bug thật: `riverTop` (SettingsWindowController.mm) LẶP NGUYÊN
+        công thức `segTop`, quên trừ chiều cao segmented "Ngày/Tuần/Tháng" — sông (140pt, add SAU
+        nên vẽ ĐÈ LÊN) che kín segmented, control vẫn tồn tại nhưng không ai thấy được. ĐÃ VÁ (1 dòng).
+        Chủ dự án gửi kèm artifact thiết kế mới ("Vòng Soi lại") — màn Soi lại viết lại toàn bộ theo
+        đúng artifact: 3 nhịp Nhận ra/Soi/Nuôi dưỡng thay 4 nhịp cũ (nhịp "Cho phép" gộp vào câu quan
+        sát), đường ngăn giữa nhịp, eyebrow hoa, đoạn quan sát 2 câu tường thuật theo buổi (thay số
+        thô + dòng "Quãng lặng: N phút" cũ), caption phụ dưới câu hỏi, thẻ gợi ý tách nền cam nhạt +
+        nút "Để sau", chân trang 3 dòng tin cậy, tiêu đề cửa sổ có thứ+ngày thật.
+        `EmotionRiverView` thêm method MỚI `setCaptionHidden:` (KHÔNG đổi setSamples:/preferredHeight
+        đã khoá) để ReflectionScreenMac tự viết câu quan sát riêng, khỏi chồng caption tự sinh của
+        view; đồng thời làm ấm câu caption trống-dữ-liệu mặc định (dùng chung popover+cửa sổ) khớp
+        tông artifact hơn.
+        build sạch · make test 16/16 (+ iOS build-smoke OK) · brand-lint 0 (130 file) ·
+        `git diff core/` rỗng. App đã restart bản vá. **VẪN CHƯA ai nhìn bản đã vá** — gate giữ
+        `review`, không lên `done`.
       owner: "mood-layer-agent + platform-shell-agent"
       identity_touch: true
       depends_on_gate: 1

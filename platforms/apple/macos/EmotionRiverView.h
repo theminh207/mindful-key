@@ -30,6 +30,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// tuần/tháng" — KHÔNG đổi setSamples:/preferredHeight đã khoá từ 2.4. Cần ĐÚNG 4 phần tử.
 - (void)setAxisLabels:(NSArray<NSString *> *)labels;
 
+/// [MINDFUL] Story 3.6 v2 — ẩn dòng caption tự sinh (mặc định hiện). Dùng khi host tự viết câu
+/// quan sát riêng ngay bên dưới (vd ReflectionScreenMac) và không muốn 2 câu chồng nhau.
+/// preferredHeight tự trừ phần caption khi bị ẩn — KHÔNG đổi setSamples:/preferredHeight đã khoá.
+- (void)setCaptionHidden:(BOOL)hidden;
+
 /// Chiều cao cần để hiện đủ thẻ (vùng vẽ + nhãn trục Sáng/Trưa/Chiều/Tối + caption) — host popover
 /// dùng để xếp layout.
 - (CGFloat)preferredHeight;

@@ -117,6 +117,7 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
     NSTextField *_axisMorning, *_axisNoon, *_axisAfternoon, *_axisEvening;
     NSTextField *_caption;
     NSArray<NSNumber *> *_samples;
+    BOOL _captionHidden;
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect {
@@ -156,6 +157,14 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
     _axisEvening.stringValue   = labels[3];
 }
 
+// [MINDFUL] Story 3.6 v2 — xem EmotionRiverView.h. Mặc định NO (giữ nguyên hành vi cũ cho
+// popover + cửa sổ Cài đặt), ReflectionScreenMac bật YES vì tự viết câu quan sát riêng.
+- (void)setCaptionHidden:(BOOL)hidden {
+    _captionHidden = hidden;
+    _caption.hidden = hidden;
+    self.needsLayout = YES;
+}
+
 - (NSTextField *)axisLabel:(NSString *)s align:(NSTextAlignment)align {
     NSTextField *l = [NSTextField labelWithString:s];
     l.font = [NSFont systemFontOfSize:10.5 weight:NSFontWeightRegular];
@@ -183,7 +192,9 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
     // Nếu dưới 3 mẫu, coi như chưa đủ nét
     if (validCount < 3) {
         _riverArea.samples = nil;
-        _caption.stringValue = @"Hồ chưa đủ nét — ngày mới bắt đầu.";
+        // [MINDFUL] Story 3.6 v2 — khớp tông ấm hơn của thiết kế duyệt (artifact "Vòng Soi lại"
+        // panel 3 "Ngày gõ ít"): vẫn 1 câu mô tả (không phán xét), chỉ đổi giọng bớt khô.
+        _caption.stringValue = @"Hôm nay bàn phím nghỉ nhiều — và điều đó cũng chẳng sao.";
     } else {
         _caption.stringValue = @"Mỗi vòng tròn là một nhịp chuông — lúc app lặng lẽ ghi một điểm.";
     }
@@ -191,6 +202,8 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
 }
 
 - (CGFloat)preferredHeight {
+    if (_captionHidden)
+        return kPad + kWaveAreaH + kAxisGap + kAxisH + kPad;
     return kPad + kWaveAreaH + kAxisGap + kAxisH + kCaptionGap + kCaptionH + kPad;
 }
 
@@ -208,9 +221,11 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
     _axisNoon.frame      = NSMakeRect(kPad + axisW, top - kAxisH, axisW, kAxisH);
     _axisAfternoon.frame = NSMakeRect(kPad + 2 * axisW, top - kAxisH, axisW, kAxisH);
     _axisEvening.frame   = NSMakeRect(kPad + 3 * axisW, top - kAxisH, axisW, kAxisH);
-    top -= kAxisH + kCaptionGap;
 
-    _caption.frame = NSMakeRect(kPad, top - kCaptionH, w - 2 * kPad, kCaptionH);
+    if (!_captionHidden) {
+        top -= kAxisH + kCaptionGap;
+        _caption.frame = NSMakeRect(kPad, top - kCaptionH, w - 2 * kPad, kCaptionH);
+    }
 }
 
 @end

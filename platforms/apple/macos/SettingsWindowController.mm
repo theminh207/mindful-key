@@ -467,7 +467,11 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     _dateRangeSeg.action = @selector(mk_onDateRangeChanged:);
     [pane addSubview:_dateRangeSeg];
 
-    CGFloat riverTop = cardTop - cardH - kTodaySectionGap;
+    // [MINDFUL] Vá lỗi (2026-07-16): trước đây riverTop lặp NGUYÊN công thức của segTop (quên
+    // trừ chiều cao segmented + khoảng cách), khiến sông (140pt, add SAU nên nằm TRÊN) đè kín lên
+    // đúng phần segmented "Ngày/Tuần/Tháng" — control vẫn tồn tại nhưng bị che hoàn toàn, không
+    // ai thấy được. Chủ dự án phát hiện qua ảnh chụp cửa sổ Cài đặt thật.
+    CGFloat riverTop = segTop - kDateRangeSegH - kTodaySectionGap;
     _settingsRiver = [[EmotionRiverView alloc] initWithFrame:NSMakeRect(0, riverTop - kTodayRiverH, kMaxPaneW, kTodayRiverH)];
     [pane addSubview:_settingsRiver];
     return pane;
