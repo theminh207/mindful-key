@@ -4,7 +4,8 @@
 # ============================================================================
 #
 # 1. STORY TIẾP THEO CẦN LÀM = dòng ĐẦU TIÊN đọc từ trên xuống trong mục
-#    `stories:` (Epic 1) hoặc `v2_roadmap.steps` (Epic 2) có status KHÁC
+#    `stories:` (Epic 1) → `v2_roadmap.steps` (Epic 2) → `epic3_acceptance.gates`
+#    (Epic 3 — đang mở, xem cuối file) có status KHÁC
 #    `done` và KHÁC `superseded`. File đã sắp đúng thứ tự phụ thuộc sẵn — cứ
 #    đọc từ trên xuống, gặp cái đầu tiên chưa xong là làm cái đó. Đây là QUY
 #    TẮC TỰ TÌM, không phải một con trỏ cứng — vì con trỏ cứng ("story kế là
@@ -92,6 +93,22 @@ epics:
       - "1.8.macro-window-reskin"
       - "1.9.convert-window-reskin"
       - "1.10.about-window-reskin"
+
+  - id: "epic-3"
+    title: "Hoàn thiện theo nghiệm thu tay v2 (2026-07-15)"
+    description: >
+      [MỚI 2026-07-15] Đóng khoảng cách giữa "app đang chạy" và "bản thiết kế" — phát hiện ở lần
+      ĐẦU TIÊN chủ dự án mở app thật nhìn bằng mắt (trước đó cả Epic 2 chỉ build-verified). 10
+      finding F1–F10, nguồn sự thật đầy đủ: `bmad-output/macos/ACCEPTANCE-v2-2026-07-15.md`.
+      Nặng nhất: mục "Hệ thống" trắng trơn (F1), pane "Hôm nay" thiếu hẳn card Gác cổng =
+      Feature #1 (F2), nội dung bị cắt đáy vì cửa sổ không cuộn (F5), chấm cam đánh dấu bộ tiếng
+      đang chọn — nghi phạm hiến chương §5 điều 6 (F7). KHÔNG đụng core/engine.
+    status: backlog
+    story_ids:
+      - "3.1.window-scroll-and-labels"
+      - "3.2.orange-dot-charter-audit"
+      - "3.3.today-pane-gatekeeper-river-reflection"
+      - "3.4.system-pane-investigation"
 
 # ---------------------------------------------------------------------------
 # STORIES — order: epic trước, rồi topological theo dependency
@@ -304,4 +321,82 @@ v2_roadmap:
     và Chuông (BellToggleHotkey) ngay tại Panel Popover. Cập nhật các card gom gọn trong NSScrollView
     giữ nguyên Header & Footer. Dời Sensitivity Card sang tab Hôm nay. Khắc phục triệt để lỗi
     đồng bộ Giờ yên lặng không lưu trực tiếp và bổ sung quyền thông báo lúc khởi động.
+  acceptance_note_2026_07_15: >
+    [NGHIỆM THU TAY LẦN 1 — 2026-07-15] Chủ dự án ĐÃ mở app thật, xem 5/6 mục nav của cửa sổ
+    quản lý. Đây là việc mà `status_note_2026_07_14` nói là "việc còn lại của Epic 2 — nghiệm thu
+    tay". KẾT QUẢ: **KHÔNG PASS** — màn hình thật chưa bằng bản thiết kế, 10 finding (F1–F10),
+    trong đó 3 mức `chặn`: "Hệ thống" trắng trơn · "Hôm nay" thiếu hẳn card Gác cổng (Feature #1)
+    · chấm cam đánh dấu trạng thái đang-chọn (nghi phạm hiến chương §5 điều 6).
+    → Epic 2 KHÔNG được coi là đóng. Việc sửa đi theo Epic 3 (xem `epic3_acceptance` cuối file).
+    Nguồn sự thật đầy đủ: `bmad-output/macos/ACCEPTANCE-v2-2026-07-15.md`.
+    Bằng chứng đã backfill vào `docs/TEST_MATRIX.md` (khối 2026-07-15).
+
+# ---------------------------------------------------------------------------
+# EPIC 3 — Hoàn thiện theo nghiệm thu tay v2 (2026-07-15). CHƯA shard thành .story.md đầy đủ:
+# 4 "gate" dưới = 4 gói việc, mỗi gói trỏ về finding trong ACCEPTANCE-v2-2026-07-15.md (đã đủ chi
+# tiết để thi công — cùng kiểu quyết định có chủ đích như IMPLEMENTATION-PLAN-legacy-reskin.md,
+# xem reconciliation 2026-07-10). Shard thành story đầy đủ NẾU một gói phình quá 1 ngày công.
+# THỨ TỰ CÓ LÝ DO: G1 (đường cuộn) phải xong trước G3 — chưa cuộn được thì nhồi thêm card vào
+# "Hôm nay" chỉ làm cắt cụt sâu hơn. G4 tách riêng vì chưa biết nguyên nhân, không để nó chặn G1-G3.
+# ---------------------------------------------------------------------------
+epic3_acceptance:
+  opened: "2026-07-15"
+  source_of_truth: "bmad-output/macos/ACCEPTANCE-v2-2026-07-15.md"
+  trigger: "nghiệm thu tay lần 1 của chủ dự án trên app thật (5/6 mục nav, có ảnh chụp màn hình)"
+  driver_mode: "từng gói, 1 người lái; dừng-hỏi khi chạm nhận diện/pháp lý/riêng tư hoặc phát sinh ngoài plan"
+  constraints:
+    - "KHÔNG đụng core/ (bộ não C++ dùng chung) — giữ `make test` xanh"
+    - "Mỗi gói xong: cập nhật status ở ĐÂY + 1 dòng bằng chứng ở docs/TEST_MATRIX.md, NGAY lúc commit"
+    - "Bằng chứng của Epic 3 phải là MẮT NHÌN app thật, không nhận build-verified — chính build-verified đã để lọt cả 10 finding này"
+  gates:
+    - g: 1
+      title: "Cắt cụt + nhãn: bọc NSScrollView cho pane cửa sổ (kMaxPaneH=472 cố định, không có scroll) + nhãn cụt chữ ở Bộ gõ"
+      findings: ["F5", "F6"]
+      status: backlog
+      owner: platform-shell-agent
+      note: "Nguyên nhân F5 ĐÃ truy ra, không cần điều tra: SettingsWindowController.mm:55 + cả file không có NSScrollView. Popover đã chữa ở d377eaf, cửa sổ bị bỏ sót — cùng bệnh, mới chữa một nửa."
+    - g: 2
+      title: "Soát nhận diện: chấm CAM đánh dấu 'Bộ tiếng' đang chọn ở tab Chuông"
+      findings: ["F7"]
+      status: backlog
+      owner: platform-shell-agent
+      identity_touch: true
+      note: "§5 điều 6 (bất khả xâm phạm): cam CHỈ ở CTA + link active, KHÔNG ở trạng thái ON/OFF. 'Đang chọn' là trạng thái. Soát trước: đây là chấm chọn hay là một phần glyph icon? Nếu là chấm chọn → đổi sang teal. Mơ hồ → hỏi chủ dự án + ghi FRICTION-LOG."
+    - g: 3
+      title: "Hồn của 'Hôm nay': mount card Gác cổng + lối vào Soi lại + copy rỗng có câu hỏi phản chiếu"
+      findings: ["F2", "F3", "F4"]
+      status: backlog
+      owner: "mood-layer-agent + platform-shell-agent"
+      identity_touch: true
+      depends_on_gate: 1
+      note: >
+        F2 KHÔNG phải bug — là việc chưa làm: mk_buildTodayPane (SettingsWindowController.mm:333)
+        chỉ dựng tiêu đề + EmotionRiverView, chưa bao giờ dựng theo mockup A2. GatekeeperCardView
+        đã có sẵn và đã chạy trong popover (3651a25) — tái dùng, đừng viết lại.
+        Chạm §5 điều 10 (Feature #1 luôn nổi nhất) → phải qua cổng hiến chương.
+        CHỜ chốt: "Hôm nay" trong cửa sổ = bản đầy đủ của "Hôm nay" trong popover, hay cố ý khác?
+        (FRICTION-LOG 2026-07-15 — hỏi trước khi code gói này.)
+    - g: 4
+      title: "Điều tra: mục 'Hệ thống' trắng trơn hoàn toàn"
+      findings: ["F1"]
+      status: backlog
+      owner: platform-shell-agent
+      note: >
+        NGUYÊN NHÂN CHƯA BIẾT — cấm vá mò. Giả thuyết đáng soi đầu tiên: outlet @property(weak)
+        (ViewController.h:19/:21) + removeFromSuperview (SettingsWindowController.mm:277-278) → box
+        bị giải phóng → outlet nil → hiện nil = trắng. NHƯNG giả thuyết CHƯA giải thích được vì sao
+        'Bộ gõ ▸ Kiểu gõ' (tabviewPrimary, y hệt cơ chế) lại hiện bình thường → còn mắt xích chưa
+        hiểu. Điều tra tới nơi rồi mới sửa (CLAUDE.md §Think Before Coding — CẤM đoán).
+  blocked_on_owner:
+    - f: "F9"
+      q: "Tên sản phẩm: tiêu đề cửa sổ đang là 'Cài đặt Mindful Keyboard', nhưng artifact + repo + DMG đều gọi 'mindful-key'/'MindfulKey'. Chốt tên hiển thị nào?"
+    - f: "F10"
+      q: "Nhịp chuông 15 phút: A2 chốt nhịp lấy mẫu là 30 HOẶC 60 (~24-48 chấm/ngày). Mức 15 → ~96 chấm/ngày, gấp đôi trần đã chốt. Giữ 15 (và sửa lại spec), hay bỏ 15?"
+    - f: "F2"
+      q: "'Hôm nay' trong cửa sổ quản lý có phải bản đầy đủ của 'Hôm nay' trong popover không, hay 2 chỗ cố ý khác nhau?"
+  not_covered_yet: >
+    Nghiệm thu 2026-07-15 CHƯA phủ: mục 'Giới thiệu' (chưa ai xem — credit Mai Vũ Tuyên + GPL v3
+    nằm ở đây, hệ trọng pháp lý) · popover 3 tab (đợt này chỉ xem cửa sổ) · luồng động (chuông reo
+    thật, check-in 3 sóng, gác cổng nuốt Enter trong Zalo, sông có dữ liệu thật — mọi ảnh đều chụp
+    lúc sông rỗng) · a11y (VoiceOver/Tab/Giảm chuyển động). Đừng suy diễn "không nhắc = đã đạt".
 

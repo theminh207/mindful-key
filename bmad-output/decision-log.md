@@ -1,4 +1,4 @@
-# Decision Log — Mindful Keyboard — Windows Port
+# Decision Log — Mindful Keyboard — mindful-key (macOS + iOS)
 
 A threaded, append-only record of decisions made across BMAD planning workflows.
 Every later skill (brief, PRD, architecture, stories) appends here so the reasoning
@@ -35,6 +35,61 @@ rút ra 2026-07-14: phát hiện `bmad-output/macos/DESIGN-macos-control-panel.m
 thế từ 2026-07-13, mà không có dấu hiệu gì ngay trong 2 file đó — chỉ decision-log biết.
 
 ---
+
+### 2026-07-15 — Nghiệm thu tay v2 KHÔNG PASS → mở Epic 3, hạ chuẩn bằng chứng "build-verified"
+- **Decision:** Ba việc, ghi cùng lúc:
+  1. **Epic 2 KHÔNG được coi là đóng.** Lần đầu chủ dự án mở app thật (5/6 mục nav cửa sổ quản
+     lý, có ảnh) → **10 finding F1–F10**, 3 mức `chặn`: mục "Hệ thống" trắng trơn · pane "Hôm nay"
+     thiếu hẳn card Gác cổng (Feature #1) · chấm cam đánh dấu bộ tiếng đang chọn (nghi phạm
+     HIẾN CHƯƠNG §5 điều 6). Nguồn sự thật: `bmad-output/macos/ACCEPTANCE-v2-2026-07-15.md`.
+  2. **Mở Epic 3** "Hoàn thiện theo nghiệm thu tay v2" — 4 gói (gate) trong `sprint-status.yaml`
+     → `epic3_acceptance`. Thứ tự có lý do: G1 (bọc `NSScrollView` cho cửa sổ) đi TRƯỚC G3 (mount
+     card gác cổng vào "Hôm nay") — chưa cuộn được thì nhồi thêm card chỉ làm cắt cụt sâu hơn.
+     G4 (điều tra "Hệ thống") tách riêng vì chưa biết nguyên nhân, không để nó chặn G1–G3.
+     Chưa shard thành `.story.md` đầy đủ — cùng kiểu quyết định có chủ đích như
+     `IMPLEMENTATION-PLAN-legacy-reskin.md`; shard sau nếu một gói phình quá 1 ngày công.
+  3. **Hạ chuẩn bằng chứng:** từ Epic 3, cột macOS của `TEST_MATRIX` chỉ nhận `✅` khi có
+     **mắt nhìn app thật**; build-verified (build sạch + `make test` + `brand-lint`) xuống `⚠️`.
+     Dòng "Cửa sổ quản lý 6 mục nav (Story 2.2)" hạ từ `✅` → `⚠️` cho đúng sự thật.
+- **Rationale:** Cả 6 bước v2 đều xanh mọi cổng tự động mà vẫn để lọt một mục nav **trắng trơn**
+  và Feature #1 **không có mặt** ở chỗ mockup vẽ nó. `brand-lint` 0 lỗi vẫn để lọt chấm cam ở
+  trạng thái đang-chọn. Kết luận: cổng tự động chứng minh *code hợp lệ*, không chứng minh *màn
+  hình giống thiết kế* — đó là hai câu hỏi khác nhau, và dự án đã nhầm cái sau bằng cái trước
+  suốt Epic 2 (`status_note_2026_07_14` đã cảnh báo đúng, nay có số liệu chứng minh).
+  Phương án khác đã cân nhắc: nhét findings vào Epic 2 như "việc còn lại". Bỏ, vì Epic 2 đóng
+  khung theo *6 bước thi công*, còn đây là *đóng khoảng cách với thiết kế* — trộn vào sẽ làm
+  chìm mất ranh giới "code xong" vs "đúng thiết kế", đúng lỗi vừa mắc phải.
+- **Ghi kèm:** 3 chỗ phải-đoán vào `docs/FRICTION-LOG.md` (2026-07-15) — "Hôm nay" cửa sổ vs
+  popover (F2) · nhịp chuông 15 phút vs trần lấy mẫu 30/60 đã chốt (F10, chạm riêng tư) · tên
+  sản phẩm hiển thị (F9, chạm nhận diện). **Cả 3 chặn code cho tới khi chủ dự án chốt** — không
+  tự chọn trong im lặng (bài học "Chốt điểm gai #3" 2026-07-14).
+- **Made by:** hội thoại với chủ dự án (feedback + 5 ảnh chụp + 2 artifact thiết kế A1/A2)
+- **Supersedes:** không supersede entry nào. **Không** dán banner SUPERSEDED lên `DESIGN-macos-control-panel.md`
+  (đã có sẵn banner từ 2026-07-13) — file này *bổ sung* bằng chứng, không đổi đặc tả: đặc tả vẫn
+  đúng, chính bản thi công mới lệch khỏi đặc tả.
+
+---
+
+### 2026-07-15 — Vá tên workspace lệch: "Windows Port" → "mindful-key (macOS + iOS)"
+- **Decision:** Đổi `project.name` trong `bmad-output/config.yaml` từ
+  `"Mindful Keyboard — Windows Port"` thành `"Mindful Keyboard — mindful-key (macOS + iOS)"`,
+  và đổi tiêu đề H1 của chính sổ này cho khớp. Thêm khối comment vào `paths:` nói rõ file
+  config gốc gánh 2 vai (config workspace + config mặc định của đội macOS).
+  **KHÔNG đổi giá trị `stories_folder`** và không đụng gì khác.
+- **Rationale:** Cái tên "Windows Port" là di sản từ 2026-07-09, lúc workspace này được lập
+  để lo việc port Windows. Dự án xoay sang macOS-first ngay hôm sau (changelog `CLAUDE.md`
+  2026-07-08 trở đi), workspace bị tái dụng cho `macos/` + `ios/`, nhưng cái tên thì ở lại.
+  Không có việc Windows nào trong đây. Tên sai không làm vỡ tool (mỗi đội đọc config của
+  mình), nhưng nó là nguồn hiểu nhầm cho bất kỳ agent/người nào mở file đầu tiên — đúng loại
+  drift mà `FRICTION-LOG` sinh ra để bắt.
+- **Vì sao giữ nguyên `stories_folder: "bmad-output/macos/stories"`:** thoạt nhìn dòng này
+  cũng lệch (config gốc mà trỏ vào story của riêng 1 đội). Nhưng kiểm lại thì `macos/` cố ý
+  KHÔNG có `config.yaml` riêng — đội macOS đang SỐNG nhờ đúng dòng này. `ios/` thì có config
+  riêng nên tự override. Sửa dòng này = làm mù tool của đội macOS. Đã thay bằng comment giải
+  thích, không thay giá trị.
+- **Made by:** bmad-init (intent: Update)
+- **Supersedes:** none (bổ sung cho entry "2026-07-09 — Scope: Windows port" ở cuối sổ —
+  entry đó vẫn đúng với LÚC ĐÓ, chỉ là phạm vi workspace đã đổi từ sau; không xoá/sửa nó)
 
 ### 2026-07-15 — Bổ sung Hotkeys, cuộn NSScrollView cho Popover, và sửa lỗi đồng bộ Chuông
 - **Decision:** Thực hiện các cải tiến và sửa lỗi trên ứng dụng macOS:

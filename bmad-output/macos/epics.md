@@ -151,7 +151,32 @@ lấy mẫu), `NudgeCoordinatorMac` (độ nhạy 3 mức), `BellMac`/`BellSetti
 
 **Cross-epic dependencies:**
 - Blocked by: Epic 1 (brand primitives 1.1 + EmotionWaveView 1.2 + reskin 1.7–1.10 — đã done).
-- Blocks: none.
+- Blocks: **Epic 3** — nghiệm thu tay Epic 2 chính là thứ mở ra Epic 3.
+
+---
+
+## Epic 3: Hoàn thiện theo nghiệm thu tay v2 (mở 2026-07-15)
+
+**Goal:** Đóng khoảng cách giữa **app đang chạy** và **bản thiết kế** — phát hiện ở lần ĐẦU TIÊN
+chủ dự án mở app thật nhìn bằng mắt (trước đó cả Epic 2 chỉ *build-verified*).
+
+**Nguồn spec:** `ACCEPTANCE-v2-2026-07-15.md` (10 finding F1–F10 + 2 artifact thiết kế A1/A2 đã
+trích vào đó) — đọc file này là đủ, không cần mở link artifact.
+
+**In scope:** F5/F6 cắt cụt + nhãn cụt chữ · F7 soát chấm cam (nghi phạm HIẾN CHƯƠNG §5 điều 6)
+· F2/F3/F4 hồn của "Hôm nay" (card Gác cổng + lối vào Soi lại + copy rỗng có câu hỏi phản chiếu)
+· F1 điều tra mục "Hệ thống" trắng trơn.
+
+**Out of scope:** F9 (tên sản phẩm) + F10 (nhịp chuông 15 phút) — **chờ chủ dự án chốt**, xem
+`docs/FRICTION-LOG.md` 2026-07-15. PhoBERT + tín hiệu "gõ thế nào" (vẫn là lộ trình xa).
+
+**Cross-epic dependencies:**
+- Blocked by: Epic 2 (thi công xong mới nghiệm thu được).
+- Blocks: coi Epic 2 là đóng.
+
+> Story 3.1–3.4 KHÔNG có file `.story.md` đầy đủ — cùng kiểu quyết định có chủ đích như 1.7–1.10:
+> spec sống ở `ACCEPTANCE-v2-2026-07-15.md` + 4 gate trong `sprint-status.yaml` → `epic3_acceptance`.
+> Shard thành story đầy đủ NẾU một gói phình quá 1 ngày công.
 
 ---
 

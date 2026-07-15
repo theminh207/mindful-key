@@ -59,7 +59,7 @@ Ký hiệu ô: `✅` có bằng chứng · `⚠️` một phần/gián tiếp ·
 | Kho nhật ký lấy mẫu (Story 2.3) | — | ✅ | ❌ | build sạch (0 warning mới) + `make test` xanh + `make brand-lint` 0 lỗi. Tự động tích lũy sum/count qua `analyzeRecentTextAsync` và gọi `MoodStoreMac_LogSampleEvent`. `git diff core/` rỗng. CHƯA ai nhìn app thật. Commit `b35fb2b` | implemented |
 | UI Check-in 1 chạm (Story 2.3) | — | ✅ | ❌ | Cấu hình heartbeat timer nội bộ trên Main Queue trong `PanelViewController` hiện `NSPanel` sau thời gian `vBellInterval`, lưu 3 mức sóng `MoodStoreMac_LogCheckinEvent`. Commit `b35fb2b` | implemented |
 | Đổi độ nhạy 3 mức (Story 2.3) | ✅ | ✅ | ❌ | `make test` test C++ (`NudgeCoordinatorIOS` tương đương) xanh. macOS đọc trực tiếp biến cài đặt (thay vì hằng số cứng). Tự test "bật/tắt" qua test shell. CHƯA gõ thật xem E2E có đúng 5/3/2 câu không. Commit `b35fb2b` | implemented |
-| Cửa sổ quản lý 6 mục nav trái (Story 2.2) | — | ✅ | ❌ | build sạch, `make test` xanh, `make brand-lint` 0 lỗi. Instantiate các VC thành phần qua `SettingsWindowController` và chuyển tab. AppDelegate gọi đúng hàm mở cửa sổ mới. Commit `66cce8b` | implemented |
+| Cửa sổ quản lý 6 mục nav trái (Story 2.2) | — | ⚠️ | ❌ | ~~✅~~ **HẠ CẤP 2026-07-15 khi có mắt nhìn thật:** build sạch, `make test` xanh, `make brand-lint` 0 lỗi, instantiate VC + chuyển tab chạy (commit `66cce8b`) — nhưng nghiệm thu tay phát hiện **mục "Hệ thống" trắng trơn hoàn toàn** (F1) và **4/6 mục lệch thiết kế** (F2/F5/F6/F7). Khung nav 6 mục đúng mockup; NỘI DUNG bên trong thì chưa. Xem `bmad-output/macos/ACCEPTANCE-v2-2026-07-15.md` | implemented *(khung đúng, nội dung chưa)* |
 | Emotion River (Story 2.4) | — | ✅ | ❌ | build sạch, `make test` xanh. `MKRiverCanvas` render gap (`NSNull`). `SettingsWindowController` nhúng river đúng tab Hôm nay. Commit `fa76313` | implemented |
 | Cửa sổ Soi lại (Reflection Screen) (Story 2.4) | — | ✅ | ❌ | build sạch, `make test` xanh. `ReflectionScreenMac_Show` thay bằng custom window, chia 4 nhịp, nút gọi callback cập nhật cài đặt giờ. Commit `fa76313` | implemented |
 | Tab Chuông - Nhịp định kỳ (Story 2.5) | — | ✅ | ❌ | build sạch, `make test` xanh. Thêm thẻ "Nhịp" có MKSegmented (15, 30, 60), chọn theo khoảng gần nhất, gọi `BellMac_ApplySettings()` khi đổi. Không rớt `kBellSoundMuteName`. Commit `6d15a0b` | implemented |
@@ -71,6 +71,17 @@ Ký hiệu ô: `✅` có bằng chứng · `⚠️` một phần/gián tiếp ·
 | Khắc phục lỗi reo chuông và Quyền thông báo (Bug fix) | — | ✅ | ❌ | Thêm yêu cầu quyền thông báo `UNUserNotificationCenter` lúc start. Sửa lỗi thay đổi giờ yên lặng ở UI không cập nhật bộ nhớ `vBellFrom/vBellTo` trong `controlTextDidEndEditing:`. | implemented |
 | Đưa khung cuộn NSScrollView vào Popover (Đồng nhất UI) | — | ✅ | ❌ | Gom nội dung các tab động vào `NSScrollView` cục bộ của `PanelViewController`. Cố định Header/Tab bar và Footer không bị cuộn mất khi Popover quá dài. | implemented |
 | Cấu hình phím tắt nhanh cho Chuông & Bộ gõ (Hotkeys) | — | ✅ | ❌ | Bổ sung nút ghi âm phím nóng trực tiếp (phím tắt chuông mặc định `⌥⌘B`, bộ gõ `⌥Z`) bên cạnh switch ở tab Chuông và Bộ gõ. Tích hợp event intercept trong `OpenKey.mm` và đồng bộ qua NotificationCenter. | implemented |
+| **[2026-07-15] NGHIỆM THU TAY LẦN 1 — chủ dự án mở app thật, xem 5/6 mục nav cửa sổ quản lý (có ảnh)** | | | | | |
+| **Mục "Hệ thống" hiện được nội dung** (F1) | — | ❌ | ❌ | **PHẢN CHỨNG bằng mắt:** pane trắng trơn hoàn toàn — không tiêu đề, không control. Code: `SettingsWindowController.mm:388` show `_openKeyVC.tabviewSystem`; outlet CÓ thật (`Main.storyboard:1871`). **Nguyên nhân chưa biết** — giả thuyết `@property(weak)` (`ViewController.h:21`) + `removeFromSuperview` → box giải phóng → nil; nhưng CHƯA giải thích được vì sao `tabviewPrimary` y hệt cơ chế lại hiện tốt. Cấm vá mò | in_progress *(Epic 3 gate 4)* |
+| **Pane "Hôm nay" có card Gác cổng (Feature #1) nổi nhất** (F2) | — | ❌ | ❌ | **PHẢN CHỨNG bằng mắt:** không có card gác cổng, không link "Soi lại →", không chân trang riêng tư — chỉ tiêu đề + khung sông rỗng. Code xác nhận đây là **việc chưa làm**, không phải bug: `mk_buildTodayPane` (`SettingsWindowController.mm:333-337`) chỉ dựng title + `EmotionRiverView`. Chạm HIẾN CHƯƠNG §5 điều 10 (Feature #1 luôn nổi nhất) | in_progress *(Epic 3 gate 3)* |
+| **Lối vào màn "Soi lại" 4 nhịp từ cửa sổ** (F3) | — | ❌ | ❌ | **PHẢN CHỨNG bằng mắt:** không có lối vào. `ReflectionScreenMac_Show` tồn tại + build sạch (`fa76313`) nhưng **không ai gọi được từ cửa sổ** → dòng "Cửa sổ Soi lại (Story 2.4)" phía trên là code-có-thật-nhưng-người-dùng-không-tới-được | in_progress *(Epic 3 gate 3)* |
+| **Mọi mục xem hết được nội dung (không cắt đáy)** (F5) | — | ❌ | ❌ | **PHẢN CHỨNG bằng mắt:** "Chuông" cụt ở thanh Âm lượng, "Riêng tư" cụt giữa nút "Xóa toàn bộ nhật ký". Code (nguyên nhân ĐÃ truy ra, không cần điều tra): `kMaxPaneH = 472.0` cố định (`SettingsWindowController.mm:55`) + **cả file không có `NSScrollView`**. Popover đã chữa ở `d377eaf`; cửa sổ bị bỏ sót — cùng bệnh, mới chữa một nửa | in_progress *(Epic 3 gate 1)* |
+| **Nhãn control hiện đủ chữ** (F6) | — | ❌ | — | **PHẢN CHỨNG bằng mắt:** "Tạm tắt Mindful Keyboard bằng p" cụt ở Bộ gõ ▸ Kiểu gõ; "Tạm tắt chính tả bằng phím ^" sát mép | in_progress *(Epic 3 gate 1)* |
+| **Cam CHỈ dùng cho CTA + link active** (HIẾN CHƯƠNG §5 điều 6) (F7) | — | ⚠️ | — | **NGHI PHẠM, thấy bằng mắt:** chấm CAM đánh dấu "Bộ tiếng" đang chọn ở tab Chuông — "đang chọn" là TRẠNG THÁI, không phải CTA. `make brand-lint` 0 lỗi mà vẫn lọt → lint chưa bắt được ca này. Cần soát: chấm chọn hay một phần glyph? | in_progress *(Epic 3 gate 2)* |
+| **1 token teal duy nhất cho mọi PillSwitch ON** (F8) | — | ⚠️ | — | **thấy bằng mắt:** PillSwitch ở Bộ gõ nhạt hơn hẳn ở Chuông, cùng trạng thái ON → 2 sắc teal khác nhau. Nguyên nhân chưa truy | in_progress *(Epic 3 gate 1)* |
+| Khung nav 6 mục (đúng thứ tự, chấm trung tính, mục chọn nền tealLight) | — | ✅ | — | **Mắt nhìn thật xác nhận ĐÚNG mockup A2** — đây là dòng ✅-thật đầu tiên của Epic 2 (không phải build-verify). Đủ 6 mục, đúng thứ tự Hôm nay·Chuông·Bộ gõ·Riêng tư·Hệ thống·Giới thiệu; Bộ gõ có sub-nav 3 mục | implemented |
+| Không có vi phạm hiến chương ở 5 màn đã xem (ngoài F7) | — | ✅ | — | **Mắt nhìn thật:** không đèn đỏ/xanh cảm xúc, không mặt cười, không streak/điểm/huy hiệu, không copy khiển trách. Copy "Riêng tư" đúng giọng quan sát ("Quên có chủ đích — các sự kiện cũ sẽ tự biến mất…") | implemented |
+| Mục "Giới thiệu" (credit Mai Vũ Tuyên + GPL v3) | — | ❌ | — | none — **nghiệm thu 2026-07-15 CHƯA xem mục này**. Hệ trọng pháp lý (GPL v3 + credit). Đừng suy diễn "không nhắc = đã đạt" | implemented (?) |
 > **Vì sao macOS=⚠️ chứ không phải ✅ cho 3/4 cửa sổ trên:** sandbox agent không có quyền
 > Accessibility → không tự động click được, và gọi thẳng AppKit qua `lldb` từng gây deadlock 1 lần
 > (thử ở story 1.8) nên các story sau tránh dùng — verify bằng build sạch + `make test` + `ibtool`
@@ -106,6 +117,16 @@ nhất với "có người nhìn" trong đợt nhưng chưa đi hết luồng.
   phải code — là chủ dự án mở Simulator, gõ thử, đo RAM, nâng các dòng ✅¹/⚠️² lên ✅ thật.
   Mandate vẫn hẹp: **nhật ký + nhắc thụ động**, KHÔNG gác cổng gửi tin (sandbox chặn, `retired`).
   Con sóng/chuông (Round 2) chặn ở quyết định nhận diện Q1–Q3, chưa khởi công.
+
+- **Đội macOS — nghiệm thu tay lần 1 (2026-07-15): file này vừa chứng minh nó tồn tại để làm gì.**
+  Cả Epic 2 (6 bước v2) từng ghi `✅` ở cột macOS với bằng chứng "build sạch + `make test` xanh +
+  `brand-lint` 0 lỗi" — mọi cổng tự động đều xanh. Chủ dự án mở app thật xem 5/6 mục nav: **10
+  finding**, trong đó một mục nav **trắng trơn** (Hệ thống), Feature #1 **không có mặt** ở pane
+  "Hôm nay", nội dung **cắt cụt** ở 2 mục, và 1 nghi phạm hiến chương (chấm cam) mà `brand-lint`
+  không bắt. Bài học đóng đinh: **build-verified không nói gì về việc màn hình có giống thiết kế
+  hay không** — nó chỉ nói code hợp lệ. Từ Epic 3 trở đi, bằng chứng nhận `✅` cột macOS phải là
+  **mắt nhìn app thật**; build-verified xuống hạng `⚠️`. Chi tiết:
+  `bmad-output/macos/ACCEPTANCE-v2-2026-07-15.md`.
 
 ## Khi nào cập nhật file này
 
