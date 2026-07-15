@@ -42,6 +42,9 @@ static const CGFloat kSwitchH    = 24.0;
 static const CGFloat kExplainH   = 44.0;
 static const CGFloat kInvalidH   = 16.0;
 static const CGFloat kLabelWQ    = 90.0;   // cột nhãn cho hàng "Giờ yên lặng"
+static const CGFloat kBellBtnSize = 48.0;  // "Bộ tiếng" — cạnh nút icon chuông
+static const CGFloat kBellGap     = kGapMd; // khoảng cách giữa 2 icon chuông liền kề (dùng chung
+                                             // với updateBellIndicatorAnimated: — đổi thì đổi cả 2 chỗ)
 
 // Ánh xạ nhãn thân thiện (mockup "Bộ tiếng") → tên NSSound hệ thống thật (hoặc sentinel "Im").
 static NSString *SoundNameForIndex(NSInteger i) {
@@ -479,6 +482,10 @@ static NSString *StringFromHotkey(int hotkey) {
     f.layer.borderColor = [Brand divider].CGColor;
     f.backgroundColor = [NSColor whiteColor];
     f.drawsBackground = YES;
+    // Tắt focus ring mặc định của hệ thống — nó vẽ theo Accent Color máy người dùng (có thể ra
+    // cam/vàng), dễ bị hiểu lầm là mã hoá trạng thái. Tự vẽ viền lúc gõ bằng brand teal thay thế
+    // (xem controlTextDidBeginEditing:/controlTextDidEndEditing: dưới).
+    f.focusRingType = NSFocusRingTypeNone;
     f.delegate = self;   // commit khi rời ô (controlTextDidEndEditing:)
     [self addSubview:f];
     return f;
@@ -582,10 +589,24 @@ static NSString *StringFromHotkey(int hotkey) {
     return btn;
 }
 
+// [MINDFUL] Epic 3 (chủ dự án tự test, 2026-07-15): "Phần icon cho nằm ở giữa sẽ thẩm mỹ hơn."
+// Trước đó có 1 lượt đổi ngược lại (neo trái, comment giải thích "căn giữa trông như đảo riêng,
+// lệch cách mọi hàng khác trong thẻ đều neo trái") — nhưng đó là lựa chọn thẩm mỹ nội bộ, không
+// phải luật đã chốt ở DESIGN.md/mockup. Chủ dự án là người quyết cuối cùng trên sản phẩm của
+// mình: quay lại căn giữa theo đúng yêu cầu trực tiếp. Gộp công thức vào 1 hàm DUY NHẤT (thay vì
+// hằng số lặp lại ở 2 nơi kèm comment "phải khớp") để không thể lệch nhau lần nữa.
+- (CGFloat)bellRowStartX {
+    CGFloat btnSize = kBellBtnSize;
+    CGFloat gap = kBellGap;
+    CGFloat rowW = 3 * btnSize + 2 * gap;
+    CGFloat contentW = NSWidth(self.bounds) - 2 * kCardPadX;
+    return kCardPadX + (contentW - rowW) / 2.0;
+}
+
 - (void)updateBellIndicatorAnimated:(BOOL)animated {
-    CGFloat btnSize = 48.0;
-    CGFloat gap = 24.0;
-    CGFloat startX = (self.bounds.size.width - (3 * btnSize + 2 * gap)) / 2.0;
+    CGFloat btnSize = kBellBtnSize;
+    CGFloat gap = kBellGap;
+    CGFloat startX = [self bellRowStartX];
     CGFloat targetX = startX + _bellSelectedIndex * (btnSize + gap) + (btnSize - 12.0) / 2.0;
     
     NSRect currentFrame = _bellIndicator.frame;
@@ -626,9 +647,29 @@ static NSString *StringFromHotkey(int hotkey) {
     [self notifyLayoutChanged];
 }
 
+// Đang gõ giờ yên lặng: viền chuyển teal (thay cho focus ring mặc định hệ thống — xem timeChip).
+- (void)controlTextDidBeginEditing:(NSNotification *)note {
+    if (note.object != _quietFrom && note.object != _quietTo) return;
+    NSTextField *f = (NSTextField *)note.object;
+    f.layer.borderColor = [Brand teal].CGColor;
+
+    // [MINDFUL] Mảng nền be/cam phủ lên "22:00" KHÔNG phải mình vẽ — đó là "Data Detectors" của
+    // macOS (cùng thứ tô sáng ngày/giờ nhận diện được trong Mail/Notes) rò vào field editor dùng
+    // chung của NSTextField. Với ô nhập GIỜ thuần (không phải văn bản tự do), tắt hẳn detector +
+    // auto-substitution/spellcheck cho field editor đang active — tránh macOS tự tô màu/gợi ý.
+    NSTextView *editor = (NSTextView *)f.currentEditor;
+    editor.automaticDataDetectionEnabled = NO;
+    editor.automaticTextReplacementEnabled = NO;
+    editor.automaticSpellingCorrectionEnabled = NO;
+    editor.automaticDashSubstitutionEnabled = NO;
+    editor.automaticQuoteSubstitutionEnabled = NO;
+    editor.continuousSpellCheckingEnabled = NO;
+}
+
 // Commit giờ yên lặng khi rời ô. Validate chồng chéo TRƯỚC khi ghi; lỗi → giữ giá trị cũ.
 - (void)controlTextDidEndEditing:(NSNotification *)note {
     if (note.object != _quietFrom && note.object != _quietTo) return;
+    ((NSTextField *)note.object).layer.borderColor = [Brand divider].CGColor;
 
     NSInteger fr = ParseHour(_quietFrom.stringValue);
     NSInteger to = ParseHour(_quietTo.stringValue);
@@ -734,10 +775,14 @@ static NSString *StringFromHotkey(int hotkey) {
     SET(_lblSound, kCardPadX, soundTop + cy, 90.0, kRowH);
     cy += kRowH + kGapSm; // khoảng cách sau nhãn
     
-    CGFloat btnSize = 48.0;
-    CGFloat gap = 24.0;
-    CGFloat startX = (W - (3 * btnSize + 2 * gap)) / 2.0;
-    
+    CGFloat btnSize = kBellBtnSize;
+    CGFloat gap = kBellGap;
+    // [MINDFUL] Epic 3 (chủ dự án tự test, 2026-07-15) — CĂN GIỮA theo yêu cầu trực tiếp trên
+    // sản phẩm ("Phần icon cho nằm ở giữa sẽ thẩm mỹ hơn"), ghi đè lựa chọn neo-trái trước đó.
+    // Dùng chung `bellRowStartX` với updateBellIndicatorAnimated: — 1 công thức, không lặp hằng
+    // số ở 2 nơi để tránh lệch nhau như trước.
+    CGFloat startX = [self bellRowStartX];
+
     SET(_btnBell1, startX, soundTop + cy, btnSize, btnSize);
     SET(_btnBell2, startX + btnSize + gap, soundTop + cy, btnSize, btnSize);
     SET(_btnBell3, startX + 2 * btnSize + 2 * gap, soundTop + cy, btnSize, btnSize);

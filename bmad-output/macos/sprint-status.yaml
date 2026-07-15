@@ -490,6 +490,24 @@ epic3_acceptance:
         20pt của box rộng 520) — đọc đúng thành 1 hàng full-width riêng dưới lưới 2 cột, không còn
         như 1 ô cột trái bị rớt lại với nửa phải bỏ trống.
       evidence: "build sạch (0 ibtool notice mới) · make test xanh (16/16) · brand-lint 0 · `git diff core/` rỗng. CHƯA ai nhìn app thật."
+    - g: 7
+      title: "Căn giữa 3 icon 'Bộ tiếng' ở tab Chuông (chủ dự án tự test lần 3, ghi đè quyết định neo-trái trước đó)"
+      findings: ["F16"]
+      status: review
+      owner: platform-shell-agent
+      note: >
+        [2026-07-15] Chủ dự án: "Phần icon cho nằm ở giữa sẽ thẩm mỹ hơn." Trước đó có 1 lượt sửa
+        (chưa commit, phiên/đội khác — xem `BellSettingsView.mm` diff không nằm trong `ba07891`)
+        ĐỔI TỪ căn giữa SANG neo trái tại `kCardPadX`, kèm comment giải thích chủ đích: "căn giữa
+        cả khối trong W khiến cụm icon trông như 1 đảo riêng, lệch cách mọi hàng khác trong thẻ
+        đều neo trái". Đây là lựa chọn thẩm mỹ NỘI BỘ của người viết code, không phải luật đã
+        chốt ở DESIGN.md/mockup — chủ dự án là người quyết cuối cùng trên sản phẩm của mình, yêu
+        cầu trực tiếp thì làm theo, GHI ĐÈ lựa chọn trước.
+        ĐÃ VÁ: gộp công thức vào 1 hàm `bellRowStartX` (căn giữa theo `NSWidth(self.bounds) -
+        2*kCardPadX`), dùng chung cho cả `relayout:` (vị trí 3 nút) và `updateBellIndicatorAnimated:`
+        (vị trí chấm chọn) — trước đây 2 nơi lặp cùng 1 hằng số kèm comment "phải khớp nhau", nay
+        chỉ 1 nguồn, không thể lệch lại lần nữa dù ai đổi trong tương lai.
+      evidence: "build sạch (1 warning linker baseline) · make test xanh (16/16) · brand-lint 0 · `git diff core/` rỗng. CHƯA ai nhìn app thật."
   blocked_on_owner: []   # F9/F10/F2 đã chốt 2026-07-15 (xem decision-log.md "Chốt 3 câu chặn Epic 3" +
                           # "Có thể để 30/60 và thêm ô tùy chỉnh...") — record vĩnh viễn nằm ở decision-log,
                           # không lặp lại ở đây để tránh 2 nguồn lệch nhau (đúng bài học epics.md/status).
