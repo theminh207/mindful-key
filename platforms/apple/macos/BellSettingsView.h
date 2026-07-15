@@ -35,4 +35,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface SensitivityCardView : NSView
+- (CGFloat)preferredHeight;
+- (void)refresh;
+@property (nonatomic, copy, nullable) void (^onLayoutChanged)(void);
+@end
+
 NS_ASSUME_NONNULL_END

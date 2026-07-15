@@ -20,6 +20,7 @@
 #import "BellMac.h"
 #import "MoodStoreMac.h"
 #import "ReflectionScreenMac.h"
+#import <UserNotifications/UserNotifications.h>
 #import "PanelViewController.h"   // [MINDFUL] PHA 1 — popover panel trạng thái
 #import "SettingsWindowController.h"   // [MINDFUL] Story 2.2 — cửa sổ quản lý nav-trái 6 mục
 
@@ -102,6 +103,7 @@ extern bool convertToolDontAlertWhenCompleted;
     NSMenuItem* mnuQuickConvert;
     NSMenuItem* mnuMoodWatch;
     NSMenuItem* mnuBellSettings;
+    NSMenuItem* mnuBellToggle;
 }
 
 -(void)askPermission {
@@ -222,6 +224,15 @@ extern bool convertToolDontAlertWhenCompleted;
     MoodWatchMac_Init();
     BellMac_Init();
 
+    if (@available(macOS 10.14, *)) {
+        [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound)
+                                                                           completionHandler:^(BOOL granted, NSError * _Nullable error) {
+            if (error) {
+                NSLog(@"Notification authorization error: %@", error);
+            }
+        }];
+    }
+
     // [MINDFUL] Hỏi đồng ý ghi nhật ký cảm xúc (bước 6) — hỏi lúc khởi động bình thường,
     // KHÔNG hỏi giữa lúc đang có 1 khoảnh khắc căng thẳng thật. Idempotent, chỉ hỏi 1 lần.
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -271,6 +282,7 @@ extern bool convertToolDontAlertWhenCompleted;
     [theMenu addItem:[NSMenuItem separatorItem]];
 
     mnuMoodWatch = [theMenu addItemWithTitle:@"Bật Nhắc tâm (cảm xúc)" action:@selector(onMoodWatchSelected) keyEquivalent:@""];
+    mnuBellToggle = [theMenu addItemWithTitle:@"Bật chuông tỉnh thức" action:@selector(onBellToggleSelected) keyEquivalent:@""];
     mnuBellSettings = [theMenu addItemWithTitle:@"Cài đặt Chuông tỉnh thức..." action:@selector(onBellSettingsSelected) keyEquivalent:@""];
     [theMenu addItemWithTitle:@"Tạm hoãn chuông 1 giờ" action:@selector(onSnoozeBellSelected) keyEquivalent:@""];
     [theMenu addItemWithTitle:@"Soi lại hôm nay..." action:@selector(onShowReflectionSelected) keyEquivalent:@""];
@@ -524,6 +536,9 @@ extern bool convertToolDontAlertWhenCompleted;
     vMoodWatch = moodValue == nil ? 1 : (int)[moodValue integerValue];
     [mnuMoodWatch setState:vMoodWatch ? NSControlStateValueOn : NSControlStateValueOff];
 
+    extern int vBell;
+    vBell = (int)[[NSUserDefaults standardUserDefaults] integerForKey:@"vBell"];
+    [mnuBellToggle setState:vBell ? NSControlStateValueOn : NSControlStateValueOff];
 }
 
 -(void)onImputMethodChanged:(BOOL)willNotify {
@@ -538,8 +553,10 @@ extern bool convertToolDontAlertWhenCompleted;
     [self fillData];
     [viewController fillData];
     
-    if (willNotify)
+    if (willNotify) {
         OnInputMethodChanged();
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"InputMethodChangedNotification" object:nil];
+    }
 }
 
 #pragma mark -StatusBar menu action
@@ -596,6 +613,17 @@ extern bool convertToolDontAlertWhenCompleted;
 -(void)onMoodWatchSelected {
     MoodWatchMac_SetEnabled(MoodWatchMac_IsEnabled() ? 0 : 1);
     [self fillData];
+}
+
+-(void)onBellToggleSelected {
+    extern int vBell;
+    vBell = vBell ? 0 : 1;
+    [[NSUserDefaults standardUserDefaults] setInteger:vBell forKey:@"vBell"];
+    BellMac_ApplySettings();
+    [self fillData];
+    if (_panelPopover.isShown) {
+        [_panelVC refreshAll];
+    }
 }
 
 -(void)onBellSettingsSelected {

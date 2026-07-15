@@ -36,6 +36,7 @@
 #import "EmotionRiverView.h"
 #import "PrivacyPaneView.h"
 #import "MoodStoreMac.h"
+#import "BellSettingsView.h"
 
 // [MINDFUL] `ConvertToolViewController -fillData` tồn tại thật (ConvertToolViewController.mm:64)
 // nhưng là method PRIVATE (không khai trong .h) — forward-declare tại đây (KHÔNG sửa
@@ -301,6 +302,10 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     // Các pane khác
     _paneToday   = [self mk_buildTodayPane];
     _paneBell    = [self mk_buildEmptyPaneWithTitle:@"Chuông"];
+    BellSettingsView *bellView = [[BellSettingsView alloc] initWithFrame:NSMakeRect(0, 0, kMaxPaneW, kMaxPaneH - 40)];
+    CGFloat bh = [bellView preferredHeight];
+    bellView.frame = NSMakeRect(0, kMaxPaneH - 40 - bh, kMaxPaneW, bh);
+    [_paneBell addSubview:bellView];
     
     PrivacyPaneView *pv = [[PrivacyPaneView alloc] initWithFrame:NSMakeRect(0, 0, kMaxPaneW, kMaxPaneH)];
     CGFloat ph = [pv preferredHeight];
@@ -350,6 +355,11 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
             [self mk_showPaneInHost:_paneToday];
             break;
         case MKSettingsSectionBell:
+            for (NSView *sub in _paneBell.subviews) {
+                if ([sub isKindOfClass:[BellSettingsView class]]) {
+                    [(BellSettingsView *)sub refresh];
+                }
+            }
             [self mk_showPaneInHost:_paneBell];
             break;
         case MKSettingsSectionInput:

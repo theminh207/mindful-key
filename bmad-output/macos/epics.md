@@ -49,18 +49,24 @@ thái cảm xúc hiển thị rõ nhưng tôn trọng riêng tư + hiến chươ
 
 **Stories (ordered theo wave phụ thuộc):**
 
-| ID | Slug | Intent | Wave | Status |
-|----|------|--------|------|--------|
-| 1.1 | brand-ui-primitives | Tạo PillSwitch (tint teal) + StatusDot (1 màu) + CTAButton (chữ tối) tái dùng; sở hữu token BrandColors | 1 | **done** |
-| 1.2 | emotion-wave-view | EmotionWaveView: sóng 1-hue biên độ, thu gọn mặc định, reduced-motion, VoiceOver | 1 | **done** |
-| 1.3 | panel-scroll-layout | ~~Bỏ 4-tab → 1-trang cuộn dọc~~ + card container + divider + PrivacyFooterRow + InputMethodCard | 2 | **superseded** (xem 2026-07-10 trong decision-log) |
-| 1.4 | gatekeeper-card | GatekeeperCardView full-width trên cùng + copy + lối tắt "Soi lại hôm nay →" | 2 | **in-progress** (lát cắt dọc, chưa commit — treo trên đỉnh 4-tab cũ) |
-| 1.5 | bell-settings-card | BellSettingsView + đọc/ghi âm/volume/3-mức/giờ-yên-lặng qua UserDefaults thay hardcode | 2 | ready-for-dev (cách gắn UI: CHƯA chốt — xem decision-log) |
-| 1.6 | panel-integration-states | ~~Ráp các card vào panel cuộn dọc~~ + thứ tự ưu tiên + screen states (loading/empty/error/consent/tắt) | 3 | **superseded** (xem 2026-07-10 trong decision-log) |
-| 1.7 | legacy-tabs-reskin | Thay áo nội dung 4 tab cũ (checkbox→PillSwitch, tab cam→teal, card hoá) trong `ViewController.m` — **giữ nguyên 4 tab + khối `mountGatekeeperCardIfNeeded`** | 2b | **done** (commit 3b41b3d) — gap: radio Chế độ gõ chưa tint được (AppKit hạn chế) |
-| 1.8 | macro-window-reskin | Thay áo cửa sổ Gõ tắt (`MacroViewController.mm`): tên cột tiếng Việt, CTA cam cho "Thêm", card hoá | 2b | **done** (commit d370161) |
-| 1.9 | convert-window-reskin | Thay áo cửa sổ Chuyển mã (`ConvertToolViewController.mm`): bỏ ảnh nút xanh-dương/xanh-lá, CTA cam + nút phụ trung tính | 2b | **done** (commit 7c759a7) |
-| 1.10 | about-window-reskin | Thay áo cửa sổ Thông tin (`AboutViewController.m`): logo sóng `~` thay "V" đỏ, vá bug đè chữ, **giữ nguyên credit Mai Vũ Tuyên (GPL v3)** | 2b | **done** (commit 2a4a090) |
+> **Trạng thái + bằng chứng thi công (nguồn sự thật DUY NHẤT): `sprint-status.yaml` mục
+> `stories:`.** Bảng dưới đây KHÔNG còn cột Status — từng ghi text độc lập ở đây từng lệch
+> so với `sprint-status.yaml` nhiều lần (vd 1.4/1.5 từng ghi "in-progress"/"ready-for-dev"
+> trong khi đã `done` từ lâu). Xem đồng thời `docs/TEST_MATRIX.md` để biết mức bằng chứng
+> (build-verified hay đã có người xem/gõ thật).
+
+| ID | Slug | Intent | Wave |
+|----|------|--------|------|
+| 1.1 | brand-ui-primitives | Tạo PillSwitch (tint teal) + StatusDot (1 màu) + CTAButton (chữ tối) tái dùng; sở hữu token BrandColors | 1 |
+| 1.2 | emotion-wave-view | EmotionWaveView: sóng 1-hue biên độ, thu gọn mặc định, reduced-motion, VoiceOver | 1 |
+| 1.3 | panel-scroll-layout | ~~Bỏ 4-tab → 1-trang cuộn dọc~~ + card container + divider + PrivacyFooterRow + InputMethodCard | 2 |
+| 1.4 | gatekeeper-card | GatekeeperCardView full-width trên cùng + copy + lối tắt "Soi lại hôm nay →" | 2 |
+| 1.5 | bell-settings-card | BellSettingsView + đọc/ghi âm/volume/3-mức/giờ-yên-lặng qua UserDefaults thay hardcode | 2 |
+| 1.6 | panel-integration-states | ~~Ráp các card vào panel cuộn dọc~~ + thứ tự ưu tiên + screen states (loading/empty/error/consent/tắt) | 3 |
+| 1.7 | legacy-tabs-reskin | Thay áo nội dung 4 tab cũ (checkbox→PillSwitch, tab cam→teal, card hoá) trong `ViewController.m` — **giữ nguyên 4 tab + khối `mountGatekeeperCardIfNeeded`** | 2b |
+| 1.8 | macro-window-reskin | Thay áo cửa sổ Gõ tắt (`MacroViewController.mm`): tên cột tiếng Việt, CTA cam cho "Thêm", card hoá | 2b |
+| 1.9 | convert-window-reskin | Thay áo cửa sổ Chuyển mã (`ConvertToolViewController.mm`): bỏ ảnh nút xanh-dương/xanh-lá, CTA cam + nút phụ trung tính | 2b |
+| 1.10 | about-window-reskin | Thay áo cửa sổ Thông tin (`AboutViewController.m`): logo sóng `~` thay "V" đỏ, vá bug đè chữ, **giữ nguyên credit Mai Vũ Tuyên (GPL v3)** | 2b |
 
 > **Scope-conflict-check (2026-07-09, revise 2026-07-10):** 1.3/1.6 superseded nên overlap gốc
 > của chúng với `ViewController.m`/`Main.storyboard` không còn áp dụng. Overlap MỚI cần biết:
@@ -120,14 +126,18 @@ lấy mẫu), `NudgeCoordinatorMac` (độ nhạy 3 mức), `BellMac`/`BellSetti
 
 **Stories (6 bước tuần tự — build-xem-thật rồi mới sang bước kế):**
 
-| ID | Slug | Intent | Owner | Status |
-|----|------|--------|-------|--------|
-| 2.1 | popover-3tab-foundation | Popover 3 tab: thẻ trắng, sóng nhỏ 150px, segmented, khung dòng sông TRỐNG thật thà | platform-shell | **done** (df31657+3651a25+0de1216+6df6cb4; duyệt bằng mắt 2026-07-13) |
-| 2.2 | six-nav-settings-window | Cửa sổ 6 mục nav trái, tái dùng ViewController/Macro/Convert/About làm pane; trim menu tray; Hôm nay/Chuông/Riêng tư = phòng trống | platform-shell | backlog |
-| 2.3 | sampling-journal-sensitivity | Kho nhật ký lấy mẫu theo nhịp chuông + check-in 3 sóng + độ nhạy 3 mức (nối NudgeCoordinator hardcode "3"). **CHẠM RIÊNG TƯ** | mood-layer | backlog |
-| 2.4 | emotion-river-reflection | Vẽ dòng sông từ dữ liệu lấy mẫu + màn Soi lại 4 nhịp (Nhận ra→Cho phép→Soi→Nuôi dưỡng), câu hỏi trung tâm | mood-layer | backlog |
-| 2.5 | bell-detail-sounds | Chuông chi tiết + chọn/tải tiếng chuông, nghe thử | platform-shell | backlog |
-| 2.6 | privacy-export-autopurge | Xuất CSV + tự xoá định kỳ ("quên có chủ đích") | mood-layer | backlog |
+> **Trạng thái + bằng chứng thi công (nguồn sự thật DUY NHẤT): `sprint-status.yaml` mục
+> `v2_roadmap.steps`.** Không lặp lại status ở bảng này — xem đồng thời `docs/TEST_MATRIX.md`
+> để biết mức bằng chứng (build-verified hay đã có người xem/gõ thật).
+
+| ID | Slug | Intent | Owner |
+|----|------|--------|-------|
+| 2.1 | popover-3tab-foundation | Popover 3 tab: thẻ trắng, sóng nhỏ 150px, segmented, khung dòng sông TRỐNG thật thà | platform-shell |
+| 2.2 | six-nav-settings-window | Cửa sổ 6 mục nav trái, tái dùng ViewController/Macro/Convert/About làm pane; trim menu tray; Hôm nay/Chuông/Riêng tư = phòng trống | platform-shell |
+| 2.3 | sampling-journal-sensitivity | Kho nhật ký lấy mẫu theo nhịp chuông + check-in 3 sóng + độ nhạy 3 mức (nối NudgeCoordinator hardcode "3"). **CHẠM RIÊNG TƯ** | mood-layer |
+| 2.4 | emotion-river-reflection | Vẽ dòng sông từ dữ liệu lấy mẫu + màn Soi lại 4 nhịp (Nhận ra→Cho phép→Soi→Nuôi dưỡng), câu hỏi trung tâm | mood-layer |
+| 2.5 | bell-detail-sounds | Chuông chi tiết + chọn/tải tiếng chuông, nghe thử | platform-shell |
+| 2.6 | privacy-export-autopurge | Xuất CSV + tự xoá định kỳ ("quên có chủ đích") | mood-layer |
 
 > **Sizing note:** 2.3 và 2.4 mỗi cái CÓ THỂ vượt 1 dev-day (2.3 = store schema + lấy mẫu +
 > check-in UI + độ nhạy; 2.4 = river render + 4 phép tính + màn Soi lại 4 nhịp). Khi compile
@@ -145,14 +155,12 @@ lấy mẫu), `NudgeCoordinatorMac` (độ nhạy 3 mức), `BellMac`/`BellSetti
 
 ---
 
-## Delivery Tracking (count-based)
+## Delivery Tracking
 
-- Total stories: 10 (6 gốc + 4 thêm 2026-07-10; 2 trong 6 gốc đã superseded)
-- Done: 6 (1.1, 1.2, 1.7, 1.8, 1.9, 1.10)
-- Superseded: 2 (1.3, 1.6 — không tính vào "còn phải làm")
-- In-progress: 1 (1.4 — lát cắt dọc, chưa commit)
-- Remaining: 1 (1.5 — bell-settings-card, cách gắn UI chưa chốt)
-- Completion rate: 6/8 hiệu lực (loại 2 superseded khỏi mẫu số)
+> **Đã bỏ đếm tay ở đây (2026-07-14)** — từng là nguồn thứ 3 ghi cùng 1 sự thật với
+> `sprint-status.yaml`, và đã sai lệch (từng ghi "1.5 remaining" dù story đó done từ lâu).
+> Số liệu done/superseded/remaining thật: xem `sprint-status.yaml` mục `sequencing_summary`
+> (Epic 1) và `v2_roadmap` (Epic 2).
 
 ## Notes
 

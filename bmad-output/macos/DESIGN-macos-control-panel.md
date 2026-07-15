@@ -4,6 +4,12 @@
 **Nguồn:** `brainstorming-report-macos-control-panel.md`, NOW BRAND OS, HIẾN CHƯƠNG §2.2/2.3
 **Trạng thái:** LOCKED planning artifact — dev tool đọc, không sửa. Đổi thiết kế → ghi `decision-log.md`.
 
+> ⚠️ **SUPERSEDED (2026-07-13)** — xem `decision-log.md` entry "Diện mạo mới v2: popover chia
+> tab". Cấu trúc UI mô tả dưới đây ("card nổi trên cửa sổ 4-tab") KHÔNG còn là hướng thi công —
+> đã bị thay bằng popover 3-tab (Hôm nay·Chuông·Bộ gõ) + cửa sổ quản lý 6 mục nav trái. Phần vẫn
+> còn dùng được: design tokens (màu, WCAG contrast), nguyên tắc "quan sát trước, cấu hình sau",
+> ràng buộc HIẾN CHƯƠNG §5 — những phần đó không đổi. Xem `epics.md` Epic 2 cho hướng hiện tại.
+
 > ⚖️ **Luật tối cao ở tài liệu này là HIẾN CHƯƠNG, không phải "đẹp/hiện đại".** Mọi token,
 > component, state bên dưới đã lọc qua §2.2/2.3. Xem §5 "Ràng buộc HIẾN CHƯƠNG nhúng vào design".
 

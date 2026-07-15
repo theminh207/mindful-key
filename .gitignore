@@ -22,3 +22,7 @@ tests/ios/bridge_test
 
 # iOS host-test compiled binaries (không commit — chỉ commit .mm nguồn)
 tests/ios/*_test
+
+# Local/IDE configs
+.claude/
+*.html

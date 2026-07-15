@@ -14,6 +14,7 @@ int vBell = 0;
 int vBellInterval = 60;
 int vBellFrom = 8;
 int vBellTo = 22;
+int vBellHotkey = 0x6200060B;
 
 // [MINDFUL] Áo mới v2 — xem BellMac.h cho hợp đồng.
 NSString * const kBellSoundMuteName = @"__silent__";
@@ -143,6 +144,12 @@ int BellMac_MinutesUntilNextRing(void) {
     return (int)((secs + 59.0) / 60.0);   // làm tròn LÊN phút (còn <1 phút vẫn hiện "1 phút", không hiện "0")
 }
 
+NSDate * BellMac_NextRingDate(void) {
+    if (!vBell || isSnoozed() || g_bellTimer == nil)
+        return nil;
+    return g_bellTimer.fireDate;
+}
+
 void BellMac_ApplySettings() {
     dispatch_async(dispatch_get_main_queue(), ^{
         if (g_bellTimer != nil) {
@@ -171,6 +178,8 @@ void BellMac_Init() {
     vBellInterval = (int)[defaults integerForKey:@"vBellInterval"];
     vBellFrom = (int)[defaults integerForKey:@"vBellFrom"];
     vBellTo = (int)[defaults integerForKey:@"vBellTo"];
+    vBellHotkey = (int)[defaults integerForKey:@"BellToggleHotkey"];
+    if (vBellHotkey == 0) vBellHotkey = 0x6200060B;
 
     if (vBellInterval <= 0) vBellInterval = 60;
     if (vBellFrom < 0 || vBellFrom > 23) vBellFrom = 8;

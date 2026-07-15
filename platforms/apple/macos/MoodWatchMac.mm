@@ -118,7 +118,11 @@ static wstring lowerText(const wstring& in) {
     wstring out;
     for (NSUInteger i = 0; i < [lower length]; i++) {
         unichar ch = [lower characterAtIndex:i];
-        out.push_back((wchar_t)ch);
+        if (ch == ',' || ch == '.' || ch == '?' || ch == '!' || ch == ';' || ch == ':' || ch == '\n' || ch == '\r') {
+            out.push_back(L' ');
+        } else {
+            out.push_back((wchar_t)ch);
+        }
     }
     return out;
 }
@@ -219,6 +223,11 @@ static void analyzeRecentTextAsync(const wstring& word) {
         double risk = 1.0 - std::exp(-raw / 5.0);
         if (risk > 1.0) risk = 1.0;
         g_lastSendRisk = risk;
+
+        NSString *nsWord = [[NSString alloc] initWithBytes:word.data()
+                                                    length:word.size() * sizeof(wchar_t)
+                                                  encoding:NSUTF32LittleEndianStringEncoding];
+        NSLog(@"[MindfulKey] Từ vừa gõ: %@, Độ rủi ro cảm xúc (risk): %f", nsWord, risk);
 
         g_sampleSum += risk;
         g_sampleCount++;

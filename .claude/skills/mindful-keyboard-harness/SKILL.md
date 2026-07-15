@@ -41,7 +41,22 @@ Trước mọi việc, tự phân loại rủi ro rồi mới quyết cách làm
 2. **Gọi chuyên gia tương ứng** qua tool `Agent`, đọc file `.claude/agents/{name}.md` để lấy đúng vai trò/nguyên tắc nếu `subagent_type` không tự nhận diện tên agent.
 3. **Kiểm tra kết quả:** nếu có sửa `core/`, luôn xác nhận `tests/core/test_engine` vẫn 5/5 (`make test-core`) trước khi báo hoàn thành.
 4. **Cập nhật sổ bằng chứng:** khi hoàn thành/đổi một hành vi sản phẩm, cập nhật dòng tương ứng trong `docs/TEST_MATRIX.md` (điền Bằng chứng thật, đừng để `implemented` mà Bằng chứng = none). Trigger tự nhiên: *"soi bằng chứng test"*, *"ma trận test còn đúng không"*, *"cập nhật test matrix"*.
-5. **Ghi chỗ phải đoán:** bất cứ khi nào phải suy diễn vì thiếu luật/nguồn sự thật, thêm 1 dòng vào `docs/FRICTION-LOG.md` (cụ thể, không chung chung). Đây là danh sách việc nên chốt/viết luật tiếp theo.
+4b. **Cập nhật trạng thái story (BẮT BUỘC, cùng lúc với bước 4, KHÔNG tách lượt sau):** ngay
+    trong CÙNG commit hoàn thành 1 story, cập nhật trạng thái story đó trong
+    `bmad-output/{macos,ios}/sprint-status.yaml` (mục `stories:` hoặc `v2_roadmap.steps` tuỳ
+    epic) — đây là **nguồn sự thật DUY NHẤT** cho câu hỏi "story này xong chưa". **KHÔNG** ghi
+    lại trạng thái đó ở `epics.md` (file đó chỉ là index, cột Status đã bị bỏ có chủ đích ngày
+    2026-07-14 — xem note trong file) hay ở bất kỳ mục đếm-tay nào khác. Lý do bắt buộc: đợt
+    Epic 2 (2026-07-14) phát hiện 3 story liền (2.4/2.5/2.6) commit code xong mà KHÔNG một commit
+    nào đi kèm cập nhật `sprint-status.yaml`/`TEST_MATRIX.md` — trôi lệch tới mức chủ dự án tưởng
+    nhầm các story đó còn "backlog". Coi 1 story là "xong" chỉ khi CẢ HAI: sprint-status.yaml
+    cập nhật + TEST_MATRIX.md có dòng bằng chứng — thiếu 1 trong 2 thì story đó CHƯA xong việc.
+5. **Ghi chỗ phải đoán:** bất cứ khi nào phải suy diễn vì thiếu luật/nguồn sự thật — kể cả khi
+   quyết định đó đã tự chọn 1 phương án và ghi `[Inference]` ngay trong file `.story.md` — PHẢI
+   thêm 1 dòng vào `docs/FRICTION-LOG.md` (cụ thể, không chung chung), NGAY LÚC PHÁT SINH, không
+   để nó chỉ nằm trong prose của story file. Một câu hỏi "DỪNG-HỎI chủ dự án" ghi trong story mà
+   không lọt ra `FRICTION-LOG.md` coi như CHƯA từng hỏi — chủ dự án khó lòng thấy được nó giữa
+   hàng nghìn dòng story. Đây là danh sách việc nên chốt/viết luật tiếp theo.
 6. **Ghi thay đổi hạ tầng harness** (thêm/bớt agent, đổi kiến trúc) vào bảng "Lịch sử thay đổi" trong `CLAUDE.md` ở phần Harness.
 
 ## Khi nào tiến hoá harness

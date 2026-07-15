@@ -14,6 +14,21 @@ mới ở TRÊN CÙNG (mới nhất trước), không xoá/sửa entry cũ.
 - **Supersedes:** <link to prior entry, if any>
 ```
 
+**⚠️ Supersede một FILE đặc tả cụ thể (không chỉ 1 entry khác trong sổ này) — BẮT BUỘC làm
+cùng lúc, không tách lượt sau:** nếu quyết định vừa ghi làm cho nội dung một file đặc tả
+(`DESIGN*.md`, `EXPERIENCE*.md`, `tech-spec*.md`, …) không còn đúng nữa, PHẢI dán ngay 1 dòng
+banner ở ĐẦU chính file đó, trỏ về entry vừa ghi. Mẫu banner:
+
+```
+> ⚠️ **SUPERSEDED (YYYY-MM-DD)** — xem `decision-log.md` entry "<tên entry>". <1 câu: phần
+> nào của file này không còn đúng / phần nào vẫn còn dùng được>.
+```
+
+Lý do bắt buộc: trường `Supersedes:` ở trên chỉ ghi MỘT CHIỀU — sổ này biết cái mới thay cái
+cũ, nhưng bản thân file cũ thì không hề hay biết. Ai mở thẳng file cũ (không qua decision-log)
+sẽ hiểu nhầm nó vẫn còn hiệu lực. Đồng bộ cùng quy tắc ở `bmad-output/decision-log.md` (root),
+chốt 2026-07-14 sau khi phát hiện lỗ hổng này ở đội macOS.
+
 ---
 
 ### 2026-07-13 — Chốt 3 quyết định Round 3 (Q4/Q5/Q6) + kiến trúc nhật ký iOS

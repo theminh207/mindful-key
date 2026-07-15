@@ -15,6 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface PanelViewController : NSViewController
 
+@property (nonatomic, assign) BOOL isRecordingHotkey;
+@property (nonatomic, copy, nullable) void (^onHotkeyRecorded)(NSEvent *event);
+
 /// Bấm nút gear ⋯ trên header → host hiện menu cũ (mọi mục còn lại). `anchor` là nút gear để
 /// định vị menu. Host (AppDelegate) gắn hành vi.
 @property (nonatomic, copy, nullable) void (^onShowMenu)(NSView *anchor);

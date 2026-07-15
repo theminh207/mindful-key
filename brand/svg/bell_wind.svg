@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Top hanger hook -->
+  <path d="M50 15 L50 28" fill="none" stroke="#1D7C91" stroke-width="5" stroke-linecap="round"/>
+  <!-- Top roof piece -->
+  <path d="M30 34 L70 34" fill="none" stroke="#1D7C91" stroke-width="6" stroke-linecap="round"/>
+  <!-- Hanging tubes -->
+  <line x1="38" y1="36" x2="38" y2="72" stroke="#1D7C91" stroke-width="5" stroke-linecap="round"/>
+  <line x1="50" y1="36" x2="50" y2="82" stroke="#1D7C91" stroke-width="5" stroke-linecap="round"/>
+  <line x1="62" y1="36" x2="62" y2="66" stroke="#1D7C91" stroke-width="5" stroke-linecap="round"/>
+  <!-- Clapper / sail at the bottom of the center string -->
+  <circle cx="50" cy="88" r="4" fill="#FF7A1A"/>
+</svg>

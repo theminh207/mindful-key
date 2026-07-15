@@ -38,16 +38,21 @@
 
 **Stories (ordered):**
 
-| ID | Slug | Intent | Status |
-|----|------|--------|--------|
-| 1.1 | harness-backspace-edge-cases | Mở rộng `test_engine` inject phím ⌫ + ca biên Loại 6 (backspace giữa âm tiết) — lưới test cho Mốc B | ready-for-dev |
-| 1.2 | telex-typing-bridge | **Mốc B:** nối `vKeyHandleEvent` → `UITextDocumentProxy`, gõ Telex ra dấu thật (bỏ chèn thô) | **review** (code landed `91a8742`, bridge test PASS; còn verify Notes/Zalo+RAM) |
-| 1.3 | keyboard-shift-number-layer | Shift/Caps (một lần + khóa) + lớp số & ký hiệu (123↔ABC) | ready-for-dev |
-| 1.4 | secure-field-privacy-guard | Loại ô mật khẩu: không đọc/log, gõ chữ thường bình thường | ready-for-dev |
-| 1.5 | xcodegen-build-verification | Chạy `xcodegen generate` + `xcodebuild` iOS simulator sạch; macOS build vẫn xanh | ready-for-dev |
-| 1.6 | app-group-heartbeat | Entitlements App Group 2 target + `AppGroupBridge` heartbeat (extension ghi, container đọc) | ready-for-dev |
-| 1.7 | onboarding-two-screens | 2 màn onboarding (kích hoạt + Full Access minh bạch, có "Để sau") theo EXPERIENCE v0.3 | ready-for-dev |
-| 1.8 | ios-test-harness | build-smoke `xcodebuild` + vá README (bridge test 5 ca ĐÃ có + wired vào `make test-ios`) | ready-for-dev |
+> **Trạng thái + bằng chứng thi công (nguồn sự thật DUY NHẤT): `sprint-status.yaml` mục
+> `stories:`.** Bảng dưới đây KHÔNG còn cột Status (bỏ 2026-07-14) — từng ghi "ready-for-dev"
+> cho gần hết Round 1 dù đã code xong từ lâu. Xem đồng thời `docs/TEST_MATRIX.md` để biết mức
+> bằng chứng (build-verified hay đã có người xem/gõ thật).
+
+| ID | Slug | Intent |
+|----|------|--------|
+| 1.1 | harness-backspace-edge-cases | Mở rộng `test_engine` inject phím ⌫ + ca biên Loại 6 (backspace giữa âm tiết) — lưới test cho Mốc B |
+| 1.2 | telex-typing-bridge | **Mốc B:** nối `vKeyHandleEvent` → `UITextDocumentProxy`, gõ Telex ra dấu thật (bỏ chèn thô) |
+| 1.3 | keyboard-shift-number-layer | Shift/Caps (một lần + khóa) + lớp số & ký hiệu (123↔ABC) |
+| 1.4 | secure-field-privacy-guard | Loại ô mật khẩu: không đọc/log, gõ chữ thường bình thường |
+| 1.5 | xcodegen-build-verification | Chạy `xcodegen generate` + `xcodebuild` iOS simulator sạch; macOS build vẫn xanh |
+| 1.6 | app-group-heartbeat | Entitlements App Group 2 target + `AppGroupBridge` heartbeat (extension ghi, container đọc) |
+| 1.7 | onboarding-two-screens | 2 màn onboarding (kích hoạt + Full Access minh bạch, có "Để sau") theo EXPERIENCE v0.3 |
+| 1.8 | ios-test-harness | build-smoke `xcodebuild` + vá README (bridge test 5 ca ĐÃ có + wired vào `make test-ios`) |
 
 **Chuỗi phụ thuộc (tuyến tính — 1 luồng, KHÔNG parallel):**
 ```
@@ -62,11 +67,15 @@
 
 ---
 
-## Delivery Tracking (count-based)
-- Total stories (Epic 1 / Round 1): **8**
-- **done: 7 · review: 1 (1.2)** · ready-for-dev: 0. Toàn bộ CODE Round 1 đã xong + build-verify (2026-07-11).
-  Còn lại CHỈ kiểm thủ công trên máy thật (không tự động hóa được): gõ Notes/Zalo, đo RAM, VoiceOver/Reduce-Motion, Settings round-trip.
-- (Nhịp 0 + Mốc A + lưới test engine đã xong nhưng KHÔNG tính là story — là context nền.)
+## Delivery Tracking
+
+> **Đã bỏ đếm tay ở đây (2026-07-14)** — từng là nguồn thứ 2 ghi cùng 1 sự thật với
+> `sprint-status.yaml` (và ngay cả bảng Status ở Epic 2 phía trên cũng đã lệch, xem note).
+> Số liệu done/review/in-progress thật: xem `sprint-status.yaml` mục `sequencing_summary`.
+> Còn lại CHỈ kiểm thủ công trên máy thật (không tự động hóa được): gõ Notes/Zalo, đo RAM,
+> VoiceOver/Reduce-Motion, Settings round-trip — xem `docs/TEST_MATRIX.md` để biết đúng dòng
+> nào còn thiếu bước này.
+> (Nhịp 0 + Mốc A + lưới test engine đã xong nhưng KHÔNG tính là story — là context nền.)
 
 ### Reconcile 2026-07-11 (sau khi compile 8 story + đối chiếu code thật)
 - **1.2 (Mốc B)** đã code thật (commit `91a8742`) — bridge route đủ, `git diff core/` rỗng, bridge test 5 ca PASS → set **review** (chỉ còn verify Notes/Zalo trên máy + đo RAM).
@@ -88,14 +97,18 @@
 
 **Stories (ordered — 1 luồng tuần tự, 13 conflict trên `KeyboardViewController.mm`/App, KHÔNG parallel):**
 
-| ID | Slug | Track | Trạng thái | Model |
-|----|------|-------|--------|-------|
-| 2.1 | full-keyboard-suggestion-bar | A | ready-for-dev | Sonnet |
-| 2.2 | moodbridge-send-risk | A | ready-for-dev | Sonnet + **Opus review** (riêng tư/async) |
-| 2.4 | macro-text-expansion | A | ready-for-dev | Sonnet |
-| 2.3 | keyboard-settings-live-preview | A | ready-for-dev | Sonnet |
-| 2.5 | emotion-wave-ambient | B | ready-for-dev | Sonnet + **Opus review nhận diện** |
-| 2.6 | rest-reminder-bell | B | ready-for-dev | Sonnet + **Opus review nhận diện** |
+> **Trạng thái + bằng chứng thi công (nguồn sự thật DUY NHẤT): `sprint-status.yaml` mục
+> `stories:`.** Bảng dưới đây KHÔNG còn cột Trạng thái (bỏ 2026-07-14) — từng ghi "ready-for-dev"
+> cho cả 6 dòng dù cả 6 story đã code xong từ commit `c872c0c` "Round 2 complete".
+
+| ID | Slug | Track | Model |
+|----|------|-------|-------|
+| 2.1 | full-keyboard-suggestion-bar | A | Sonnet |
+| 2.2 | moodbridge-send-risk | A | Sonnet + **Opus review** (riêng tư/async) |
+| 2.4 | macro-text-expansion | A | Sonnet |
+| 2.3 | keyboard-settings-live-preview | A | Sonnet |
+| 2.5 | emotion-wave-ambient | B | Sonnet + **Opus review nhận diện** |
+| 2.6 | rest-reminder-bell | B | Sonnet + **Opus review nhận diện** |
 
 **Thứ tự dev:** `2.1 → 2.2 → 2.4 → 2.3 → 2.5 → 2.6` (2.5 blocked-by 2.1+2.2; 2.6 blocked-by 2.2+2.3).
 
@@ -107,3 +120,18 @@
 - Chuỗi App Group literal lặp nhiều lần → **gom hằng số dùng chung** khi dev.
 
 **Đích R2 (SC2):** câu căng → sóng gợn (đường cong Q1); câu thường → mặt hồ phẳng; chuông sau N câu căng liên tiếp, tắt/hoãn được; `git diff core/` rỗng; qua bài kiểm "mô tả không phán xét".
+
+---
+
+## Epic 3: iOS Round 3 — nhật ký + soi lại + theme
+
+> **Thêm 2026-07-14** — Round 3 đã có code thật (commit `34b9026`, `cf1857e`) từ trước, nhưng
+> CHƯA từng shard thành epic/story chuẩn ở đây. Spec đầy đủ sống ở `tech-spec-r3.md` (4 story:
+> 3.1 kho nhật ký, 3.2 theme, 3.3 màn soi lại, 3.4 thông báo nhắc). **Trạng thái + bằng chứng:
+> xem `sprint-status.yaml` mục `stories:` (epic-3)** — 2/4 story (3.1, 3.3) done, 2/4 (3.2, 3.4)
+> `in-progress` vì chính commit message thừa nhận chưa đạt định nghĩa hoàn thành SC3 (theme chưa
+> áp vào bàn phím thật; chuông chưa có scheduler thật ngân theo lịch).
+>
+> Chưa có file `.story.md` riêng cho Round 3 — nếu đội muốn mở rộng thêm (vd hoàn tất 3.2/3.4,
+> hoặc thêm story mới), nên shard chuẩn theo đúng cách Round 1/2 đã làm thay vì tiếp tục code
+> thẳng từ tech-spec.

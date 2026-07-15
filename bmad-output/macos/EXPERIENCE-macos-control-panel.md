@@ -4,6 +4,11 @@
 **Song hành:** `DESIGN-macos-control-panel.md` (token/component/WCAG)
 **Trạng thái:** LOCKED planning artifact — dev tool đọc, không sửa.
 
+> ⚠️ **SUPERSEDED (2026-07-13)** — xem `decision-log.md` entry "Diện mạo mới v2: popover chia
+> tab". Journey/screen-states mô tả dưới đây theo cấu trúc 4-tab KHÔNG còn đúng — đã thay bằng
+> popover 3-tab + cửa sổ quản lý 6 mục nav trái. Nguyên tắc "quan sát trước, cấu hình sau" vẫn
+> còn giá trị (đã kế thừa sang v2), nhưng bố cục màn hình cụ thể thì không. Xem `epics.md` Epic 2.
+
 > Nguyên tắc trải nghiệm chủ đạo (từ brainstorm, 3 kỹ thuật hội tụ): **"Quan sát trước, cấu
 > hình sau"** — mở panel thấy TRẠNG THÁI trước, các nút chỉnh xếp dưới. Tinh thần chánh niệm
 > nằm trong chính kiến trúc thông tin, không chỉ 1 tính năng.

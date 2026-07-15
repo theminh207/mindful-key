@@ -4,6 +4,12 @@
 **Nguồn:** Acceptance Criteria của 6 story `1.1–1.6` + `DESIGN-` / `EXPERIENCE-macos-control-panel.md`
 **Trạng thái:** LOCKED planning artifact — dev tool đọc, không sửa. Đổi test → ghi `decision-log.md`.
 
+> ⚠️ **SUPERSEDED (2026-07-10 UI + 2026-07-13 hướng)** — xem `decision-log.md` entry
+> "Reconciliation: huỷ 1.3/1.6" + "Diện mạo mới v2: popover chia tab". Test case cho story 1.3/1.6
+> KHÔNG áp dụng (2 story đó đã huỷ, không thi công); UI 4-tab mà mọi `TC-` bên dưới giả định cũng
+> đã bị thay bằng popover 3-tab. File này chỉ còn giá trị lịch sử. **Sổ bằng chứng đang hiệu lực:
+> `docs/TEST_MATRIX.md`** — dùng file đó để biết cái gì đã/chưa được kiểm chứng cho UI hiện tại.
+
 > **Tài liệu này để làm gì:** cho **người nghiệm thu bằng cách BẤM** (không đọc code) một bảng
 > "làm bước này → phải thấy cái này" cho từng tiêu chí. Bạn — hoặc bất kỳ ai — cầm bảng này chạy
 > qua app đã build là biết đội thực thi làm ĐÚNG hay chưa, trước khi coi là xong.

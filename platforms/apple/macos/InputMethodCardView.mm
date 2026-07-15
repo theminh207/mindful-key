@@ -11,6 +11,7 @@
 #import "InputMethodCardView.h"
 #import "BrandControls.h"
 #import "BrandColors.h"
+#import "PanelViewController.h"
 #import "AppDelegate.h"
 #import "OpenKeyManager.h"
 
@@ -74,6 +75,7 @@ static const CGFloat kCardPadY   = 13.0;
     NSView      *_cardType;
     NSTextField *_ebOptions;
     NSView      *_cardOptions;
+    NSButton    *_hotkeyBtn;
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect {
@@ -123,6 +125,15 @@ static const CGFloat kCardPadY   = 13.0;
         [self addSubview:_cardOptions];
 
         _lblVN = [self label:@"Gõ tiếng Việt" font:[NSFont systemFontOfSize:12 weight:NSFontWeightSemibold] color:[Brand charcoal]];
+        
+        _hotkeyBtn = [NSButton buttonWithTitle:@"⌥Z" target:self action:@selector(onHotkeyClick:)];
+        _hotkeyBtn.bordered = NO;
+        _hotkeyBtn.wantsLayer = YES;
+        _hotkeyBtn.layer.backgroundColor = [NSColor colorWithWhite:0.95 alpha:1.0].CGColor;
+        _hotkeyBtn.layer.cornerRadius = 4.0;
+        _hotkeyBtn.font = [NSFont systemFontOfSize:11.5 weight:NSFontWeightSemibold];
+        [self addSubview:_hotkeyBtn];
+
         _vnSwitch = [[PillSwitch alloc] initWithFrame:NSZeroRect];
         _vnSwitch.target = self; _vnSwitch.action = @selector(onVN:);
         [self addSubview:_vnSwitch];
@@ -157,8 +168,17 @@ static const CGFloat kCardPadY   = 13.0;
         [self addSubview:_fullLink];
 
         [self refresh];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(refresh)
+                                                     name:@"InputMethodChangedNotification"
+                                                   object:nil];
     }
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (NSTextField *)label:(NSString *)s font:(NSFont *)f color:(NSColor *)c {
@@ -185,6 +205,9 @@ static const CGFloat kCardPadY   = 13.0;
     [_vnSwitch setOn:vn animated:NO];
     [_dot setOn:vn];
 
+    extern int vSwitchKeyStatus;
+    [self updateHotkeyButtonTitle:vSwitchKeyStatus];
+
     for (NSUInteger i = 0; i < _toggleDefs.count; i++) {
         [_toggleSwitches[i] setOn:([d integerForKey:_toggleDefs[i][@"k"]] != 0) animated:NO];
     }
@@ -197,7 +220,7 @@ static const CGFloat kCardPadY   = 13.0;
     BOOL c = _collapsed;
     _chevron.stringValue = c ? @"▸" : @"▾";
     _value.hidden = !c;   // giá trị inline chỉ hiện khi thu gọn (bung thì đã có dropdown)
-    NSMutableArray<NSView *> *fields = [@[_lblType, _typePopup, _lblCode, _codePopup, _lblVN, _vnSwitch, _fullLink,
+    NSMutableArray<NSView *> *fields = [@[_lblType, _typePopup, _lblCode, _codePopup, _lblVN, _vnSwitch, _hotkeyBtn, _fullLink,
                                           _ebType, _cardType, _ebOptions, _cardOptions] mutableCopy];
     [fields addObjectsFromArray:_toggleLabels];
     [fields addObjectsFromArray:_toggleSwitches];
@@ -247,8 +270,10 @@ static const CGFloat kCardPadY   = 13.0;
     cy = kCardPadY;
     CGFloat rowGap = 10.0;
 
-    SET(_lblVN, kCardPadX, optTop + cy, W - kCardPadX - 60.0, kToggleH);
+    SET(_lblVN, kCardPadX, optTop + cy, W - kCardPadX - 125.0, kToggleH);
     if (apply) {
+        _hotkeyBtn.frame = NSMakeRect(W - kCardPadX - 115.0,
+                                     H - (optTop + cy) - kToggleH + (kToggleH - 20.0) / 2.0, 65.0, 20.0);
         _vnSwitch.frame = NSMakeRect(W - kCardPadX - 40.0,
                                      H - (optTop + cy) - kToggleH + (kToggleH - 24.0) / 2.0, 40.0, 24.0);
     }
@@ -276,6 +301,105 @@ static const CGFloat kCardPadY   = 13.0;
 }
 
 #pragma mark - Actions (nối hàm/key/global sẵn có — KHÔNG tự chế)
+
+static NSString *StringFromHotkey(int hotkey) {
+    if (hotkey == 0) return @"Chưa set";
+    NSMutableString *s = [NSMutableString string];
+    if (hotkey & 0x100) [s appendString:@"⌃"]; // Control
+    if (hotkey & 0x200) [s appendString:@"⌥"]; // Option
+    if (hotkey & 0x400) [s appendString:@"⌘"]; // Command
+    if (hotkey & 0x800) [s appendString:@"⇧"]; // Shift
+    
+    unsigned int charCode = (hotkey >> 24) & 0xFF;
+    if (charCode > 0) {
+        if (charCode == 32) {
+            [s appendString:@"Space"];
+        } else {
+            [s appendFormat:@"%c", toupper(charCode)];
+        }
+    } else {
+        int keycode = hotkey & 0xFF;
+        if (keycode != 0xFE) {
+            if (keycode == 49) [s appendString:@"Space"];
+            else [s appendFormat:@"[Key %d]", keycode];
+        }
+    }
+    return s;
+}
+
+- (void)updateHotkeyButtonTitle:(int)hotkey {
+    NSString *title = StringFromHotkey(hotkey);
+    NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
+    style.alignment = NSTextAlignmentCenter;
+    _hotkeyBtn.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:@{
+        NSForegroundColorAttributeName: [Brand teal],
+        NSParagraphStyleAttributeName: style,
+        NSFontAttributeName: [NSFont systemFontOfSize:11.5 weight:NSFontWeightSemibold]
+    }];
+}
+
+- (void)onHotkeyClick:(id)sender {
+    NSResponder *next = self.nextResponder;
+    PanelViewController *panelVC = nil;
+    while (next != nil) {
+        if ([next isKindOfClass:[PanelViewController class]]) {
+            panelVC = (PanelViewController *)next;
+            break;
+        }
+        next = next.nextResponder;
+    }
+    
+    if (!panelVC) return;
+    
+    if (panelVC.isRecordingHotkey) {
+        panelVC.isRecordingHotkey = NO;
+        panelVC.onHotkeyRecorded = nil;
+        extern int vSwitchKeyStatus;
+        [self updateHotkeyButtonTitle:vSwitchKeyStatus];
+        return;
+    }
+    
+    panelVC.isRecordingHotkey = YES;
+    NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
+    style.alignment = NSTextAlignmentCenter;
+    _hotkeyBtn.attributedTitle = [[NSAttributedString alloc] initWithString:@"..." attributes:@{
+        NSForegroundColorAttributeName: [NSColor systemRedColor],
+        NSParagraphStyleAttributeName: style,
+        NSFontAttributeName: [NSFont systemFontOfSize:11.5 weight:NSFontWeightBold]
+    }];
+    
+    __weak InputMethodCardView *weakSelf = self;
+    __weak PanelViewController *weakVC = panelVC;
+    panelVC.onHotkeyRecorded = ^(NSEvent *event) {
+        weakVC.isRecordingHotkey = NO;
+        weakVC.onHotkeyRecorded = nil;
+        
+        if (event.keyCode == 53) { // Esc
+            extern int vSwitchKeyStatus;
+            [weakSelf updateHotkeyButtonTitle:vSwitchKeyStatus];
+            return;
+        }
+        
+        int newHotkey = 0;
+        if (event.modifierFlags & NSEventModifierFlagControl) newHotkey |= 0x100;
+        if (event.modifierFlags & NSEventModifierFlagOption)  newHotkey |= 0x200;
+        if (event.modifierFlags & NSEventModifierFlagCommand) newHotkey |= 0x400;
+        if (event.modifierFlags & NSEventModifierFlagShift)   newHotkey |= 0x800;
+        
+        newHotkey |= (event.keyCode & 0xFF);
+        NSString *chars = [event.charactersIgnoringModifiers lowercaseString];
+        if (chars.length > 0) {
+            unichar c = [chars characterAtIndex:0];
+            newHotkey |= ((unsigned int)c << 24);
+        }
+        
+        extern int vSwitchKeyStatus;
+        vSwitchKeyStatus = newHotkey;
+        [[NSUserDefaults standardUserDefaults] setInteger:newHotkey forKey:@"SwitchKeyStatus"];
+        
+        [weakSelf updateHotkeyButtonTitle:vSwitchKeyStatus];
+    };
+}
 
 - (void)onToggle:(id)sender {
     _collapsed = !_collapsed;

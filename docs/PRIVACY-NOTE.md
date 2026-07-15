@@ -21,6 +21,8 @@ Nếu bạn **đồng ý** (và chỉ khi bạn đồng ý), app lưu lại mộ
 
 Nhật ký này được **mã hóa** và **chỉ lưu trên máy bạn** — không đồng bộ lên đám mây, không có server nào của chúng tôi nhận được nó.
 
+**Khi bạn tự xuất ra file CSV** (mục Riêng tư trong cửa sổ quản lý): file đó **hẹp hơn** nhật ký lưu tại chỗ — chỉ có điểm rủi ro, thời điểm, và trạng thái cảm xúc, **KHÔNG có tên ứng dụng và lựa chọn "Vẫn gửi"/"Đợi chút"**. Lý do: file CSV không còn được mã hóa (để bạn mở bằng Excel/Numbers), nên một khi đã rời khỏi app, chúng tôi giữ nó càng gọn càng tốt.
+
 ## Bạn luôn có quyền kiểm soát
 
 - **Chưa từng đồng ý = chưa có gì được ghi lại.** App sẽ hỏi bạn một lần, vào lúc bình thường (không phải giữa lúc bạn đang bực mình) — bạn có thể từ chối.

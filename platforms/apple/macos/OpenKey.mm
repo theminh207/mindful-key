@@ -13,6 +13,7 @@
 #import "ViewController.h"
 #import "MoodWatchMac.h"
 #import "SendGatekeeperMac.h"
+#import "BellMac.h"
 
 #define FRONT_APP [[NSWorkspace sharedWorkspace] frontmostApplication].bundleIdentifier
 #define OTHER_CONTROL_KEY (_flag & kCGEventFlagMaskCommand) || (_flag & kCGEventFlagMaskControl) || \
@@ -632,7 +633,7 @@ extern "C" {
         
         //switch language shortcut; convert hotkey
         if (type == kCGEventKeyDown) {
-            if (GET_SWITCH_KEY(vSwitchKeyStatus) != _keycode && GET_SWITCH_KEY(convertToolHotKey) != _keycode) {
+            if (GET_SWITCH_KEY(vSwitchKeyStatus) != _keycode && GET_SWITCH_KEY(convertToolHotKey) != _keycode && GET_SWITCH_KEY(vBellHotkey) != _keycode) {
                 _lastFlag = 0;
             } else {
                 if (GET_SWITCH_KEY(vSwitchKeyStatus) == _keycode && checkHotKey(vSwitchKeyStatus, GET_SWITCH_KEY(vSwitchKeyStatus) != 0xFE)){
@@ -643,6 +644,17 @@ extern "C" {
                 }
                 if (GET_SWITCH_KEY(convertToolHotKey) == _keycode && checkHotKey(convertToolHotKey, GET_SWITCH_KEY(convertToolHotKey) != 0xFE)){
                     [appDelegate onQuickConvert];
+                    _lastFlag = 0;
+                    _hasJustUsedHotKey = true;
+                    return NULL;
+                }
+                if (GET_SWITCH_KEY(vBellHotkey) == _keycode && checkHotKey(vBellHotkey, GET_SWITCH_KEY(vBellHotkey) != 0xFE)){
+                    vBell = vBell ? 0 : 1;
+                    [[NSUserDefaults standardUserDefaults] setInteger:vBell forKey:@"vBell"];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        BellMac_ApplySettings();
+                        [[NSNotificationCenter defaultCenter] postNotificationName:@"BellStateChangedNotification" object:nil];
+                    });
                     _lastFlag = 0;
                     _hasJustUsedHotKey = true;
                     return NULL;

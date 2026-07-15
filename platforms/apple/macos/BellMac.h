@@ -16,6 +16,7 @@ extern int vBell;
 extern int vBellInterval;
 extern int vBellFrom;
 extern int vBellTo;
+extern int vBellHotkey;
 
 void BellMac_Init();
 void BellMac_ApplySettings();
@@ -48,6 +49,7 @@ int BellMac_MinutesUntilNextRing(void);
 // [MINDFUL] Áo mới v2 — "Im" trong Bộ tiếng segmented (BellSettingsView). KHÔNG phải tên NSSound
 // thật; playBellSound() nhận sentinel này và không phát gì (không rơi về "Glass" mặc định).
 extern NSString * const kBellSoundMuteName;
+NSDate * BellMac_NextRingDate(void);
 #endif
 
 #endif /* BellMac_h */

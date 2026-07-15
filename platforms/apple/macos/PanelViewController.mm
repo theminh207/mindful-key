@@ -172,6 +172,7 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
     // Tab "Hôm nay"
     NSTextField        *_ebNow;       // "NGAY BÂY GIỜ"
     GatekeeperCardView *_gatekeeper;
+    SensitivityCardView *_sensitivityCard;
     NSTextField        *_ebToday;     // "HÔM NAY"
     EmotionRiverView   *_river;
     NSTextField        *_bellLine;    // "Chuông tỉnh thức kế tiếp: còn X phút"
@@ -181,6 +182,9 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
 
     NSView             *_footerDiv;    // đường kẻ mảnh trước chân trang (kiểu Haynoi)
     NSTextField        *_privacy;
+
+    NSScrollView       *_contentScrollView;
+    MKFlippedView      *_contentDocumentView;
 
     CGFloat             _lastHeight;   // chiều cao nội dung lần reflow gần nhất
 }
@@ -200,36 +204,51 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
     _tabBar.onSelect = ^(NSInteger index) { (void)index; [weakSelf reflow]; };
     [root addSubview:_tabBar];
 
+    // Khởi tạo ScrollView chứa nội dung động
+    _contentScrollView = [[NSScrollView alloc] initWithFrame:NSZeroRect];
+    _contentScrollView.hasVerticalScroller = YES;
+    _contentScrollView.hasHorizontalScroller = NO;
+    _contentScrollView.drawsBackground = NO;
+    [root addSubview:_contentScrollView];
+
+    _contentDocumentView = [[MKFlippedView alloc] initWithFrame:NSZeroRect];
+    _contentDocumentView.wantsLayer = YES;
+    _contentDocumentView.layer.backgroundColor = [NSColor clearColor].CGColor;
+    _contentScrollView.documentView = _contentDocumentView;
+
     _ebNow = [NSTextField mk_eyebrowLabelWithTitle:@"Ngay bây giờ"];
-    [root addSubview:_ebNow];
+    [_contentDocumentView addSubview:_ebNow];
 
     _gatekeeper = [[GatekeeperCardView alloc] initWithFrame:NSMakeRect(kMargin, 0, kCardW, 96)];
-    [root addSubview:_gatekeeper];
+    [_contentDocumentView addSubview:_gatekeeper];
+
+    _sensitivityCard = [[SensitivityCardView alloc] initWithFrame:NSMakeRect(kMargin, 0, kCardW, 100)];
+    [_contentDocumentView addSubview:_sensitivityCard];
 
     _ebToday = [NSTextField mk_eyebrowLabelWithTitle:@"Hôm nay"];
-    [root addSubview:_ebToday];
+    [_contentDocumentView addSubview:_ebToday];
 
     // [MINDFUL] Áo mới v2 mục 5 — khung "dòng sông", TRẠNG THÁI TRỐNG (Bước 3 chưa có nguồn dữ
     // liệu thật). KHÔNG gọi setSamples: ở đây — mặc định nil = trống thật thà. Bước 3/4 sẽ đổ dữ
     // liệu thật vào bằng đúng API này, không cần sửa layout.
     _river = [[EmotionRiverView alloc] initWithFrame:NSMakeRect(kMargin, 0, kCardW, 100)];
-    [root addSubview:_river];
+    [_contentDocumentView addSubview:_river];
 
     _bellLine = [NSTextField labelWithString:@""];
     _bellLine.backgroundColor = [NSColor clearColor];
     _bellLine.bordered = NO;
     _bellLine.editable = NO;
-    [root addSubview:_bellLine];
+    [_contentDocumentView addSubview:_bellLine];
 
     _bell = [[BellSettingsView alloc] initWithFrame:NSMakeRect(kMargin, 0, kCardW, 100)];
     _bell.onLayoutChanged = ^{ [weakSelf reflow]; };   // đổi cao khi 1 mục con trong Chuông bung (vd giải thích Focus)
-    [root addSubview:_bell];
+    [_contentDocumentView addSubview:_bell];
 
     _input = [[InputMethodCardView alloc] initWithFrame:NSMakeRect(kMargin, 0, kCardW, 48)];
     [_input expandForTabPresentation];
     _input.onOpen = ^{ if (weakSelf.onOpenFullSettings) weakSelf.onOpenFullSettings(); };
     _input.onLayoutChanged = ^{ [weakSelf reflow]; };
-    [root addSubview:_input];
+    [_contentDocumentView addSubview:_input];
 
     _footerDiv = [[NSView alloc] initWithFrame:NSZeroRect];
     _footerDiv.wantsLayer = YES;
@@ -248,6 +267,15 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
 
     [self refreshAll];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(refreshAll)
+                                                 name:@"InputMethodChangedNotification"
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(refreshAll)
+                                                 name:@"BellStateChangedNotification"
+                                               object:nil];
+
     // [MINDFUL] Cluster B: Check-in timer
     if (g_checkinTimer == nil) {
         g_checkinTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
@@ -262,9 +290,14 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
                 [self showCheckinOverlay];
                 g_checkinLastTime = now;
             }
+            [self updateBellLine];
         });
         dispatch_resume(g_checkinTimer);
     }
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)showCheckinOverlay {
@@ -371,6 +404,7 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
 
 - (void)refreshAll {
     [_gatekeeper refresh];
+    [_sensitivityCard refresh];
     [_bell refresh];
     [_input refresh];
 
@@ -428,9 +462,16 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
     }
 
     int minutes = BellMac_MinutesUntilNextRing();
+    NSDate *nextDate = BellMac_NextRingDate();
     NSMutableAttributedString *s = [[NSMutableAttributedString alloc]
         initWithString:@"Chuông tỉnh thức kế tiếp: " attributes:leadAttrs];
-    NSString *value = (minutes >= 0) ? [NSString stringWithFormat:@"còn %d phút", minutes] : @"—";
+    NSString *value = @"—";
+    if (minutes >= 0 && nextDate != nil) {
+        NSDateFormatter *df = [[NSDateFormatter alloc] init];
+        df.dateFormat = @"HH:mm";
+        NSString *timeStr = [df stringFromDate:nextDate];
+        value = [NSString stringWithFormat:@"lúc %@ (còn %d phút)", timeStr, minutes];
+    }
     [s appendAttributedString:[[NSAttributedString alloc] initWithString:value attributes:@{
         NSForegroundColorAttributeName:[Brand charcoal],
         NSFontAttributeName:[NSFont systemFontOfSize:12.5 weight:NSFontWeightSemibold]
@@ -450,49 +491,66 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
     _tabBar.frame = NSMakeRect(kMargin, y, kCardW, kTabBarH);
     y += kTabBarH + kTabGapBottom;
 
+    CGFloat contentStartY = y;
+
     MKPanelTab tab = (MKPanelTab)_tabBar.selectedIndex;
     BOOL isToday = (tab == MKPanelTabToday);
     _ebNow.hidden = !isToday;
     _gatekeeper.hidden = !isToday;
+    _sensitivityCard.hidden = !isToday;
     _ebToday.hidden = !isToday;
     _river.hidden = !isToday;
     _bellLine.hidden = !isToday;
     _bell.hidden  = (tab != MKPanelTabBell);
     _input.hidden = (tab != MKPanelTabInput);
 
+    CGFloat contentH = 0;
     if (isToday) {
-        _ebNow.frame = NSMakeRect(kMargin, y, kCardW, kEbH);
-        y += kEbH + kEbGap;
+        CGFloat cy = 0;
+        _ebNow.frame = NSMakeRect(kMargin, cy, kCardW, kEbH);
+        cy += kEbH + kEbGap;
 
         CGFloat gkH = [_gatekeeper preferredHeight];
-        _gatekeeper.frame = NSMakeRect(kMargin, y, kCardW, gkH);
-        y += gkH + kSectionGap;
+        _gatekeeper.frame = NSMakeRect(kMargin, cy, kCardW, gkH);
+        cy += gkH + kSectionGap;
 
-        _ebToday.frame = NSMakeRect(kMargin, y, kCardW, kEbH);
-        y += kEbH + kEbGap;
+        CGFloat sensH = [_sensitivityCard preferredHeight];
+        _sensitivityCard.frame = NSMakeRect(kMargin, cy, kCardW, sensH);
+        cy += sensH + kSectionGap;
+
+        _ebToday.frame = NSMakeRect(kMargin, cy, kCardW, kEbH);
+        cy += kEbH + kEbGap;
 
         CGFloat riverH = [_river preferredHeight];
-        _river.frame = NSMakeRect(kMargin, y, kCardW, riverH);
-        y += riverH + kSectionGap;
+        _river.frame = NSMakeRect(kMargin, cy, kCardW, riverH);
+        cy += riverH + kSectionGap;
 
-        _bellLine.frame = NSMakeRect(kMargin, y, kCardW, kBellLineH);
-        y += kBellLineH;
+        _bellLine.frame = NSMakeRect(kMargin, cy, kCardW, kBellLineH);
+        cy += kBellLineH;
+
+        contentH = cy;
     } else if (tab == MKPanelTabBell) {
-        CGFloat contentH = [_bell preferredHeight];
-        _bell.frame = NSMakeRect(kMargin, y, kCardW, contentH);
-        y += contentH;
+        contentH = [_bell preferredHeight];
+        _bell.frame = NSMakeRect(kMargin, 0, kCardW, contentH);
     } else {
-        CGFloat contentH = [_input preferredHeight];
-        _input.frame = NSMakeRect(kMargin, y, kCardW, contentH);
-        y += contentH;
+        contentH = [_input preferredHeight];
+        _input.frame = NSMakeRect(kMargin, 0, kCardW, contentH);
     }
+
+    _contentDocumentView.frame = NSMakeRect(0, 0, kPanelW, contentH);
+
+    // Giới hạn chiều cao tối đa của vùng nội dung cuộn để vừa màn hình
+    CGFloat maxContentH = 430.0;
+    CGFloat scrollH = MIN(contentH, maxContentH);
+
+    _contentScrollView.frame = NSMakeRect(0, contentStartY, kPanelW, scrollH);
+    y = contentStartY + scrollH;
 
     _footerDiv.frame = NSMakeRect(0, y, kPanelW, 1.0);  y += 1.0;
     y += 10.0;
     _privacy.frame = NSMakeRect(kMargin, y, kCardW, kFooterH);  y += kFooterH + 12.0;
 
     _lastHeight = y;
-    NSRect rf = self.view.frame; rf.size = NSMakeSize(kPanelW, y); self.view.frame = rf;
     self.preferredContentSize = NSMakeSize(kPanelW, y);   // NSPopover theo dõi để đổi kích thước
 }
 
@@ -504,6 +562,14 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
 }
 
 - (NSSize)panelContentSize { return NSMakeSize(kPanelW, _lastHeight); }
+
+- (BOOL)performKeyEquivalent:(NSEvent *)event {
+    if (self.isRecordingHotkey && self.onHotkeyRecorded) {
+        self.onHotkeyRecorded(event);
+        return YES;
+    }
+    return [super performKeyEquivalent:event];
+}
 
 - (void)onGear:(id)sender {
     if (self.onShowMenu) self.onShowMenu(_gear);

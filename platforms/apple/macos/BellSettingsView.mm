@@ -15,6 +15,7 @@
 #import "BrandColors.h"
 #import "EmotionWaveView.h"
 #import "NudgeCoordinatorMac.h"
+#import "PanelViewController.h"
 #import "BellMac.h"   // [MINDFUL] Story 1.5 — BellMac_PreviewSound() / kBellSoundMuteName
 
 // UserDefaults keys (story 1.5). Đặt cạnh nhau để không rải magic-string.
@@ -44,11 +45,11 @@ static const CGFloat kLabelWQ    = 90.0;   // cột nhãn cho hàng "Giờ yên 
 
 // Ánh xạ nhãn thân thiện (mockup "Bộ tiếng") → tên NSSound hệ thống thật (hoặc sentinel "Im").
 static NSString *SoundNameForIndex(NSInteger i) {
-    switch (i) { case 1: return @"Tink"; case 2: return kBellSoundMuteName; default: return @"Glass"; }
+    switch (i) { case 1: return @"Chuông gió"; case 2: return @"Chuông reo"; default: return @"Chuông chùa"; }
 }
 static NSInteger IndexForSoundName(NSString *name) {
-    if ([name isEqualToString:@"Tink"]) return 1;
-    if ([name isEqualToString:kBellSoundMuteName]) return 2;
+    if ([name isEqualToString:@"Chuông gió"]) return 1;
+    if ([name isEqualToString:@"Chuông reo"]) return 2;
     return 0;
 }
 
@@ -137,6 +138,14 @@ static NSInteger ParseHour(NSString *s) {
 @end
 
 @implementation BellSettingsView {
+    // Trạng thái (Status)
+    NSTextField *_ebStatus;
+    NSView      *_cardStatus;
+    NSTextField *_lblBellEnable;
+    PillSwitch  *_bellEnableSwitch;
+    NSTextField *_noteStatus;
+    NSButton    *_hotkeyBtn;
+
     // Nhịp (Interval)
     NSTextField *_ebInterval;
     NSView      *_cardInterval;
@@ -144,20 +153,17 @@ static NSInteger ParseHour(NSString *s) {
     MKSegmented *_intervalSeg;
     NSTextField *_noteInterval;
 
-    // Nhận diện
-    NSTextField *_ebIdentify;
-    NSView      *_cardIdentify;
-    NSTextField *_lblSensitivity;
-    MKSegmented *_seg;
-    NSInteger    _sensitivity;          // 1..3
-    EmotionWaveView *_demoWave;
-    NSTextField *_noteIdentify;
+
 
     // Âm thanh
     NSTextField *_ebSound;
     NSView      *_cardSound;
     NSTextField *_lblSound;
-    MKSegmented *_soundSeg;
+    NSButton    *_btnBell1;
+    NSButton    *_btnBell2;
+    NSButton    *_btnBell3;
+    NSView      *_bellIndicator;
+    NSInteger    _bellSelectedIndex;
     NSTextField *_lblVolume;
     NSSlider    *_volume;
 
@@ -181,14 +187,23 @@ static NSInteger ParseHour(NSString *s) {
     if ((self = [super initWithFrame:frameRect])) {
         self.wantsLayer = YES;
 
+        [self buildStatusSection];
         [self buildIntervalSection];
-        [self buildIdentifySection];
         [self buildSoundSection];
         [self buildQuietSection];
 
         [self refresh];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(refresh)
+                                                     name:@"BellStateChangedNotification"
+                                                   object:nil];
     }
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Helpers
@@ -216,6 +231,159 @@ static NSInteger ParseHour(NSString *s) {
 
 #pragma mark - Build subviews
 
+- (void)buildStatusSection {
+    _ebStatus = [NSTextField mk_eyebrowLabelWithTitle:@"Trạng thái"];
+    [self addSubview:_ebStatus];
+    _cardStatus = [self addCard];
+
+    _lblBellEnable = [self label:@"Bật chuông tỉnh thức" font:[NSFont systemFontOfSize:12 weight:NSFontWeightSemibold] color:[Brand charcoal]];
+    
+    _hotkeyBtn = [NSButton buttonWithTitle:@"⌥⌘B" target:self action:@selector(onHotkeyClick:)];
+    _hotkeyBtn.bordered = NO;
+    _hotkeyBtn.wantsLayer = YES;
+    _hotkeyBtn.layer.backgroundColor = [NSColor colorWithWhite:0.95 alpha:1.0].CGColor;
+    _hotkeyBtn.layer.cornerRadius = 4.0;
+    _hotkeyBtn.font = [NSFont systemFontOfSize:11.5 weight:NSFontWeightSemibold];
+    [self addSubview:_hotkeyBtn];
+
+    _bellEnableSwitch = [[PillSwitch alloc] initWithFrame:NSZeroRect];
+    _bellEnableSwitch.target = self;
+    _bellEnableSwitch.action = @selector(onBellEnableSwitch:);
+    [self addSubview:_bellEnableSwitch];
+
+    _noteStatus = [self label:@"Chuông đang tắt" font:[self fCaption] color:[Brand muted]];
+    _noteStatus.lineBreakMode = NSLineBreakByWordWrapping;
+    _noteStatus.maximumNumberOfLines = 2;
+}
+
+static NSString *StringFromHotkey(int hotkey) {
+    if (hotkey == 0) return @"Chưa set";
+    NSMutableString *s = [NSMutableString string];
+    if (hotkey & 0x100) [s appendString:@"⌃"]; // Control
+    if (hotkey & 0x200) [s appendString:@"⌥"]; // Option
+    if (hotkey & 0x400) [s appendString:@"⌘"]; // Command
+    if (hotkey & 0x800) [s appendString:@"⇧"]; // Shift
+    
+    unsigned int charCode = (hotkey >> 24) & 0xFF;
+    if (charCode > 0) {
+        if (charCode == 32) {
+            [s appendString:@"Space"];
+        } else {
+            [s appendFormat:@"%c", toupper(charCode)];
+        }
+    } else {
+        int keycode = hotkey & 0xFF;
+        if (keycode != 0xFE) {
+            if (keycode == 49) [s appendString:@"Space"];
+            else [s appendFormat:@"[Key %d]", keycode];
+        }
+    }
+    return s;
+}
+
+- (void)updateHotkeyButtonTitle:(int)hotkey {
+    NSString *title = StringFromHotkey(hotkey);
+    NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
+    style.alignment = NSTextAlignmentCenter;
+    _hotkeyBtn.attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:@{
+        NSForegroundColorAttributeName: [Brand teal],
+        NSParagraphStyleAttributeName: style,
+        NSFontAttributeName: [NSFont systemFontOfSize:11.5 weight:NSFontWeightSemibold]
+    }];
+}
+
+- (void)onHotkeyClick:(id)sender {
+    NSResponder *next = self.nextResponder;
+    PanelViewController *panelVC = nil;
+    while (next != nil) {
+        if ([next isKindOfClass:[PanelViewController class]]) {
+            panelVC = (PanelViewController *)next;
+            break;
+        }
+        next = next.nextResponder;
+    }
+    
+    if (!panelVC) return;
+    
+    if (panelVC.isRecordingHotkey) {
+        panelVC.isRecordingHotkey = NO;
+        panelVC.onHotkeyRecorded = nil;
+        extern int vBellHotkey;
+        [self updateHotkeyButtonTitle:vBellHotkey];
+        return;
+    }
+    
+    panelVC.isRecordingHotkey = YES;
+    NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
+    style.alignment = NSTextAlignmentCenter;
+    _hotkeyBtn.attributedTitle = [[NSAttributedString alloc] initWithString:@"..." attributes:@{
+        NSForegroundColorAttributeName: [NSColor systemRedColor],
+        NSParagraphStyleAttributeName: style,
+        NSFontAttributeName: [NSFont systemFontOfSize:11.5 weight:NSFontWeightBold]
+    }];
+    
+    __weak BellSettingsView *weakSelf = self;
+    __weak PanelViewController *weakVC = panelVC;
+    panelVC.onHotkeyRecorded = ^(NSEvent *event) {
+        weakVC.isRecordingHotkey = NO;
+        weakVC.onHotkeyRecorded = nil;
+        
+        if (event.keyCode == 53) { // Esc
+            extern int vBellHotkey;
+            [weakSelf updateHotkeyButtonTitle:vBellHotkey];
+            return;
+        }
+        
+        int newHotkey = 0;
+        if (event.modifierFlags & NSEventModifierFlagControl) newHotkey |= 0x100;
+        if (event.modifierFlags & NSEventModifierFlagOption)  newHotkey |= 0x200;
+        if (event.modifierFlags & NSEventModifierFlagCommand) newHotkey |= 0x400;
+        if (event.modifierFlags & NSEventModifierFlagShift)   newHotkey |= 0x800;
+        
+        newHotkey |= (event.keyCode & 0xFF);
+        NSString *chars = [event.charactersIgnoringModifiers lowercaseString];
+        if (chars.length > 0) {
+            unichar c = [chars characterAtIndex:0];
+            newHotkey |= ((unsigned int)c << 24);
+        }
+        
+        extern int vBellHotkey;
+        vBellHotkey = newHotkey;
+        [[NSUserDefaults standardUserDefaults] setInteger:newHotkey forKey:@"BellToggleHotkey"];
+        
+        [weakSelf updateHotkeyButtonTitle:vBellHotkey];
+    };
+}
+
+- (void)onBellEnableSwitch:(PillSwitch *)sender {
+    BOOL on = sender.isOn;
+    extern int vBell;
+    vBell = on ? 1 : 0;
+    [[NSUserDefaults standardUserDefaults] setInteger:vBell forKey:@"vBell"];
+    BellMac_ApplySettings();
+    [self updateStatusLabel];
+    [self notifyLayoutChanged];
+}
+
+- (void)updateStatusLabel {
+    extern int vBell;
+    if (!vBell) {
+        _noteStatus.stringValue = @"Chuông đang tắt";
+        return;
+    }
+    
+    int minutes = BellMac_MinutesUntilNextRing();
+    NSDate *nextDate = BellMac_NextRingDate();
+    if (minutes >= 0 && nextDate != nil) {
+        NSDateFormatter *df = [[NSDateFormatter alloc] init];
+        df.dateFormat = @"HH:mm";
+        NSString *timeStr = [df stringFromDate:nextDate];
+        _noteStatus.stringValue = [NSString stringWithFormat:@"Dự kiến reo lúc: %@ (còn %d phút)", timeStr, minutes];
+    } else {
+        _noteStatus.stringValue = @"Chuông đang bật (chưa lên lịch reo)";
+    }
+}
+
 - (void)buildIntervalSection {
     _ebInterval = [NSTextField mk_eyebrowLabelWithTitle:@"Nhịp"];
     [self addSubview:_ebInterval];
@@ -235,26 +403,7 @@ static NSInteger ParseHour(NSString *s) {
     _noteInterval.maximumNumberOfLines = 3;
 }
 
-- (void)buildIdentifySection {
-    _ebIdentify = [NSTextField mk_eyebrowLabelWithTitle:@"Nhận diện"];
-    [self addSubview:_ebIdentify];
-    _cardIdentify = [self addCard];
 
-    _lblSensitivity = [self label:@"Độ nhạy" font:[self fFieldLbl] color:[Brand muted]];
-    _demoWave = [[EmotionWaveView alloc] initWithFrame:NSZeroRect];   // xem thử mức, thu gọn
-    [self addSubview:_demoWave];
-
-    _seg = [[MKSegmented alloc] initWithFrame:NSZeroRect];
-    _seg.titles = @[@"Ít nhạy", @"Vừa", @"Nhạy"];
-    _seg.target = self;
-    _seg.action = @selector(onSensitivity:);
-    [self addSubview:_seg];
-
-    _noteIdentify = [self label:@"Quyết định khi nào mặt hồ được coi là gợn — dùng chung cho nhật ký lấy mẫu và chuông."
-                            font:[self fCaption] color:[Brand muted]];
-    _noteIdentify.lineBreakMode = NSLineBreakByWordWrapping;
-    _noteIdentify.maximumNumberOfLines = 3;
-}
 
 - (void)buildSoundSection {
     _ebSound = [NSTextField mk_eyebrowLabelWithTitle:@"Âm thanh"];
@@ -262,11 +411,21 @@ static NSInteger ParseHour(NSString *s) {
     _cardSound = [self addCard];
 
     _lblSound = [self label:@"Bộ tiếng" font:[self fFieldLbl] color:[Brand muted]];
-    _soundSeg = [[MKSegmented alloc] initWithFrame:NSZeroRect];
-    _soundSeg.titles = @[@"Chuông chùa", @"Chuông gió", @"Im"];
-    _soundSeg.target = self;
-    _soundSeg.action = @selector(onSound:);
-    [self addSubview:_soundSeg];
+    
+    // Nút hình ảnh (3 loại chuông)
+    _btnBell1 = [self createBellButtonWithTag:0 image:@"bell_temple"];
+    _btnBell2 = [self createBellButtonWithTag:1 image:@"bell_wind"];
+    _btnBell3 = [self createBellButtonWithTag:2 image:@"bell_chime"];
+    [self addSubview:_btnBell1];
+    [self addSubview:_btnBell2];
+    [self addSubview:_btnBell3];
+
+    // Dấu chấm cam báo hiệu trạng thái được chọn
+    _bellIndicator = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 12, 12)];
+    _bellIndicator.wantsLayer = YES;
+    _bellIndicator.layer.backgroundColor = [Brand orange].CGColor;
+    _bellIndicator.layer.cornerRadius = 6.0;
+    [self addSubview:_bellIndicator];
 
     _lblVolume = [self label:@"Âm lượng" font:[self fFieldLbl] color:[Brand muted]];
     _volume = [NSSlider sliderWithValue:0.6 minValue:0.0 maxValue:1.0
@@ -326,6 +485,15 @@ static NSInteger ParseHour(NSString *s) {
 - (void)refresh {
     NSUserDefaults *d = [NSUserDefaults standardUserDefaults];
 
+    // Trạng thái bật chuông
+    extern int vBell;
+    BOOL bellEnabled = (vBell != 0);
+    [_bellEnableSwitch setOn:bellEnabled animated:NO];
+    [self updateStatusLabel];
+
+    extern int vBellHotkey;
+    [self updateHotkeyButtonTitle:vBellHotkey];
+
     // Nhịp
     extern int vBellInterval;
     int curInterval = vBellInterval > 0 ? vBellInterval : (int)[d integerForKey:@"vBellInterval"];
@@ -337,14 +505,11 @@ static NSInteger ParseHour(NSString *s) {
     
     _intervalSeg.selectedIndex = bestIdx;
 
-    // Độ nhạy — default 2 (Vừa) = ngưỡng 3 hiện hành (edge case story: cài mới ≈ hành vi cũ).
-    NSInteger sens = [d objectForKey:kKeySensitivity] ? [d integerForKey:kKeySensitivity] : 2;
-    if (sens < 1 || sens > 3) sens = 2;
-    [self setSensitivity:sens persist:NO];
 
     // Âm thanh
     NSString *sound = [d stringForKey:kKeySoundName] ?: SoundNameForIndex(0);
-    _soundSeg.selectedIndex = IndexForSoundName(sound);
+    _bellSelectedIndex = IndexForSoundName(sound);
+    [self updateBellIndicatorAnimated:NO];
 
     // Âm lượng
     double vol = [d objectForKey:kKeyVolume] ? [d doubleForKey:kKeyVolume] : 0.6;
@@ -368,17 +533,7 @@ static NSInteger ParseHour(NSString *s) {
     self.needsLayout = YES;
 }
 
-- (void)setSensitivity:(NSInteger)s persist:(BOOL)persist {
-    _sensitivity = s;
-    _seg.selectedIndex = s - 1;
-    // Sóng demo "thấy mức": ít→thấp, vừa→giữa, nhạy→cao (chỉ cảm giác, KHÔNG phải ngưỡng thật).
-    CGFloat amp = (s == 1) ? 0.2 : (s == 2 ? 0.5 : 0.85);
-    [_demoWave setAmplitude:amp animated:YES];
 
-    if (persist) {
-        [[NSUserDefaults standardUserDefaults] setInteger:s forKey:kKeySensitivity];
-    }
-}
 
 - (void)syncQuietFields {
     _quietFrom.stringValue = [NSString stringWithFormat:@"%02ld:00", (long)_quietFromHour];
@@ -398,14 +553,57 @@ static NSInteger ParseHour(NSString *s) {
     BellMac_ApplySettings();
 }
 
-- (void)onSensitivity:(MKSegmented *)sender {
-    [self setSensitivity:sender.selectedIndex + 1 persist:YES];
+
+- (NSButton *)createBellButtonWithTag:(NSInteger)tag image:(NSString *)imageName {
+    NSButton *btn = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 48, 48)];
+    btn.buttonType = NSButtonTypeMomentaryChange;
+    btn.bordered = NO;
+    btn.imagePosition = NSImageOnly;
+    // Tạm thời dùng chung ảnh bell1.png hoặc hình tròn nếu ko load được
+    NSImage *img = [NSImage imageNamed:imageName];
+    if (!img) {
+        img = [[NSImage alloc] initWithSize:NSMakeSize(48, 48)];
+        [img lockFocus];
+        [[NSColor colorWithWhite:0.9 alpha:1.0] setFill];
+        [[NSBezierPath bezierPathWithOvalInRect:NSMakeRect(2, 2, 44, 44)] fill];
+        [img unlockFocus];
+    }
+    // bell1.png là ảnh nguồn 1024x1024 — PHẢI ép lại size logic về
+    // đúng khung nút (48x48), nếu không AppKit vẽ ảnh tràn khỏi nút ra ngoài popover.
+    img.size = NSMakeSize(48, 48);
+    btn.image = img;
+    btn.target = self;
+    btn.action = @selector(onBellClick:);
+    btn.tag = tag;
+    return btn;
 }
 
-- (void)onSound:(MKSegmented *)sender {
-    [[NSUserDefaults standardUserDefaults] setObject:SoundNameForIndex(sender.selectedIndex)
+- (void)updateBellIndicatorAnimated:(BOOL)animated {
+    CGFloat btnSize = 48.0;
+    CGFloat gap = 24.0;
+    CGFloat startX = (self.bounds.size.width - (3 * btnSize + 2 * gap)) / 2.0;
+    CGFloat targetX = startX + _bellSelectedIndex * (btnSize + gap) + (btnSize - 12.0) / 2.0;
+    
+    NSRect currentFrame = _bellIndicator.frame;
+    currentFrame.origin.x = targetX;
+    
+    if (animated) {
+        [NSAnimationContext runAnimationGroup:^(NSAnimationContext * _Nonnull context) {
+            context.duration = 0.25;
+            _bellIndicator.animator.frame = currentFrame;
+        }];
+    } else {
+        _bellIndicator.frame = currentFrame;
+    }
+}
+
+- (void)onBellClick:(NSButton *)sender {
+    _bellSelectedIndex = sender.tag;
+    [self updateBellIndicatorAnimated:YES];
+    
+    [[NSUserDefaults standardUserDefaults] setObject:SoundNameForIndex(_bellSelectedIndex)
                                               forKey:kKeySoundName];
-    BellMac_PreviewSound();   // nghe thử ngay âm vừa chọn ("Im" tự im lặng — xem BellMac.mm)
+    BellMac_PreviewSound();
 }
 
 - (void)onVolume:(NSSlider *)sender {
@@ -454,6 +652,12 @@ static NSInteger ParseHour(NSString *s) {
     [d setInteger:_quietToHour   forKey:kKeyBellFrom];
     [d setInteger:_quietFromHour forKey:kKeyBellTo];
 
+    extern int vBellFrom;
+    extern int vBellTo;
+    vBellFrom = (int)_quietToHour;
+    vBellTo = (int)_quietFromHour;
+    BellMac_ApplySettings();
+
     if (wasInvalid) [self notifyLayoutChanged];
 }
 
@@ -480,11 +684,31 @@ static NSInteger ParseHour(NSString *s) {
 
 #define SET(v, x, t, w, h) if (apply) { (v).frame = NSMakeRect((x), H - (t) - (h), (w), (h)); }
 
+    // ---- Trạng thái (Status) ----
+    SET(_ebStatus, 0, top, W, kEbH);
+    top += kEbH + kEbGap;
+    CGFloat statusTop = top;
+    CGFloat cy = kCardPadY;
+
+    SET(_lblBellEnable, kCardPadX, statusTop + cy, W - kCardPadX - 60.0, kRowH);
+    if (apply) {
+        _bellEnableSwitch.frame = NSMakeRect(W - kCardPadX - 40.0, H - (statusTop + cy) - kRowH + (kRowH - kSwitchH) / 2.0, 40.0, kSwitchH);
+    }
+    cy += kRowH + kGapSm;
+    // noteStatus hiển thị thông tin thời gian reo chuông kế tiếp
+    if (apply) {
+        [self updateStatusLabel];
+    }
+    SET(_noteStatus, kCardPadX, statusTop + cy, W - 2 * kCardPadX, kNoteH);
+    cy += kNoteH + kCardPadY;
+    SET(_cardStatus, 0, statusTop, W, cy);
+    top = statusTop + cy + kSectionGap;
+
     // ---- Nhịp ----
     SET(_ebInterval, 0, top, W, kEbH);
     top += kEbH + kEbGap;
     CGFloat intervalTop = top;
-    CGFloat cy = kCardPadY;
+    cy = kCardPadY;
 
     SET(_lblInterval, kCardPadX, intervalTop + cy, W - 2 * kCardPadX, kRowH);
     cy += kRowH + kGapSm;
@@ -495,22 +719,7 @@ static NSInteger ParseHour(NSString *s) {
     SET(_cardInterval, 0, intervalTop, W, cy);
     top = intervalTop + cy + kSectionGap;
 
-    // ---- Nhận diện ----
-    SET(_ebIdentify, 0, top, W, kEbH);
-    top += kEbH + kEbGap;
-    CGFloat identifyTop = top;
-    CGFloat cy = kCardPadY;
 
-    SET(_lblSensitivity, kCardPadX, identifyTop + cy, 90.0, kRowH);
-    CGFloat waveW = 64.0, waveH = 18.0;
-    SET(_demoWave, W - kCardPadX - waveW, identifyTop + cy + (kRowH - waveH) / 2.0, waveW, waveH);
-    cy += kRowH + kGapSm;
-    SET(_seg, kCardPadX, identifyTop + cy, W - 2 * kCardPadX, kSegH);
-    cy += kSegH + kGapSm;
-    SET(_noteIdentify, kCardPadX, identifyTop + cy, W - 2 * kCardPadX, kNoteH);
-    cy += kNoteH + kCardPadY;
-    SET(_cardIdentify, 0, identifyTop, W, cy);
-    top = identifyTop + cy + kSectionGap;
 
     // ---- Âm thanh ----
     SET(_ebSound, 0, top, W, kEbH);
@@ -519,9 +728,21 @@ static NSInteger ParseHour(NSString *s) {
     cy = kCardPadY;
 
     SET(_lblSound, kCardPadX, soundTop + cy, 90.0, kRowH);
-    cy += kRowH + kGapSm;
-    SET(_soundSeg, kCardPadX, soundTop + cy, W - 2 * kCardPadX, kSegH);
-    cy += kSegH + kGapMd;
+    cy += kRowH + kGapSm; // khoảng cách sau nhãn
+    
+    CGFloat btnSize = 48.0;
+    CGFloat gap = 24.0;
+    CGFloat startX = (W - (3 * btnSize + 2 * gap)) / 2.0;
+    
+    SET(_btnBell1, startX, soundTop + cy, btnSize, btnSize);
+    SET(_btnBell2, startX + btnSize + gap, soundTop + cy, btnSize, btnSize);
+    SET(_btnBell3, startX + 2 * btnSize + 2 * gap, soundTop + cy, btnSize, btnSize);
+    
+    cy += btnSize + 8.0; // Khoảng cách tới dấu chấm
+    SET(_bellIndicator, 0, soundTop + cy, 12, 12);
+    [self updateBellIndicatorAnimated:NO];
+    
+    cy += 12.0 + kGapMd;
     SET(_lblVolume, kCardPadX, soundTop + cy, 74.0, kRowH);
     CGFloat volX = kCardPadX + 74.0 + 10.0;
     SET(_volume, volX, soundTop + cy + (kRowH - 20.0) / 2.0, W - kCardPadX - volX, 20.0);
@@ -568,6 +789,128 @@ static NSInteger ParseHour(NSString *s) {
 
 #undef SET
     return top;
+}
+
+@end
+
+@implementation SensitivityCardView {
+    NSTextField *_ebIdentify;
+    NSView      *_cardIdentify;
+    NSTextField *_lblSensitivity;
+    MKSegmented *_seg;
+    NSInteger    _sensitivity;          // 1..3
+    EmotionWaveView *_demoWave;
+    NSTextField *_noteIdentify;
+}
+
+- (instancetype)initWithFrame:(NSRect)frameRect {
+    if ((self = [super initWithFrame:frameRect])) {
+        self.wantsLayer = YES;
+        [self buildIdentifySection];
+        [self refresh];
+    }
+    return self;
+}
+
+- (NSTextField *)label:(NSString *)s font:(NSFont *)f color:(NSColor *)c {
+    NSTextField *l = [NSTextField labelWithString:s];
+    l.font = f;
+    l.textColor = c;
+    l.backgroundColor = [NSColor clearColor];
+    l.bordered = NO;
+    l.editable = NO;
+    [self addSubview:l];
+    return l;
+}
+
+- (NSFont *)fFieldLbl { return [NSFont systemFontOfSize:12 weight:NSFontWeightRegular]; }
+- (NSFont *)fCaption  { return [NSFont systemFontOfSize:11.5 weight:NSFontWeightRegular]; }
+
+- (NSView *)addCard {
+    NSView *v = [[NSView alloc] initWithFrame:NSZeroRect];
+    [v applyThinCardStyle];
+    [self addSubview:v];
+    return v;
+}
+
+- (void)buildIdentifySection {
+    _ebIdentify = [NSTextField mk_eyebrowLabelWithTitle:@"Nhận diện"];
+    [self addSubview:_ebIdentify];
+    _cardIdentify = [self addCard];
+
+    _lblSensitivity = [self label:@"Độ nhạy" font:[self fFieldLbl] color:[Brand muted]];
+    _demoWave = [[EmotionWaveView alloc] initWithFrame:NSZeroRect];
+    [self addSubview:_demoWave];
+
+    _seg = [[MKSegmented alloc] initWithFrame:NSZeroRect];
+    _seg.titles = @[@"Ít nhạy", @"Vừa", @"Nhạy"];
+    _seg.target = self;
+    _seg.action = @selector(onSensitivity:);
+    [self addSubview:_seg];
+
+    _noteIdentify = [self label:@"Quyết định khi nào mặt hồ được coi là gợn — dùng chung cho nhật ký lấy mẫu và chuông."
+                           font:[self fCaption] color:[Brand muted]];
+    _noteIdentify.lineBreakMode = NSLineBreakByWordWrapping;
+    _noteIdentify.maximumNumberOfLines = 3;
+}
+
+- (void)onSensitivity:(MKSegmented *)sender {
+    [self setSensitivity:sender.selectedIndex + 1 persist:YES];
+}
+
+- (void)setSensitivity:(NSInteger)s persist:(BOOL)persist {
+    _sensitivity = s;
+    _seg.selectedIndex = s - 1;
+    
+    // Đổi sóng nhỏ gợn động
+    CGFloat amp = (s == 1) ? 0.2 : (s == 2 ? 0.5 : 0.85);
+    [_demoWave setAmplitude:amp animated:YES];
+
+    if (persist) {
+        [[NSUserDefaults standardUserDefaults] setInteger:s forKey:kKeySensitivity];
+    }
+}
+
+- (void)refresh {
+    NSUserDefaults *d = [NSUserDefaults standardUserDefaults];
+    NSInteger sens = [d objectForKey:kKeySensitivity] ? [d integerForKey:kKeySensitivity] : 2;
+    if (sens < 1 || sens > 3) sens = 2;
+    [self setSensitivity:sens persist:NO];
+}
+
+- (void)layout {
+    [super layout];
+    [self relayout:YES];
+}
+
+- (CGFloat)preferredHeight {
+    return [self relayout:NO];
+}
+
+- (CGFloat)relayout:(BOOL)apply {
+    CGFloat W = NSWidth(self.bounds);
+    CGFloat H = NSHeight(self.bounds);
+    CGFloat top = 0;
+
+#define SET(v, x, t, w, h) if (apply) { (v).frame = NSMakeRect((x), H - (t) - (h), (w), (h)); }
+
+    SET(_ebIdentify, 0, top, W, kEbH);
+    top += kEbH + kEbGap;
+    CGFloat identifyTop = top;
+    CGFloat cy = kCardPadY;
+
+    SET(_lblSensitivity, kCardPadX, identifyTop + cy, 90.0, kRowH);
+    CGFloat waveW = 64.0, waveH = 18.0;
+    SET(_demoWave, W - kCardPadX - waveW, identifyTop + cy + (kRowH - waveH) / 2.0, waveW, waveH);
+    cy += kRowH + kGapSm;
+    SET(_seg, kCardPadX, identifyTop + cy, W - 2 * kCardPadX, kSegH);
+    cy += kSegH + kGapSm;
+    SET(_noteIdentify, kCardPadX, identifyTop + cy, W - 2 * kCardPadX, kNoteH);
+    cy += kNoteH + kCardPadY;
+    SET(_cardIdentify, 0, identifyTop, W, cy);
+    
+    return identifyTop + cy;
+#undef SET
 }
 
 @end

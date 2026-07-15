@@ -17,7 +17,54 @@ or delete past entries — supersede them with a new entry that references the o
 - **Supersedes:** <link to prior entry, if any>
 ```
 
+**⚠️ Supersede một FILE đặc tả cụ thể (không chỉ 1 entry khác trong sổ này) — BẮT BUỘC làm
+cùng lúc, không tách lượt sau:** nếu quyết định vừa ghi làm cho nội dung một file đặc tả
+(`DESIGN*.md`, `EXPERIENCE*.md`, `TEST-PLAN*.md`, `tech-spec*.md`, `PRD.md`, …) không còn đúng
+nữa, PHẢI dán ngay 1 dòng banner ở ĐẦU chính file đó, trỏ về entry vừa ghi. Mẫu banner:
+
+```
+> ⚠️ **SUPERSEDED (YYYY-MM-DD)** — xem `decision-log.md` entry "<tên entry>". <1 câu: phần
+> nào của file này không còn đúng / phần nào vẫn còn dùng được (vd token màu, a11y)>.
+```
+
+Lý do bắt buộc: trường `Supersedes:` ở trên chỉ ghi MỘT CHIỀU — sổ này biết cái mới thay cái
+cũ, nhưng bản thân file cũ thì không hề hay biết. Ai mở thẳng file cũ (không qua decision-log,
+ví dụ theo link `[Source: DESIGN#...]` trong 1 story) sẽ hiểu nhầm nó vẫn còn hiệu lực. Bài học
+rút ra 2026-07-14: phát hiện `bmad-output/macos/DESIGN-macos-control-panel.md` +
+`EXPERIENCE-macos-control-panel.md` mô tả UI "card nổi trên 4-tab" đã bị v2 popover 3-tab thay
+thế từ 2026-07-13, mà không có dấu hiệu gì ngay trong 2 file đó — chỉ decision-log biết.
+
 ---
+
+### 2026-07-15 — Bổ sung Hotkeys, cuộn NSScrollView cho Popover, và sửa lỗi đồng bộ Chuông
+- **Decision:** Thực hiện các cải tiến và sửa lỗi trên ứng dụng macOS:
+  1. **Hotkeys nhanh**: Thêm nút phím tắt trực quan bên cạnh switch bật/tắt của "Bật chuông tỉnh thức" (mặc định `⌥⌘B`) và "Gõ tiếng Việt" (mặc định `⌥Z`). Click vào nút sẽ chuyển sang trạng thái đỏ và chờ gõ phím nóng. Sự kiện được lắng nghe thông qua `performKeyEquivalent:` trong `PanelViewController` và đánh chặn trong `OpenKey.mm`. Đồng bộ hóa hai chiều tức thời bằng NotificationCenter (`InputMethodChangedNotification` và `BellStateChangedNotification`).
+  2. **Giao diện Popover cuộn**: Đưa nội dung các tab động vào `NSScrollView`, giữ cố định Header, Tabbar và Footer để giao diện đồng nhất và không bị cắt cúp khi mở rộng.
+  3. **Sensitivity Card**: Dời card nhận diện độ nhạy sang tab Hôm nay (nằm dưới card Gatekeeper) để cân đối trải nghiệm.
+  4. **Quyền thông báo & Hẹn giờ**: Yêu cầu quyền gửi Notification khi app start, và sửa bug cập nhật giờ yên lặng không lưu trực tiếp vào bộ nhớ.
+- **Rationale:** Giải quyết trực tiếp các phản hồi của chủ dự án về độ cân đối của các tab, tính tiện dụng của phím nóng gõ tiếng Việt / chuông tỉnh thức, lỗi chuông không vang do thiếu quyền và không đồng bộ giờ yên lặng.
+- **Made by:** Antigravity (model)
+- **Supersedes:** none
+
+### 2026-07-14 — Chốt điểm gai #3 (story 2.6): phạm vi cột CSV export + N-ngày tự xoá
+- **Decision:** Chủ dự án XÁC NHẬN giữ nguyên đúng những gì code đã chạy (dev agent tự chọn qua
+  `[Inference]` lúc thi công, chưa từng được ghi nhận là "đã chốt" ở đâu cho tới hôm nay):
+  1. **Cột CSV export = bản HẸP.** File `.csv` chỉ có `ts, event_type, send_risk, mood_label,
+     intensity` — KHÔNG có `app_bundle_id` (tên app) và `choice` (Vẫn gửi/Đợi chút), dù 2 cột
+     này CÓ được lưu mã hoá tại chỗ trong `mood.enc`. Lý do chốt: dữ liệu rời khỏi vùng mã hoá
+     của app (đi vào 1 file CSV plaintext người dùng tự cầm) nên giữ CÀNG HẸP CÀNG TỐT, đúng
+     tinh thần "riêng tư mặc định" — hẹp hơn cả những gì lưu tại chỗ là lựa chọn AN TOÀN HƠN,
+     không phải thiếu sót.
+  2. **N-ngày tự xoá mặc định = 90 ngày**, giữ đủ 4 lựa chọn 30/60/90/Không bao giờ.
+- **Theo dõi thêm:** `docs/PRIVACY-NOTE.md` được cập nhật cùng lúc để nói rõ "xuất CSV hẹp hơn
+  lưu trữ" (bảng "Được lưu" liệt kê cả tên app + lựa chọn, nhưng export thì không) — tránh người
+  dùng đọc PRIVACY-NOTE rồi tưởng nhầm file xuất ra có đủ mọi thứ đã lưu.
+- **Rationale:** Đây là 1 trong "5 điểm gai" liệt kê ở entry ngay dưới (2026-07-14, mục 3) —
+  bị bỏ sót khi story 2.6 được code (không có commit/entry nào xác nhận), phát hiện lúc soát
+  lỗ hổng quy trình theo dõi kế hoạch. Xác nhận qua hội thoại trực tiếp với chủ dự án.
+- **Made by:** chủ dự án (xác nhận qua hội thoại) + Claude (tra code thật `MoodStoreMac.mm`
+  dòng 454-499, `PrivacyPaneView.mm` trước khi đề xuất, không đoán).
+- **Supersedes:** đóng điểm gai #3 trong entry "2026-07-14 — Epic 2 sharded thành 6 story" ngay dưới.
 
 ### 2026-07-14 — Epic 2 "Áo mới v2" sharded thành 6 story (đội macOS)
 - **Decision:** Chuẩn hoá roadmap 6 bước v2 (entry 2026-07-13) thành **Epic 2** trong `macos/epics.md` + 6 story context-object đầy đủ (`macos/stories/2.1–2.6.*.story.md`), giống đội iOS đã shard Round 2/3. Status: **2.1 done · 2.2 ready-for-dev · 2.3–2.6 backlog** (tuần tự). Compile qua 6 agent story-author song song; context chung ở `macos/context/sharding-context-epic2.md`.

@@ -1,3 +1,34 @@
+# ============================================================================
+# 🧭 ĐỌC ĐÂY TRƯỚC — mọi Agent, trong lẫn ngoài (Claude/Codex/Antigravity/khác),
+# PHẢI đọc khối này trước khi động tay vào bất kỳ story nào trong file.
+# ============================================================================
+#
+# 1. STORY TIẾP THEO CẦN LÀM = dòng ĐẦU TIÊN đọc từ trên xuống trong mục
+#    `stories:` (Epic 1) hoặc `v2_roadmap.steps` (Epic 2) có status KHÁC
+#    `done` và KHÁC `superseded`. File đã sắp đúng thứ tự phụ thuộc sẵn — cứ
+#    đọc từ trên xuống, gặp cái đầu tiên chưa xong là làm cái đó. Đây là QUY
+#    TẮC TỰ TÌM, không phải một con trỏ cứng — vì con trỏ cứng ("story kế là
+#    X") sẽ lại trôi lệch y hệt kiểu đã xảy ra với `epics.md` (xem 2026-07-14).
+#
+# 2. TRƯỚC khi coi 1 story là "xong": PHẢI cập nhật CẢ HAI, NGAY LÚC COMMIT
+#    CODE (không tách lượt sau) — (a) status của chính story đó ngay trong
+#    file này, VÀ (b) 1 dòng bằng chứng mới trong `docs/TEST_MATRIX.md`.
+#    Thiếu 1 trong 2 = CHƯA xong việc, dù code đã chạy sạch.
+#
+# 3. Muốn biết cái gì đã CHỨNG MINH chạy thật (không chỉ build sạch — có
+#    người gõ/nhìn thật) → đọc `docs/TEST_MATRIX.md`. KHÔNG suy diễn "build
+#    sạch = chạy đúng" từ file này.
+#
+# 4. Gặp chỗ phải đoán vì thiếu luật/nguồn sự thật (đặc biệt: nhận diện/pháp
+#    lý/riêng tư) → DỪNG, hỏi chủ dự án, rồi ghi NGAY 1 dòng vào
+#    `docs/FRICTION-LOG.md`. Một câu hỏi chỉ ghi trong file `.story.md` mà
+#    không có dòng ở đây coi như CHƯA từng hỏi — bài học rút ra 2026-07-14
+#    (xem `bmad-output/decision-log.md` entry "Chốt điểm gai #3").
+#
+# 5. `epics.md` chỉ là bản đồ/index — KHÔNG bao giờ ghi status ở đó nữa.
+#    Status thật DUY NHẤT sống ở file này.
+# ============================================================================
+#
 # BMAD Sprint Status — Sequencing System-of-Record
 # Generated: 2026-07-09T08:53:46Z
 # Last reconciled: 2026-07-13 (xem decision-log.md "Diện mạo mới v2: popover chia tab" + note bên dưới)
@@ -34,7 +65,7 @@
 project_name: "mindful-key — Bảng điều khiển macOS"
 track: "BMad Method"
 generated_at: "2026-07-09T08:53:46Z"
-last_updated: "2026-07-13"
+last_updated: "2026-07-15"
 
 # ---------------------------------------------------------------------------
 # EPICS
@@ -248,16 +279,29 @@ v2_roadmap:
       privacy_touch: true          # ghi nhật ký nhiều hơn + check-in — chủ dự án ĐÃ đồng thuận (decision-log 2026-07-13 dec.4/6); vẫn tái xác nhận lúc thi công
     - n: 4
       title: "Dòng sông cảm xúc + màn Soi lại 4 nhịp (câu hỏi là trung tâm)"
-      status: backlog
+      status: done                 # commit fa76313 — build-verified, CHỜ chủ dự án xác nhận bằng mắt (xem TEST_MATRIX.md)
       owner: mood-layer-agent
       note: "soát lại asset thang màu teal→cam theo HIẾN CHƯƠNG §2.3 (friction (a)) khi làm bước này"
     - n: 5
       title: "Chuông chi tiết + chọn/tải tiếng"
-      status: backlog
+      status: done                 # commit 6d15a0b — build-verified, CHỜ chủ dự án xác nhận bằng mắt (xem TEST_MATRIX.md)
       owner: platform-shell-agent
     - n: 6
       title: "Riêng tư: xuất CSV + tự xoá định kỳ"
-      status: backlog
+      status: done                 # commit c5646e9 — build-verified, CHỜ chủ dự án xác nhận bằng mắt (xem TEST_MATRIX.md)
       owner: mood-layer-agent
       privacy_touch: true
   out_of_scope_this_round: "PhoBERT + tín hiệu 'gõ thế nào' (lộ trình xa); iOS + hợp nhất lexicon (đội khác)"
+  status_note_2026_07_14: >
+    [ĐỒNG BỘ 2026-07-14] Cả 6 bước v2 (2.1–2.6) đã CODE XONG — commit tip hiện tại `c5646e9`
+    (Story 2.6). Trạng thái ở đây và ở `epics.md` bị lỗi thời (ghi backlog dù đã done) do
+    doc không theo kịp code — nay đồng bộ lại. MỌI dòng "done" trong Epic 2 đều mới ở mức
+    build-verified (build sạch + make test xanh + brand-lint 0 lỗi), CHƯA có ai mở app thật
+    kiểm bằng mắt/tay — xem `docs/TEST_MATRIX.md` để biết chính xác mức bằng chứng từng dòng.
+    Việc còn lại của Epic 2 KHÔNG phải code — là nghiệm thu tay 6 bước trên app thật.
+  status_note_2026_07_15: >
+    [CẬP NHẬT 2026-07-15] Triển khai thành công thiết lập Hotkey cho Bộ gõ (SwitchKeyStatus)
+    và Chuông (BellToggleHotkey) ngay tại Panel Popover. Cập nhật các card gom gọn trong NSScrollView
+    giữ nguyên Header & Footer. Dời Sensitivity Card sang tab Hôm nay. Khắc phục triệt để lỗi
+    đồng bộ Giờ yên lặng không lưu trực tiếp và bổ sung quyền thông báo lúc khởi động.
+

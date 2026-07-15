@@ -1,0 +1,283 @@
+# ============================================================================
+# 🧭 ĐỌC ĐÂY TRƯỚC — mọi Agent, trong lẫn ngoài (Claude/Codex/Antigravity/khác),
+# PHẢI đọc khối này trước khi động tay vào bất kỳ story nào trong file.
+# ============================================================================
+#
+# 1. STORY TIẾP THEO CẦN LÀM = dòng ĐẦU TIÊN đọc từ trên xuống trong mục
+#    `stories:` có status KHÁC `done` và KHÁC `superseded`. File đã sắp đúng
+#    thứ tự phụ thuộc sẵn (iOS chạy TUẦN TỰ, không song song, ở mọi round tới
+#    nay) — cứ đọc từ trên xuống, gặp cái đầu tiên chưa xong là làm cái đó.
+#    Đây là QUY TẮC TỰ TÌM, không phải con trỏ cứng — con trỏ cứng sẽ lại trôi
+#    lệch y hệt kiểu đã xảy ra với `epics.md` (xem note "retrofit" bên dưới).
+#
+# 2. TRƯỚC khi coi 1 story là "xong": PHẢI cập nhật CẢ HAI, NGAY LÚC COMMIT
+#    CODE (không tách lượt sau) — (a) status của chính story đó ngay trong
+#    file này, VÀ (b) 1 dòng bằng chứng mới trong `docs/TEST_MATRIX.md`.
+#    Thiếu 1 trong 2 = CHƯA xong việc, dù code đã chạy sạch.
+#
+# 3. Muốn biết cái gì đã CHỨNG MINH chạy thật (không chỉ build sạch — có
+#    người gõ/nhìn thật) → đọc `docs/TEST_MATRIX.md`. KHÔNG suy diễn "build
+#    sạch = chạy đúng" từ file này.
+#
+# 4. Gặp chỗ phải đoán vì thiếu luật/nguồn sự thật (đặc biệt: nhận diện/pháp
+#    lý/riêng tư) → DỪNG, hỏi chủ dự án, rồi ghi NGAY 1 dòng vào
+#    `docs/FRICTION-LOG.md`. Một câu hỏi chỉ ghi trong file `.story.md`/
+#    `tech-spec-r3.md` mà không có dòng ở đây coi như CHƯA từng hỏi — bài học
+#    rút ra 2026-07-14 (xem `bmad-output/decision-log.md` entry "Chốt điểm gai #3").
+#
+# 5. `epics.md` chỉ là bản đồ/index — KHÔNG bao giờ ghi status ở đó nữa.
+#    Status thật DUY NHẤT sống ở file này.
+# ============================================================================
+#
+# BMAD Sprint Status — iOS — Sequencing System-of-Record
+# Retrofit: 2026-07-14 — dựng lần đầu từ git log thật + epics.md + TEST_MATRIX.md,
+# KHÔNG đoán. Trước file này, iOS chỉ có `epics.md` (đã lệch: bảng Epic 2 ghi
+# "ready-for-dev" cho cả 6 story dù đã code xong từ commit c872c0c "Round 2 complete").
+# Project: mindful-key — iOS Keyboard Extension
+# Track: Quick Flow
+#
+# GHI CHÚ CẤU TRÚC: iOS chạy TUẦN TỰ (1 luồng, KHÔNG song song) ở mọi round tới
+# nay — khác macOS (có wave chạy song song nên cần owned_scope chi tiết để tránh
+# xung đột). Vì vậy file này KHÔNG liệt kê owned_scope đầy đủ cho từng story —
+# muốn biết phạm vi file chi tiết, đọc mục "Owned" trong chính file .story.md
+# (Round 1/2) hoặc mục tương ứng trong `tech-spec-r3.md` (Round 3, chưa có
+# .story.md riêng — xem note "3.x").
+#
+# STATUS LIFECYCLE: backlog → ready-for-dev → in-progress → review → done
+#   (hoặc superseded). `review` = code landed, build-verified, còn thiếu bước
+#   kiểm cuối (thường là device-verify tay). `in-progress` = code landed NHƯNG
+#   chính commit message/tech-spec thừa nhận CHƯA đạt định nghĩa hoàn thành.
+
+project_name: "mindful-key — iOS Keyboard Extension"
+track: "Quick Flow"
+last_updated: "2026-07-14"
+
+# ---------------------------------------------------------------------------
+# EPICS
+# ---------------------------------------------------------------------------
+epics:
+  - id: "epic-1"
+    title: "iOS Round 1 — Walking skeleton (gõ Telex thật + onboarding + test)"
+    status: done
+    note: >
+      7 done + 1 review (1.2 — code+bridge test PASS, còn thiếu device-verify
+      gõ Notes/Zalo thật + đo RAM). Xem TEST_MATRIX.md khối "Đội iOS Round 1".
+    story_ids:
+      - "1.1.harness-backspace-edge-cases"
+      - "1.2.telex-typing-bridge"
+      - "1.3.keyboard-shift-number-layer"
+      - "1.4.secure-field-privacy-guard"
+      - "1.5.xcodegen-build-verification"
+      - "1.6.app-group-heartbeat"
+      - "1.7.onboarding-two-screens"
+      - "1.8.ios-test-harness"
+
+  - id: "epic-2"
+    title: "iOS Round 2 — lõi Laban đầy đủ + lớp cảm xúc (sóng + chuông)"
+    status: done
+    note: >
+      Cả 6 story done, commit cuối c872c0c "Round 2 complete". epics.md CHƯA
+      từng cập nhật bảng Status theo việc này (vẫn ghi "ready-for-dev" cho cả
+      6 dòng tính tới 2026-07-14) — đúng lỗ hổng đồng bộ đã vá ở macOS, nay vá
+      tương tự cho iOS.
+    story_ids:
+      - "2.1.full-keyboard-suggestion-bar"
+      - "2.2.moodbridge-send-risk"
+      - "2.4.macro-text-expansion"
+      - "2.3.keyboard-settings-live-preview"
+      - "2.5.emotion-wave-ambient"
+      - "2.6.rest-reminder-bell"
+
+  - id: "epic-3"
+    title: "iOS Round 3 — nhật ký + soi lại + theme"
+    status: in-progress
+    note: >
+      CHƯA từng shard thành epic/story chuẩn trong epics.md — sống trong
+      `tech-spec-r3.md` + đã có code thật (commit 34b9026, cf1857e). 2/4 story
+      (3.2, 3.4) code landed nhưng CHÍNH commit message thừa nhận chưa đạt
+      định nghĩa hoàn thành (SC3) — xem status_note từng story bên dưới.
+    story_ids:
+      - "3.1.mood-journal-store"
+      - "3.2.theme-preset-live-preview"
+      - "3.3.end-of-day-reflection-screen"
+      - "3.4.reflection-reminder-notification"
+
+# ---------------------------------------------------------------------------
+# STORIES — thứ tự: epic trước, rồi tuần tự theo dependency (iOS không có wave
+# song song, nên không có parallel_set như macOS).
+# ---------------------------------------------------------------------------
+stories:
+  # ================= ROUND 1 (tuần tự, DONE) =================
+  - id: "1.1.harness-backspace-edge-cases"
+    title: "Mở rộng test_engine inject phím ⌫ + ca biên Loại 6"
+    epic_id: "epic-1"
+    status: done                 # commit gộp 3832e58 "mark Round 1 stories done"
+    file: "bmad-output/ios/stories/1.1.harness-backspace-edge-cases.story.md"
+    dependencies: []
+
+  - id: "1.2.telex-typing-bridge"
+    title: "Mốc B — nối vKeyHandleEvent → UITextDocumentProxy, gõ Telex ra dấu thật"
+    epic_id: "epic-1"
+    status: review                # commit 91a8742 — bridge test 5 ca PASS, git diff core/ rỗng.
+                                   # CHỜ device-verify: gõ "vieetj"→"việt" thật trong Notes/Zalo + đo RAM.
+                                   # Xem TEST_MATRIX.md dòng "Gõ Telex ra dấu qua core/engine — Mốc B".
+    file: "bmad-output/ios/stories/1.2.telex-typing-bridge.story.md"
+    dependencies:
+      - "1.1.harness-backspace-edge-cases"
+
+  - id: "1.3.keyboard-shift-number-layer"
+    title: "Shift/Caps (one-shot + lock) + lớp số & ký hiệu (123↔ABC)"
+    epic_id: "epic-1"
+    status: done                 # commit c6c042d; build-verified, chưa ai thử chạm/double-tap thật trên simulator
+    file: "bmad-output/ios/stories/1.3.keyboard-shift-number-layer.story.md"
+    dependencies:
+      - "1.2.telex-typing-bridge"
+
+  - id: "1.4.secure-field-privacy-guard"
+    title: "Loại ô mật khẩu — không đọc/log/mạng"
+    epic_id: "epic-1"
+    status: done                 # commit 7760f38; negative-test qua audit tĩnh (grep 0 NSLog/network)
+    file: "bmad-output/ios/stories/1.4.secure-field-privacy-guard.story.md"
+    dependencies:
+      - "1.2.telex-typing-bridge"
+
+  - id: "1.5.xcodegen-build-verification"
+    title: "xcodegen generate + xcodebuild iOS simulator sạch; macOS vẫn xanh"
+    epic_id: "epic-1"
+    status: done                 # commit dfb083d — đóng Risk R5 tech-spec
+    file: "bmad-output/ios/stories/1.5.xcodegen-build-verification.story.md"
+    dependencies:
+      - "1.2.telex-typing-bridge"
+
+  - id: "1.6.app-group-heartbeat"
+    title: "Entitlements App Group 2 target + AppGroupBridge heartbeat"
+    epic_id: "epic-1"
+    status: done                 # commit 6e83b8d; round-trip 2 tiến trình thật CHƯA thử (device-only, xem TEST_MATRIX)
+    file: "bmad-output/ios/stories/1.6.app-group-heartbeat.story.md"
+    dependencies:
+      - "1.5.xcodegen-build-verification"
+
+  - id: "1.7.onboarding-two-screens"
+    title: "2 màn onboarding (kích hoạt + Full Access minh bạch) + Home"
+    epic_id: "epic-1"
+    status: done                 # commit d874c84 + fix 5b225c3 (lối thoát thủ công khi App Group heartbeat hỏng)
+    file: "bmad-output/ios/stories/1.7.onboarding-two-screens.story.md"
+    dependencies:
+      - "1.6.app-group-heartbeat"
+
+  - id: "1.8.ios-test-harness"
+    title: "tests/ios test thật — bridge + build-smoke"
+    epic_id: "epic-1"
+    status: done                 # commit 0c1ade7; verify RED thật (bẻ scheme → exit 2, trả lại → 0)
+    file: "bmad-output/ios/stories/1.8.ios-test-harness.story.md"
+    dependencies:
+      - "1.2.telex-typing-bridge"
+      - "1.5.xcodegen-build-verification"
+
+  # ================= ROUND 2 (tuần tự, DONE) =================
+  - id: "2.1.full-keyboard-suggestion-bar"
+    title: "Telex<->VNI toggle + empty suggestion bar surface (FR-A11 nền)"
+    epic_id: "epic-2"
+    status: done                 # commit 7fc34b9
+    file: "bmad-output/ios/stories/2.1.full-keyboard-suggestion-bar.story.md"
+    dependencies:
+      - "1.8.ios-test-harness"
+
+  - id: "2.2.moodbridge-send-risk"
+    title: "MoodBridge tính send-risk on-device (FR-A09)"
+    epic_id: "epic-2"
+    status: done                 # commit 7d8777c, xác nhận docs 78d1174 "mark story 2.2 done (after Opus review)"
+    file: "bmad-output/ios/stories/2.2.moodbridge-send-risk.story.md"
+    dependencies:
+      - "2.1.full-keyboard-suggestion-bar"
+
+  - id: "2.4.macro-text-expansion"
+    title: "Macro text expansion wired vào keyboard extension (FR-A15 tiering R2)"
+    epic_id: "epic-2"
+    status: done                 # commit 02b9439
+    file: "bmad-output/ios/stories/2.4.macro-text-expansion.story.md"
+    dependencies:
+      - "2.2.moodbridge-send-risk"
+
+  - id: "2.3.keyboard-settings-live-preview"
+    title: "Keyboard settings screen với live preview (FR-A11)"
+    epic_id: "epic-2"
+    status: done                 # commit 79d5478
+    file: "bmad-output/ios/stories/2.3.keyboard-settings-live-preview.story.md"
+    dependencies:
+      - "2.4.macro-text-expansion"
+
+  - id: "2.5.emotion-wave-ambient"
+    title: "Emotion wave ambient trên suggestion bar (FR-A08)"
+    epic_id: "epic-2"
+    status: done                 # commit fcac072, xác nhận docs f3c79fc "mark story 2.5 done (after Opus identity-review)"
+    file: "bmad-output/ios/stories/2.5.emotion-wave-ambient.story.md"
+    dependencies:
+      - "2.1.full-keyboard-suggestion-bar"
+      - "2.2.moodbridge-send-risk"
+
+  - id: "2.6.rest-reminder-bell"
+    title: "Rest-reminder bell sau N câu căng liên tiếp (FR-A10)"
+    epic_id: "epic-2"
+    status: done                 # commit 092f1aa, xác nhận docs c872c0c "mark story 2.6 done — Round 2 complete"
+    file: "bmad-output/ios/stories/2.6.rest-reminder-bell.story.md"
+    dependencies:
+      - "2.2.moodbridge-send-risk"
+      - "2.3.keyboard-settings-live-preview"
+
+  # ================= ROUND 3 (tuần tự, TRẠNG THÁI TRỘN — xem note từng dòng) =================
+  # Chưa từng shard thành .story.md riêng — spec sống trong tech-spec-r3.md.
+  - id: "3.1.mood-journal-store"
+    title: "Kho nhật ký cảm xúc on-device mã hóa + consent (FR-A13 nền)"
+    epic_id: "epic-3"
+    status: done                 # commit 34b9026; host-verified crypto/consent qua tests/ios/mood_journal_store_test
+                                  # (6 ca PASS, negative-test "không plaintext"). Cross-process device-verify CHƯA
+                                  # làm (keychain-access-groups cần Team ID thật) — xem TEST_MATRIX.md.
+    file: "bmad-output/ios/tech-spec-r3.md#story-31"
+    dependencies:
+      - "2.6.rest-reminder-bell"
+
+  - id: "3.2.theme-preset-live-preview"
+    title: "Theme preset trung tính + live preview bàn phím (FR-A12)"
+    epic_id: "epic-3"
+    status: in-progress          # commit cf1857e — ThemeBridge + màn Giao diện + persist qua App Group ĐÃ code.
+                                  # NHƯNG chính commit message ghi rõ "Bàn phím áp nền = việc sau" — tiêu chí
+                                  # hoàn thành SC3 "đổi preset → bàn phím đổi ngay" CHƯA đạt. KHÔNG tính done.
+    file: "bmad-output/ios/tech-spec-r3.md#story-32"
+    dependencies:
+      - "3.1.mood-journal-store"
+
+  - id: "3.3.end-of-day-reflection-screen"
+    title: "Màn soi lại cuối ngày trong tab Mặt hồ (FR-A14 màn)"
+    epic_id: "epic-3"
+    status: done                 # commit cf1857e — MoodLakeViewController: câu hỏi phản chiếu trọng tâm +
+                                  # số liệu Q4 phụ, đúng SC3. CHƯA ai xem/thử thật trên máy (build-verified).
+    file: "bmad-output/ios/tech-spec-r3.md#story-33"
+    dependencies:
+      - "3.1.mood-journal-store"
+
+  - id: "3.4.reflection-reminder-notification"
+    title: "Thông báo nhắc soi lại cuối ngày, opt-in (FR-A14 notification)"
+    epic_id: "epic-3"
+    status: in-progress          # commit cf1857e — BellSettingsViewController + BellScheduleSettingsBridge
+                                  # persist lựa chọn giờ/on-off ĐÃ code. NHƯNG chính commit message ghi rõ
+                                  # "CHƯA có scheduler thật ngân theo lịch" — chưa dùng UNUserNotificationCenter
+                                  # thật, tiêu chí hoàn thành SC3 CHƯA đạt. KHÔNG tính done.
+    file: "bmad-output/ios/tech-spec-r3.md#story-34"
+    dependencies:
+      - "3.3.end-of-day-reflection-screen"
+
+# ---------------------------------------------------------------------------
+# SEQUENCING SUMMARY
+# ---------------------------------------------------------------------------
+sequencing_summary:
+  total_stories: 18               # 8 (R1) + 6 (R2) + 4 (R3)
+  done: 14                        # R1: 7 · R2: 6 · R3: 1 (3.1, 3.3)
+  review: 1                       # 1.2 (device-verify tay còn treo)
+  in_progress: 2                  # 3.2, 3.4 (code landed, chưa đạt định nghĩa hoàn thành SC3)
+  handoff_notes: >
+    [2026-07-14] File này là bản RETROFIT đầu tiên cho iOS — trước đó chỉ có epics.md (lệch,
+    xem note epic-2). Việc còn lại KHÔNG phải "code từ đầu" cho R1/R2 (đã xong, chỉ còn
+    device-verify tay một số dòng — xem TEST_MATRIX.md) — mà là HOÀN TẤT 3.2 (áp theme thật vào
+    bàn phím) + 3.4 (scheduler notification thật) để đóng Round 3, rồi shard R3 thành .story.md
+    chuẩn nếu đội muốn tiếp tục mở rộng (R4 ký thật/notarize/TestFlight đang out-of-scope).
