@@ -26,3 +26,5 @@ tests/ios/*_test
 # Local/IDE configs
 .claude/
 *.html
+# ...nhưng landing page trong site/ PHẢI được commit (deploy qua Coolify)
+!site/**/*.html
