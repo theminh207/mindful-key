@@ -1347,7 +1347,12 @@
                                             </connections>
                                         </customView>
                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MKLblOtherLang">
-                                            <rect key="frame" x="64" y="24" width="300" height="16"/>
+                                            <!-- [MINDFUL] Epic 3 (nghiệm thu 2026-07-15, "lệch và không cân đối"): 11 công tắc
+                                                 của tab Kiểu gõ chia 6 trái/5 phải, dòng này (duy nhất lẻ) từng rộng 300pt —
+                                                 đọc như thuộc cột trái, để trống hẳn nửa phải cùng hàng. Nới thành 436pt
+                                                 (64 + 436 = 500, khớp lề phải 20pt của box rộng 520) để đọc đúng là 1 hàng
+                                                 riêng full-width bên dưới lưới 2 cột, không phải 1 ô cột trái bị rớt lại. -->
+                                            <rect key="frame" x="64" y="24" width="436" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" lineBreakMode="clipping" title="Tắt tiếng Việt khi bộ gõ hệ thống khác tiếng Anh" id="MKCelOtherLang">
                                                 <font key="font" usesAppearanceFont="YES"/>

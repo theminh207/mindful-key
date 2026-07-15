@@ -434,6 +434,16 @@ epic3_acceptance:
         rule chấm-sóng. Đã vá 2 bug xác nhận riêng (xem epic-4 story 1.3), NHƯNG việc vẽ lại sông
         thật + trục giờ + gate số liệu theo mockup A1 vẫn CÒN NGUYÊN cho gate này — to hơn "chỉ
         thêm 1 link" như roadmap ban đầu hình dung.
+        ⚠️ [2026-07-15 — PHÌNH SCOPE LẦN 2, chủ dự án tự test tay + trả lời câu hỏi] Nghiệm thu
+        tay lần 2 xác nhận đúng dự đoán trên: "Hôm nay" trong cửa sổ chỉ có tiêu đề + khung sông
+        rỗng. Chủ dự án CHỐT THÊM: sông phải xem được theo **Ngày + Tuần + THÁNG** (mockup A2 gốc
+        chỉ có Ngày+Tuần — Tháng là MỞ RỘNG có chủ đích, không phải suy diễn). Hệ quả kỹ thuật:
+        `MoodStoreMac` hiện **0 hàm** lấy dữ liệu quá 1 ngày (đã grep xác nhận — không có
+        `FetchWeek*`/`FetchMonth*` nào) — việc viết MỚI cả tầng đọc dữ liệu lẫn tầng vẽ, không phải
+        nối dây có sẵn như F14. Gate này giờ tách được 3 việc: (a) mount GatekeeperCardView (đã có,
+        tái dùng) — nhỏ; (b) vẽ sông NGÀY thật + trục giờ + gate số liệu (nguồn `FetchTodaySamples`
+        đã có) — vừa; (c) thêm `FetchWeekSamples`/`FetchMonthSamples` + UI chuyển Ngày/Tuần/Tháng
+        — LỚN, việc mới hoàn toàn, nên tách story riêng khi bắt tay, đừng gộp 1 lần code.
     - g: 4
       title: "Điều tra: mục 'Hệ thống' trắng trơn hoàn toàn"
       findings: ["F1"]
@@ -462,6 +472,24 @@ epic3_acceptance:
         (AppDelegate.m) giờ mở thẳng mục "Chuông" (index 1) của cửa sổ Cài đặt — 1 UI chuông duy
         nhất trong app.
       evidence: "build sạch · make test xanh · brand-lint 0 · `git diff core/` rỗng. CHƯA ai nhìn app thật."
+    - g: 6
+      title: "Bố cục 11 công tắc tab Bộ gõ ▸ Kiểu gõ lệch (F15, chủ dự án tự phát hiện lúc test tay lần 2)"
+      findings: ["F15"]
+      status: review
+      owner: platform-shell-agent
+      note: >
+        [2026-07-15] Chủ dự án tự test, gửi ảnh: 11 công tắc chia 6 cột trái/5 cột phải, dòng dư
+        ("Tắt tiếng Việt khi bộ gõ hệ thống khác tiếng Anh") nằm trơ trọi ở đáy cột trái, không có
+        cặp bên phải cùng hàng. XÁC NHẬN bằng toạ độ storyboard thật (không phải cảm giác): 2 cột
+        đều giãn cách đều 35pt, nhưng trái dừng ở y=24, phải dừng ở y=55 — chênh đúng 1 hàng.
+        Đã soát thêm nghi vấn "có nút không dùng được": grep toàn bộ 11 biến UserDefaults tương ứng
+        — cả 11 đều được engine/OpenKey.mm đọc lại ở ≥3 chỗ ngoài file UI, không có nút chết. Có 1
+        dây phụ thuộc dễ gây hiểu lầm: "Kiểm tra chính tả" TẮT sẽ khoá (xám, không bấm được) 3 nút
+        khác — ĐÚNG THIẾT KẾ (`onCheckSpelling:`, ViewController.m:253-258), không phải bug.
+        ĐÃ VÁ phần bố cục: nới nhãn `MKLblOtherLang` từ 300pt → 436pt (64+436=500, khớp lề phải
+        20pt của box rộng 520) — đọc đúng thành 1 hàng full-width riêng dưới lưới 2 cột, không còn
+        như 1 ô cột trái bị rớt lại với nửa phải bỏ trống.
+      evidence: "build sạch (0 ibtool notice mới) · make test xanh (16/16) · brand-lint 0 · `git diff core/` rỗng. CHƯA ai nhìn app thật."
   blocked_on_owner: []   # F9/F10/F2 đã chốt 2026-07-15 (xem decision-log.md "Chốt 3 câu chặn Epic 3" +
                           # "Có thể để 30/60 và thêm ô tùy chỉnh...") — record vĩnh viễn nằm ở decision-log,
                           # không lặp lại ở đây để tránh 2 nguồn lệch nhau (đúng bài học epics.md/status).
