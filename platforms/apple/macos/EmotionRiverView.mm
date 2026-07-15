@@ -41,6 +41,14 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
     CGFloat w = NSWidth(b);
     CGFloat maxWaveH = NSHeight(b) * 0.42;
 
+    // [MINDFUL] Vá crash (2026-07-16): view chưa layout xong (vd frame đầu tiên lúc mới add vào
+    // hierarchy) có thể khiến bounds rộng 0 — (x/w) = 0/0 = NaN, ép NaN sang NSUInteger là hành
+    // vi không xác định, có thể ra chỉ số vượt quá _samples.count -> throw NSRangeException, crash
+    // CẢ APP (drawRect: chạy giữa chu kỳ vẽ của AppKit, không ai bắt exception hộ). Việc này luôn
+    // tồn tại nhưng CHƯA từng lộ vì trước nay k luôn = 0 (chưa có dữ liệu thật) nên return sớm ở
+    // trên — chỉ lộ ra tối nay khi seed dữ liệu giả lập làm k > 0 lần đầu.
+    if (w <= 0) return;
+
     NSColor *teal = [[Brand teal] colorUsingColorSpace:[NSColorSpace sRGBColorSpace]];
 
     NSBezierPath *path = [NSBezierPath bezierPath];
@@ -52,9 +60,9 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
     BOOL lastWasGap = YES;
     for (CGFloat x = 0; x <= w; x += 3.0) {
         CGFloat f = (k > 1) ? (x / w) * (CGFloat)(k - 1) : 0;
-        NSUInteger i = (NSUInteger)floor(f);
+        NSUInteger i = MIN((NSUInteger)floor(f), k - 1);   // kẹp cứng — không bao giờ vượt bounds dù f bất thường
         CGFloat fr = f - (CGFloat)i;
-        
+
         id val0 = _samples[i];
         id val1 = _samples[MIN(i + 1, k - 1)];
         
