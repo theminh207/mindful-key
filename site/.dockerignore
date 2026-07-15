@@ -1,3 +1,6 @@
 Dockerfile
 .dockerignore
 README.md
+# Coolify tự sinh docker-compose.yaml trong /site khi deploy — đừng để COPY lôi vào web dir
+docker-compose.yaml
+docker-compose.yml
