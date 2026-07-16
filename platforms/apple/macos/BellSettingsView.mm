@@ -43,6 +43,16 @@ static const CGFloat kExplainH   = 44.0;
 static const CGFloat kInvalidH   = 16.0;
 static const CGFloat kLabelWQ    = 90.0;   // cột nhãn cho hàng "Giờ yên lặng"
 static const CGFloat kBellBtnSize = 48.0;  // "Bộ tiếng" — cạnh nút icon chuông
+
+// [MINDFUL] Sàn/trần nhịp chuông — MỘT nguồn sự thật cho CẢ lối ghi (commitCustomInterval) lẫn lối
+// hiện (refresh). Lý do đầy đủ + bài học "app áp luật thì phải NÓI luật": xem ghi chú dài ở
+// commitCustomInterval. Định nghĩa phải nằm TRÊN mọi điểm dùng, nên đặt ở đây cùng các hằng khác.
+#if DEBUG
+static const NSInteger kIntervalFloor = 1;    // [DEV] cho xuống 1 phút để TEST — biến mất ở Release
+#else
+static const NSInteger kIntervalFloor = 15;   // decision-log 2026-07-15: dày hơn = hối thúc + nhật ký quá chi tiết
+#endif
+static const NSInteger kIntervalCeil  = 240;
 static const CGFloat kBellGap     = kGapMd; // khoảng cách giữa 2 icon chuông liền kề (dùng chung
                                              // với updateBellIndicatorAnimated: — đổi thì đổi cả 2 chỗ)
 
@@ -539,8 +549,14 @@ static NSString *StringFromHotkey(int hotkey) {
     extern int vBellInterval;
     int curInterval = vBellInterval > 0 ? vBellInterval : (int)[d integerForKey:@"vBellInterval"];
     if (curInterval <= 0) curInterval = 60; // Mặc định 60
-    if (curInterval < 15) curInterval = 15;
-    if (curInterval > 240) curInterval = 240;
+    // [MINDFUL] Vá 2026-07-16 — TỪNG kẹp cứng `< 15` ở đây trong khi commitCustomInterval kẹp theo
+    // kIntervalFloor (= 1 ở bản DEBUG). Hậu quả chỉ ở bản DEBUG nhưng đúng loại lỗi tệ nhất: đặt
+    // nhịp 2 phút → chuông CHẠY 2 phút thật, mà ô "Tùy chỉnh" refresh xong lại hiện 15. Ô số nói
+    // dối về chính thứ nó điều khiển — cùng lớp bug với "sensitivity control lying" (876d718).
+    // Đọc chung kIntervalFloor/kIntervalCeil (khai báo dưới, forward-declare ở đầu file) = 1 nguồn
+    // sự thật cho cả lối ghi lẫn lối hiện. Bản Release không đổi hành vi: sàn vẫn 15 ở cả 2 nơi.
+    if (curInterval < kIntervalFloor) curInterval = (int)kIntervalFloor;
+    if (curInterval > kIntervalCeil)  curInterval = (int)kIntervalCeil;
 
     _intervalSeg.selectedIndex = (curInterval == 30) ? 0 : ((curInterval == 60) ? 1 : -1);
     _customIntervalField.integerValue = curInterval;
@@ -600,12 +616,9 @@ static NSString *StringFromHotkey(int hotkey) {
 // KHÔNG một lời giải thích → kết luận "tính năng chỉnh giờ chuông hỏng, không có cách nào thiết lập".
 // App áp luật mà không chịu NÓI luật thì người dùng chỉ thấy nó hỏng. Nay nói thẳng lý do ngay tại
 // chỗ, giọng quan sát — không phải "bạn nhập sai", mà "sàn là 15, và đây là vì sao".
-#if DEBUG
-static const NSInteger kIntervalFloor = 1;    // [DEV] cho xuống 1 phút để TEST — biến mất ở Release
-#else
-static const NSInteger kIntervalFloor = 15;   // decision-log 2026-07-15: dày hơn = hối thúc + nhật ký quá chi tiết
-#endif
-static const NSInteger kIntervalCeil  = 240;
+//
+// Định nghĩa (không chỉ khai báo) đặt ở ĐẦU file cạnh các hằng layout — `refresh` (phía trên) cũng
+// phải kẹp bằng đúng 2 hằng này, xem ghi chú vá 2026-07-16 tại đó.
 
 - (void)commitCustomInterval {
     NSInteger typed = _customIntervalField.integerValue;
@@ -709,10 +722,10 @@ static const NSInteger kIntervalCeil  = 240;
     CGFloat gap = kBellGap;
     CGFloat startX = [self bellRowStartX];
     CGFloat targetX = startX + _bellSelectedIndex * (btnSize + gap) + (btnSize - 12.0) / 2.0;
-    
+
     NSRect currentFrame = _bellIndicator.frame;
     currentFrame.origin.x = targetX;
-    
+
     if (animated) {
         [NSAnimationContext runAnimationGroup:^(NSAnimationContext * _Nonnull context) {
             context.duration = 0.25;
@@ -720,6 +733,20 @@ static const NSInteger kIntervalCeil  = 240;
         }];
     } else {
         _bellIndicator.frame = currentFrame;
+    }
+
+    // [MINDFUL] Polish (2026-07-16) — trước đây 3 icon "Bộ tiếng" LUÔN cùng 1 độ đậm teal, chỉ có
+    // chấm 12x12 bên dưới báo icon nào đang chọn — dễ lướt qua, không rõ trạng thái "đang chọn"
+    // (10-point audit "Interactive States"). Làm mờ 2 icon KHÔNG chọn (cùng màu teal, chỉ giảm
+    // alpha) — không đổi màu ngoài token, không thêm icon/emoji, chỉ tăng độ tương phản chọn/không.
+    NSArray<NSButton *> *bellButtons = @[_btnBell1, _btnBell2, _btnBell3];
+    for (NSInteger i = 0; i < (NSInteger)bellButtons.count; i++) {
+        CGFloat targetAlpha = (i == _bellSelectedIndex) ? 1.0 : 0.38;
+        if (animated) {
+            bellButtons[i].animator.alphaValue = targetAlpha;
+        } else {
+            bellButtons[i].alphaValue = targetAlpha;
+        }
     }
 }
 

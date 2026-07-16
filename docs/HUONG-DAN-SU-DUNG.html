@@ -27,6 +27,9 @@
   section{padding:52px 0}
   section+section{border-top:1px solid var(--divider)}
   .h2{font-size:30px;font-weight:700;letter-spacing:-.3px;margin:12px 0 0}
+  /* Cấp giữa .h2 (30px, mở section) và .step h3 (17px, trong thẻ bước) — cho tiểu mục nằm TRONG
+     một section mà không cần cắt thành section mới. Dùng lại thang cỡ/biến màu sẵn có. */
+  .h3{font-size:21px;font-weight:700;letter-spacing:-.2px;margin:34px 0 0}
   .sec-lead{max-width:62ch;margin-top:14px}
 
   .note{background:var(--card);border:1px solid var(--divider);border-left:3px solid var(--teal);
@@ -162,13 +165,24 @@
       <div class="steps">
         <div class="step"><div class="n">1</div><div><h3>App nhìn cách bạn gõ</h3><p>Chỉ khi bộ gõ đang bật và bạn đang gõ tiếng Việt. Không đụng tới ô mật khẩu, không đọc gì khi bạn tắt bộ gõ hay gõ tiếng Anh.</p></div></div>
         <div class="step"><div class="n">2</div><div><h3>Mỗi câu thành một mức cường độ</h3><p>Xong một câu, app cảm độ căng của câu chữ — một mức từ <b>0 (êm)</b> tới <b>1 (căng)</b>. Con số này <b>không bao giờ hiện ra</b>; nó chỉ quyết định con sóng gợn cao hay thấp.</p></div></div>
-        <div class="step"><div class="n">3</div><div><h3>Mỗi nhịp chuông, ghi một điểm</h3><p>Cứ sau một khoảng bạn tự chọn (30 hay 60 phút), app lấy trung bình rồi lặng lẽ đặt <b>một chấm</b> lên dòng sông. Lúc bạn không gõ, sông để trống — không bịa số.</p></div></div>
+        <div class="step"><div class="n">3</div><div><h3>Mỗi nhịp chuông, ghi một điểm</h3><p>Cứ sau một khoảng bạn tự chọn (30 hay 60 phút, hoặc tự điền số phút — ít nhất 15), app lấy trung bình rồi lặng lẽ đặt <b>một chấm</b> lên dòng sông. Lúc bạn không gõ, sông để trống — không bịa số. Nhịp này vẫn đập kể cả khi bạn tắt tiếng chuông: bạn tắt <i>tiếng</i>, không phải tắt việc ghi nhận.</p></div></div>
         <div class="step"><div class="n">4</div><div><h3>Tất cả ở lại trên máy bạn</h3><p>Nhật ký được mã hoá và lưu ngay trên máy. Không một câu chữ nào rời khỏi máy của bạn.</p></div></div>
       </div>
 
       <div class="note">
         <p style="margin:0"><span class="k">Vì sao giấu con số?</span> Vì ngay khoảnh khắc bạn thấy “hôm nay 7/10”, bạn bắt đầu thi đua với chính mình — đúng thứ mà chánh niệm muốn buông. App đưa cho bạn tấm gương, không đưa điểm thi.</p>
       </div>
+
+      <h3 class="h3">Độ nhạy — vạch do bạn kẻ</h3>
+      <p class="p">Con sóng là mặt hồ, còn <b>Độ nhạy</b> là vạch bạn kẻ trên bờ: nước chạm vạch thì app mới gọi đó là “gợn”.</p>
+      <p class="p">Kéo về <b>Ít nhạy</b>, chỉ những lúc thật căng mới được gọi tên — ngày của bạn sẽ hay “vẫn êm”. Kéo sang <b>Nhạy</b>, những gợn nhỏ cũng được ghi nhận, và chuông cũng rung sớm hơn. Không mức nào đúng hơn mức nào — nó là chuyện bạn muốn tấm gương soi kỹ tới đâu.</p>
+      <div class="note">
+        <p style="margin:0"><span class="k">Một thứ không đổi theo núm này:</span> <b>người gác cổng luôn giữ nguyên vạch của nó.</b> Bạn vặn nhỏ để đỡ ồn chuông, chứ không phải để gỡ tấm lưới chặn tin nhắn lúc đang giận.</p>
+      </div>
+
+      <h3 class="h3">App nghe được tới đâu</h3>
+      <p class="p">Nói thẳng để bạn không trông đợi nhầm: app nhận ra khi bạn <b>nói thẳng ra</b> — “bực”, “mệt”, “chán”, “cảm ơn”. Còn khi bạn nói vòng, nói mát (“Tao đang rất bình tĩnh đấy nhé”), nó không nhận ra; mặt hồ lúc đó sẽ phẳng dù lòng bạn không phẳng.</p>
+      <p class="p">Nên nhớ: <b>sóng phẳng không có nghĩa là bạn ổn — nó chỉ có nghĩa app không nghe thấy gì.</b> Người biết rõ nhất vẫn luôn là bạn.</p>
 
       <div class="never">
         <div class="eyebrow" style="color:var(--stone)">App này cố ý KHÔNG có</div>
