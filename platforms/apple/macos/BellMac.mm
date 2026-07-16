@@ -91,6 +91,29 @@ static BOOL isSnoozed(void) {
     return g_snoozeUntil > 0 && [NSDate timeIntervalSinceReferenceDate] < g_snoozeUntil;
 }
 
+// [MINDFUL] 2026-07-16 — xem hợp đồng ở BellMac.h. Tiếng riêng cho khung chấm nhịp.
+void BellMac_PlayCheckinChime(void) {
+    // Cùng bộ cổng chặn với bellTick(): tắt chuông · tạm hoãn · ngoài giờ chuông. Thiếu chỗ này
+    // thì khung chấm nhịp sẽ kêu lúc 3h sáng giữa giờ yên lặng — đúng thứ người dùng đã tắt đi.
+    NSInteger hour = [[NSCalendar currentCalendar] component:NSCalendarUnitHour fromDate:[NSDate date]];
+    if (!vBell || isSnoozed() || !isInBellRange(hour))
+        return;
+
+    NSUserDefaults *d = [NSUserDefaults standardUserDefaults];
+    // Tôn trọng "Im" + âm lượng 0 y như chuông chính, dù tiếng này là tiếng CỐ ĐỊNH không theo lựa chọn.
+    if ([[d stringForKey:@"vBellSoundName"] isEqualToString:kBellSoundMuteName])
+        return;
+    float vol = [d objectForKey:@"vBellVolume"] ? (float)[d doubleForKey:@"vBellVolume"] : 0.6f;
+    if (vol <= 0) return;
+    vol *= 0.6f;   // "nhỏ" — nhẹ hơn hẳn chuông chính: đây là lời mời, không phải tiếng gọi
+
+    NSSound *sound = [NSSound soundNamed:@"Chuông gió"];
+    if (!sound) return;   // thiếu file thì IM — KHÔNG NSBeep, beep hệ thống nghe như báo lỗi
+    if (sound.isPlaying) [sound stop];
+    sound.volume = vol;
+    [sound play];
+}
+
 static void bellTick(NSTimer *timer) {
     if (!vBell || isSnoozed())
         return;

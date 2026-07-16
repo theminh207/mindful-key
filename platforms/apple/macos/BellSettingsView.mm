@@ -410,10 +410,12 @@ static NSString *StringFromHotkey(int hotkey) {
 
     _customIntervalSuffix = [self label:@"phút" font:[self fCaption] color:[Brand muted]];
 
-    _noteInterval = [self label:@"Sàn 15 · trần 240 phút. Cứ mỗi nhịp chuông, app ghi một điểm lên dòng sông cảm xúc ở tab Hôm nay. Một nhịp, hai vai."
-                           font:[self fCaption] color:[Brand muted]];
+    _noteInterval = [self label:@"" font:[self fCaption] color:[Brand muted]];
     _noteInterval.lineBreakMode = NSLineBreakByWordWrapping;
     _noteInterval.maximumNumberOfLines = 3;
+    // [MINDFUL] 2026-07-16 — câu này giờ đổi theo tình huống (báo khi số bị kẹp), nên sinh từ
+    // resetIntervalNote thay vì viết cứng ở đây: 2 bản chuỗi là sớm muộn lệch sàn/trần nhau.
+    [self resetIntervalNote];
 }
 
 
@@ -577,17 +579,52 @@ static NSString *StringFromHotkey(int hotkey) {
 // [MINDFUL] decision-log 2026-07-15 — sàn 15 / trần 240. Kẹp thay vì âm thầm nhận giá trị ngoài
 // khoảng: ghi giá trị ĐÃ KẸP trở lại ô để người dùng thấy rõ số họ gõ có bị chỉnh hay không (task
 // batch "Hệ thống + Chuông": "không âm thầm nhận").
+//
+// [MINDFUL] 2026-07-16 — "ghi số đã kẹp trở lại ô" HOÁ RA CHƯA ĐỦ. Chủ dự án gõ 5, ô nhảy về 15,
+// KHÔNG một lời giải thích → kết luận "tính năng chỉnh giờ chuông hỏng, không có cách nào thiết lập".
+// App áp luật mà không chịu NÓI luật thì người dùng chỉ thấy nó hỏng. Nay nói thẳng lý do ngay tại
+// chỗ, giọng quan sát — không phải "bạn nhập sai", mà "sàn là 15, và đây là vì sao".
+#if DEBUG
+static const NSInteger kIntervalFloor = 1;    // [DEV] cho xuống 1 phút để TEST — biến mất ở Release
+#else
+static const NSInteger kIntervalFloor = 15;   // decision-log 2026-07-15: dày hơn = hối thúc + nhật ký quá chi tiết
+#endif
+static const NSInteger kIntervalCeil  = 240;
+
 - (void)commitCustomInterval {
-    NSInteger minutes = _customIntervalField.integerValue;
-    if (minutes < 15) minutes = 15;
-    if (minutes > 240) minutes = 240;
+    NSInteger typed = _customIntervalField.integerValue;
+    NSInteger minutes = typed;
+    if (minutes < kIntervalFloor) minutes = kIntervalFloor;
+    if (minutes > kIntervalCeil) minutes = kIntervalCeil;
     _customIntervalField.integerValue = minutes;
+
+    // Chỉ nói khi số THẬT SỰ bị chỉnh. Gõ đúng khoảng thì im — không cần vỗ tay khen.
+    if (typed != minutes && typed > 0) {
+        if (minutes == kIntervalFloor) {
+            _noteInterval.stringValue = [NSString stringWithFormat:
+                @"Đã đặt %ld phút. Sàn là %ld — dày hơn nữa thì chuông thành hối thúc, và nhật ký thành dòng thời gian cảm xúc quá chi tiết.",
+                (long)minutes, (long)kIntervalFloor];
+        } else {
+            _noteInterval.stringValue = [NSString stringWithFormat:
+                @"Đã đặt %ld phút. Trần là %ld — thưa hơn nữa thì dòng sông gần như không còn điểm nào để nối.",
+                (long)minutes, (long)kIntervalCeil];
+        }
+    } else {
+        [self resetIntervalNote];
+    }
 
     extern int vBellInterval;
     vBellInterval = (int)minutes;
     [[NSUserDefaults standardUserDefaults] setInteger:minutes forKey:@"vBellInterval"];
     _intervalSeg.selectedIndex = (minutes == 30) ? 0 : ((minutes == 60) ? 1 : -1);
     BellMac_ApplySettings();
+}
+
+// Câu nền mặc định của ô Nhịp — 1 nguồn, dùng cả lúc dựng view lẫn lúc trả về sau khi báo kẹp.
+- (void)resetIntervalNote {
+    _noteInterval.stringValue = [NSString stringWithFormat:
+        @"Sàn %ld · trần %ld phút. Gõ số rồi bấm Enter. Cứ mỗi nhịp chuông, app ghi một điểm lên dòng sông cảm xúc ở tab Hôm nay. Một nhịp, hai vai.",
+        (long)kIntervalFloor, (long)kIntervalCeil];
 }
 
 

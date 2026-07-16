@@ -397,6 +397,12 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
 
     [panel orderFront:nil];
     g_checkinPanel = panel;   // KHÔNG còn tự đóng theo giờ — chỉ đóng khi người dùng chạm, hoặc khi nhịp sau tới
+
+    // [MINDFUL] 2026-07-16 (chủ dự án chốt) — khung này trước đây hiện HOÀN TOÀN IM, dễ trôi qua
+    // không ai thấy. Nay báo bằng "Chuông gió" nhỏ — tiếng CỐ ĐỊNH, khác hẳn tiếng chuông tỉnh thức
+    // người dùng chọn, để nghe ra ngay đây là việc khác: mời ghi nhận cảm xúc, không phải nhắc nghỉ.
+    // Hàm tự bỏ qua nếu chuông đang tắt / tạm hoãn / ngoài giờ chuông / "Im" / âm lượng 0.
+    BellMac_PlayCheckinChime();
 }
 
 - (void)mk_closeCheckinPanel {
