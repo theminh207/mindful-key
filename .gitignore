@@ -28,3 +28,6 @@ tests/ios/*_test
 *.html
 # ...nhưng landing page trong site/ PHẢI được commit (deploy qua Coolify)
 !site/**/*.html
+
+# macOS host-test compiled binaries (không commit — chỉ commit .mm nguồn)
+tests/macos/*_test

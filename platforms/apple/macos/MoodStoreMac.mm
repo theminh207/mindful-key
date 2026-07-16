@@ -31,6 +31,21 @@ static const NSUInteger kKeySize = 32; // AES-256
 #pragma mark - Đường dẫn file
 
 static NSURL *SupportDirectoryURL(void) {
+#ifdef MK_TEST_STORE_DIR_ENV
+    // [MINDFUL] Nhánh này CHỈ tồn tại trong binary test (tests/macos/mood_pipeline_build.sh định
+    // nghĩa macro; project.yml không bao giờ) — cần vì URLForDirectory:/NSHomeDirectory trên macOS
+    // lấy home qua getpwuid, PHỚT LỜ $HOME (đã verify thực nghiệm 2026-07-16), nên test không thể
+    // cô lập kho khỏi dữ liệu thật của người dùng bằng env HOME như tests/ios vẫn làm.
+    const char *testDir = getenv("MK_TEST_STORE_DIR");
+    if (testDir && testDir[0]) {
+        NSURL *dir = [NSURL fileURLWithPath:[NSString stringWithUTF8String:testDir] isDirectory:YES];
+        [[NSFileManager defaultManager] createDirectoryAtURL:dir
+                                  withIntermediateDirectories:YES
+                                                   attributes:nil
+                                                        error:nil];
+        return dir;
+    }
+#endif
     NSURL *base = [[NSFileManager defaultManager] URLForDirectory:NSApplicationSupportDirectory
                                                           inDomain:NSUserDomainMask
                                                  appropriateForURL:nil
@@ -196,6 +211,16 @@ static void EnsureSchema(sqlite3 *db) {
 // Mở bản làm việc: giải mã file .enc (nếu có) ra file tạm plaintext rồi sqlite3_open nó.
 // Trả về sqlite3* đã mở (hoặc NULL nếu lỗi) + ghi đường dẫn tạm vào outTempPath.
 static sqlite3 *OpenWorkingDB(NSString **outTempPath) {
+    // [MINDFUL] Vá 2026-07-16 (test E2E tests/macos/mood_pipeline Ca 0 tóm được): các hàm ĐỌC
+    // (FetchTodaySamples… — popover gọi mỗi lần mở) đi qua đây và từng TẠO kho rỗng + khóa AES
+    // thật trong Keychain dù người dùng chưa/không đồng ý — trái lời hứa ở MoodStoreMac.h
+    // ("không tạo file, không âm thầm log"). Chưa có consent nào (số LẪN ô ghi) và cũng chưa có
+    // kho từ trước → không có gì để đọc, không được phép tạo.
+    if (!MoodStoreMac_HasConsent() && !MoodStoreMac_HasNoteConsent() &&
+        ![[NSFileManager defaultManager] fileExistsAtPath:EncryptedFileURL().path]) {
+        return NULL;
+    }
+
     NSData *key = MoodStoreKey();
     if (!key) {
         NSLog(@"[MoodStoreMac] không tạo/đọc được khóa Keychain — bỏ qua ghi log lần này");
