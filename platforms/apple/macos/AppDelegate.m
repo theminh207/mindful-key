@@ -261,7 +261,7 @@ extern bool convertToolDontAlertWhenCompleted;
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
-    // Insert code here to tear down your application
+    MoodWatchMac_Flush();
 }
 
 -(void) createStatusBarMenu {

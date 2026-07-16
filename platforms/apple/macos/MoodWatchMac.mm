@@ -33,7 +33,7 @@ static dispatch_queue_t g_moodQueue;
 static NSTimeInterval g_lastWarn = 0;
 static BOOL g_popupShowing = NO;
 static NSMutableArray *g_activeAlerts = nil;
-static double g_lastSendRisk = 0.0;
+static double g_lastSendRisk = -1.0;
 
 // [MINDFUL] Thu hẹp bài toán: không còn phân loại "đang cảm xúc gì", chỉ còn 1 câu hỏi —
 // "câu này mà GỬI cho người khác thì hại tới đâu?" -> 1 điểm số trong [0,1].
@@ -313,6 +313,17 @@ void MoodWatchMac_Init() {
             }
         });
     }];
+}
+
+void MoodWatchMac_Flush(void) {
+    dispatch_sync(g_moodQueue, ^{
+        if (g_sampleCount > 0) {
+            double avgRisk = g_sampleSum / g_sampleCount;
+            MoodStoreMac_LogSampleEvent(avgRisk);
+            g_sampleSum = 0.0;
+            g_sampleCount = 0;
+        }
+    });
 }
 
 void MoodWatchMac_SetEnabled(int enabled) {

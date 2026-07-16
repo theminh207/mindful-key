@@ -609,8 +609,23 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
     // càng làm nó tệ. Nay đo theo MÀN HÌNH THẬT: chỉ cuộn khi thực sự không vừa.
     //   contentStartY = đã gồm header + tab bar. Cộng nốt chân trang + đệm/mũi tên popover.
     CGFloat chromeH = contentStartY + 1.0 + 10.0 + kFooterH + 12.0 + 28.0;
-    CGFloat screenH = [NSScreen mainScreen].visibleFrame.size.height;
-    CGFloat maxContentH = MAX(430.0, screenH - chromeH - 24.0);
+    // [MINDFUL] 2026-07-16 — đo theo MÀN HÌNH POPOVER ĐANG HIỆN, không phải mainScreen.
+    // mainScreen = màn có cửa sổ key (có thể là màn khác, hoặc không có cửa sổ nào key); khi nó
+    // cao hơn màn thật chứa icon menu bar, trần tính dư → popover không cuộn → tràn quá màn, macOS
+    // đẩy phần đầu (tiêu đề + tab) lòi khỏi mép trên. self.view.window = cửa sổ popover sau khi show.
+    NSScreen *popoverScreen = self.view.window.screen;
+    if (!popoverScreen) {
+        NSPoint mouseLoc = [NSEvent mouseLocation];
+        for (NSScreen *screen in [NSScreen screens]) {
+            if (NSMouseInRect(mouseLoc, screen.frame, NO)) {
+                popoverScreen = screen;
+                break;
+            }
+        }
+    }
+    if (!popoverScreen) popoverScreen = [NSScreen mainScreen];
+    CGFloat screenH = popoverScreen.visibleFrame.size.height;
+    CGFloat maxContentH = MAX(200.0, screenH - chromeH - 24.0);
     CGFloat scrollH = MIN(contentH, maxContentH);
 
     _contentScrollView.frame = NSMakeRect(0, contentStartY, kPanelW, scrollH);
