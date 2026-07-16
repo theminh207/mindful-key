@@ -588,8 +588,15 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
 
     _contentDocumentView.frame = NSMakeRect(0, 0, kPanelW, contentH);
 
-    // Giới hạn chiều cao tối đa của vùng nội dung cuộn để vừa màn hình
-    CGFloat maxContentH = 430.0;
+    // [MINDFUL] 2026-07-16 — trần này TỪNG là số cứng 430, nhỏ hơn màn hình thật rất nhiều: tab
+    // "Hôm nay" bị cắt ngang GIỮA một dòng chữ ở đáy (ảnh chủ dự án). Nội dung không mất — vùng này
+    // vốn cuộn được — nhưng macOS ẩn thanh cuộn khi không kéo, nên nửa dòng chữ cụt đọc ra "app
+    // lỗi", không đọc ra "còn nữa, cuộn xuống". Thẻ "Ngay bây giờ" nay là sông 6 tiếng (cao hơn ~50pt)
+    // càng làm nó tệ. Nay đo theo MÀN HÌNH THẬT: chỉ cuộn khi thực sự không vừa.
+    //   contentStartY = đã gồm header + tab bar. Cộng nốt chân trang + đệm/mũi tên popover.
+    CGFloat chromeH = contentStartY + 1.0 + 10.0 + kFooterH + 12.0 + 28.0;
+    CGFloat screenH = [NSScreen mainScreen].visibleFrame.size.height;
+    CGFloat maxContentH = MAX(430.0, screenH - chromeH - 24.0);
     CGFloat scrollH = MIN(contentH, maxContentH);
 
     _contentScrollView.frame = NSMakeRect(0, contentStartY, kPanelW, scrollH);

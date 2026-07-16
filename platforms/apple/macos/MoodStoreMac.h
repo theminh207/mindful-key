@@ -44,6 +44,12 @@ NSDictionary *MoodStoreMac_FetchTodaySummary(void);
 // [MINDFUL] Story 2.3 — lấy mẫu định kỳ và check-in tự nguyện
 void MoodStoreMac_LogSampleEvent(double avgAmplitude);
 NSArray<NSDictionary *> *MoodStoreMac_FetchTodaySamples(void);
+
+// [MINDFUL] 2026-07-16 — mẫu trong `secondsAgo` giây gần nhất, cửa sổ TRƯỢT tính từ BÂY GIỜ (khác
+// FetchTodaySamples: cái đó cắt theo mốc nửa đêm). Dùng cho "Ngay bây giờ" (zoom-in 6 tiếng) — cửa
+// sổ này VẮT QUA NỬA ĐÊM được, đúng thứ FetchTodaySamples không làm nổi. Cùng dạng trả về:
+// {@"ts": epoch giây, @"value": biên độ 0..1}, xếp tăng dần theo ts.
+NSArray<NSDictionary *> *MoodStoreMac_FetchSamplesSince(double secondsAgo);
 void MoodStoreMac_LogCheckinEvent(NSInteger waveLevel);
 
 // [MINDFUL] Story 3.7/3.8 — dòng sông theo Tuần/Tháng. Mỗi phần tử: {"day": NSString "yyyy-MM-dd",

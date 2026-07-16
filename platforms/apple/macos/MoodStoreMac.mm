@@ -401,14 +401,11 @@ NSDictionary *MoodStoreMac_FetchTodaySummary(void) {
     return summary;
 }
 
-NSArray<NSDictionary *> *MoodStoreMac_FetchTodaySamples(void) {
-    NSCalendar *cal = [NSCalendar currentCalendar];
-    NSDate *now = [NSDate date];
-    NSDate *startOfDay = [cal startOfDayForDate:now];
-    NSDate *startOfTomorrow = [cal dateByAddingUnit:NSCalendarUnitDay value:1 toDate:startOfDay options:0];
-    sqlite3_int64 tsFrom = (sqlite3_int64)[startOfDay timeIntervalSince1970];
-    sqlite3_int64 tsTo   = (sqlite3_int64)[startOfTomorrow timeIntervalSince1970];
-
+// [MINDFUL] 2026-07-16 — 1 NGUỒN cho mọi lối lấy mẫu theo khoảng thời gian. Trước đây chỉ có
+// FetchTodaySamples tự ôm SQL; nay "Ngay bây giờ" (cửa sổ trượt 6 tiếng, VẮT QUA NỬA ĐÊM) cần
+// cùng câu lệnh đó với mốc khác → tách ra thay vì chép bản thứ 2 gần giống (đúng bài học đã ghi
+// ở FetchDailyAverages: 2 bản SQL na ná nhau là chỗ chúng trôi lệch nhau).
+static NSArray<NSDictionary *> *FetchSamplesBetween(sqlite3_int64 tsFrom, sqlite3_int64 tsTo) {
     NSMutableArray<NSDictionary *> *samples = [NSMutableArray array];
 
     NSString *tempPath = nil;
@@ -434,8 +431,24 @@ NSArray<NSDictionary *> *MoodStoreMac_FetchTodaySamples(void) {
         }
         FlushAndCloseDB(db, tempPath);
     }
-    
+
     return samples;
+}
+
+NSArray<NSDictionary *> *MoodStoreMac_FetchTodaySamples(void) {
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDate *startOfDay = [cal startOfDayForDate:[NSDate date]];
+    NSDate *startOfTomorrow = [cal dateByAddingUnit:NSCalendarUnitDay value:1 toDate:startOfDay options:0];
+    return FetchSamplesBetween((sqlite3_int64)[startOfDay timeIntervalSince1970],
+                                (sqlite3_int64)[startOfTomorrow timeIntervalSince1970]);
+}
+
+// [MINDFUL] 2026-07-16 — "Ngay bây giờ" = cửa sổ TRƯỢT, không phải "hôm nay". Cố ý KHÔNG tái dùng
+// FetchTodaySamples rồi lọc: mở popover lúc 1h sáng thì 6 tiếng qua = 19h HÔM QUA → 1h nay, lọc từ
+// "hôm nay" sẽ mất sạch phần trước nửa đêm và cửa sổ trông như vừa mới bắt đầu gõ.
+NSArray<NSDictionary *> *MoodStoreMac_FetchSamplesSince(double secondsAgo) {
+    double now = [[NSDate date] timeIntervalSince1970];
+    return FetchSamplesBetween((sqlite3_int64)(now - secondsAgo), (sqlite3_int64)(now + 1));
 }
 
 #pragma mark - Story 3.7/3.8 — Tuần/Tháng (trung bình mỗi ngày, gap = NSNull thật)

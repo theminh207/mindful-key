@@ -312,6 +312,71 @@ static const CGFloat kAxisHourEvening    = 21.0;   // giữa buổi tối   (18-
     [self applyEntries:entries validCount:validCount];
 }
 
+// [MINDFUL] 2026-07-16 — zoom-in "Ngay bây giờ": cửa sổ TRƯỢT, mép phải = khoảnh khắc này.
+// Xem hợp đồng đầy đủ ở EmotionRiverView.h (kể cả cảnh báo liveHead chỉ là ảnh chụp lúc mở).
+- (void)setRecentSamples:(nullable NSArray<NSDictionary *> *)samples
+           windowSeconds:(double)windowSeconds
+              gapSeconds:(double)gapSeconds
+                liveHead:(double)liveHead {
+    if (windowSeconds <= 0) return;
+    _timeBased = YES;
+
+    double now = [[NSDate date] timeIntervalSince1970];
+    double originSec = now - windowSeconds;
+
+    // Mốc tương đối, chia đều theo ĐÚNG tỉ lệ thời gian thật (không phải 4 cột đều nhau): mép trái
+    // = trọn cửa sổ, mép phải = bây giờ. Chốt với chủ dự án 2026-07-16 — cố ý KHÔNG dùng giờ đồng
+    // hồ ("05:00 · 07:00…") vì đọc thành biểu đồ, mất chất quan sát.
+    double hrs = windowSeconds / 3600.0;
+    _axisFractions[0] = 0.0;
+    _axisFractions[1] = 1.0 / 3.0;
+    _axisFractions[2] = 2.0 / 3.0;
+    _axisFractions[3] = 1.0;
+    [self setAxisLabels:@[
+        [NSString stringWithFormat:@"%g giờ trước", hrs],
+        [NSString stringWithFormat:@"%g giờ", hrs * 2.0 / 3.0],
+        [NSString stringWithFormat:@"%g giờ", hrs / 3.0],
+        @"bây giờ",
+    ]];
+
+    NSMutableArray *entries = [NSMutableArray array];
+    NSInteger validCount = 0;
+    long long prevTs = 0;
+    BOOL hasPrev = NO;
+    for (NSDictionary *s in samples) {
+        long long ts = [s[@"ts"] longLongValue];
+        if ((double)ts < originSec) continue;   // ngoài cửa sổ — bỏ, không kéo lê vào mép trái
+        if (hasPrev && gapSeconds > 0 && (double)(ts - prevTs) > gapSeconds) {
+            [entries addObject:[NSNull null]];  // quãng không gõ — nước KHÔNG nối qua (dec.4)
+        }
+        prevTs = ts;
+        hasPrev = YES;
+        validCount++;
+        CGFloat xf = (CGFloat)(((double)ts - originSec) / windowSeconds);
+        [entries addObject:[NSValue valueWithPoint:NSMakePoint(MAX(0.0, MIN(1.0, xf)),
+                                                                [s[@"value"] doubleValue])]];
+    }
+
+    // Đầu sóng ở mép phải = ngay lúc này. Nếu mẫu lưu gần nhất đã quá xa (nghỉ gõ lâu) thì vẫn phải
+    // NGẮT trước khi cắm — bịa nước nối từ 3 tiếng trước tới bây giờ là đúng thứ dec.4 cấm.
+    if (liveHead >= 0.0) {
+        if (hasPrev && gapSeconds > 0 && (now - (double)prevTs) > gapSeconds) {
+            [entries addObject:[NSNull null]];
+        }
+        validCount++;
+        [entries addObject:[NSValue valueWithPoint:NSMakePoint(1.0, liveHead)]];
+    }
+
+    [self applyEntries:entries validCount:validCount];
+}
+
+// [MINDFUL] 2026-07-16 — xem EmotionRiverView.h. Nhúng sông vào trong 1 thẻ khác thì phải tắt
+// viền/nền của chính nó, không thì thành hộp lồng hộp.
+- (void)setCardChromeHidden:(BOOL)hidden {
+    self.layer.backgroundColor = hidden ? [NSColor clearColor].CGColor : [NSColor whiteColor].CGColor;
+    self.layer.borderWidth = hidden ? 0.0 : 1.0;
+}
+
 - (CGFloat)preferredHeight {
     if (_captionHidden)
         return kPad + kWaveAreaH + kAxisGap + kAxisH + kPad;
@@ -335,8 +400,15 @@ static const CGFloat kAxisHourEvening    = 21.0;   // giữa buổi tối   (18-
         CGFloat innerW = w - 2 * kPad;
         for (int i = 0; i < 4; i++) {
             CGFloat cx = kPad + _axisFractions[i] * innerW;
-            labels[i].alignment = NSTextAlignmentCenter;
-            labels[i].frame = NSMakeRect(cx - axisW / 2.0, top - kAxisH, axisW, kAxisH);
+            CGFloat x = cx - axisW / 2.0;
+            NSTextAlignment al = NSTextAlignmentCenter;
+            // [MINDFUL] 2026-07-16 — mốc nằm SÁT MÉP (cửa sổ trượt: "6 giờ trước" ở 0.0, "bây giờ"
+            // ở 1.0) mà canh giữa thì nửa chữ lọt ra ngoài — và view có masksToBounds nên bị CẮT
+            // cụt. Neo vào mép + đổi canh lề, đúng cách trục Sáng…Tối vẫn làm ở nhánh dưới.
+            if (x < kPad) { x = kPad; al = NSTextAlignmentLeft; }
+            if (x + axisW > w - kPad) { x = w - kPad - axisW; al = NSTextAlignmentRight; }
+            labels[i].alignment = al;
+            labels[i].frame = NSMakeRect(x, top - kAxisH, axisW, kAxisH);
         }
     } else {
         _axisMorning.frame   = NSMakeRect(kPad, top - kAxisH, axisW, kAxisH);

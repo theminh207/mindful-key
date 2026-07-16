@@ -39,6 +39,29 @@ NS_ASSUME_NONNULL_BEGIN
 ///                   Thường là `vBellInterval * 60 * 1.5`. Truyền 0 để không bao giờ ngắt.
 - (void)setTodaySamples:(nullable NSArray<NSDictionary *> *)samples gapSeconds:(double)gapSeconds;
 
+/// [MINDFUL] 2026-07-16 — "Ngay bây giờ" (zoom-in): cửa sổ TRƯỢT `[bây giờ − windowSeconds, bây giờ]`,
+/// mép PHẢI luôn là khoảnh khắc này. Đi cặp với "Hôm nay" (setTodaySamples:, zoom-out cả ngày) để
+/// người dùng có 2 tầm nhìn cùng một ngày. Trục tự đặt mốc TƯƠNG ĐỐI ("6 giờ trước … bây giờ"),
+/// KHÔNG dùng Sáng/Trưa/Chiều/Tối — cửa sổ 6 tiếng không map được vào buổi.
+///
+/// @param samples     dạng `MoodStoreMac_FetchSamplesSince()` trả về (`{@"ts", @"value"}`, tăng dần).
+/// @param windowSeconds bề rộng cửa sổ (vd 6*3600).
+/// @param gapSeconds  2 mẫu cách nhau quá ngần này = quãng không gõ → không nối nước qua (dec.4).
+/// @param liveHead    biên độ NGAY LÚC NÀY (`MoodWatchMac_LastSendRisk()`) cắm ở mép phải — tươi hơn
+///                    mẫu lưu gần nhất tới cả một nhịp chuông. Truyền số ÂM để không cắm đầu sóng.
+///                    LƯU Ý: đây là ảnh chụp lúc gọi, KHÔNG phải đồng hồ sống — popover là
+///                    `NSPopoverBehaviorTransient` (đóng ngay khi bấm ra ngoài) nên không ai vừa gõ
+///                    vừa nhìn được nó; giá trị chỉ mới lại mỗi lần mở popover.
+- (void)setRecentSamples:(nullable NSArray<NSDictionary *> *)samples
+           windowSeconds:(double)windowSeconds
+              gapSeconds:(double)gapSeconds
+                liveHead:(double)liveHead;
+
+/// [MINDFUL] 2026-07-16 — tắt viền/nền thẻ của chính view này. Mặc định BẬT (thẻ trắng viền mảnh).
+/// Bật YES khi nhúng sông vào TRONG một thẻ khác (vd GatekeeperCardView) — nếu không sẽ thành hộp
+/// lồng hộp. Không đụng preferredHeight.
+- (void)setCardChromeHidden:(BOOL)hidden;
+
 /// [MINDFUL] Story 3.7 — đổi 4 nhãn trục (mặc định "Sáng"/"Trưa"/"Chiều"/"Tối" khi không gọi
 /// method này). Dùng khi 1 điểm không còn nghĩa là "1 nhịp trong ngày" mà là "1 ngày trong
 /// tuần/tháng" — KHÔNG đổi setSamples:/preferredHeight đã khoá từ 2.4. Cần ĐÚNG 4 phần tử.

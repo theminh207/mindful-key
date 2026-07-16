@@ -28,6 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// Câu mô tả trạng thái hiện tại (mô tả, không phán xét) — cũng là accessibilityLabel.
 @property (nonatomic, readonly) NSString *stateDescription;
 
+/// [MINDFUL] 2026-07-16 — cùng ngưỡng, cùng câu chữ với `stateDescription`, dùng được ở nơi KHÔNG
+/// hiện view này (GatekeeperCardView nay vẽ sông 6 tiếng nhưng tít vẫn phải khớp đúng 3 mức đó).
++ (NSString *)stateDescriptionForAmplitude:(CGFloat)amplitude;
+
 /// Đổi biên độ. animated=YES → chuyển mượt 400–600ms (tự tắt khi "Giảm chuyển động" bật).
 - (void)setAmplitude:(CGFloat)amplitude animated:(BOOL)animated;
 

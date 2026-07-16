@@ -140,10 +140,17 @@ static CGFloat EaseInOut(CGFloat t) { return t * t * (3.0 - 2.0 * t); }
 
 #pragma mark - State description + accessibility
 
-- (NSString *)stateDescription {
-    if (_amplitude < kRestThreshold) return @"Mặt hồ đang phẳng lặng";
-    if (_amplitude < kLowThreshold)  return @"Mặt hồ đang gợn nhẹ";
+// [MINDFUL] 2026-07-16 — tách thành class method để nơi KHÔNG còn hiện EmotionWaveView vẫn gọi
+// đúng 1 nguồn phân 3 mức này (GatekeeperCardView nay vẽ sông 6 tiếng thay sóng, nhưng tít "Mặt hồ
+// đang…" vẫn phải cùng ngưỡng). Chép câu chữ sang chỗ khác = 2 nguồn, sớm muộn lệch nhau.
++ (NSString *)stateDescriptionForAmplitude:(CGFloat)amplitude {
+    if (amplitude < kRestThreshold) return @"Mặt hồ đang phẳng lặng";
+    if (amplitude < kLowThreshold)  return @"Mặt hồ đang gợn nhẹ";
     return @"Mặt hồ đang gợn sóng";
+}
+
+- (NSString *)stateDescription {
+    return [EmotionWaveView stateDescriptionForAmplitude:_amplitude];
 }
 
 - (void)announceStateChange {
