@@ -132,23 +132,46 @@ jobs:
           RELEASE_PAT: ${{ secrets.RELEASE_PAT }}
           DEFAULT_TOKEN: ${{ github.token }}
         run: |
-          if [[ -n "$RELEASE_PAT" ]]; then
-            export GITHUB_TOKEN="$RELEASE_PAT"
-            echo "Đăng bằng RELEASE_PAT — Release đứng tên chủ tài khoản."
-          else
-            export GITHUB_TOKEN="$DEFAULT_TOKEN"
-            echo "::warning::Chưa có secret RELEASE_PAT — đăng bằng token mặc định, Release sẽ đứng tên bot github-actions. Thêm RELEASE_PAT (quyền Contents: Read and write) để hiện tên cá nhân."
-          fi
-
           PRERELEASE_FLAG=""
           if [[ "${{ steps.signing.outputs.available }}" != "true" ]]; then
             PRERELEASE_FLAG="--prerelease"
           fi
-          gh release create "$GITHUB_REF_NAME" \
-            --title "MindfulKey $GITHUB_REF_NAME" \
-            --notes-file release-out/release-notes.md \
-            $PRERELEASE_FLAG \
-            release-out/MindfulKey-*.dmg \
-            release-out/MindfulKey.dmg \
-            release-out/MindfulKey-*-universal.zip \
-            release-out/MindfulKey-*-universal.dSYM.zip
+
+          echo "Asset chuẩn bị đăng:"
+          ls -lh release-out/ || true
+
+          publish() {
+            gh release create "$GITHUB_REF_NAME" \
+              --title "MindfulKey $GITHUB_REF_NAME" \
+              --notes-file release-out/release-notes.md \
+              $PRERELEASE_FLAG \
+              release-out/MindfulKey-*.dmg \
+              release-out/MindfulKey.dmg \
+              release-out/MindfulKey-*-universal.zip \
+              release-out/MindfulKey-*-universal.dSYM.zip
+          }
+
+          # PAT trước (Release đứng tên chủ tài khoản). PAT hết hạn / thiếu quyền `contents:write`
+          # KHÔNG được phép chặn phát hành: v0.2.1 đã chết 3 lần liên tiếp đúng ở đây trong khi app
+          # build sạch, và asset mất trắng theo runner. Lỗi thật của `gh` phải nổi lên annotation —
+          # log run chỉ đọc được khi có quyền, còn annotation thì API công khai đọc được, nên đây là
+          # đường DUY NHẤT để biết vì sao hỏng mà không phải đoán.
+          if [[ -n "$RELEASE_PAT" ]]; then
+            export GITHUB_TOKEN="$RELEASE_PAT"
+            if ERR=$(publish 2>&1); then
+              echo "Đã đăng bằng RELEASE_PAT — Release đứng tên chủ tài khoản."
+              exit 0
+            fi
+            echo "::warning::RELEASE_PAT có mặt nhưng đăng không được (hết hạn hoặc thiếu quyền Contents: Read and write) — lùi về token mặc định. Lỗi gh: ${ERR//$'\n'/ | }"
+            gh release delete "$GITHUB_REF_NAME" --yes >/dev/null 2>&1 || true
+          else
+            echo "::warning::Chưa có secret RELEASE_PAT — đăng bằng token mặc định, Release sẽ đứng tên bot github-actions."
+          fi
+
+          export GITHUB_TOKEN="$DEFAULT_TOKEN"
+          if ERR=$(publish 2>&1); then
+            echo "Đã đăng bằng token mặc định — Release đứng tên bot github-actions."
+            exit 0
+          fi
+          echo "::error::Đăng thất bại với CẢ HAI token. Lỗi gh: ${ERR//$'\n'/ | }"
+          exit 1
