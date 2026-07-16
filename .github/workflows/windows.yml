@@ -1,0 +1,77 @@
+# CI: build vỏ Windows (MSVC v143) + regression engine.
+#
+# Vì sao có file này: máy dev của dự án là macOS — KHÔNG chạy được trình biên dịch
+# của Microsoft. Runner `windows-latest` của GitHub cài sẵn Visual Studio 2022
+# (toolset v143, đúng thứ `OpenKey.vcxproj` đòi), nên nó đóng vai "máy Windows
+# đi mượn" để build-verify vỏ Windows mà không cần ai phải có PC.
+#
+# Nó KHÔNG thay được người: gõ thử tiếng Việt ra dấu vẫn phải có mắt người nhìn
+# trên Windows thật. CI chỉ chứng minh compile + link sạch. Xem docs/TEST_MATRIX.md
+# để biết hành vi nào đã có bằng chứng tới đâu.
+name: Windows
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'core/**'
+      - 'platforms/windows/**'
+      - 'tests/core/**'
+      - '.github/workflows/windows.yml'
+  pull_request:
+    paths:
+      - 'core/**'
+      - 'platforms/windows/**'
+      - 'tests/core/**'
+      - '.github/workflows/windows.yml'
+  workflow_dispatch:   # cho phép bấm chạy tay từ tab Actions, không cần push
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false   # Release hỏng thì vẫn phải thấy Debug ra sao, và ngược lại
+      matrix:
+        configuration: [ Debug, Release ]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      # Bộ não C++ dùng chung — cùng 5 case Telex như macOS CI (tests/core/build.sh),
+      # nhưng biên dịch bằng MSVC thay vì clang, và DataType.h rẽ nhánh `_WIN32` →
+      # `platforms/win32.h`. Đây là lần đầu nhánh shim đó được biên dịch trong CI:
+      # macOS CI luôn rơi vào nhánh `#else` → mac.h, không bao giờ chạm win32.h.
+      # Cờ khớp build.sh: c++14 + include dir trỏ vào core/engine.
+      - name: Regression engine (bộ não dùng chung, MSVC)
+        shell: cmd
+        run: |
+          for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSPATH=%%i"
+          if not defined VSPATH ( echo Khong tim thay Visual Studio qua vswhere & exit /b 1 )
+          call "%VSPATH%\VC\Auxiliary\Build\vcvars64.bat" || exit /b 1
+          cl /EHsc /std:c++14 /I core\engine /Fe:test_engine.exe ^
+            tests\core\test_engine.cpp ^
+            core\engine\Engine.cpp core\engine\Vietnamese.cpp ^
+            core\engine\Macro.cpp core\engine\SmartSwitchKey.cpp core\engine\ConvertTool.cpp || exit /b 1
+          test_engine.exe || exit /b 1
+
+      # Chỉ nhắm target `OpenKey` (app chính). Build qua .sln để $(SolutionDir)
+      # resolve đúng, nhưng KHÔNG build `OpenKeyUpdate` (updater gốc OpenKey,
+      # ngoài phạm vi Mốc 1 — hỏng ở đó không được phép chặn app chính).
+      - name: Build app Windows (${{ matrix.configuration }} x64)
+        run: >
+          msbuild platforms\windows\win32\OpenKey\OpenKey.sln
+          /t:OpenKey
+          /p:Configuration=${{ matrix.configuration }}
+          /p:Platform=x64
+          /verbosity:normal
+
+      - name: Thu .exe build ra
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mindful-key-windows-${{ matrix.configuration }}-x64
+          path: platforms/windows/win32/OpenKey/**/*.exe
+          if-no-files-found: error   # không tìm thấy .exe = thất bại thật, đừng im lặng cho qua

@@ -154,21 +154,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\engine\ConvertTool.h" />
-    <ClInclude Include="..\..\..\engine\DataType.h" />
-    <ClInclude Include="..\..\..\engine\Engine.h" />
-    <ClInclude Include="..\..\..\engine\Macro.h" />
-    <ClInclude Include="..\..\..\engine\platforms\linux.h" />
-    <ClInclude Include="..\..\..\engine\platforms\mac.h" />
-    <ClInclude Include="..\..\..\engine\platforms\win32.h" />
-    <ClInclude Include="..\..\..\engine\SmartSwitchKey.h" />
-    <ClInclude Include="..\..\..\engine\Vietnamese.h" />
+    <ClInclude Include="..\..\..\..\..\core\engine\ConvertTool.h" />
+    <ClInclude Include="..\..\..\..\..\core\engine\DataType.h" />
+    <ClInclude Include="..\..\..\..\..\core\engine\Engine.h" />
+    <ClInclude Include="..\..\..\..\..\core\engine\Macro.h" />
+    <ClInclude Include="..\..\..\..\..\core\engine\platforms\linux.h" />
+    <ClInclude Include="..\..\..\..\..\core\engine\platforms\mac.h" />
+    <ClInclude Include="..\..\..\..\..\core\engine\platforms\win32.h" />
+    <ClInclude Include="..\..\..\..\..\core\engine\SmartSwitchKey.h" />
+    <ClInclude Include="..\..\..\..\..\core\engine\Vietnamese.h" />
     <ClInclude Include="AboutDialog.h" />
     <ClInclude Include="AppDelegate.h" />
     <ClInclude Include="BaseDialog.h" />
+    <ClInclude Include="Bell.h" />
     <ClInclude Include="ConvertToolDialog.h" />
     <ClInclude Include="MacroDialog.h" />
     <ClInclude Include="MainControlDialog.h" />
+    <ClInclude Include="MoodWatch.h" />
     <ClInclude Include="OpenKeyHelper.h" />
     <ClInclude Include="OpenKeyManager.h" />
     <ClInclude Include="Resource.h" />
@@ -177,18 +179,20 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\engine\ConvertTool.cpp" />
-    <ClCompile Include="..\..\..\engine\Engine.cpp" />
-    <ClCompile Include="..\..\..\engine\Macro.cpp" />
-    <ClCompile Include="..\..\..\engine\SmartSwitchKey.cpp" />
-    <ClCompile Include="..\..\..\engine\Vietnamese.cpp" />
+    <ClCompile Include="..\..\..\..\..\core\engine\ConvertTool.cpp" />
+    <ClCompile Include="..\..\..\..\..\core\engine\Engine.cpp" />
+    <ClCompile Include="..\..\..\..\..\core\engine\Macro.cpp" />
+    <ClCompile Include="..\..\..\..\..\core\engine\SmartSwitchKey.cpp" />
+    <ClCompile Include="..\..\..\..\..\core\engine\Vietnamese.cpp" />
     <ClCompile Include="AboutDialog.cpp" />
     <ClCompile Include="AppDelegate.cpp" />
     <ClCompile Include="BaseDialog.cpp" />
+    <ClCompile Include="Bell.cpp" />
     <ClCompile Include="ConvertToolDialog.cpp" />
     <ClCompile Include="MacroDialog.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainControlDialog.cpp" />
+    <ClCompile Include="MoodWatch.cpp" />
     <ClCompile Include="OpenKey.cpp" />
     <ClCompile Include="OpenKeyHelper.cpp" />
     <ClCompile Include="OpenKeyManager.cpp" />
