@@ -46,11 +46,11 @@ typedef NS_ENUM(NSInteger, MKDayShape) {
 // câu hỏi phải đọc cùng một ngày, lệch ngưỡng là chúng nói ngược nhau ngay trên cùng màn hình.
 // [MINDFUL] 2026-07-16 — nay trỏ về `MoodPhrasingMac` (nguồn duy nhất), vì thẻ Gác cổng cũng đọc
 // cùng ngưỡng này: màn Soi lại nói "phẳng lặng" mà thẻ nói "có gợn" thì người dùng tin ai?
-static const double kRippleThreshold = kMoodRippleThreshold;
-
+// KHÔNG còn `static const`: ngưỡng nay đọc lựa chọn "Độ nhạy" LÚC CHẠY, không phải hằng số biên
+// dịch — người dùng đổi nút là câu chữ đổi theo ngay lần mở sau.
 static MKDayShape DayShapeOf(double peakAmp, int gkCount) {
     if (gkCount > 0) return MKDayShapeGated;
-    if (peakAmp >= kRippleThreshold) return MKDayShapeRippled;
+    if (peakAmp >= MoodPhrasing_RippleThreshold()) return MKDayShapeRippled;
     return MKDayShapeCalm;
 }
 
@@ -80,7 +80,7 @@ static NSString *CapitalizeFirst(NSString *s) {
 static NSString *ObservationParagraph(double peakAmp, long long peakTs,
                                        long long maxQuietStart, long long maxQuietEnd) {
     NSMutableArray<NSString *> *parts = [NSMutableArray array];
-    if (peakAmp < kRippleThreshold) {
+    if (peakAmp < MoodPhrasing_RippleThreshold()) {
         [parts addObject:@"Hôm nay mặt hồ khá phẳng lặng."];
     } else {
         [parts addObject:[NSString stringWithFormat:@"Mặt hồ gợn nhiều nhất vào %@.", TimeOfDayLabel(peakTs)]];

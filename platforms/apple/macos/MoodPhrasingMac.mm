@@ -6,8 +6,14 @@
 //
 
 #import "MoodPhrasingMac.h"
+#import "NudgeCoordinatorMac.h"
 
-const double kMoodRippleThreshold = 0.4;
+// [MINDFUL] 2026-07-16 — xem hợp đồng ở .h. Uỷ thác cho NudgeCoordinatorMac: nơi đó ĐÃ đọc
+// vBellSensitivity cho chuông từ story 1.5. Tự đọc lại UserDefaults ở đây = nguồn thứ 2, sớm muộn
+// lệch — mà lệch ở đây nghĩa là chuông và câu chữ nói ngược nhau về cùng một ngày.
+double MoodPhrasing_RippleThreshold(void) {
+    return NudgeCoordinatorMac_RippleThreshold();
+}
 
 // Ranh giới buổi — NGUỒN DUY NHẤT. Khớp `kAxisHour*` (EmotionRiverView.mm) đang đặt nhãn trục:
 // sáng 5-11, trưa 11-13, chiều 13-18, tối 18-24. Đổi ở đây thì phải đổi kèm bên đó, và ngược lại.
@@ -74,7 +80,7 @@ NSString *MoodPhrasing_DayShapeSentence(NSArray<NSDictionary *> *todaySamples) {
     NSInteger calmCount = 0;
     for (NSDictionary *s in todaySamples) {
         double v = [s[@"value"] doubleValue];
-        if (v >= kMoodRippleThreshold) {
+        if (v >= MoodPhrasing_RippleThreshold()) {
             rippled[TimeOfDayOf([s[@"ts"] longLongValue])] = YES;
         } else {
             calmCount++;

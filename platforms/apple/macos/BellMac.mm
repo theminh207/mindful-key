@@ -116,7 +116,14 @@ void BellMac_PlayCheckinChime(void) {
     [sound play];
 }
 
+NSString * const kMKMoodBeatNotification = @"MKMoodBeatNotification";
+
 static void bellTick(NSTimer *timer) {
+    // [MINDFUL] 2026-07-16 — NHỊP trước, TIẾNG sau. Xem hợp đồng ở BellMac.h.
+    // Bắn nhịp TRƯỚC mọi cổng chặn: nhật ký + khung chấm nhịp phải chạy kể cả khi người dùng tắt
+    // chuông / tạm hoãn / ngoài giờ chuông. Họ tắt TIẾNG, không phải tắt việc ghi nhận.
+    [[NSNotificationCenter defaultCenter] postNotificationName:kMKMoodBeatNotification object:nil];
+
     if (!vBell || isSnoozed())
         return;
 
@@ -182,9 +189,13 @@ void BellMac_ApplySettings() {
             g_bellTimer = nil;
         }
 
-        if (!vBell)
-            return;
-
+        // [MINDFUL] 2026-07-16 — TỪNG có `if (!vBell) return;` ở đây. Bỏ đi CÓ CHỦ ĐÍCH: từ nay
+        // đồng hồ này là NHỊP chung của app (kMKMoodBeatNotification), không còn là đồng hồ riêng
+        // của tiếng chuông. Tắt chuông mà dừng nhịp = tắt luôn nhật ký + khung chấm nhịp, tức âm
+        // thầm tắt việc ghi nhận khi người dùng chỉ muốn yên tĩnh. Cổng chặn TIẾNG nằm trong
+        // bellTick(), không phải ở đây.
+        // `BellMac_NextRingDate`/`MinutesUntilNextRing` vẫn tự trả nil khi !vBell nên dòng "Dự kiến
+        // reo lúc" không bị ảnh hưởng — đã kiểm, chúng có sẵn check `!vBell` riêng.
         int minutes = vBellInterval;
         if (minutes < 1) minutes = 1;
         if (minutes > 240) minutes = 240;

@@ -19,8 +19,10 @@
 #import "BellMac.h"
 #import "MoodStoreMac.h"
 
-static NSTimeInterval g_checkinLastTime = 0;
-static dispatch_source_t g_checkinTimer = nil;
+// [MINDFUL] 2026-07-16 — `g_checkinLastTime`/`g_checkinTimer` đã XOÁ: khung chấm nhịp không còn tự
+// đếm giờ, nó lắng nghe nhịp chung của BellMac (kMKMoodBeatNotification). Xem mk_startCheckinTimerIfNeeded.
+// Còn lại đúng 1 đồng hồ, và nó chỉ lo dòng đếm ngược hiển thị — không phải nhịp của app.
+static dispatch_source_t g_bellLineTimer = nil;
 
 // [MINDFUL] Chấm nhịp v2 (2026-07-16) — khung check-in giờ ở lại tới khi người dùng CHỌN hoặc
 // BỎ QUA (bỏ tự-đóng-sau-8-giây). Phải giữ tham chiếu để: (a) không dựng chồng nhiều khung khi
@@ -212,22 +214,28 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
 }
 
 - (void)mk_startCheckinTimerIfNeeded {
-    if (g_checkinTimer != nil) return;
-    g_checkinTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
-    dispatch_source_set_timer(g_checkinTimer, dispatch_time(DISPATCH_TIME_NOW, 60 * NSEC_PER_SEC), 60 * NSEC_PER_SEC, 1 * NSEC_PER_SEC);
-    dispatch_source_set_event_handler(g_checkinTimer, ^{
-        NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
-        if (g_checkinLastTime == 0) g_checkinLastTime = now;
+    // [MINDFUL] 2026-07-16 — TỪNG tự đếm giờ ở đây (dispatch_source 60s, tự cộng dồn tới đủ
+    // vBellInterval, mốc bắt đầu = lúc _panelVC được tạo). Chuông đếm từ mốc khác, nhật ký đếm từ
+    // mốc khác nữa → BA đồng hồ trôi lệch nhau, trong khi màn Chuông hứa "Một nhịp, hai vai".
+    // Nay khung chấm nhịp LẮNG NGHE nhịp chung do BellMac điểm.
+    [[NSNotificationCenter defaultCenter] addObserverForName:kMKMoodBeatNotification
+                                                      object:nil
+                                                       queue:[NSOperationQueue mainQueue]
+                                                  usingBlock:^(NSNotification *note) {
+        [self showCheckinOverlay];   // tự bỏ qua nếu chưa có consent
+    }];
 
-        extern int vBellInterval;
-        int intervalMins = vBellInterval > 0 ? vBellInterval : 60;
-        if (now - g_checkinLastTime >= intervalMins * 60.0) {
-            [self showCheckinOverlay];
-            g_checkinLastTime = now;
-        }
+    // Đồng hồ 60 giây VẪN CÒN, nhưng nay chỉ còn ĐÚNG MỘT việc: cập nhật dòng đếm ngược "chuông kế
+    // tiếp: còn N phút" trong popover. Đây là nhịp HIỂN THỊ (phải đập từng phút thì số mới trôi),
+    // KHÔNG phải nhịp của app — nên nó không thuộc diện "3 đồng hồ trôi lệch" vừa gộp. Gộp nốt nó
+    // vào nhịp 15 phút sẽ làm số đếm ngược đứng hình 15 phút một lần.
+    if (g_bellLineTimer != nil) return;
+    g_bellLineTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_main_queue());
+    dispatch_source_set_timer(g_bellLineTimer, dispatch_time(DISPATCH_TIME_NOW, 60 * NSEC_PER_SEC), 60 * NSEC_PER_SEC, 1 * NSEC_PER_SEC);
+    dispatch_source_set_event_handler(g_bellLineTimer, ^{
         [self updateBellLine];
     });
-    dispatch_resume(g_checkinTimer);
+    dispatch_resume(g_bellLineTimer);
 }
 
 - (void)loadView {

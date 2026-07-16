@@ -438,9 +438,16 @@ static NSString *StringFromHotkey(int hotkey) {
     _lblSound = [self label:@"Bộ tiếng" font:[self fFieldLbl] color:[Brand muted]];
     
     // Nút hình ảnh (3 loại chuông)
-    _btnBell1 = [self createBellButtonWithTag:0 image:@"bell_temple"];
-    _btnBell2 = [self createBellButtonWithTag:1 image:@"bell_chime"];
-    _btnBell3 = [self createBellButtonWithTag:2 image:@"bell_wind"];
+    // [MINDFUL] 2026-07-16 — VÁ ẢNH BỊ TRÁO. tag → tiếng (SoundNameForIndex): 0=Chuông chùa,
+    // 1=Chuông gió, 2=Chuông reo. Ảnh cũ gắn ngược ở tag 1/2: hình chuông CẦM phát tiếng chuông
+    // GIÓ, hình chuông GIÓ phát tiếng REO.
+    // Bằng chứng tên file ĐÚNG, ảnh SAI (đo bằng `afinfo`, không phải nghe đoán):
+    //   Chuông chùa 23.8s (ngân dài) · Chuông gió 10.3s (leng keng lâu) · Chuông reo 2.0s (ngắn gọn).
+    // Nên sửa ẢNH chứ KHÔNG sửa ánh xạ tag→tên: đổi ánh xạ sẽ khiến `vBellSoundName` đã lưu của
+    // người dùng đột nhiên phát ra tiếng khác — đổi ảnh thì tiếng giữ nguyên, chỉ hình về đúng chỗ.
+    _btnBell1 = [self createBellButtonWithTag:0 image:@"bell_temple"];   // → Chuông chùa (23.8s)
+    _btnBell2 = [self createBellButtonWithTag:1 image:@"bell_wind"];     // → Chuông gió  (10.3s)
+    _btnBell3 = [self createBellButtonWithTag:2 image:@"bell_chime"];    // → Chuông reo  (2.0s)
     [self addSubview:_btnBell1];
     [self addSubview:_btnBell2];
     [self addSubview:_btnBell3];
@@ -1012,7 +1019,13 @@ static const NSInteger kIntervalCeil  = 240;
     _seg.action = @selector(onSensitivity:);
     [self addSubview:_seg];
 
-    _noteIdentify = [self label:@"Quyết định khi nào mặt hồ được coi là gợn — dùng chung cho nhật ký lấy mẫu và chuông."
+    // [MINDFUL] 2026-07-16 — câu cũ ghi "dùng chung cho NHẬT KÝ LẤY MẪU và chuông" và đó là NÓI SAI:
+    // tra hết nơi dùng thì Độ nhạy chỉ chạm chuông (chuỗi câu căng liên tiếp). Nó KHÔNG đổi cách lấy
+    // mẫu — điểm ghi lên sông vẫn là risk thô trung bình, không qua ngưỡng nào. Nay ngưỡng này còn
+    // điều khiển thêm CÂU QUAN SÁT (thẻ Gác cổng + màn Soi lại), nên câu chữ sửa lại cho đúng sự
+    // thật mới. CỐ Ý nói rõ "không đổi gác cổng": ngưỡng gác cổng đóng cứng 0.5 trong core/, người
+    // dùng dễ tưởng chọn "Nhạy" là gác cổng chặn sớm hơn — không hề.
+    _noteIdentify = [self label:@"Quyết định khi nào mặt hồ được coi là gợn — dùng chung cho chuông và các câu quan sát. Không đổi ngưỡng gác cổng."
                            font:[self fCaption] color:[Brand muted]];
     _noteIdentify.lineBreakMode = NSLineBreakByWordWrapping;
     _noteIdentify.maximumNumberOfLines = 3;

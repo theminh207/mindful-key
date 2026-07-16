@@ -49,8 +49,8 @@ static int g_tenseStreak = 0;
 
 static double g_sampleSum = 0.0;
 static int g_sampleCount = 0;
-static NSTimeInterval g_sampleLastTime = 0;
-static dispatch_source_t g_sampleTimer = nil;
+// [MINDFUL] 2026-07-16 — `g_sampleLastTime`/`g_sampleTimer` đã XOÁ: nhật ký không còn tự đếm giờ,
+// nó lắng nghe nhịp chung của BellMac (kMKMoodBeatNotification). Xem MoodWatchMac_Init().
 
 static double categoryWeight(const wstring& cat) {
     if (cat == L"giận") return 1.0;
@@ -283,27 +283,28 @@ void MoodWatchMac_Init() {
         g_moodQueue = dispatch_queue_create("mindful.keyboard.moodwatch", DISPATCH_QUEUE_SERIAL);
     vOnWordCommitted = MoodWatchMac_OnWord;
 
-    if (g_sampleTimer == nil) {
-        g_sampleTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, g_moodQueue);
-        dispatch_source_set_timer(g_sampleTimer, dispatch_time(DISPATCH_TIME_NOW, 60 * NSEC_PER_SEC), 60 * NSEC_PER_SEC, 1 * NSEC_PER_SEC);
-        dispatch_source_set_event_handler(g_sampleTimer, ^{
-            NSTimeInterval now = [NSDate timeIntervalSinceReferenceDate];
-            if (g_sampleLastTime == 0) g_sampleLastTime = now;
-            
-            extern int vBellInterval;
-            int intervalMins = vBellInterval > 0 ? vBellInterval : 60;
-            if (now - g_sampleLastTime >= intervalMins * 60.0) {
-                if (g_sampleCount > 0) {
-                    double avg = g_sampleSum / g_sampleCount;
-                    MoodStoreMac_LogSampleEvent(avg);
-                    g_sampleSum = 0.0;
-                    g_sampleCount = 0;
-                }
-                g_sampleLastTime = now;
+    // [MINDFUL] 2026-07-16 — TỪNG có `g_sampleTimer` riêng ở đây: dispatch_source đập mỗi 60 giây,
+    // tự đếm xem đã đủ vBellInterval chưa, mốc bắt đầu là lúc MoodWatchMac_Init() chạy. Chuông thì
+    // đếm từ lúc BellMac_Init() chạy, khung chấm nhịp đếm từ lúc PanelViewController init — BA mốc
+    // khác nhau nên chúng trôi lệch nhau vài phút, dù màn Chuông hứa "Một nhịp, hai vai".
+    // Nay LẮNG NGHE nhịp chung do BellMac điểm (kMKMoodBeatNotification) thay vì tự đếm.
+    // Nhịp đó bắn kể cả khi chuông tắt/hoãn/ngoài giờ, nên nhật ký vẫn ghi như trước — đúng hành vi
+    // cũ của g_sampleTimer (nó chưa bao giờ phụ thuộc vBell).
+    [[NSNotificationCenter defaultCenter] addObserverForName:kMKMoodBeatNotification
+                                                      object:nil
+                                                       queue:nil
+                                                  usingBlock:^(NSNotification *note) {
+        // Về đúng g_moodQueue mới chạm g_sampleSum/g_sampleCount — 2 biến này chỉ được đọc/ghi ở
+        // hàng đợi đó (analyzeRecentTextAsync), đọc từ luồng khác là đua dữ liệu.
+        dispatch_async(g_moodQueue, ^{
+            if (g_sampleCount > 0) {
+                double avg = g_sampleSum / g_sampleCount;
+                g_sampleSum = 0.0;
+                g_sampleCount = 0;
+                MoodStoreMac_LogSampleEvent(avg);   // vẫn gọi trên g_moodQueue, y như bản cũ
             }
         });
-        dispatch_resume(g_sampleTimer);
-    }
+    }];
 }
 
 void MoodWatchMac_SetEnabled(int enabled) {

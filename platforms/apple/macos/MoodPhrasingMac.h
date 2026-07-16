@@ -29,7 +29,12 @@ extern "C" {
 
 /// Ngưỡng "coi là có gợn". Dùng CHUNG cho mọi câu mô tả — lệch ngưỡng giữa 2 màn là chúng nói
 /// ngược nhau về cùng một ngày.
-extern const double kMoodRippleThreshold;
+///
+/// [MINDFUL] 2026-07-16 — TỪNG là hằng số cứng 0.4, và đó là một lời nói dối: người dùng có nút
+/// "Độ nhạy" (Ít nhạy/Vừa/Nhạy → 0.6/0.5/0.4) mà mọi câu chữ đều phớt lờ, chỉ CHUÔNG mới nghe.
+/// Để "Ít nhạy" thì chuông coi 0.6 mới là gợn, còn câu chữ vẫn phán "có gợn" từ 0.4 → chuông im
+/// mà chữ vẫn nói có gợn. Nay đọc thẳng lựa chọn của người dùng, cùng nguồn với chuông.
+double MoodPhrasing_RippleThreshold(void);
 
 /// "buổi sáng" (5-11) · "buổi trưa" (11-13) · "buổi chiều" (13-18) · "buổi tối" (còn lại).
 NSString *MoodPhrasing_TimeOfDayLabel(long long epochSeconds);

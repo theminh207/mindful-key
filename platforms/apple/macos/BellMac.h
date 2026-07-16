@@ -21,6 +21,20 @@ extern int vBellHotkey;
 void BellMac_Init();
 void BellMac_ApplySettings();
 
+// [MINDFUL] 2026-07-16 — NHỊP DUY NHẤT của app. Trước đây có BA đồng hồ rời nhau cùng lấy
+// `vBellInterval` nhưng mỗi cái tự đếm từ lúc chủ nó khởi động, nên chúng TRÔI LỆCH nhau vài phút:
+//   · g_bellTimer (BellMac)            → reo tiếng
+//   · g_checkinTimer (PanelViewController) → hiện khung chấm nhịp
+//   · g_sampleTimer (MoodWatchMac)     → ghi điểm lên sông
+// Trong khi màn Chuông hứa thẳng với người dùng: "Một nhịp, hai vai."
+//
+// Nay `g_bellTimer` là nhịp gốc và bắn thông báo này mỗi lần điểm; 2 nơi kia LẮNG NGHE thay vì tự đếm.
+//
+// ⚠️ Nhịp KHÔNG phụ thuộc chuông có kêu hay không. Tắt chuông / tạm hoãn / ngoài giờ chuông →
+// vẫn bắn nhịp, chỉ TIẾNG bị chặn. Tắt chuông ≠ ngừng ghi nhật ký — gộp nhầm 2 thứ này là âm thầm
+// tắt nhật ký của người dùng khi họ chỉ muốn yên tĩnh.
+extern NSString * const kMKMoodBeatNotification;
+
 // [MINDFUL] Bước 7 — chuông data-driven. Gọi từ MoodWatchMac khi phát hiện 1 chuỗi câu căng
 // thẳng liên tiếp (không chờ tới lịch cố định). Tự tôn trọng cooldown dùng chung với nhắc thụ
 // động (xem NudgeCoordinatorMac) và trạng thái snooze.
