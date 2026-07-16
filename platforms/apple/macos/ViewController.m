@@ -138,15 +138,39 @@ extern int vPerformLayoutCompat;
 }
 
 // [MINDFUL] Story 1.7 — bọc box header ("Kiểu gõ"/"Bảng mã"/"Phím chuyển"/"Chế độ gõ") + 4 box
-// nội dung tab vào card NOW BRAND OS (bo góc 16px + bóng ngọc bích, xem BrandControls.h). Cùng kỹ
-// thuật với ConvertToolViewController -applyBrandCardStyleToOptionBoxes (story 1.9): boxType +
-// transparent tắt fill/viền gốc trước khi áp layer tự vẽ. Gọi sau khi mọi box đã có frame cuối
-// (sau vòng lặp gán tabViewRect + showTab:0 ở trên) để shadowPath tính đúng kích thước.
+// nội dung tab vào card NOW BRAND OS. Cùng kỹ thuật với ConvertToolViewController
+// -applyBrandCardStyleToOptionBoxes (story 1.9): boxType + transparent tắt fill/viền gốc trước
+// khi áp layer tự vẽ.
+// [MINDFUL] Batch "Bộ gõ" (2026-07-16) — đổi `applyBrandCardStyle` (bo 16px + bóng ngọc bích) sang
+// `applyThinCardStyle` (viền mảnh 1px + bo 11px, KHÔNG bóng): đúng quy ước "áo mới v2" mà mọi pane
+// đã thay áo brand đều dùng (BellSettingsView/PrivacyPaneView/SystemSettingsView/GatekeeperCardView/
+// InputMethodCardView — xem BrandControls.h); riêng file này còn sót style cũ, đúng lệch
+// SCREEN-REFERENCE.md §2.3 nêu. `tabviewPrimary` là box DUY NHẤT trong 5 box ở đây thật sự hiện ra
+// (SettingsWindowController.mm chỉ reparent nó); 4 box còn lại (headerBox/Macro/System/Info) không
+// còn gắn vào cửa sổ nào — đổi chung 1 dòng cho cả mảng an toàn tuyệt đối (không ai nhìn thấy 4 box
+// kia) và tránh rẽ nhánh thừa. Không còn cần "gọi sau khi có frame cuối" như bản shadowPath cũ —
+// applyThinCardStyle chỉ set thuộc tính CALayer (border/radius), tự bám theo bounds, không tính
+// hình học tại thời điểm gọi (xem BrandControls.m).
 - (void)applyBrandCardStyleToGroups {
     for (NSBox *box in @[self.headerBox, self.tabviewPrimary, self.tabviewMacro, self.tabviewSystem, self.tabviewInfo]) {
         box.boxType = NSBoxCustom;
         box.transparent = YES;
-        [box applyBrandCardStyle];
+        [box applyThinCardStyle];
+    }
+}
+
+// [MINDFUL] Batch "Bộ gõ" (2026-07-16) — 11 nhãn trong lưới "Kiểu gõ" (tabviewPrimary) đang tô màu
+// hệ thống `labelColor` khai trong storyboard (không qua token brand) — lệch quy ước mọi pane đã
+// thay áo (đều set thẳng `[Brand charcoal]`, vd BellSettingsView.mm:498). Không có IBOutlet riêng
+// cho từng nhãn (chỉ 11 PillSwitch có outlet, xem ViewController.h) nên duyệt subview thay vì thêm
+// 11 outlet mới cho 1 thay đổi thuần màu sắc. CHỈ đổi textColor — CỐ Ý không đụng font size/weight:
+// nhãn hẹp nhất ("Cho phép z w j f làm phụ âm", 188pt) đã sát mép ở cỡ chữ hiện tại, đổi sang chữ
+// đậm hơn có thể đẩy tràn khung (lineBreakMode="clipping" cắt chữ, không tự xuống dòng).
+- (void)styleInputGridLabels {
+    for (NSView *v in self.tabviewPrimary.contentView.subviews) {
+        if ([v isKindOfClass:[NSTextField class]]) {
+            ((NSTextField *)v).textColor = [Brand charcoal];
+        }
     }
 }
 
