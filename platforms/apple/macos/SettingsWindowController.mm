@@ -38,6 +38,7 @@
 #import "PrivacyPaneView.h"
 #import "MoodStoreMac.h"
 #import "BellSettingsView.h"
+#import "SystemSettingsView.h"
 
 // [MINDFUL] `ConvertToolViewController -fillData` tồn tại thật (ConvertToolViewController.mm:64)
 // nhưng là method PRIVATE (không khai trong .h) — forward-declare tại đây (KHÔNG sửa
@@ -233,6 +234,7 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     EmotionRiverView *_settingsRiver;
     NSView *_paneBell;
     NSView *_panePrivacy;
+    NSView *_paneSystem;
 
     ViewController *_openKeyVC;               // strong — giữ sống dù .view gốc không bao giờ show
     MacroViewController *_macroVC;
@@ -368,13 +370,13 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     [_openKeyVC view];   // ép -viewDidLoad chạy — box đã live object, đã có frame + card style cuối.
     [_rootVC addChildViewController:_openKeyVC];
 
+    // [MINDFUL] Batch "Hệ thống + Chuông" — "Hệ thống" KHÔNG còn tái dùng `tabviewSystem` (hộp cũ
+    // rỗng, xem SCREEN-REFERENCE.md §2.5); pane thật dựng bằng SystemSettingsView bên dưới. Chỉ
+    // còn `tabviewPrimary` ("Bộ gõ ▸ Kiểu gõ", ngoài phạm vi batch này) cần reparent từ VC cũ.
     NSBox *primary = _openKeyVC.tabviewPrimary;
-    NSBox *system  = _openKeyVC.tabviewSystem;
     [primary removeFromSuperview];
-    [system removeFromSuperview];
     // Chỉ reset ORIGIN — giữ nguyên KÍCH THƯỚC để shadowPath (tính theo self.bounds) không lệch.
     primary.frame = (NSRect){NSZeroPoint, primary.frame.size};
-    system.frame  = (NSRect){NSZeroPoint, system.frame.size};
 
     // "Bộ gõ ▸ Gõ tắt" — không có identifier riêng, qua window-controller cha "MacroWindow".
     NSWindowController *macroWC = [sb instantiateControllerWithIdentifier:@"MacroWindow"];
@@ -413,6 +415,15 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     _panePrivacy = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, kMaxPaneW, MAX(ph, kMaxPaneH))];
     pv.frame = NSMakeRect(0, NSHeight(_panePrivacy.frame) - ph, kMaxPaneW, ph);
     [_panePrivacy addSubview:pv];
+
+    // [MINDFUL] Batch "Hệ thống + Chuông" — "Hệ thống" dựng mới bằng SystemSettingsView (4 mục đã
+    // chốt, xem SCREEN-REFERENCE.md §2.5), cùng khuôn MAX(height, kMaxPaneH) như PrivacyPaneView
+    // ngay trên (pane ngắn vẫn lấp khung nhìn, pane dài NSScrollView lo phần cuộn).
+    SystemSettingsView *sv = [[SystemSettingsView alloc] initWithFrame:NSMakeRect(0, 0, kMaxPaneW, kMaxPaneH)];
+    CGFloat svh = [sv preferredHeight];
+    _paneSystem = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, kMaxPaneW, MAX(svh, kMaxPaneH))];
+    sv.frame = NSMakeRect(0, NSHeight(_paneSystem.frame) - svh, kMaxPaneW, svh);
+    [_paneSystem addSubview:sv];
 }
 
 - (NSView *)mk_buildEmptyPaneWithTitle:(NSString *)title {
@@ -512,8 +523,10 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
             [self mk_showPaneInHost:_panePrivacy];
             break;
         case MKSettingsSectionSystem:
-            [self mk_showPaneInHost:_openKeyVC.tabviewSystem];
-            [_openKeyVC fillData];
+            if (_paneSystem.subviews.count > 0 && [_paneSystem.subviews[0] isKindOfClass:[SystemSettingsView class]]) {
+                [(SystemSettingsView *)_paneSystem.subviews[0] refresh];
+            }
+            [self mk_showPaneInHost:_paneSystem];
             break;
         case MKSettingsSectionAbout:
             [self mk_showPaneInHost:_aboutVC.view];

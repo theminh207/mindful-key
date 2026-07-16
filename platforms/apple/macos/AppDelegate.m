@@ -459,8 +459,33 @@ extern bool convertToolDontAlertWhenCompleted;
 }
 
 -(void)setRunOnStartup:(BOOL)val {
+    // [MINDFUL] Batch "Hệ thống + Chuông" — SMAppService.mainAppService (tên ObjC thật; header khai
+    // `NS_SWIFT_NAME(mainApp)` — đó là tên BÊN SWIFT, không phải selector ObjC, xác nhận bằng cách
+    // đọc thẳng SMAppService.h trong SDK) — macOS 13+, cùng framework ServiceManagement đã import ở
+    // đầu file — KHÔNG cần Helper bundle riêng: chính app tự đăng ký làm login item. Đây là đường
+    // THẬT cho máy dev hiện tại (deployment target 10.15 nhưng dùng @available để chạy đúng API
+    // theo từng máy — xem platforms/apple/project.yml).
+    if (@available(macOS 13.0, *)) {
+        if (val) {
+            [[SMAppService mainAppService] registerAndReturnError:nil];
+        } else {
+            [[SMAppService mainAppService] unregisterAndReturnError:nil];
+        }
+        return;
+    }
+    // Dự phòng < macOS 13 — mã GỐC OpenKey, dựa vào Helper bundle "com.tuyenmai.OpenKeyHelper".
+    // Helper đó KHÔNG còn trong project này (đã kiểm platforms/apple/project.yml + .pbxproj, không
+    // có target/embed nào tên OpenKeyHelper) nên nhánh này hiện KHÔNG thật sự bật được login item
+    // trên macOS cũ — giữ nguyên như tài liệu, không tự ý xây Helper mới (ngoài phạm vi batch UI).
     CFStringRef appId = (__bridge CFStringRef)@"com.tuyenmai.OpenKeyHelper";
     SMLoginItemSetEnabled(appId, val);
+}
+
+-(BOOL)isRunOnStartup {
+    if (@available(macOS 13.0, *)) {
+        return [SMAppService mainAppService].status == SMAppServiceStatusEnabled;
+    }
+    return [[NSUserDefaults standardUserDefaults] integerForKey:@"RunOnStartup"] != 0;
 }
 
 -(void)setGrayIcon:(BOOL)val {
@@ -469,6 +494,14 @@ extern bool convertToolDontAlertWhenCompleted;
 
 -(void)showIconOnDock:(BOOL)val {
     [NSApp setActivationPolicy: val ? NSApplicationActivationPolicyRegular : NSApplicationActivationPolicyAccessory];
+}
+
+-(BOOL)isStatusItemVisible {
+    return statusItem.visible;
+}
+
+-(void)setStatusItemVisible:(BOOL)val {
+    statusItem.visible = val;
 }
 
 #pragma mark -StatusBar menu data

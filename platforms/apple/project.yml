@@ -33,6 +33,12 @@ targets:
         excludes:
           - "Info.plist"
           - "MindfulKey.entitlements"
+      # [MINDFUL] Batch "Hệ thống + Chuông" — pane "Hệ thống" hiện số phiên bản THẬT đọc từ file
+      # này lúc chạy (SystemSettingsView.mm, CurrentVersionString()), KHÔNG đọc
+      # CFBundleShortVersionString ($(MARKETING_VERSION) dưới đây đang LỆCH version.env — không sửa
+      # ở batch này, ngoài phạm vi UI). Không có extension nhận diện là mã nguồn nên XcodeGen tự xếp
+      # vào Copy Bundle Resources — đọc được cả từ bản đã cài /Applications, không chỉ lúc chạy Xcode.
+      - path: ../../version.env
 
     dependencies:
       - sdk: Carbon.framework

@@ -154,6 +154,8 @@ static NSInteger ParseHour(NSString *s) {
     NSView      *_cardInterval;
     NSTextField *_lblInterval;
     MKSegmented *_intervalSeg;
+    NSTextField *_customIntervalField;   // [MINDFUL] "Tùy chỉnh" — sàn 15/trần 240, decision-log 2026-07-15
+    NSTextField *_customIntervalSuffix;  // nhãn "phút" cạnh ô Tùy chỉnh
     NSTextField *_noteInterval;
 
 
@@ -393,14 +395,22 @@ static NSString *StringFromHotkey(int hotkey) {
     _cardInterval = [self addCard];
 
     _lblInterval = [self label:@"Chuông định kỳ mỗi" font:[self fFieldLbl] color:[Brand muted]];
-    
+
+    // [MINDFUL] decision-log 2026-07-15 "Nhịp chuông 15 phút vs trần lấy mẫu đã chốt": bỏ "15" khỏi
+    // 2 lựa chọn nhanh (còn 30/60) + thêm ô "Tùy chỉnh" riêng cho số phút bất kỳ, sàn 15/trần 240 —
+    // xem commitCustomInterval.
     _intervalSeg = [[MKSegmented alloc] initWithFrame:NSZeroRect];
-    _intervalSeg.titles = @[@"15", @"30", @"60"];
+    _intervalSeg.titles = @[@"30", @"60"];
     _intervalSeg.target = self;
     _intervalSeg.action = @selector(onInterval:);
     [self addSubview:_intervalSeg];
 
-    _noteInterval = [self label:@"Cứ mỗi nhịp chuông, app ghi một điểm lên dòng sông cảm xúc ở tab Hôm nay. Một nhịp, hai vai."
+    _customIntervalField = [self timeChip];   // tái dùng chip viền-mảnh sẵn có (giống ô giờ yên lặng)
+    _customIntervalField.placeholderString = @"Tùy chỉnh";
+
+    _customIntervalSuffix = [self label:@"phút" font:[self fCaption] color:[Brand muted]];
+
+    _noteInterval = [self label:@"Sàn 15 · trần 240 phút. Cứ mỗi nhịp chuông, app ghi một điểm lên dòng sông cảm xúc ở tab Hôm nay. Một nhịp, hai vai."
                            font:[self fCaption] color:[Brand muted]];
     _noteInterval.lineBreakMode = NSLineBreakByWordWrapping;
     _noteInterval.maximumNumberOfLines = 3;
@@ -505,16 +515,17 @@ static NSString *StringFromHotkey(int hotkey) {
     extern int vBellHotkey;
     [self updateHotkeyButtonTitle:vBellHotkey];
 
-    // Nhịp
+    // Nhịp — 30/60 khớp đúng thì chọn segmented; giá trị khác (Tùy chỉnh) → segmented KHÔNG chọn ô
+    // nào (selectedIndex = -1, MKSegmented vẽ "không chọn" tự nhiên vì không so khớp i nào). Ô
+    // "Tùy chỉnh" luôn phản ánh số phút thật đang dùng, kể cả khi nó trùng 30/60.
     extern int vBellInterval;
     int curInterval = vBellInterval > 0 ? vBellInterval : (int)[d integerForKey:@"vBellInterval"];
     if (curInterval <= 0) curInterval = 60; // Mặc định 60
-    
-    NSInteger bestIdx = 2; // "60"
-    if (abs(curInterval - 15) < abs(curInterval - 30) && abs(curInterval - 15) < abs(curInterval - 60)) bestIdx = 0;
-    else if (abs(curInterval - 30) < abs(curInterval - 60)) bestIdx = 1;
-    
-    _intervalSeg.selectedIndex = bestIdx;
+    if (curInterval < 15) curInterval = 15;
+    if (curInterval > 240) curInterval = 240;
+
+    _intervalSeg.selectedIndex = (curInterval == 30) ? 0 : ((curInterval == 60) ? 1 : -1);
+    _customIntervalField.integerValue = curInterval;
 
 
     // Âm thanh
@@ -554,13 +565,28 @@ static NSString *StringFromHotkey(int hotkey) {
 #pragma mark - Actions
 
 - (void)onInterval:(MKSegmented *)sender {
-    int minutes = 60;
-    if (sender.selectedIndex == 0) minutes = 15;
-    else if (sender.selectedIndex == 1) minutes = 30;
-    
+    int minutes = (sender.selectedIndex == 0) ? 30 : 60;
+
     extern int vBellInterval;
     vBellInterval = minutes;
     [[NSUserDefaults standardUserDefaults] setInteger:minutes forKey:@"vBellInterval"];
+    _customIntervalField.integerValue = minutes;   // giữ ô Tùy chỉnh đồng bộ với lựa chọn nhanh
+    BellMac_ApplySettings();
+}
+
+// [MINDFUL] decision-log 2026-07-15 — sàn 15 / trần 240. Kẹp thay vì âm thầm nhận giá trị ngoài
+// khoảng: ghi giá trị ĐÃ KẸP trở lại ô để người dùng thấy rõ số họ gõ có bị chỉnh hay không (task
+// batch "Hệ thống + Chuông": "không âm thầm nhận").
+- (void)commitCustomInterval {
+    NSInteger minutes = _customIntervalField.integerValue;
+    if (minutes < 15) minutes = 15;
+    if (minutes > 240) minutes = 240;
+    _customIntervalField.integerValue = minutes;
+
+    extern int vBellInterval;
+    vBellInterval = (int)minutes;
+    [[NSUserDefaults standardUserDefaults] setInteger:minutes forKey:@"vBellInterval"];
+    _intervalSeg.selectedIndex = (minutes == 30) ? 0 : ((minutes == 60) ? 1 : -1);
     BellMac_ApplySettings();
 }
 
@@ -649,7 +675,7 @@ static NSString *StringFromHotkey(int hotkey) {
 
 // Đang gõ giờ yên lặng: viền chuyển teal (thay cho focus ring mặc định hệ thống — xem timeChip).
 - (void)controlTextDidBeginEditing:(NSNotification *)note {
-    if (note.object != _quietFrom && note.object != _quietTo) return;
+    if (note.object != _quietFrom && note.object != _quietTo && note.object != _customIntervalField) return;
     NSTextField *f = (NSTextField *)note.object;
     f.layer.borderColor = [Brand teal].CGColor;
 
@@ -668,6 +694,11 @@ static NSString *StringFromHotkey(int hotkey) {
 
 // Commit giờ yên lặng khi rời ô. Validate chồng chéo TRƯỚC khi ghi; lỗi → giữ giá trị cũ.
 - (void)controlTextDidEndEditing:(NSNotification *)note {
+    if (note.object == _customIntervalField) {
+        _customIntervalField.layer.borderColor = [Brand divider].CGColor;
+        [self commitCustomInterval];
+        return;
+    }
     if (note.object != _quietFrom && note.object != _quietTo) return;
     ((NSTextField *)note.object).layer.borderColor = [Brand divider].CGColor;
 
@@ -757,10 +788,21 @@ static NSString *StringFromHotkey(int hotkey) {
 
     SET(_lblInterval, kCardPadX, intervalTop + cy, W - 2 * kCardPadX, kRowH);
     cy += kRowH + kGapSm;
-    SET(_intervalSeg, kCardPadX, intervalTop + cy, W - 2 * kCardPadX, kSegH);
+    // Segmented 30/60 + ô "Tùy chỉnh" + nhãn "phút" trên CÙNG 1 hàng — segmented hẹp lại còn 2 lựa
+    // chọn (khớp SCREEN-REFERENCE.md §2.2: "MKSegmented 30/60 + ô Tùy chỉnh").
+    if (apply) {
+        CGFloat rowY = H - (intervalTop + cy) - kSegH;
+        CGFloat segW = 108.0, chipW = 56.0, gap = 10.0;
+        _intervalSeg.frame = NSMakeRect(kCardPadX, rowY, segW, kSegH);
+        _customIntervalField.frame = NSMakeRect(kCardPadX + segW + gap, rowY, chipW, kSegH);
+        _customIntervalSuffix.frame = NSMakeRect(kCardPadX + segW + gap + chipW + 6.0, rowY + (kSegH - kRowH) / 2.0, 36.0, kRowH);
+    }
     cy += kSegH + kGapSm;
-    SET(_noteInterval, kCardPadX, intervalTop + cy, W - 2 * kCardPadX, kNoteH);
-    cy += kNoteH + kCardPadY;
+    // Caption dài hơn bản cũ (thêm "Sàn 15 · trần 240 phút.") — cần thêm chỗ so với kNoteH dùng
+    // chung, chỉ chỉnh cục bộ ở đây (không đổi hằng số kNoteH — các note khác trong file vẫn khớp).
+    CGFloat noteIntervalH = kNoteH + 14.0;
+    SET(_noteInterval, kCardPadX, intervalTop + cy, W - 2 * kCardPadX, noteIntervalH);
+    cy += noteIntervalH + kCardPadY;
     SET(_cardInterval, 0, intervalTop, W, cy);
     top = intervalTop + cy + kSectionGap;
 
