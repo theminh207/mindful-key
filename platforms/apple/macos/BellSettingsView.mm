@@ -438,16 +438,15 @@ static NSString *StringFromHotkey(int hotkey) {
     _lblSound = [self label:@"Bộ tiếng" font:[self fFieldLbl] color:[Brand muted]];
     
     // Nút hình ảnh (3 loại chuông)
-    // [MINDFUL] 2026-07-16 — VÁ ẢNH BỊ TRÁO. tag → tiếng (SoundNameForIndex): 0=Chuông chùa,
-    // 1=Chuông gió, 2=Chuông reo. Ảnh cũ gắn ngược ở tag 1/2: hình chuông CẦM phát tiếng chuông
-    // GIÓ, hình chuông GIÓ phát tiếng REO.
-    // Bằng chứng tên file ĐÚNG, ảnh SAI (đo bằng `afinfo`, không phải nghe đoán):
-    //   Chuông chùa 23.8s (ngân dài) · Chuông gió 10.3s (leng keng lâu) · Chuông reo 2.0s (ngắn gọn).
-    // Nên sửa ẢNH chứ KHÔNG sửa ánh xạ tag→tên: đổi ánh xạ sẽ khiến `vBellSoundName` đã lưu của
-    // người dùng đột nhiên phát ra tiếng khác — đổi ảnh thì tiếng giữ nguyên, chỉ hình về đúng chỗ.
+    // [MINDFUL] tag → tiếng (SoundNameForIndex) KHÓA CỨNG: 0=Chuông chùa, 1=Chuông gió,
+    // 2=Chuông reo — đổi ánh xạ này sẽ khiến `vBellSoundName` đã lưu của người dùng đột nhiên
+    // phát ra tiếng khác, nên mọi chỉnh sửa chỉ được đụng vào ẢNH.
+    // 2026-07-16 (chủ dự án chốt qua ảnh chú thích, đè lần vá theo-afinfo cùng ngày): nút giữa
+    // (tiếng Chuông gió) mang hình chuông CẦM `bell_chime`, nút phải (tiếng Chuông reo) mang hình
+    // chuông GIÓ `bell_wind` — hoán đổi ảnh giữa tag 1/2, tiếng giữ nguyên.
     _btnBell1 = [self createBellButtonWithTag:0 image:@"bell_temple"];   // → Chuông chùa (23.8s)
-    _btnBell2 = [self createBellButtonWithTag:1 image:@"bell_wind"];     // → Chuông gió  (10.3s)
-    _btnBell3 = [self createBellButtonWithTag:2 image:@"bell_chime"];    // → Chuông reo  (2.0s)
+    _btnBell2 = [self createBellButtonWithTag:1 image:@"bell_chime"];    // → Chuông gió  (10.3s)
+    _btnBell3 = [self createBellButtonWithTag:2 image:@"bell_wind"];     // → Chuông reo  (2.0s)
     [self addSubview:_btnBell1];
     [self addSubview:_btnBell2];
     [self addSubview:_btnBell3];
