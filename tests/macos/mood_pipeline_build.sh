@@ -25,7 +25,7 @@ clang++ -std=c++14 -fobjc-arc \
   "$MAC/MoodStoreMac.mm" \
   "$MAC/BellMac.mm" \
   "$MAC/NudgeCoordinatorMac.mm" \
-  "$CORE/mood/MoodBuffer.cpp" \
+  "$CORE/mood/MoodBuffer.cpp" "$CORE/mood/SendRiskAnalyzer.cpp" \
   -framework Cocoa -framework Security -lsqlite3 \
   -o "$HERE/mood_pipeline_test"
 echo "OK -> $HERE/mood_pipeline_test"
