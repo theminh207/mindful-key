@@ -182,10 +182,53 @@ static NSString *PickForToday(NSArray<NSString *> *items, NSUInteger salt) {
     return items[(DaySeed() + salt) % items.count];
 }
 
-@interface MKReflectionWindowController : NSWindowController
+// [MINDFUL] Ô ghi cảm nhận (DECISION-daily-note-v1.md). Controller giữ ô + lo consent + lưu, vì nó
+// là thứ duy nhất sống lâu bằng cửa sổ.
+@interface MKReflectionWindowController : NSWindowController <NSTextFieldDelegate, NSWindowDelegate>
+@property (nonatomic, weak) NSTextField *noteField;
 @end
 
 @implementation MKReflectionWindowController
+
+// Hỏi consent ĐÚNG LÚC người dùng lần đầu chạm vào ô — không hỏi trước (§3.2: không hỏi giữa lúc
+// đang căng thẳng, và không xin phép cho việc người ta chưa chắc muốn làm).
+- (void)controlTextDidBeginEditing:(NSNotification *)note {
+    if (note.object != self.noteField) return;
+    if (MoodStoreMac_HasAskedNoteConsent()) return;
+
+    NSAlert *alert = [[NSAlert alloc] init];
+    alert.messageText = @"Giữ lại dòng bạn vừa viết?";
+    // Nói thẳng LƯU GÌ · Ở ĐÂU · AI ĐỌC ĐƯỢC. Không hù doạ, không "để không bỏ lỡ" (§7).
+    alert.informativeText =
+        @"Chữ bạn viết sẽ được lưu ngay trên máy này, đã mã hoá, và chỉ mình bạn đọc được. "
+        @"Không gửi đi đâu, không dùng để phân tích hay chấm điểm. Xoá được bất cứ lúc nào.";
+    [alert addButtonWithTitle:@"Giữ lại"];
+    [alert addButtonWithTitle:@"Không, cảm ơn"];
+    alert.window.level = NSStatusWindowLevel;
+
+    BOOL granted = ([alert runModal] == NSAlertFirstButtonReturn);
+    MoodStoreMac_SetNoteConsent(granted);
+    if (!granted) {
+        // Từ chối = ô biến mất khỏi phiên này, chữ vừa gõ không lưu. Lần mở sau ô không dựng nữa —
+        // KHÔNG hỏi lại, không nhắc lại. Im lặng là tôn trọng (§2.4).
+        self.noteField.stringValue = @"";
+        [self.window makeFirstResponder:nil];
+        self.noteField.hidden = YES;
+    }
+}
+
+- (void)controlTextDidEndEditing:(NSNotification *)note {
+    if (note.object != self.noteField) return;
+    MoodStoreMac_SaveNoteForToday(self.noteField.stringValue);
+}
+
+// Đóng cửa sổ khi đang gõ dở: controlTextDidEndEditing: không chắc nổ, nên lưu lần cuối ở đây.
+// SaveNoteForToday tự bỏ qua nếu chưa consent, nên gọi thừa cũng vô hại.
+- (void)windowWillClose:(NSNotification *)notification {
+    if (self.noteField && !self.noteField.hidden) {
+        MoodStoreMac_SaveNoteForToday(self.noteField.stringValue);
+    }
+}
 
 // [MINDFUL] Soi lại v2.1 (2026-07-16) — chủ dự án chốt: link chuông MỞ Cài đặt → Chuông, KHÔNG tự
 // ghi cài đặt. Bản cũ (`onSuggestAction:`) set vBellFrom=15/vBellTo=17 và sai ở 3 tầng:
@@ -347,9 +390,17 @@ void ReflectionScreenMac_Show(void) {
         CGFloat gkY       = yTop; yTop += gkH + dividerGap;
         CGFloat div1Y     = yTop; yTop += dividerH + afterDivGap;
 
+        // [MINDFUL] Ô ghi cảm nhận — đặt DƯỚI nhịp "Soi", ngay sau câu hỏi (§2.2: nó là chỗ ĐÓN câu
+        // hỏi hôm đó, không phải một mục riêng). Người đã từ chối consent thì ô KHÔNG dựng nữa —
+        // không hỏi lại, không chỗ trống, không dấu vết. Im lặng là tôn trọng (§2.4).
+        BOOL showNote = !(MoodStoreMac_HasAskedNoteConsent() && !MoodStoreMac_HasNoteConsent());
+        CGFloat noteGap = 10.0, noteH = 54.0, noteHintGap = 6.0, noteHintH = 14.0;
+
         CGFloat eyebrow2Y = yTop; yTop += eyebrowH + qGap;
         CGFloat qY        = yTop; yTop += qH + qcapGap;
-        CGFloat qcapY     = yTop; yTop += qcapH + dividerGap;
+        CGFloat qcapY     = yTop; yTop += qcapH + (showNote ? noteGap : dividerGap);
+        CGFloat noteY     = yTop; if (showNote) yTop += noteH + noteHintGap;
+        CGFloat noteHintY = yTop; if (showNote) yTop += noteHintH + dividerGap;
         CGFloat div2Y     = yTop; yTop += dividerH + afterDivGap;
 
         CGFloat eyebrow3Y = yTop; yTop += eyebrowH + sugGap;
@@ -373,6 +424,10 @@ void ReflectionScreenMac_Show(void) {
         win.contentView = content;
 
         g_reflWC = [[MKReflectionWindowController alloc] initWithWindow:win];
+        // [MINDFUL] initWithWindow: KHÔNG tự gán delegate cho window dựng bằng code (chỉ nib mới
+        // gán). Thiếu dòng này thì `windowWillClose:` không bao giờ nổ → gõ dở ô ghi rồi đóng cửa
+        // sổ là MẤT chữ, mà mất im lặng — kiểu hỏng tệ nhất cho một ô nhật ký.
+        win.delegate = g_reflWC;
 
         // Nhịp 1: Nhận ra
         NSTextField *ebRealize = EyebrowLabel(@"Nhận ra");
@@ -415,6 +470,36 @@ void ReflectionScreenMac_Show(void) {
         qcapLabel.textColor = [Brand stone];
         qcapLabel.frame = NSMakeRect(pad, ReflY(contentH, qcapY, qcapH), contentW, qcapH);
         [content addSubview:qcapLabel];
+
+        // [MINDFUL] Ô ghi — LỜI MỜI, không phải ô bắt buộc: chỉ có placeholder mờ, KHÔNG label
+        // "Ghi chú:" đứng trên ra lệnh (§2.3). Trống thì tuyệt đối im lặng — không đếm "đã ghi N
+        // ngày", không "bạn chưa viết", không nhắc (§2.4). Ô trống kiểu bảng điểm danh chính là
+        // chuỗi-ngày-liên-tục trá hình mà hiến chương cấm.
+        if (showNote) {
+            NSTextField *noteField = [[NSTextField alloc] initWithFrame:
+                NSMakeRect(pad, ReflY(contentH, noteY, noteH), contentW, noteH)];
+            noteField.placeholderString = @"Nếu muốn, ghi lại một dòng cho hôm nay…";
+            noteField.font = [NSFont systemFontOfSize:13 weight:NSFontWeightRegular];
+            noteField.textColor = [Brand charcoal];
+            noteField.bezeled = YES;
+            noteField.bezelStyle = NSTextFieldRoundedBezel;
+            noteField.editable = YES;
+            noteField.usesSingleLineMode = NO;
+            [[noteField cell] setWraps:YES];
+            [[noteField cell] setScrollable:NO];
+            noteField.delegate = g_reflWC;
+            noteField.stringValue = MoodStoreMac_FetchNoteForToday() ?: @"";   // sửa được trong ngày (§2.6)
+            [content addSubview:noteField];
+            g_reflWC.noteField = noteField;
+
+            // Dòng cam kết ngay dưới ô (§7) — nói rõ chữ đi đâu, ĐÚNG chỗ người ta sắp viết ra,
+            // không bắt đi tìm trong trang Riêng tư.
+            NSTextField *noteHint = [NSTextField labelWithString:@"Chỉ nằm trên máy · đã mã hoá · xoá được bất cứ lúc nào."];
+            noteHint.font = [NSFont systemFontOfSize:11 weight:NSFontWeightRegular];
+            noteHint.textColor = [Brand stone];
+            noteHint.frame = NSMakeRect(pad, ReflY(contentH, noteHintY, noteHintH), contentW, noteHintH);
+            [content addSubview:noteHint];
+        }
 
         NSBox *div2 = [[NSBox alloc] initWithFrame:NSMakeRect(pad, ReflY(contentH, div2Y, dividerH), contentW, dividerH)];
         div2.boxType = NSBoxSeparator;
