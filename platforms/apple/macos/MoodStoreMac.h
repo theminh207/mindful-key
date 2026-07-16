@@ -91,10 +91,19 @@ BOOL MoodStoreMac_HasAskedNoteConsent(void);
 // Lưu ô ghi HÔM NAY. 1 note/ngày — gọi nhiều lần trong ngày = SỬA, không đẻ thêm dòng.
 // Chuỗi rỗng/nil = xoá ghi chú hôm nay (người dùng xoá hết chữ = rút lại, phải tôn trọng).
 // Không làm gì nếu chưa có consent riêng cho ô ghi.
-void MoodStoreMac_SaveNoteForToday(NSString *text);
+// `question` = câu hỏi hôm đó, lưu NGUYÊN VĂN kèm note (§2.6 "gắn ngày + câu hỏi hôm đó") để lúc
+// đọc lại còn biết dòng chữ này đang trả lời cái gì. nil được — note cũ không có, màn đọc lại chịu
+// được thiếu. Xem lý do "nguyên văn thay vì suy lại" ở chỗ INSERT trong .mm.
+void MoodStoreMac_SaveNoteForToday(NSString *text, NSString *question);
 
 // nil nếu hôm nay chưa ghi gì (hoặc chưa consent). KHÔNG BAO GIỜ trả chuỗi rỗng thay cho nil.
 NSString *MoodStoreMac_FetchNoteForToday(void);
+
+// [MINDFUL] 2026-07-16 — "chồng ghi chú": mọi ngày CÓ chữ, mới nhất trước. Ngày không viết KHÔNG
+// xuất hiện (§2.4 "Trống = im lặng" — không ô trống, không chỗ để thấy "mình bỏ lỡ").
+// Mỗi phần tử: {@"ts": NSNumber epoch giây, @"text": NSString, @"question": NSString HOẶC VẮNG}.
+// Trả @[] nếu chưa consent ô ghi.
+NSArray<NSDictionary *> *MoodStoreMac_FetchAllNotes(void);
 
 // [MINDFUL] Story 2.6 — Riêng tư
 BOOL MoodStoreMac_ExportCSVToURL(NSURL *url);

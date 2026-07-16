@@ -544,7 +544,7 @@ static void TodayBounds(sqlite3_int64 *outFrom, sqlite3_int64 *outTo) {
     *outTo   = (sqlite3_int64)[startOfTomorrow timeIntervalSince1970];
 }
 
-void MoodStoreMac_SaveNoteForToday(NSString *text) {
+void MoodStoreMac_SaveNoteForToday(NSString *text, NSString *question) {
     if (!MoodStoreMac_HasNoteConsent())
         return;   // chưa đồng ý = KHÔNG ghi gì, kể cả không tạo dòng rỗng
 
@@ -577,10 +577,26 @@ void MoodStoreMac_SaveNoteForToday(NSString *text) {
         NSData *enc = AESEncrypt([trimmed dataUsingEncoding:NSUTF8StringEncoding], key);
         if (enc) {
             sqlite3_stmt *ins = NULL;
-            const char *sql = "INSERT INTO mood_events (ts, event_type, note_blob) VALUES (?, 'note', ?);";
+            // [MINDFUL] 2026-07-16 — `mood_label` gánh thêm vai "câu hỏi hôm đó" (§2.6 "gắn ngày +
+            // câu hỏi"). Tái dùng cột sẵn có thay vì ALTER TABLE lần nữa trên kho đang chạy thật —
+            // cột này khai cho 'checkin', và dòng 'note' chưa bao giờ đụng tới (cùng lối đã dùng
+            // cho `app_bundle_id` ở seed marker).
+            // Vì sao lưu NGUYÊN VĂN câu hỏi, không lưu index/shape rồi suy lại: câu hỏi chọn theo
+            // (DaySeed, hình dạng ngày) — suy lại được, NHƯNG chỉ khi mảng câu hỏi không đổi. Sửa
+            // lời một câu là mọi note cũ đột nhiên "trả lời" câu khác. Lưu nguyên văn = ghi lại
+            // câu ĐÃ THẬT SỰ được hỏi, đúng thứ người đọc lại cần.
+            // Câu hỏi KHÔNG mã hoá riêng như `note_blob`: nó là 1 trong 12 chuỗi do app viết sẵn,
+            // không phải chữ người dùng. Nó có lộ hình dạng ngày (êm/gợn) — nhưng chính xác thứ đó
+            // đã nằm sẵn dạng số ở các dòng 'sample' cùng kho rồi, không thêm bậc nhạy cảm nào.
+            const char *sql = "INSERT INTO mood_events (ts, event_type, note_blob, mood_label) VALUES (?, 'note', ?, ?);";
             if (sqlite3_prepare_v2(db, sql, -1, &ins, NULL) == SQLITE_OK) {
                 sqlite3_bind_int64(ins, 1, (sqlite3_int64)[[NSDate date] timeIntervalSince1970]);
                 sqlite3_bind_blob(ins, 2, enc.bytes, (int)enc.length, SQLITE_TRANSIENT);
+                if (question.length > 0) {
+                    sqlite3_bind_text(ins, 3, question.UTF8String, -1, SQLITE_TRANSIENT);
+                } else {
+                    sqlite3_bind_null(ins, 3);
+                }
                 if (sqlite3_step(ins) != SQLITE_DONE) {
                     NSLog(@"[MoodStoreMac] ghi note lỗi: %s", sqlite3_errmsg(db));
                 }
@@ -627,6 +643,51 @@ NSString *MoodStoreMac_FetchNoteForToday(void) {
     }
     FlushAndCloseDB(db, tempPath);
     return result.length > 0 ? result : nil;   // rỗng ⇒ nil, đúng hợp đồng ở .h
+}
+
+// [MINDFUL] 2026-07-16 — "chồng ghi chú" (chủ dự án chốt lối đọc lại; xem DECISION-daily-note-v1.md
+// §2.5 vốn hoãn việc này sang "đợt sau"). Trả về CHỈ những ngày CÓ chữ — ngày trống không có dòng
+// nào trong bảng nên tự nhiên vắng mặt, đúng §2.4 ("Trống = im lặng"): không đếm, không ô trống,
+// không chỗ nào để thấy "mình bỏ lỡ".
+// Mỗi phần tử: {@"ts": epoch giây, @"text": chữ đã giải mã, @"question": câu hỏi hôm đó HOẶC vắng}.
+// `question` VẮNG với note ghi trước bản này (cột `mood_label` khi đó chưa dùng cho note) — màn
+// đọc lại phải chịu được thiếu, KHÔNG bịa câu hỏi khác vào chỗ đó.
+NSArray<NSDictionary *> *MoodStoreMac_FetchAllNotes(void) {
+    if (!MoodStoreMac_HasNoteConsent())
+        return @[];
+
+    NSData *key = MoodStoreKey();
+    if (!key) return @[];
+
+    NSString *tempPath = nil;
+    sqlite3 *db = OpenWorkingDB(&tempPath);
+    if (!db) return @[];
+
+    NSMutableArray<NSDictionary *> *out = [NSMutableArray array];
+    sqlite3_stmt *stmt = NULL;
+    const char *sql =
+        "SELECT ts, note_blob, mood_label FROM mood_events "
+        "WHERE event_type = 'note' ORDER BY ts DESC;";   // mới nhất trước
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
+            const void *bytes = sqlite3_column_blob(stmt, 1);
+            int len = sqlite3_column_bytes(stmt, 1);
+            if (!bytes || len <= 0) continue;
+            NSData *dec = AESDecrypt([NSData dataWithBytes:bytes length:(NSUInteger)len], key);
+            if (!dec) continue;   // giải mã hỏng ⇒ BỎ QUA dòng đó, không dựng chuỗi rác cho người đọc
+            NSString *text = [[NSString alloc] initWithData:dec encoding:NSUTF8StringEncoding];
+            if (text.length == 0) continue;
+
+            NSMutableDictionary *row = [@{ @"ts": @(sqlite3_column_int64(stmt, 0)),
+                                           @"text": text } mutableCopy];
+            const unsigned char *q = sqlite3_column_text(stmt, 2);
+            if (q && q[0]) row[@"question"] = [NSString stringWithUTF8String:(const char *)q];
+            [out addObject:row];
+        }
+        sqlite3_finalize(stmt);
+    }
+    FlushAndCloseDB(db, tempPath);
+    return out;
 }
 
 #pragma mark - Story 3.7/3.8 — Tuần/Tháng (trung bình mỗi ngày, gap = NSNull thật)

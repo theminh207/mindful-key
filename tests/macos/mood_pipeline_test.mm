@@ -193,9 +193,31 @@ int main(void) {
         // tiêm-ngày. Đã ghi ⚠️ ở TEST_MATRIX, không ghi ✅.
         printf("\n-- Ca 6b: auto-purge dọn số đo quá hạn; ô ghi lưu/đọc/xoá --\n");
         MoodStoreMac_SetNoteConsent(YES);
-        MoodStoreMac_SaveNoteForToday(@"hôm nay nhẹ nhõm");
+        MoodStoreMac_SaveNoteForToday(@"hôm nay nhẹ nhõm", @"Điều gì đã giữ cho ngày nhẹ như vậy?");
         expectTrue("note hôm nay đọc lại được ngay sau khi lưu",
                    [MoodStoreMac_FetchNoteForToday() isEqualToString:@"hôm nay nhẹ nhõm"]);
+
+        // "Chồng ghi chú" (2026-07-16): FetchAllNotes trả chữ + câu hỏi hôm đó, mới nhất trước.
+        NSArray<NSDictionary *> *all = MoodStoreMac_FetchAllNotes();
+        expectEqualInt("FetchAllNotes: 1 ngày viết -> 1 dòng", (long)all.count, 1);
+        if (all.count == 1) {
+            expectTrue("FetchAllNotes trả đúng chữ", [all[0][@"text"] isEqualToString:@"hôm nay nhẹ nhõm"]);
+            expectTrue("FetchAllNotes trả kèm câu hỏi hôm đó (§2.6)",
+                       [all[0][@"question"] isEqualToString:@"Điều gì đã giữ cho ngày nhẹ như vậy?"]);
+        }
+        // Sửa trong ngày = SỬA, không đẻ dòng thứ 2 (§2.6) — chồng ghi chú không được nhân đôi 1 ngày.
+        MoodStoreMac_SaveNoteForToday(@"hôm nay nhẹ nhõm thật", @"Điều gì đã giữ cho ngày nhẹ như vậy?");
+        expectEqualInt("sửa note trong ngày -> chồng ghi chú vẫn 1 dòng",
+                       (long)MoodStoreMac_FetchAllNotes().count, 1);
+        // Note KHÔNG có câu hỏi (dòng ghi trước bản này) phải chịu được — key vắng, không crash.
+        MoodStoreMac_SaveNoteForToday(@"không kèm câu hỏi", nil);
+        all = MoodStoreMac_FetchAllNotes();
+        expectEqualInt("note thiếu câu hỏi vẫn đọc được", (long)all.count, 1);
+        if (all.count == 1) {
+            expectTrue("note thiếu câu hỏi -> key 'question' VẮNG (không bịa câu khác)",
+                       all[0][@"question"] == nil);
+        }
+        MoodStoreMac_SaveNoteForToday(@"hôm nay nhẹ nhõm", @"Điều gì đã giữ cho ngày nhẹ như vậy?");
         expectEqualInt("1 note/ngày: lưu lần 2 là SỬA, không đẻ dòng mới",
                        (long)MoodStoreMac_FetchTodaySamples().count, 3);   // note không lẫn vào mẫu
 

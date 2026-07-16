@@ -8,6 +8,7 @@
 #import "ReflectionScreenMac.h"
 #import <Cocoa/Cocoa.h>
 #import "MoodStoreMac.h"
+#import "NotesHistoryMac.h"
 #import "MoodPhrasingMac.h"
 #import "EmotionRiverView.h"
 #import "BrandColors.h"
@@ -186,6 +187,10 @@ static NSString *PickForToday(NSArray<NSString *> *items, NSUInteger salt) {
 // là thứ duy nhất sống lâu bằng cửa sổ.
 @interface MKReflectionWindowController : NSWindowController <NSTextFieldDelegate, NSWindowDelegate>
 @property (nonatomic, weak) NSTextField *noteField;
+// [MINDFUL] 2026-07-16 — câu hỏi ĐANG hiện trên màn, giữ NGUYÊN VĂN để lưu kèm note (§2.6). Copy
+// chứ không tính lại lúc lưu: tính lại đúng vào lúc qua nửa đêm sẽ ra câu của NGÀY MỚI, tức là
+// gắn nhầm câu hỏi vào dòng chữ người ta vừa viết cho ngày cũ.
+@property (nonatomic, copy) NSString *questionText;
 @end
 
 @implementation MKReflectionWindowController
@@ -219,14 +224,14 @@ static NSString *PickForToday(NSArray<NSString *> *items, NSUInteger salt) {
 
 - (void)controlTextDidEndEditing:(NSNotification *)note {
     if (note.object != self.noteField) return;
-    MoodStoreMac_SaveNoteForToday(self.noteField.stringValue);
+    MoodStoreMac_SaveNoteForToday(self.noteField.stringValue, self.questionText);
 }
 
 // Đóng cửa sổ khi đang gõ dở: controlTextDidEndEditing: không chắc nổ, nên lưu lần cuối ở đây.
 // SaveNoteForToday tự bỏ qua nếu chưa consent, nên gọi thừa cũng vô hại.
 - (void)windowWillClose:(NSNotification *)notification {
     if (self.noteField && !self.noteField.hidden) {
-        MoodStoreMac_SaveNoteForToday(self.noteField.stringValue);
+        MoodStoreMac_SaveNoteForToday(self.noteField.stringValue, self.questionText);
     }
 }
 
@@ -247,6 +252,18 @@ static NSString *PickForToday(NSArray<NSString *> *items, NSUInteger salt) {
 - (void)onOpenBellSettings:(id)sender {
     [self.window close];
     [appDelegate onBellSettingsSelected];
+}
+
+// [MINDFUL] 2026-07-16 — mở "chồng ghi chú". KHÔNG đóng cửa sổ Soi lại (khác onOpenBellSettings:
+// vốn nhường chỗ cho cửa sổ Cài đặt): người ta hay mở chồng ghi chú để ngó lại rồi viết tiếp cho
+// hôm nay — đóng mất màn đang viết là cắt ngang đúng mạch đó.
+// Lưu chữ đang gõ dở TRƯỚC khi mở: nếu không, dòng hôm nay vừa gõ mà chưa rời ô sẽ không có trong
+// danh sách, người dùng đọc xong tưởng app nuốt mất chữ của mình.
+- (void)onOpenNotesHistory:(id)sender {
+    if (self.noteField && !self.noteField.hidden) {
+        MoodStoreMac_SaveNoteForToday(self.noteField.stringValue, self.questionText);
+    }
+    NotesHistoryMac_Show();
 }
 
 @end
@@ -396,11 +413,20 @@ void ReflectionScreenMac_Show(void) {
         BOOL showNote = !(MoodStoreMac_HasAskedNoteConsent() && !MoodStoreMac_HasNoteConsent());
         CGFloat noteGap = 10.0, noteH = 54.0, noteHintGap = 6.0, noteHintH = 14.0;
 
+        // [MINDFUL] 2026-07-16 — lối vào "chồng ghi chú" (NotesHistoryMac). Đặt ngay dưới ô ghi vì
+        // đó là thứ nó nói về (§2.2), KHÔNG thêm mục nav thứ 7 vào cửa sổ Cài đặt (diện mạo v2 chốt
+        // 6 mục — đổi số đó là quyết định nhận diện khác, không đính kèm vào việc này).
+        // ẨN HẲN khi chưa viết dòng nào: một lối vào xám/disabled vẫn là lời nhắc "bạn chưa viết
+        // gì" — đúng thứ §2.4 cấm. Chưa có gì để đọc thì không có gì để mời.
+        BOOL showNotesLink = showNote && NotesHistoryMac_HasAnyNote();
+        CGFloat notesLinkGap = 8.0, notesLinkH = 15.0;
+
         CGFloat eyebrow2Y = yTop; yTop += eyebrowH + qGap;
         CGFloat qY        = yTop; yTop += qH + qcapGap;
         CGFloat qcapY     = yTop; yTop += qcapH + (showNote ? noteGap : dividerGap);
         CGFloat noteY     = yTop; if (showNote) yTop += noteH + noteHintGap;
-        CGFloat noteHintY = yTop; if (showNote) yTop += noteHintH + dividerGap;
+        CGFloat noteHintY = yTop; if (showNote) yTop += noteHintH + (showNotesLink ? notesLinkGap : dividerGap);
+        CGFloat notesLinkY = yTop; if (showNotesLink) yTop += notesLinkH + dividerGap;
         CGFloat div2Y     = yTop; yTop += dividerH + afterDivGap;
 
         CGFloat eyebrow3Y = yTop; yTop += eyebrowH + sugGap;
@@ -459,7 +485,9 @@ void ReflectionScreenMac_Show(void) {
         ebSoi.frame = NSMakeRect(pad, ReflY(contentH, eyebrow2Y, eyebrowH), contentW, eyebrowH);
         [content addSubview:ebSoi];
 
-        NSTextField *qLabel = [NSTextField wrappingLabelWithString:PickForToday(ReflectivePromptsFor(shape), 0)];
+        NSString *questionText = PickForToday(ReflectivePromptsFor(shape), 0);
+        g_reflWC.questionText = questionText;   // lưu kèm note (§2.6) — xem ghi chú ở @property
+        NSTextField *qLabel = [NSTextField wrappingLabelWithString:questionText];
         qLabel.font = [NSFont systemFontOfSize:18 weight:NSFontWeightSemibold];
         qLabel.textColor = [Brand charcoal];
         qLabel.frame = NSMakeRect(pad, ReflY(contentH, qY, qH), contentW, qH);
@@ -499,6 +527,22 @@ void ReflectionScreenMac_Show(void) {
             noteHint.textColor = [Brand stone];
             noteHint.frame = NSMakeRect(pad, ReflY(contentH, noteHintY, noteHintH), contentW, noteHintH);
             [content addSubview:noteHint];
+
+            // Lối vào "chồng ghi chú" — chỉ dựng khi ĐÃ có dòng để đọc (xem showNotesLink ở trên).
+            // Cùng kiểu link cam với "Mở cài đặt chuông" phía dưới, không chế kiểu mới.
+            if (showNotesLink) {
+                NSButton *notesLink = [NSButton buttonWithTitle:@"" target:g_reflWC action:@selector(onOpenNotesHistory:)];
+                notesLink.bordered = NO;
+                notesLink.bezelStyle = NSBezelStyleInline;
+                [(NSButtonCell *)notesLink.cell setBackgroundColor:[NSColor clearColor]];
+                notesLink.attributedTitle = [[NSAttributedString alloc] initWithString:@"Những dòng đã viết →" attributes:@{
+                    NSForegroundColorAttributeName : [Brand orange],
+                    NSFontAttributeName : [NSFont systemFontOfSize:12.5 weight:NSFontWeightMedium],
+                }];
+                CGFloat notesLinkW = ceil(notesLink.attributedTitle.size.width) + 8.0;
+                notesLink.frame = NSMakeRect(pad - 4.0, ReflY(contentH, notesLinkY, notesLinkH), notesLinkW, notesLinkH);
+                [content addSubview:notesLink];
+            }
         }
 
         NSBox *div2 = [[NSBox alloc] initWithFrame:NSMakeRect(pad, ReflY(contentH, div2Y, dividerH), contentW, dividerH)];
