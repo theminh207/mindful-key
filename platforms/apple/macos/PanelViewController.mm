@@ -625,7 +625,7 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
     }
     if (!popoverScreen) popoverScreen = [NSScreen mainScreen];
     CGFloat screenH = popoverScreen.visibleFrame.size.height;
-    CGFloat maxContentH = MAX(200.0, screenH - chromeH - 24.0);
+    CGFloat maxContentH = MAX(200.0, screenH - chromeH - 80.0);
     CGFloat scrollH = MIN(contentH, maxContentH);
 
     _contentScrollView.frame = NSMakeRect(0, contentStartY, kPanelW, scrollH);

@@ -367,11 +367,11 @@ extern bool convertToolDontAlertWhenCompleted;
         [_panelPopover close];
         return;
     }
+    [_panelVC refreshAll]; // view đã load → cập nhật trạng thái mới nhất và tính toán kích thước
     [_panelPopover showRelativeToRect:statusItem.button.bounds
                                ofView:statusItem.button
                         preferredEdge:NSMinYEdge];
-    [_panelVC refreshAll];                                  // view đã load → cập nhật trạng thái mới nhất
-    _panelPopover.contentSize = [_panelVC panelContentSize];
+
 }
 
 // Hiện menu cũ (mọi mục còn lại) — dùng chung cho bấm phải icon và nút gear ⋯ trong panel.
