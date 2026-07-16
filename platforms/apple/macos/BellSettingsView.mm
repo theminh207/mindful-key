@@ -1082,8 +1082,13 @@ static const NSInteger kIntervalCeil  = 240;
     cy += kRowH + kGapSm;
     SET(_seg, kCardPadX, identifyTop + cy, W - 2 * kCardPadX, kSegH);
     cy += kSegH + kGapSm;
-    SET(_noteIdentify, kCardPadX, identifyTop + cy, W - 2 * kCardPadX, kNoteH);
-    cy += kNoteH + kCardPadY;
+    // [MINDFUL] 2026-07-16 — câu dài hơn bản cũ (thêm "Không đổi ngưỡng gác cổng.") tràn sang dòng 3
+    // (maximumNumberOfLines đã là 3 từ trước), nhưng khung vẫn kẹt ở kNoteH=32 (đúng 2 dòng) nên
+    // dòng 3 bị cắt mất, hiện dở dang "Không đổi" vô nghĩa. Cùng mẫu đã dùng cho _noteInterval ở
+    // trên: chỉ chỉnh cục bộ, không đổi hằng số kNoteH dùng chung (đụng cả _noteStatus không liên quan).
+    CGFloat noteIdentifyH = kNoteH + 14.0;
+    SET(_noteIdentify, kCardPadX, identifyTop + cy, W - 2 * kCardPadX, noteIdentifyH);
+    cy += noteIdentifyH + kCardPadY;
     SET(_cardIdentify, 0, identifyTop, W, cy);
     
     return identifyTop + cy;
