@@ -23,8 +23,69 @@ permissions:
   contents: write
 
 jobs:
+  # Vỏ Windows build ở đây chứ không phải máy chủ dự án: máy dev là macOS, không chạy được MSVC.
+  # Runner windows-latest có sẵn VS 2022 (toolset v143) mà OpenKey.vcxproj đòi. Job này CHỈ đóng
+  # gói — nó KHÔNG ký Authenticode (chưa có chứng chỉ; xem docs/FRICTION-LOG.md), nên bộ cài tải
+  # về sẽ bị SmartScreen cảnh báo "Unknown publisher". Đúng thân phận hiện tại của bản macOS
+  # (ad-hoc, chưa notarize) — không giấu.
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Đối chiếu tag với version.env (chặn lệch phiên bản)
+        shell: bash
+        run: |
+          source version.env
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          if [[ "$TAG_VERSION" != "$VERSION" ]]; then
+            echo "::error::Tag v$TAG_VERSION không khớp version.env (VERSION=$VERSION)." >&2
+            exit 1
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      # Chỉ target OpenKey (app chính), KHÔNG build OpenKeyUpdate — updater gốc của OpenKey,
+      # ngoài phạm vi bản phát hành này.
+      - name: Build app Windows (Release x64)
+        run: >
+          msbuild platforms\windows\win32\OpenKey\OpenKey.sln
+          /t:OpenKey /p:Configuration=Release /p:Platform=x64 /verbosity:normal
+
+      - name: Tìm .exe vừa build (không đoán đường dẫn OutDir)
+        shell: bash
+        run: |
+          EXE=$(find platforms/windows -name "OpenKey64.exe" -type f | head -1)
+          if [[ -z "$EXE" ]]; then
+            echo "::error::Build xong nhưng không tìm thấy OpenKey64.exe — OutDir khác dự đoán." >&2
+            find platforms/windows -name "*.exe" -type f || true
+            exit 1
+          fi
+          echo "Tìm thấy: $EXE"
+          echo "SOURCE_EXE=$(cygpath -w "$(pwd)/$EXE")" >> "$GITHUB_ENV"
+
+      - name: Đóng bộ cài (Inno Setup)
+        shell: bash
+        run: |
+          choco install innosetup --no-progress -y
+          mkdir -p release-out
+          "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" \
+            "/DMyAppVersion=$VERSION" \
+            "/DSourceExe=$SOURCE_EXE" \
+            platforms/windows/installer/MindfulKey.iss
+          ls -lh release-out/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-setup
+          path: release-out/MindfulKey_*_x64-setup.exe
+          if-no-files-found: error
+
   release:
     runs-on: macos-latest
+    needs: build-windows   # bộ cài Windows phải sẵn sàng trước, để đăng CÙNG 1 Release
     steps:
       - uses: actions/checkout@v4
 
@@ -127,6 +188,14 @@ jobs:
       # động tác đăng, 3 lần liên tiếp, và runner bị xoá nên mọi asset mất trắng. Nay thiếu PAT thì
       # lùi về github.token (workflow đã có `permissions: contents: write`) — bản vẫn ra được, chỉ
       # đứng tên bot; cắm RELEASE_PAT vào lúc nào là tự động đứng tên cá nhân lại từ bản kế tiếp.
+      # Tải bộ cài Windows từ job build-windows về đây, SAU khi release.sh đã dựng xong
+      # release-out/ (chạy trước sẽ bị script dọn mất).
+      - name: Lấy bộ cài Windows từ job build-windows
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-setup
+          path: release-out/
+
       - name: Đăng GitHub Release
         env:
           RELEASE_PAT: ${{ secrets.RELEASE_PAT }}
@@ -148,7 +217,8 @@ jobs:
               release-out/MindfulKey-*.dmg \
               release-out/MindfulKey.dmg \
               release-out/MindfulKey-*-universal.zip \
-              release-out/MindfulKey-*-universal.dSYM.zip
+              release-out/MindfulKey-*-universal.dSYM.zip \
+              release-out/MindfulKey_*_x64-setup.exe
           }
 
           # PAT trước (Release đứng tên chủ tài khoản). PAT hết hạn / thiếu quyền `contents:write`
