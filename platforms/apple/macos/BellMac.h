@@ -33,9 +33,9 @@ void BellMac_Snooze(int minutes);
 // vBellSoundName / vBellVolume). Dùng cho "nghe thử khi chọn" ở BellSettingsView (EXPERIENCE Journey B).
 void BellMac_PreviewSound(void);
 
-// [MINDFUL] 2026-07-16 (chủ dự án chốt) — tiếng báo cho khung CHẤM NHỊP ("Mặt hồ đang thế nào?").
-// CỐ Ý dùng "Chuông gió" cố định + nhỏ hơn chuông chính, KHÔNG theo tiếng người dùng chọn: đây là
-// việc khác (mời ghi nhận cảm xúc), phải nghe ra ngay là khác tiếng chuông tỉnh thức.
+// [MINDFUL] 2026-07-16 (chủ dự án chỉ đích danh file "Chuông reo.wav") — tiếng báo cho khung CHẤM
+// NHỊP ("Mặt hồ đang thế nào?"). CỐ ĐỊNH + nhỏ hơn chuông chính, KHÔNG theo tiếng người dùng chọn:
+// đây là việc khác (mời ghi nhận cảm xúc), phải nghe ra ngay là khác tiếng chuông tỉnh thức.
 //
 // Tôn trọng ĐÚNG mọi cổng chặn của chuông chính (tắt chuông · tạm hoãn · ngoài giờ chuông · chọn
 // "Im" · âm lượng 0) — người dùng đã bảo im thì mọi thứ phải im, kêu thêm 1 tiếng là hối thúc.

@@ -154,8 +154,9 @@ static NSInteger ParseHour(NSString *s) {
     NSView      *_cardInterval;
     NSTextField *_lblInterval;
     MKSegmented *_intervalSeg;
-    NSTextField *_customIntervalField;   // [MINDFUL] "Tùy chỉnh" — sàn 15/trần 240, decision-log 2026-07-15
+    NSTextField *_customIntervalField;   // [MINDFUL] "Tùy chỉnh" — sàn/trần: xem kIntervalFloor/Ceil
     NSTextField *_customIntervalSuffix;  // nhãn "phút" cạnh ô Tùy chỉnh
+    NSButton *_btnApplyInterval;         // [MINDFUL] 2026-07-16 — "Đặt": lối chốt NHÌN THẤY ĐƯỢC
     NSTextField *_noteInterval;
 
 
@@ -410,6 +411,15 @@ static NSString *StringFromHotkey(int hotkey) {
 
     _customIntervalSuffix = [self label:@"phút" font:[self fCaption] color:[Brand muted]];
 
+    // [MINDFUL] 2026-07-16 (chủ dự án chốt) — nút "Đặt". Trước đây chỉ chốt được bằng Enter hoặc rời
+    // ô: cả hai đều là đường NGẦM, không có gì trên màn hình nói ra → chủ dự án gõ số rồi kết luận
+    // "không có hướng để thiết lập chạy". Nút này không thay Enter (vẫn chạy), nó chỉ làm lối chốt
+    // HIỆN RA. Viền mảnh, KHÔNG phải nút cam CTA — đây là thao tác nhỏ, không phải hành động chính.
+    _btnApplyInterval = [NSButton buttonWithTitle:@"Đặt" target:self action:@selector(onApplyInterval:)];
+    _btnApplyInterval.bezelStyle = NSBezelStyleRounded;
+    _btnApplyInterval.font = [self fCaption];
+    [self addSubview:_btnApplyInterval];
+
     _noteInterval = [self label:@"" font:[self fCaption] color:[Brand muted]];
     _noteInterval.lineBreakMode = NSLineBreakByWordWrapping;
     _noteInterval.maximumNumberOfLines = 3;
@@ -618,6 +628,28 @@ static const NSInteger kIntervalCeil  = 240;
     [[NSUserDefaults standardUserDefaults] setInteger:minutes forKey:@"vBellInterval"];
     _intervalSeg.selectedIndex = (minutes == 30) ? 0 : ((minutes == 60) ? 1 : -1);
     BellMac_ApplySettings();
+
+    // [MINDFUL] 2026-07-16 — VÁ LỖI: thiếu đúng dòng này. `BellMac_ApplySettings()` lên lịch lại
+    // đồng hồ ĐÚNG từ bây giờ, nhưng dòng "Dự kiến reo lúc: … (còn N phút)" thì không ai bảo nó
+    // vẽ lại → nó đứng nguyên số CŨ. Chủ dự án đặt 4 phút mà vẫn thấy "còn 13 phút" (ảnh
+    // 2026-07-16) và kết luận đồng hồ không nhận nhịp mới. Nhịp nhận đúng từ đầu — chỉ có CHỮ là ôi.
+    // ApplySettings chạy bất đồng bộ trên main queue, nên đọc fireDate ngay lập tức sẽ trúng timer
+    // CŨ chưa bị thay; xếp hàng sau nó để đọc đúng lịch mới.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateStatusLabel];
+    });
+}
+
+- (void)onApplyInterval:(id)sender {
+    // Đang gõ dở: rời ô là thứ khiến số vừa gõ được đọc — và `controlTextDidEndEditing:` TỰ gọi
+    // commitCustomInterval. Gọi thêm lần nữa ở đây là chốt 2 lần + lên lịch chuông 2 lần liên tiếp.
+    // Nhưng nếu ô chưa từng được focus (bấm "Đặt" luôn) thì không delegate nào nổ → phải tự chốt.
+    // NSTextField sửa qua field editor dùng chung (1 NSTextView), delegate của nó chính là ô.
+    NSResponder *fr = self.window.firstResponder;
+    BOOL fieldWasEditing = [fr isKindOfClass:[NSTextView class]] &&
+                           (id)((NSTextView *)fr).delegate == (id)_customIntervalField;
+    [self.window makeFirstResponder:nil];
+    if (!fieldWasEditing) [self commitCustomInterval];
 }
 
 // Câu nền mặc định của ô Nhịp — 1 nguồn, dùng cả lúc dựng view lẫn lúc trả về sau khi báo kẹp.
@@ -829,10 +861,14 @@ static const NSInteger kIntervalCeil  = 240;
     // chọn (khớp SCREEN-REFERENCE.md §2.2: "MKSegmented 30/60 + ô Tùy chỉnh").
     if (apply) {
         CGFloat rowY = H - (intervalTop + cy) - kSegH;
-        CGFloat segW = 108.0, chipW = 56.0, gap = 10.0;
-        _intervalSeg.frame = NSMakeRect(kCardPadX, rowY, segW, kSegH);
-        _customIntervalField.frame = NSMakeRect(kCardPadX + segW + gap, rowY, chipW, kSegH);
-        _customIntervalSuffix.frame = NSMakeRect(kCardPadX + segW + gap + chipW + 6.0, rowY + (kSegH - kRowH) / 2.0, 36.0, kRowH);
+        // [MINDFUL] 2026-07-16 — segmented hẹp lại 108→92 để chừa chỗ nút "Đặt". Chủ dự án cần đặt
+        // số bất kỳ (vd 20-40 phút) và thấy RÕ nó đã ăn — Enter/rời ô là đường ngầm, không ai đoán ra.
+        CGFloat segW = 92.0, chipW = 52.0, gap = 8.0, applyW = 52.0;
+        CGFloat x = kCardPadX;
+        _intervalSeg.frame = NSMakeRect(x, rowY, segW, kSegH);            x += segW + gap;
+        _customIntervalField.frame = NSMakeRect(x, rowY, chipW, kSegH);   x += chipW + 6.0;
+        _customIntervalSuffix.frame = NSMakeRect(x, rowY + (kSegH - kRowH) / 2.0, 34.0, kRowH);  x += 34.0 + gap;
+        _btnApplyInterval.frame = NSMakeRect(x, rowY, applyW, kSegH);
     }
     cy += kSegH + kGapSm;
     // Caption dài hơn bản cũ (thêm "Sàn 15 · trần 240 phút.") — cần thêm chỗ so với kNoteH dùng

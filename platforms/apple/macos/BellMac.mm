@@ -107,7 +107,9 @@ void BellMac_PlayCheckinChime(void) {
     if (vol <= 0) return;
     vol *= 0.6f;   // "nhỏ" — nhẹ hơn hẳn chuông chính: đây là lời mời, không phải tiếng gọi
 
-    NSSound *sound = [NSSound soundNamed:@"Chuông gió"];
+    // Chủ dự án chỉ đích danh file 2026-07-16 ("Lấy tiếng chuông này khi hiển thị khung chấm nhịp
+    // ngay" → platforms/apple/macos/Chuông reo.wav). CỐ ĐỊNH, không theo tiếng người dùng chọn.
+    NSSound *sound = [NSSound soundNamed:@"Chuông reo"];
     if (!sound) return;   // thiếu file thì IM — KHÔNG NSBeep, beep hệ thống nghe như báo lỗi
     if (sound.isPlaying) [sound stop];
     sound.volume = vol;
