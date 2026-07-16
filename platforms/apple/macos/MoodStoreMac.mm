@@ -909,7 +909,16 @@ void MoodStoreMac_RunAutoPurgeIfNeeded(void) {
     if (!db) return;
     
     sqlite3_stmt *stmt = NULL;
-    const char *sql = "DELETE FROM mood_events WHERE ts < ?;";
+    // [MINDFUL] Vá 2026-07-16 (chủ dự án chốt phương án (a)) — TỪNG là `WHERE ts < ?` trần, không
+    // lọc loại, nên nó cuốn theo cả dòng 'note'. Ghép với sự thật "v1 chỉ đọc được note HÔM NAY"
+    // (DECISION-daily-note-v1.md) thì hậu quả là: chữ người dùng tự tay viết đi vào kho KHÔNG có
+    // cửa đọc, rồi bị xoá sau 90 ngày — không một ai, kể cả chính họ, từng đọc lại được. Số đo suy
+    // ra thì xoá được (còn sinh lại được khi gõ tiếp); CHỮ NGƯỜI VIẾT thì mất là mất hẳn.
+    // Nên auto-purge từ nay CHỪA note ra, chờ tính năng đọc lại ngày cũ (đợt sau).
+    // ⚠️ Hệ quả phải nói thật với người dùng: lời hứa "tự xoá sau N ngày" ở màn Riêng tư nay KHÔNG
+    // còn đúng với ô ghi. Copy màn Riêng tư đã sửa kèm trong commit này. Note vẫn xoá được bằng:
+    // tắt consent ô ghi (xoá sạch note) · "Xoá nhật ký" (xoá cả kho) · tự xoá chữ trong ngày.
+    const char *sql = "DELETE FROM mood_events WHERE ts < ? AND event_type != 'note';";
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
         sqlite3_bind_int64(stmt, 1, threshold);
         if (sqlite3_step(stmt) != SQLITE_DONE) {

@@ -146,10 +146,13 @@ static const CGFloat kBtnH       = 32.0;
     _popPurge.action = @selector(onPurgeChange:);
     [self addSubview:_popPurge];
 
-    _notePurge = [self label:@"Quên có chủ đích — các sự kiện cũ sẽ tự biến mất để tâm trí nhẹ nhàng hơn."
+    // [MINDFUL] 2026-07-16 — câu này PHẢI nói rõ ô ghi được chừa ra, vì auto-purge nay bỏ qua dòng
+    // 'note' (MoodStoreMac_RunAutoPurgeIfNeeded). Không nói = app hứa xoá mà giữ lại, tệ hơn hẳn
+    // chiều ngược lại: người dùng tưởng chữ mình viết đã tự bay, thật ra vẫn nằm trên đĩa.
+    _notePurge = [self label:@"Quên có chủ đích — các số đo cũ sẽ tự biến mất để tâm trí nhẹ nhàng hơn. Riêng chữ bạn viết trong ô ghi thì được giữ lại; xoá bằng nút bên dưới."
                         font:[self fCaption] color:[Brand muted]];
     _notePurge.lineBreakMode = NSLineBreakByWordWrapping;
-    _notePurge.maximumNumberOfLines = 2;
+    _notePurge.maximumNumberOfLines = 2;   // đo thật: câu mới cao 28.0pt @11.5pt/572pt = 2 dòng, vừa kNoteH(32)
 }
 
 - (void)addMenuItem:(NSMenu *)menu title:(NSString *)title tag:(NSInteger)tag {

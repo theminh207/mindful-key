@@ -177,6 +177,76 @@ int main(void) {
                        memcmp(head.bytes, "SQLite format 3", 15) != 0);
         }
 
+        // ===== Ca 6b: auto-purge dọn SỐ ĐO quá hạn, và ô ghi =====
+        //
+        // ⚠️ ĐỌC KỸ GIỚI HẠN TRƯỚC KHI TIN CA NÀY (đừng nâng lên ✅ trong TEST_MATRIX):
+        // Bản vá 2026-07-16 thêm `AND event_type != 'note'` vào câu DELETE của auto-purge. Ca này
+        // KHÔNG chứng minh được bản vá đó, và đây là lý do — ghi ra để người sau khỏi tưởng đã phủ:
+        //   · Note LUÔN mang mốc HÔM NAY (SaveNoteForToday ghi theo TodayBounds, không nhận ts).
+        //   · Purge chỉ xoá `ts < now − days*86400`, và `days <= 0` bị coi là TẮT (return sớm).
+        //   → Với mọi giá trị days hợp lệ, note-hôm-nay LUÔN nằm trong hạn, nên nó sống sót y hệt
+        //     nhau ở CẢ bản vá lẫn bản chưa vá. Muốn test thật thì phải ghi note với mốc QUÁ KHỨ,
+        //     tức cần một cửa tiêm-ngày cho test — chưa có, và không tự ý thêm chỉ để chiều test.
+        // Cái ca này CÓ chứng minh: (1) purge vẫn dọn được số đo quá hạn (bản vá không làm hỏng
+        // chính việc dọn — hồi quy đúng nghĩa); (2) hai đường xoá note hợp lệ vẫn hoạt động.
+        // Việc "note sống qua mốc N ngày" vẫn cần một người đổi đồng hồ máy mà thử, hoặc chờ cửa
+        // tiêm-ngày. Đã ghi ⚠️ ở TEST_MATRIX, không ghi ✅.
+        printf("\n-- Ca 6b: auto-purge dọn số đo quá hạn; ô ghi lưu/đọc/xoá --\n");
+        MoodStoreMac_SetNoteConsent(YES);
+        MoodStoreMac_SaveNoteForToday(@"hôm nay nhẹ nhõm");
+        expectTrue("note hôm nay đọc lại được ngay sau khi lưu",
+                   [MoodStoreMac_FetchNoteForToday() isEqualToString:@"hôm nay nhẹ nhõm"]);
+        expectEqualInt("1 note/ngày: lưu lần 2 là SỬA, không đẻ dòng mới",
+                       (long)MoodStoreMac_FetchTodaySamples().count, 3);   // note không lẫn vào mẫu
+
+        // days <= 0 = TẮT tự dọn (lựa chọn "Không bao giờ" ở màn Riêng tư) — phải no-op.
+        MoodStoreMac_SetAutoPurgeDays(0);
+        MoodStoreMac_RunAutoPurgeIfNeeded();
+        expectEqualInt("tự dọn TẮT -> số đo còn nguyên", (long)MoodStoreMac_FetchTodaySamples().count, 3);
+        expectTrue("tự dọn TẮT -> note còn nguyên",
+                   [MoodStoreMac_FetchNoteForToday() isEqualToString:@"hôm nay nhẹ nhõm"]);
+
+        // Dữ liệu QUÁ HẠN thật: seed 30 ngày (mốc quá khứ thật) rồi dọn với hạn 1 ngày.
+        // Đây là phần chứng minh purge còn chạy đúng SAU bản vá.
+        // Seed gieo phiên gõ rải suốt 30 ngày — KỂ CẢ hôm nay (nên FetchTodaySamples tăng, không
+        // còn là 3). Đo sau khi seed thay vì hard-code: số mẫu/ngày là chuyện nội bộ của seed, test
+        // không nên khoá cứng vào nó.
+        MoodStoreMac_SeedFakeSamplesForTesting(30);
+        expectTrue("seed 30 ngày -> có dữ liệu giả trong kho", MoodStoreMac_HasSimulatedData());
+        expectEqualInt("FetchWeekSamples luôn trả đủ 7 ô (kể cả ngày trống)",
+                       (long)MoodStoreMac_FetchWeekSamples().count, 7);
+        NSInteger todayAfterSeed = (NSInteger)MoodStoreMac_FetchTodaySamples().count;
+        expectTrue("seed có gieo cả mẫu hôm nay (nền cho phép thử dưới)", todayAfterSeed > 3);
+
+        // Ngày cũ trong tuần CÓ dữ liệu trước khi dọn — mốc để chứng minh purge thật sự xoá.
+        NSArray *weekBefore = MoodStoreMac_FetchWeekSamples();
+        NSInteger daysWithDataBefore = 0;
+        for (NSDictionary *day in weekBefore) {
+            if (![day[@"value"] isKindOfClass:[NSNull class]]) daysWithDataBefore++;
+        }
+        expectTrue("trước khi dọn: tuần qua có ngày cũ mang dữ liệu", daysWithDataBefore > 1);
+
+        MoodStoreMac_SetAutoPurgeDays(1);
+        MoodStoreMac_RunAutoPurgeIfNeeded();
+
+        NSInteger daysWithDataAfter = 0;
+        for (NSDictionary *day in MoodStoreMac_FetchWeekSamples()) {
+            if (![day[@"value"] isKindOfClass:[NSNull class]]) daysWithDataAfter++;
+        }
+        expectTrue("sau dọn hạn 1 ngày: ngày CŨ đã trống — purge vẫn làm việc sau bản vá",
+                   daysWithDataAfter < daysWithDataBefore);
+        expectEqualInt("sau dọn: mẫu HÔM NAY (trong hạn) còn nguyên",
+                       (long)MoodStoreMac_FetchTodaySamples().count, (long)todayAfterSeed);
+        expectTrue("sau dọn: note còn (xem giới hạn ở đầu ca — chưa chứng minh được bản vá)",
+                   [MoodStoreMac_FetchNoteForToday() isEqualToString:@"hôm nay nhẹ nhõm"]);
+
+        // Rút consent ô ghi = chữ phải BIẾN MẤT (đường xoá hợp lệ, khác auto-purge) và KHÔNG đụng số đo.
+        MoodStoreMac_SetNoteConsent(NO);
+        expectTrue("rút consent ô ghi -> note bị xoá", MoodStoreMac_FetchNoteForToday() == nil);
+        expectEqualInt("rút consent ô ghi KHÔNG đụng số đo",
+                       (long)MoodStoreMac_FetchTodaySamples().count, (long)todayAfterSeed);
+        MoodStoreMac_SetAutoPurgeDays(90);   // trả về mặc định, tránh rò trạng thái sang ca sau
+
         // ===== Ca 7: nhịp gốc (g_bellTimer) có được lên lịch — nguồn bắn notification thật =====
         printf("\n-- Ca 7: BellMac_ApplySettings lên lịch nhịp gốc --\n");
         vBell = 1; // NextRingDate cố ý trả nil khi tắt chuông — bật để đọc được fireDate

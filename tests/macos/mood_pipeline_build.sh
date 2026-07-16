@@ -17,6 +17,7 @@ CORE="$ROOT/core"
 clang++ -std=c++14 -fobjc-arc \
   -I "$MAC" -I "$CORE/engine" -I "$CORE/mood" \
   -DMK_TEST_STORE_DIR_ENV \
+  -DDEBUG=1 \
   -DSecItemCopyMatching=MKTestSecItemCopyMatching \
   -DSecItemAdd=MKTestSecItemAdd \
   -DSecItemDelete=MKTestSecItemDelete \
