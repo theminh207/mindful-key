@@ -47,7 +47,7 @@ static void MoodBridge_OnWordCommitted(const wstring& word) {
     dispatch_async(g_moodQueue, ^{
         // Từ đây trở đi chạy trên serial queue riêng — KHÔNG BAO GIỜ trên thread xử lý phím.
         g_moodBuffer.pushWord(wordCopy);
-        double risk = SendRiskAnalyzer_Analyze(g_moodBuffer.recentText());
+        double risk = SendRiskAnalyzer_Analyze(g_moodBuffer.recentText()).risk;
         g_lastSendRisk.store(risk, std::memory_order_relaxed);
         // Story 2.6 — đếm số câu căng liên tiếp CẠNH chỗ risk vừa tính, đúng vị trí macOS gọi
         // (MoodWatchMac.mm: đếm chuỗi liên tiếp ngay sau `g_lastSendRisk = risk;`, cùng 1 callback,

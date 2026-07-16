@@ -28,9 +28,11 @@ generate:        ## Sinh .xcodeproj từ platforms/apple/project.yml (XcodeGen)
 
 test: test-core test-macos test-ios  ## Chạy test cả 3 đội (core + macos + ios)
 
-test-core:       ## Regression engine (bộ não dùng chung, đội core sở hữu)
+test-core:       ## Regression bộ não dùng chung (đội core sở hữu): engine Telex/VNI + chấm điểm send-risk
 	bash tests/core/build.sh
 	./tests/core/test_engine
+	bash tests/core/send_risk_build.sh
+	./tests/core/test_send_risk
 
 test-macos:      ## Test riêng vỏ macOS (đội macOS sở hữu): E2E tầng dữ liệu chuỗi nhịp lấy mẫu (gõ→nhịp→ghi→đọc, host, cô lập kho + keychain)
 	bash tests/macos/mood_pipeline_build.sh

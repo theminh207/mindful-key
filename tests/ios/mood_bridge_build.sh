@@ -23,10 +23,10 @@ ENGINE_SRC=("$ENGINE/Engine.cpp" "$ENGINE/Vietnamese.cpp" "$ENGINE/Macro.cpp" \
 clang++ -std=c++14 -fobjc-arc \
   -I "$ENGINE" -I "$MOOD" -I "$SHARED" -I "$IOSEXT" \
   "$HERE/mood_bridge_test.mm" \
-  "$SHARED/EngineKeyMap.mm" "$SHARED/SendRiskAnalyzer.mm" "$SHARED/BellReminderSettingsBridge.mm" \
+  "$SHARED/EngineKeyMap.mm" "$SHARED/BellReminderSettingsBridge.mm" \
   "$SHARED/MoodJournalStore.mm" \
   "$IOSEXT/KeyboardBridge.mm" "$IOSEXT/MoodBridge.mm" "$IOSEXT/NudgeCoordinatorIOS.mm" \
-  "$MOOD/MoodBuffer.cpp" \
+  "$MOOD/MoodBuffer.cpp" "$MOOD/SendRiskAnalyzer.cpp" \
   "${ENGINE_SRC[@]}" \
   -framework Foundation -framework Security \
   -o "$HERE/mood_bridge_test"

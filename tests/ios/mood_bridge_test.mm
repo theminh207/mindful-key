@@ -48,7 +48,7 @@ static void testAnalyzerPure() {
     // dồn cả 3, không phải chỉ needle dài nhất).
     // raw = |(-2)|*1.0 = 2.0 -> risk = 1 - e^(-2/5).
     {
-        double risk = SendRiskAnalyzer_Analyze(L"tôi đang bực quá");
+        double risk = SendRiskAnalyzer_Analyze(L"tôi đang bực quá").risk;
         double want = 1.0 - std::exp(-2.0 / 5.0);
         expectNear("\"...bực...\" (giận, weight 1.0, match đơn)", risk, want, 1e-9);
     }
@@ -56,14 +56,14 @@ static void testAnalyzerPure() {
     // "vui" (score +2, category "+", weight 0.6) và "cảm ơn" (score +2, category "+", weight 0.6)
     // đều dương -> trừ vào raw. raw tổng = -(2*0.6) - (2*0.6) = -2.4 -> raw<0 nên chốt về 0 -> risk=0.
     {
-        double risk = SendRiskAnalyzer_Analyze(L"cảm ơn bạn nhiều, hôm nay tôi rất vui");
+        double risk = SendRiskAnalyzer_Analyze(L"cảm ơn bạn nhiều, hôm nay tôi rất vui").risk;
         expectNear("\"cảm ơn...vui\" (toàn tích cực, raw chốt 0)", risk, 0.0, 1e-9);
     }
 
     // Câu trung tính, không khớp từ nào trong LEX/LEX_SUB -> raw=0 chính xác -> risk=0.0 CHÍNH XÁC
     // (không phải xấp xỉ — không có phép tính nào chạy khi không match).
     {
-        double risk = SendRiskAnalyzer_Analyze(L"hôm nay trời nắng đẹp đi dạo công viên");
+        double risk = SendRiskAnalyzer_Analyze(L"hôm nay trời nắng đẹp đi dạo công viên").risk;
         expectNear("câu trung tính không khớp LEX (raw=0 chính xác)", risk, 0.0, 0.0);
     }
 
@@ -71,7 +71,7 @@ static void testAnalyzerPure() {
     // score riêng, không tự động hardHit) -> hardHit=true -> raw=max(raw,9.0) dù raw từ vòng LEX
     // = 0 (không từ nào trong "sao mà chậm thế" khớp LEX) -> risk = 1 - e^(-9/5), gần 1.0.
     {
-        double risk = SendRiskAnalyzer_Analyze(L"vcl sao mà chậm thế");
+        double risk = SendRiskAnalyzer_Analyze(L"vcl sao mà chậm thế").risk;
         double want = 1.0 - std::exp(-9.0 / 5.0);
         expectNear("\"vcl...\" (LEX_SUB hardHit, raw=max(raw,9))", risk, want, 1e-9);
     }
@@ -136,14 +136,14 @@ static void testEdgeCases() {
     printf("\n-- Phần 4: edge case --\n");
 
     // 4a. Chuỗi rỗng/chỉ khoảng trắng vào analyzer trực tiếp — không crash, risk = 0.0.
-    expectNear("analyzer chuỗi rỗng", SendRiskAnalyzer_Analyze(L""), 0.0, 0.0);
-    expectNear("analyzer chỉ khoảng trắng", SendRiskAnalyzer_Analyze(L"   "), 0.0, 0.0);
+    expectNear("analyzer chuỗi rỗng", SendRiskAnalyzer_Analyze(L"").risk, 0.0, 0.0);
+    expectNear("analyzer chỉ khoảng trắng", SendRiskAnalyzer_Analyze(L"   ").risk, 0.0, 0.0);
 
     // 4b. Ký tự lặp ("đmmmmm") qua collapseRuns đã rút — rút gọn về "đm" (run>=3 -> 1 ký tự) nên
     // vẫn khớp LEX y hệt "đm" thường ("đm" là 1 entry LEX thường, score -4, KHÔNG phải LEX_SUB).
     {
-        double riskRepeated = SendRiskAnalyzer_Analyze(L"đmmmmm sao chậm thế");
-        double riskNormal = SendRiskAnalyzer_Analyze(L"đm sao chậm thế");
+        double riskRepeated = SendRiskAnalyzer_Analyze(L"đmmmmm sao chậm thế").risk;
+        double riskNormal = SendRiskAnalyzer_Analyze(L"đm sao chậm thế").risk;
         expectNear("\"đmmmmm\" qua collapseRuns == \"đm\" thường", riskRepeated, riskNormal, 1e-9);
     }
 
