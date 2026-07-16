@@ -20,6 +20,12 @@ static NSString *const kKeychainService = @"com.mindfulkeyboard.moodstore";
 static NSString *const kKeychainAccount = @"mood-store-key";
 static NSString *const kConsentGrantedKey = @"MoodStoreConsentGranted";
 static NSString *const kConsentAskedKey   = @"MoodStoreConsentAsked";
+
+// [MINDFUL] Consent RIÊNG cho ô ghi (DECISION-daily-note-v1.md §3.2). CỐ Ý không tái dùng 2 khoá
+// trên: đồng ý cho app đếm điểm gợn ≠ đồng ý cho app giữ CHỮ mình viết. Gộp chung là âm thầm mở
+// rộng phạm vi của một lời đồng ý đã cho trước đó cho một việc nhạy cảm hơn hẳn.
+static NSString *const kNoteConsentGrantedKey = @"MoodStoreNoteConsentGranted";
+static NSString *const kNoteConsentAskedKey   = @"MoodStoreNoteConsentAsked";
 static const NSUInteger kKeySize = 32; // AES-256
 
 #pragma mark - Đường dẫn file
@@ -143,12 +149,14 @@ static NSString *TempWorkingPath(void) {
 }
 
 static void EnsureSchema(sqlite3 *db) {
-    // KHÔNG có cột nào chứa câu chữ/văn bản gốc — chỉ số + nhãn ngắn đã định nghĩa trước.
+    // [MINDFUL] Tới 2026-07-16 bảng này KHÔNG có cột nào chứa câu chữ người dùng gõ — chỉ số suy ra
+    // + nhãn ngắn định nghĩa sẵn. `note_blob` (thêm bên dưới) là NGOẠI LỆ DUY NHẤT và có hợp đồng
+    // riêng: xem MoodStoreMac.h + DECISION-daily-note-v1.md. Nó chứa CIPHERTEXT, không phải chữ thô.
     const char *sql =
         "CREATE TABLE IF NOT EXISTS mood_events ("
         "  id INTEGER PRIMARY KEY AUTOINCREMENT,"
         "  ts INTEGER NOT NULL,"
-        "  event_type TEXT NOT NULL,"     // 'gatekeeper' | 'checkin' | 'sample'
+        "  event_type TEXT NOT NULL,"     // 'gatekeeper' | 'checkin' | 'sample' | 'note'
         "  send_risk REAL,"               // 0..1, cho gatekeeper (risk 1 câu) hoặc sample (risk trung bình)
         "  app_bundle_id TEXT,"           // vd 'com.vng.zalo'
         "  choice TEXT,"                  // 'send_anyway' | 'wait' | 'dismissed'
@@ -159,6 +167,29 @@ static void EnsureSchema(sqlite3 *db) {
     if (sqlite3_exec(db, sql, NULL, NULL, &err) != SQLITE_OK) {
         NSLog(@"[MoodStoreMac] tạo schema lỗi: %s", err ? err : "?");
         if (err) sqlite3_free(err);
+    }
+
+    // [MINDFUL] MIGRATION ĐẦU TIÊN của dự án (2026-07-16, ô ghi cảm nhận).
+    // Vì sao KHÔNG chỉ thêm cột vào câu CREATE ở trên: `IF NOT EXISTS` nghĩa là bảng đã có rồi thì
+    // câu đó KHÔNG chạy — máy người dùng đang có kho cũ sẽ VĨNH VIỄN thiếu cột, và mọi INSERT note
+    // sẽ lỗi "no such column" một cách lặng lẽ. Phải ALTER thật, có kiểm tra trước.
+    BOOL hasNoteBlob = NO;
+    sqlite3_stmt *chk = NULL;
+    if (sqlite3_prepare_v2(db, "PRAGMA table_info(mood_events);", -1, &chk, NULL) == SQLITE_OK) {
+        while (sqlite3_step(chk) == SQLITE_ROW) {
+            const unsigned char *col = sqlite3_column_text(chk, 1);   // cột 1 = tên
+            if (col && strcmp((const char *)col, "note_blob") == 0) { hasNoteBlob = YES; break; }
+        }
+        sqlite3_finalize(chk);
+    }
+    if (!hasNoteBlob) {
+        // BLOB chứ không TEXT: đây là đầu ra AES (bytes nhị phân), nhét vào cột TEXT là SQLite sẽ
+        // diễn giải theo encoding và làm hỏng dữ liệu.
+        char *aerr = NULL;
+        if (sqlite3_exec(db, "ALTER TABLE mood_events ADD COLUMN note_blob BLOB;", NULL, NULL, &aerr) != SQLITE_OK) {
+            NSLog(@"[MoodStoreMac] migration note_blob lỗi: %s", aerr ? aerr : "?");
+            if (aerr) sqlite3_free(aerr);
+        }
     }
 }
 
@@ -451,6 +482,128 @@ NSArray<NSDictionary *> *MoodStoreMac_FetchSamplesSince(double secondsAgo) {
     return FetchSamplesBetween((sqlite3_int64)(now - secondsAgo), (sqlite3_int64)(now + 1));
 }
 
+#pragma mark - Ô ghi cảm nhận (daily note) — xem hợp đồng ở MoodStoreMac.h
+
+BOOL MoodStoreMac_HasNoteConsent(void) {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kNoteConsentGrantedKey];
+}
+
+BOOL MoodStoreMac_HasAskedNoteConsent(void) {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kNoteConsentAskedKey];
+}
+
+void MoodStoreMac_SetNoteConsent(BOOL granted) {
+    [[NSUserDefaults standardUserDefaults] setBool:granted forKey:kNoteConsentGrantedKey];
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kNoteConsentAskedKey];
+    if (!granted) {
+        // Rút lại đồng ý = chữ đã viết phải BIẾN MẤT, không chỉ "thôi ghi tiếp". Xoá đúng dòng
+        // note, KHÔNG đụng dữ liệu số (khác MoodStoreMac_SetConsent — cái đó xoá cả kho).
+        NSString *tempPath = nil;
+        sqlite3 *db = OpenWorkingDB(&tempPath);
+        if (!db) return;
+        char *err = NULL;
+        if (sqlite3_exec(db, "DELETE FROM mood_events WHERE event_type = 'note';", NULL, NULL, &err) != SQLITE_OK) {
+            NSLog(@"[MoodStoreMac] xoá note lỗi: %s", err ? err : "?");
+            if (err) sqlite3_free(err);
+        }
+        FlushAndCloseDB(db, tempPath);
+    }
+}
+
+// Mốc đầu/cuối ngày hôm nay — dùng chung cho lưu (tìm dòng để sửa) và đọc.
+static void TodayBounds(sqlite3_int64 *outFrom, sqlite3_int64 *outTo) {
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDate *startOfDay = [cal startOfDayForDate:[NSDate date]];
+    NSDate *startOfTomorrow = [cal dateByAddingUnit:NSCalendarUnitDay value:1 toDate:startOfDay options:0];
+    *outFrom = (sqlite3_int64)[startOfDay timeIntervalSince1970];
+    *outTo   = (sqlite3_int64)[startOfTomorrow timeIntervalSince1970];
+}
+
+void MoodStoreMac_SaveNoteForToday(NSString *text) {
+    if (!MoodStoreMac_HasNoteConsent())
+        return;   // chưa đồng ý = KHÔNG ghi gì, kể cả không tạo dòng rỗng
+
+    NSData *key = MoodStoreKey();
+    if (!key) return;
+
+    NSString *trimmed = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+
+    NSString *tempPath = nil;
+    sqlite3 *db = OpenWorkingDB(&tempPath);
+    if (!db) return;
+
+    sqlite3_int64 from = 0, to = 0;
+    TodayBounds(&from, &to);
+
+    // Xoá dòng note hôm nay trước, rồi ghi lại — đơn giản hơn UPDATE-hay-INSERT và tự nhiên đúng
+    // luật "1 note/ngày". Chuỗi rỗng = chỉ xoá, không ghi lại (người dùng xoá hết chữ = rút lại).
+    sqlite3_stmt *del = NULL;
+    if (sqlite3_prepare_v2(db, "DELETE FROM mood_events WHERE event_type = 'note' AND ts >= ? AND ts < ?;",
+                            -1, &del, NULL) == SQLITE_OK) {
+        sqlite3_bind_int64(del, 1, from);
+        sqlite3_bind_int64(del, 2, to);
+        sqlite3_step(del);
+        sqlite3_finalize(del);
+    }
+
+    if (trimmed.length > 0) {
+        // MÃ HOÁ RIÊNG nội dung TRƯỚC khi chạm SQLite (chốt 2026-07-16). Nhờ vậy file tạm plaintext
+        // mà OpenWorkingDB bày ra đĩa mỗi lần đọc/ghi CHỈ chứa ciphertext của ghi chú, không phải chữ.
+        NSData *enc = AESEncrypt([trimmed dataUsingEncoding:NSUTF8StringEncoding], key);
+        if (enc) {
+            sqlite3_stmt *ins = NULL;
+            const char *sql = "INSERT INTO mood_events (ts, event_type, note_blob) VALUES (?, 'note', ?);";
+            if (sqlite3_prepare_v2(db, sql, -1, &ins, NULL) == SQLITE_OK) {
+                sqlite3_bind_int64(ins, 1, (sqlite3_int64)[[NSDate date] timeIntervalSince1970]);
+                sqlite3_bind_blob(ins, 2, enc.bytes, (int)enc.length, SQLITE_TRANSIENT);
+                if (sqlite3_step(ins) != SQLITE_DONE) {
+                    NSLog(@"[MoodStoreMac] ghi note lỗi: %s", sqlite3_errmsg(db));
+                }
+                sqlite3_finalize(ins);
+            }
+        }
+    }
+
+    FlushAndCloseDB(db, tempPath);
+}
+
+NSString *MoodStoreMac_FetchNoteForToday(void) {
+    if (!MoodStoreMac_HasNoteConsent())
+        return nil;
+
+    NSData *key = MoodStoreKey();
+    if (!key) return nil;
+
+    NSString *tempPath = nil;
+    sqlite3 *db = OpenWorkingDB(&tempPath);
+    if (!db) return nil;
+
+    sqlite3_int64 from = 0, to = 0;
+    TodayBounds(&from, &to);
+
+    NSString *result = nil;
+    sqlite3_stmt *stmt = NULL;
+    const char *sql =
+        "SELECT note_blob FROM mood_events "
+        "WHERE event_type = 'note' AND ts >= ? AND ts < ? "
+        "ORDER BY ts DESC LIMIT 1;";
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+        sqlite3_bind_int64(stmt, 1, from);
+        sqlite3_bind_int64(stmt, 2, to);
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            const void *bytes = sqlite3_column_blob(stmt, 0);
+            int len = sqlite3_column_bytes(stmt, 0);
+            if (bytes && len > 0) {
+                NSData *dec = AESDecrypt([NSData dataWithBytes:bytes length:(NSUInteger)len], key);
+                if (dec) result = [[NSString alloc] initWithData:dec encoding:NSUTF8StringEncoding];
+            }
+        }
+        sqlite3_finalize(stmt);
+    }
+    FlushAndCloseDB(db, tempPath);
+    return result.length > 0 ? result : nil;   // rỗng ⇒ nil, đúng hợp đồng ở .h
+}
+
 #pragma mark - Story 3.7/3.8 — Tuần/Tháng (trung bình mỗi ngày, gap = NSNull thật)
 
 // [MINDFUL] Story 3.7/3.8 — hàm DÙNG CHUNG cho cả Tuần (numDays=7) và Tháng (numDays=30), thay
@@ -676,7 +829,13 @@ BOOL MoodStoreMac_ExportCSVToURL(NSURL *url) {
     
     sqlite3_stmt *stmt = NULL;
     // Xuất hẹp: chỉ lấy các cột này, bỏ qua app_bundle_id và choice
-    const char *sql = "SELECT ts, event_type, send_risk, mood_label, intensity FROM mood_events ORDER BY ts ASC;";
+    // [MINDFUL] 2026-07-16 — LOẠI HẲN dòng 'note' (DECISION-daily-note-v1.md §3.4). Cột `note_blob`
+    // vốn đã không được SELECT nên chữ không lọt; nhưng để dòng note lại thì file xuất vẫn khai ra
+    // "21:03 ngày 15/7 người này có viết nhật ký" — đó là metadata của nhật ký riêng tư rời khỏi
+    // vùng mã hoá. Đúng tinh thần đã chốt 2026-07-14: hẹp hơn khi dữ liệu ra ngoài. Muốn xuất note
+    // thì phải là lựa chọn opt-in riêng, có cảnh báo rõ — không phải mặc định.
+    const char *sql = "SELECT ts, event_type, send_risk, mood_label, intensity FROM mood_events "
+                      "WHERE event_type != 'note' ORDER BY ts ASC;";
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
         while (sqlite3_step(stmt) == SQLITE_ROW) {
             sqlite3_int64 ts = sqlite3_column_int64(stmt, 0);

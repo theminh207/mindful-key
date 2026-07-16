@@ -72,6 +72,30 @@ void MoodStoreMac_DeleteSimulatedData(void);
 BOOL MoodStoreMac_HasSimulatedData(void);
 #endif
 
+#pragma mark - Ô ghi cảm nhận cuối ngày (daily note)
+
+// [MINDFUL] Hợp đồng đầy đủ: `bmad-output/_shared/DECISION-daily-note-v1.md`. Tóm tắt ràng buộc CỨNG:
+//   · Đây là LẦN ĐẦU app lưu CHỮ THẬT người dùng gõ — tới giờ kho chỉ có số suy ra. Threat model đổi hẳn.
+//   · Nội dung mã hoá RIÊNG từng ghi chú (field-level), KHÔNG chỉ dựa vào mã hoá cả file (chốt
+//     2026-07-16): mỗi lần đọc/ghi, cả kho bị giải mã ra 1 file tạm plaintext trên đĩa — nhật ký chữ
+//     nằm đó dạng đọc được là không chấp nhận được. iOS kế thừa cùng giao ước.
+//   · Consent RIÊNG, tách khỏi consent nhật ký-số. Hỏi 1 lần, khi người dùng lần đầu CHẠM vào ô ghi.
+//   · CẤM TUYỆT ĐỐI chạy sentiment/model lên nội dung note. Note chỉ cho con người đọc.
+//   · KHÔNG nằm trong CSV export mặc định.
+//   · v1 CHỈ note HÔM NAY (ghi + sửa trong ngày). Đọc lại ngày cũ = đợt sau (chốt 2026-07-16).
+
+BOOL MoodStoreMac_HasNoteConsent(void);
+void MoodStoreMac_SetNoteConsent(BOOL granted);   // NO = xoá sạch mọi ghi chú đã lưu
+BOOL MoodStoreMac_HasAskedNoteConsent(void);
+
+// Lưu ô ghi HÔM NAY. 1 note/ngày — gọi nhiều lần trong ngày = SỬA, không đẻ thêm dòng.
+// Chuỗi rỗng/nil = xoá ghi chú hôm nay (người dùng xoá hết chữ = rút lại, phải tôn trọng).
+// Không làm gì nếu chưa có consent riêng cho ô ghi.
+void MoodStoreMac_SaveNoteForToday(NSString *text);
+
+// nil nếu hôm nay chưa ghi gì (hoặc chưa consent). KHÔNG BAO GIỜ trả chuỗi rỗng thay cho nil.
+NSString *MoodStoreMac_FetchNoteForToday(void);
+
 // [MINDFUL] Story 2.6 — Riêng tư
 BOOL MoodStoreMac_ExportCSVToURL(NSURL *url);
 void MoodStoreMac_SetAutoPurgeDays(NSInteger days);
