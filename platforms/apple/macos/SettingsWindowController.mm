@@ -233,6 +233,7 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     MKDateRangeSeg *_dateRangeSeg;             // [MINDFUL] Story 3.7/3.8 — "Ngày / Tuần / Tháng"
     EmotionRiverView *_settingsRiver;
     NSView *_paneBell;
+    NSTextField *_paneBellTitleLabel;          // nhãn "Chuông" — dịch lại khi mk_relayoutBellPane chạy
     NSView *_panePrivacy;
     NSView *_paneSystem;
 
@@ -405,8 +406,19 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     BellSettingsView *bellView = [[BellSettingsView alloc] initWithFrame:NSMakeRect(0, 0, kMaxPaneW, kMaxPaneH - 40)];
     CGFloat bh = [bellView preferredHeight];
     _paneBell = [self mk_buildEmptyPaneWithTitle:@"Chuông" height:(40.0 + bh)];
+    // Nhãn tiêu đề "Chuông" là subview DUY NHẤT của _paneBell tại thời điểm này (bellView chưa
+    // add) — giữ lại tham chiếu để mk_relayoutBellPane có thể dịch nó khi chiều cao đổi.
+    _paneBellTitleLabel = (NSTextField *)_paneBell.subviews.firstObject;
     bellView.frame = NSMakeRect(0, NSHeight(_paneBell.frame) - 40.0 - bh, kMaxPaneW, bh);
     [_paneBell addSubview:bellView];
+    // [MINDFUL] Vá (2026-07-16) — `onLayoutChanged` của BellSettingsView đã được wire ở
+    // PanelViewController.mm (popover) nhưng CHƯA từng wire ở đây: bấm "Đồng bộ Chế độ Tập trung"
+    // hoặc gõ giờ yên lặng không hợp lệ đổi CHIỀU CAO NỘI DUNG thật của bellView (kExplainH/
+    // kInvalidH hiện/ẩn), nhưng khung pane + vị trí tiêu đề "Chuông" vẫn đứng yên vì không ai
+    // được báo để dựng lại — dẫn tới card cuối bị cắt/chồng lấn tuỳ mức lệch. mk_relayoutBellPane
+    // dựng lại đúng khung mỗi khi bellView tự báo đổi cao.
+    __weak SettingsWindowController *weakSelf = self;
+    bellView.onLayoutChanged = ^{ [weakSelf mk_relayoutBellPane]; };
 
     // Riêng tư cố ý KHÔNG có tiêu đề lớn (PrivacyPaneView tự mở đầu bằng section "Nhật ký cảm xúc")
     // — giữ nguyên như bản cũ, chỉ bỏ trần cứng kMaxPaneH.
@@ -447,6 +459,38 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     label.frame = lf;
     [pane addSubview:label];
     return pane;
+}
+
+// [MINDFUL] Vá (2026-07-16) — dựng lại khung pane "Chuông" khi BellSettingsView tự báo đổi chiều
+// cao thật (bấm "Đồng bộ Chế độ Tập trung", gõ giờ yên lặng không hợp lệ...). Trước đây
+// `onLayoutChanged` không được set nên callback này chưa từng chạy; xem chỗ wire ở
+// mk_instantiateEmbeddedViewControllers. Công thức giống HỆT lúc dựng ban đầu (dòng ~405-409),
+// chỉ khác là bh được đọc LẠI thay vì đọc 1 lần lúc khởi tạo.
+- (void)mk_relayoutBellPane {
+    BellSettingsView *bellView = nil;
+    for (NSView *sub in _paneBell.subviews) {
+        if ([sub isKindOfClass:[BellSettingsView class]]) {
+            bellView = (BellSettingsView *)sub;
+            break;
+        }
+    }
+    if (bellView == nil) return;
+
+    CGFloat bh = [bellView preferredHeight];
+    CGFloat paneH = MAX(40.0 + bh, kMaxPaneH);
+    _paneBell.frame = NSMakeRect(0, 0, kMaxPaneW, paneH);
+
+    NSRect lf = _paneBellTitleLabel.frame;
+    lf.origin = NSMakePoint(0.0, paneH - NSHeight(lf) - 4.0);
+    _paneBellTitleLabel.frame = lf;
+
+    bellView.frame = NSMakeRect(0, paneH - 40.0 - bh, kMaxPaneW, bh);
+
+    // Đang đứng đúng mục "Chuông" thì dựng lại khung nhìn NGAY (đừng đợi rời-rồi-quay-lại mới
+    // đúng) — mk_showPaneInHost tính lại docH theo _paneBell.frame vừa đổi ở trên.
+    if (_selectedIndex == MKSettingsSectionBell) {
+        [self mk_showPaneInHost:_paneBell];
+    }
 }
 
 // [MINDFUL] Story 3.5 — "Hôm nay" giờ là BẢN ĐẦY ĐỦ của popover (decision-log 2026-07-15 "Chốt
@@ -618,6 +662,17 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
 }
 
 - (void)mk_showPaneInHost:(nullable NSView *)paneView {
+    // [MINDFUL] Vá vệt chữ nhòe (2026-07-16) — trước khi gỡ pane cũ, ép NSClipView vẽ lại đúng
+    // vùng nó đang chiếm (rect tính theo hệ toạ độ của clip view, KHÔNG phải của _paneHost).
+    // NSClipView mặc định chỉ invalidate phần diện tích THỰC SỰ đổi khi tính toán được (để đỡ vẽ
+    // lại tốn kém) — khi ta thay NGUYÊN documentView (gỡ pane cũ, gắn pane khác kích thước khác)
+    // rồi NHẢY thẳng vị trí cuộn (không phải cử chỉ cuộn mượt của người dùng), phép tính "phần nào
+    // đổi" của nó có thể sai, để lại pixel CŨ (vd tiêu đề pane vừa rời) không được vẽ đè — đúng
+    // dạng "2 lớp chữ đè nhau" chủ dự án chụp được. `-setNeedsDisplayInRect:` là cách Apple khuyến
+    // nghị thay cho `copiesOnScroll` (đã bị loại bỏ tác dụng từ macOS 11).
+    NSClipView *clipView = _paneScroll.contentView;
+    [clipView setNeedsDisplayInRect:clipView.bounds];
+
     for (NSView *v in [_paneHost.subviews copy]) {
         [v removeFromSuperview];
     }
@@ -640,6 +695,10 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     // Đổi mục thì luôn bắt đầu từ đỉnh — không thừa hưởng vị trí cuộn của mục vừa xem.
     [_paneScroll.contentView scrollToPoint:NSMakePoint(0.0, docH - viewportH)];
     [_paneScroll reflectScrolledClipView:_paneScroll.contentView];
+
+    // Ép vẽ lại lần nữa SAU khi nội dung mới đã vào đúng vị trí — đảm bảo khung nhìn hiển thị
+    // đúng pixel hiện tại, không phải bitmap còn sót từ pane/scroll-position trước đó.
+    [clipView setNeedsDisplayInRect:clipView.bounds];
 }
 
 @end
