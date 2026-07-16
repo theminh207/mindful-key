@@ -187,11 +187,19 @@ static void showMindfulPrompt(NSString *message) {
 }
 
 static void analyzeRecentTextAsync(const wstring& word) {
+    // [MINDFUL] 2026-07-16 — Copy TRƯỚC khi tạo block, y như MoodBridge.mm bên iOS đã phải làm.
+    // `word` là tham chiếu tới biến cục bộ của emitCommittedWord() (Engine.cpp:463), chết ngay khi
+    // callback trả về. Block ObjC++ bắt biến KIỂU THAM CHIẾU bằng chính địa chỉ, KHÔNG sao chép
+    // (chỉ biến kiểu giá trị mới được gọi copy ctor) — verify bằng test thật: trong block, &word
+    // vẫn là ô nhớ đã chết, size 24 -> 0. Đọc trúng ô chưa bị giành thì chạy đúng, nên lỗi trông
+    // như ngẫu nhiên; giành rồi thì hoặc mất chữ (size=0, iOS thấy recentText() rỗng), hoặc size
+    // thành rác -> push_back ném length_error -> không ai bắt -> abort() (crash 2026-07-16 01:44).
+    wstring wordCopy = word;
     dispatch_async(g_moodQueue, ^{
         if (!vMoodWatch)
             return;
 
-        g_buffer.pushWord(word);
+        g_buffer.pushWord(wordCopy);
         wstring s = L" " + lowerText(g_buffer.recentText()) + L" ";
         s = collapseRuns(s);
 
@@ -224,8 +232,8 @@ static void analyzeRecentTextAsync(const wstring& word) {
         if (risk > 1.0) risk = 1.0;
         g_lastSendRisk = risk;
 
-        NSString *nsWord = [[NSString alloc] initWithBytes:word.data()
-                                                    length:word.size() * sizeof(wchar_t)
+        NSString *nsWord = [[NSString alloc] initWithBytes:wordCopy.data()
+                                                    length:wordCopy.size() * sizeof(wchar_t)
                                                   encoding:NSUTF32LittleEndianStringEncoding];
         NSLog(@"[MindfulKey] Từ vừa gõ: %@, Độ rủi ro cảm xúc (risk): %f", nsWord, risk);
 
