@@ -12,6 +12,7 @@
 #import "BrandControls.h"
 #import "MoodWatchMac.h"
 #import "MoodStoreMac.h"
+#import "MoodPhrasingMac.h"
 #import "ReflectionScreenMac.h"
 
 // [MINDFUL] Zoom-in/Zoom-out (chốt 2026-07-16): thẻ này ("NGAY BÂY GIỜ") giờ là **cửa sổ 6 tiếng**,
@@ -21,13 +22,22 @@
 // (`MoodWatchMac_LastSendRisk()` — rủi ro của chữ vừa gõ), không có trục thời gian.
 // ⚠️ Đừng tưởng đổi lại là "khôi phục phản ứng sống": sóng đó CHƯA BAO GIỜ động khi gõ — popover là
 // `NSPopoverBehaviorTransient`, bấm ra ngoài là đóng, nên không ai vừa gõ vừa nhìn được nó. Nó luôn
-// chỉ là ảnh chụp lúc MỞ. Nay giá trị đó thành ĐẦU SÓNG ở mép phải của sông 6 tiếng — vẫn là
-// "khoảnh khắc này", nhưng có thêm 6 tiếng bối cảnh phía sau.
-static const CGFloat kWindowSeconds = 6 * 3600.0;
+// chỉ là ảnh chụp lúc MỞ. Nay giá trị đó thành ĐẦU SÓNG ở mép phải của sông — vẫn là "khoảnh khắc
+// này", nhưng có bối cảnh phía sau.
+//
+// 3 TIẾNG (chủ dự án chốt 2026-07-16 "khoảng 2-3 tiếng"): chọn 3 chứ không 2 vì trục chia 3 phần ra
+// đúng số tròn — "3 giờ trước · 2 giờ · 1 giờ · bây giờ". Để 2 tiếng thì thành "1,3 giờ · 40 phút",
+// đọc như đồng hồ đo, mất chất quan sát. 3 tiếng ≈ 12 nhịp chuông (nhịp 15 phút) — đủ dày để thấy
+// hình dâng/lắng, đủ hẹp để gọi là "ngay bây giờ".
+static const CGFloat kWindowSeconds = 3 * 3600.0;
 
 static const CGFloat kPad         = 14.0;  // padding trong thẻ (mockup .card: 13px 14px)
 static const CGFloat kWaveGap     = 6.0;   // sông → tít
-static const CGFloat kTitleH      = 20.0;  // tít trạng thái, 16pt semibold
+// [MINDFUL] 2026-07-16 — 20pt (1 dòng) đủ cho tít CŨ ("Mặt hồ đang phẳng lặng", 22 ký tự). Tít mới
+// đọc hình dạng ngày nên dài gấp đôi: "Sáng, trưa và chiều có gợn, phần lớn êm" ≈ 38 ký tự, ở 16pt
+// semibold vượt bề ngang thẻ (300pt) → chừa 2 dòng, nếu không là cụt chữ đúng như lỗi đã gặp ở
+// nhãn trục. Câu ngắn ("Gác cổng đang tắt") chỉ dùng 1 dòng, thừa chỗ chứ không hỏng.
+static const CGFloat kTitleH      = 42.0;  // tít trạng thái, 16pt semibold, tối đa 2 dòng
 static const CGFloat kTitleGap    = 8.0;   // tít → hàng phụ đề/link
 static const CGFloat kSubRowH     = 34.0;  // hàng phụ đề/link — chừa chỗ tối đa 2 dòng cho state "tắt"
 
@@ -49,6 +59,8 @@ static const CGFloat kSubRowH     = 34.0;  // hàng phụ đề/link — chừa 
         [self addSubview:_river];
 
         _title = [self labelWithString:@"" font:[NSFont systemFontOfSize:16 weight:NSFontWeightSemibold] color:[Brand charcoal]];
+        _title.lineBreakMode = NSLineBreakByWordWrapping;
+        _title.maximumNumberOfLines = 2;   // xem kTitleH — tít đọc hình dạng ngày có thể tràn 1 dòng
         [self addSubview:_title];
 
         _caption = [self labelWithString:@"" font:[NSFont systemFontOfSize:11.5 weight:NSFontWeightRegular] color:[Brand muted]];
@@ -127,16 +139,24 @@ static const CGFloat kSubRowH     = 34.0;  // hàng phụ đề/link — chừa 
                    windowSeconds:kWindowSeconds
                       gapSeconds:gapSecs
                         liveHead:risk];
-        // [MINDFUL] Áo mới v2 — tít = TRẠNG THÁI, vẫn lấy đúng 3 mức của EmotionWaveView (phẳng
-        // lặng / gợn nhẹ / gợn sóng). Nay qua class method vì thẻ không còn hiện view sóng đó nữa,
-        // nhưng NGƯỠNG phải y hệt: tít nói "gợn sóng" thì đầu sóng bên phải cũng phải đang gợn.
-        _title.stringValue = [EmotionWaveView stateDescriptionForAmplitude:(CGFloat)risk];
-        _caption.stringValue = @"Gác cổng đang canh khi anh gõ";
+
+        // [MINDFUL] 2026-07-16 (chủ dự án chốt) — tít giờ ĐỌC HÌNH DẠNG CẢ NGÀY ("Sáng và chiều có
+        // gợn, phần lớn êm") thay vì chỉ gọi tên trạng thái tức thời ("Mặt hồ đang phẳng lặng").
+        // Cặp với sóng 3 tiếng bên trên: sóng cho thấy VỪA RỒI, câu cho biết CẢ NGÀY — nhìn 1 thẻ
+        // là nắm được 2 tầm. Câu sinh từ MoodPhrasingMac (nguồn duy nhất, cùng ngưỡng với màn Soi lại).
+        NSArray<NSDictionary *> *today = MoodStoreMac_FetchTodaySamples();
+        _title.stringValue = MoodPhrasing_DayShapeSentence(today);
+
+        // Số nhịp chuông = APP lấy được bao nhiêu mẫu hôm nay → cho biết câu tít dựa trên bao nhiêu
+        // dữ liệu. KHÔNG phải điểm số / chuỗi-ngày-liên-tục: không mục tiêu, không so hôm qua,
+        // không khen nhiều / trách ít. Minh bạch về ĐỘ DÀY DỮ LIỆU, không phải bảng thành tích.
+        _caption.stringValue = [NSString stringWithFormat:@"Gác cổng đang canh khi bạn gõ · %ld nhịp chuông hôm nay",
+                                 (long)today.count];
     } else {
         // State "tắt": sông TRỐNG thật thà (không vẽ nước giả), copy trung tính. KHÔNG đỏ/xám-chết.
         [_river setRecentSamples:nil windowSeconds:kWindowSeconds gapSeconds:0 liveHead:-1.0];
         _title.stringValue = @"Gác cổng đang tắt";
-        _caption.stringValue = @"Bật lại trong Cài đặt khi anh sẵn sàng";
+        _caption.stringValue = @"Bật lại trong Cài đặt khi bạn sẵn sàng";
     }
     self.needsLayout = YES;
 }

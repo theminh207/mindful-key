@@ -8,6 +8,7 @@
 #import "ReflectionScreenMac.h"
 #import <Cocoa/Cocoa.h>
 #import "MoodStoreMac.h"
+#import "MoodPhrasingMac.h"
 #import "EmotionRiverView.h"
 #import "BrandColors.h"
 // Cho link chuông gọi onBellSettingsSelected. Cùng lối ViewController.m / InputMethodCardView.mm /
@@ -22,16 +23,12 @@ static NSInteger HourOf(long long epochSeconds) {
 }
 
 // [MINDFUL] Story 3.6 (AC3) — mô tả THỜI ĐIỂM trong ngày, không phải ĐỘ LỚN bằng số (xem
-// DESIGN.md §1.2/§2.2 "KHÔNG nhãn số"). Ranh giới buổi dùng giờ THẬT (NSCalendar), độc lập với
-// cách EmotionRiverView tự chia trục 4 phần đều theo vị trí vẽ (view không biết giờ thật —
-// xem EmotionRiverView.mm dòng 197-200, chỉ chia đều bề rộng, không theo mốc giờ) — 2 cách chia
-// khác nhau có chủ đích, câu mô tả ưu tiên đúng giờ thật hơn là khớp tuyệt đối với trục vẽ.
+// DESIGN.md §1.2/§2.2 "KHÔNG nhãn số").
+// [MINDFUL] 2026-07-16 — ranh giới buổi ĐÃ dời sang `MoodPhrasingMac` (nguồn duy nhất): thẻ Gác
+// cổng nay cũng đọc buổi, giữ bản chép riêng ở đây là sắp có 3 bản trôi lệch nhau — đúng thứ
+// comment cũ tại chỗ này đã tự cảnh báo. Giữ tên hàm cũ để phần dưới file không phải sửa theo.
 static NSString *TimeOfDayLabel(long long epochSeconds) {
-    NSInteger hour = HourOf(epochSeconds);
-    if (hour >= 5 && hour < 11)  return @"buổi sáng";
-    if (hour >= 11 && hour < 13) return @"buổi trưa";
-    if (hour >= 13 && hour < 18) return @"buổi chiều";
-    return @"buổi tối";
+    return MoodPhrasing_TimeOfDayLabel(epochSeconds);
 }
 
 // [MINDFUL] Soi lại v2.1 (2026-07-16) — HÌNH DẠNG NGÀY. Trước đây câu hỏi + gợi ý bốc ngẫu nhiên
@@ -47,7 +44,9 @@ typedef NS_ENUM(NSInteger, MKDayShape) {
 
 // Ngưỡng "có gợn hay không". DÙNG CHUNG với ObservationParagraph có chủ đích: câu quan sát và
 // câu hỏi phải đọc cùng một ngày, lệch ngưỡng là chúng nói ngược nhau ngay trên cùng màn hình.
-static const double kRippleThreshold = 0.4;
+// [MINDFUL] 2026-07-16 — nay trỏ về `MoodPhrasingMac` (nguồn duy nhất), vì thẻ Gác cổng cũng đọc
+// cùng ngưỡng này: màn Soi lại nói "phẳng lặng" mà thẻ nói "có gợn" thì người dùng tin ai?
+static const double kRippleThreshold = kMoodRippleThreshold;
 
 static MKDayShape DayShapeOf(double peakAmp, int gkCount) {
     if (gkCount > 0) return MKDayShapeGated;
