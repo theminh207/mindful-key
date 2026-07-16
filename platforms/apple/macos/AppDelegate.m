@@ -22,6 +22,16 @@
 #import "ReflectionScreenMac.h"
 #import <UserNotifications/UserNotifications.h>
 #import "PanelViewController.h"   // [MINDFUL] PHA 1 — popover panel trạng thái
+
+#if DEBUG
+// [MINDFUL] `showCheckinOverlay` là method PRIVATE của PanelViewController (không khai trong .h —
+// nó là việc nội bộ của timer chấm nhịp, không phải API công khai). Forward-declare tại đây cho
+// riêng mục [DEV], KHÔNG sửa PanelViewController.h — cùng idiom file SettingsWindowController.mm
+// đã dùng cho `ConvertToolViewController -fillData`.
+@interface PanelViewController (MKDebugCheckin)
+- (void)showCheckinOverlay;
+@end
+#endif
 #import "SettingsWindowController.h"   // [MINDFUL] Story 2.2 — cửa sổ quản lý nav-trái 6 mục
 
 AppDelegate* appDelegate;
@@ -301,6 +311,10 @@ extern bool convertToolDontAlertWhenCompleted;
     [theMenu addItem:[NSMenuItem separatorItem]];
     [theMenu addItemWithTitle:@"[DEV] Giả lập 30 ngày dữ liệu sông" action:@selector(onSeedFakeMoodDataSelected) keyEquivalent:@""];
     [theMenu addItemWithTitle:@"[DEV] Xóa dữ liệu giả lập" action:@selector(onDeleteSimulatedMoodDataSelected) keyEquivalent:@""];
+    // [MINDFUL] 2026-07-16 — khung chấm nhịp chỉ tự hiện mỗi vBellInterval phút (sàn 15). Không có
+    // lối gọi tay thì mỗi lần sửa nó phải chờ 15 phút mới thấy — nên không ai verify, và đó đúng là
+    // cách bug lọt (bài học 2026-07-16: build xanh ≠ đã chạy). Chỉ Debug, biến mất ở Release.
+    [theMenu addItemWithTitle:@"[DEV] Hiện khung chấm nhịp ngay" action:@selector(onShowCheckinNowSelected) keyEquivalent:@""];
 #endif
 
     [theMenu addItem:[NSMenuItem separatorItem]];
@@ -672,6 +686,10 @@ extern bool convertToolDontAlertWhenCompleted;
 }
 
 #if DEBUG
+-(void)onShowCheckinNowSelected {
+    [_panelVC showCheckinOverlay];
+}
+
 -(void)onSeedFakeMoodDataSelected {
     MoodStoreMac_SeedFakeSamplesForTesting(30);
     NSAlert *alert = [[NSAlert alloc] init];

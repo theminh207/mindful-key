@@ -22,6 +22,11 @@
 static NSTimeInterval g_checkinLastTime = 0;
 static dispatch_source_t g_checkinTimer = nil;
 
+// [MINDFUL] Chấm nhịp v2 (2026-07-16) — khung check-in giờ ở lại tới khi người dùng CHỌN hoặc
+// BỎ QUA (bỏ tự-đóng-sau-8-giây). Phải giữ tham chiếu để: (a) không dựng chồng nhiều khung khi
+// rời máy lâu — nhịp sau tới thì thay khung cũ, không xếp đống; (b) đóng đúng khung đang hiện.
+static NSPanel *g_checkinPanel = nil;
+
 static const CGFloat kPanelW  = 360.0;
 static const CGFloat kMargin  = 16.0;
 static const CGFloat kCardW   = kPanelW - 2 * kMargin;   // 328
@@ -320,9 +325,17 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
 - (void)showCheckinOverlay {
     if (!MoodStoreMac_HasConsent()) return;
 
+    // [MINDFUL] Chấm nhịp v2 — khung ở lại tới khi chọn/bỏ qua, nên nhịp sau tới mà khung cũ còn
+    // đó thì THAY, không xếp chồng (rời máy 2 tiếng = 8 khung đè nhau). Khung cũ tự tan đúng lúc
+    // nhịp mới tới → thời hạn buông tay bám nhịp lấy mẫu, không phải một con số hết-giờ tuỳ tiện.
+    if (g_checkinPanel) {
+        [g_checkinPanel close];
+        g_checkinPanel = nil;
+    }
+
     NSRect screenRect = [NSScreen mainScreen].visibleFrame;
     CGFloat w = 320;
-    CGFloat h = 90;
+    CGFloat h = 116;   // +26 so với bản cũ: chừa hàng "Bỏ qua" bên dưới 3 lựa chọn
     NSRect frame = NSMakeRect(screenRect.origin.x + screenRect.size.width - w - 20,
                               screenRect.origin.y + screenRect.size.height - h - 40,
                               w, h);
@@ -335,6 +348,11 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
     panel.backgroundColor = [NSColor clearColor];
     panel.hasShadow = NO;
     panel.opaque = NO;
+    // [MINDFUL] NSPanel mặc định hidesOnDeactivate = YES. Bản cũ tự đóng sau 8 giây nên không ai
+    // thấy hệ quả; nay khung phải sống tới khi người dùng chạm, mà người dùng thì LUÔN đang gõ ở
+    // app khác (đây là bộ gõ) — để mặc định thì khung lặng lẽ biến mất, phá đúng thứ vừa chốt.
+    // Tắt hẳn, cùng cách SendGatekeeperMac.mm đã làm cho overlay nhịp thở.
+    panel.hidesOnDeactivate = NO;
 
     NSVisualEffectView *vev = [[NSVisualEffectView alloc] initWithFrame:panel.contentView.bounds];
     vev.material = NSVisualEffectMaterialPopover;
@@ -356,25 +374,47 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
     for (int i = 0; i < 3; i++) {
         NSButton *btn = [NSButton buttonWithTitle:titles[i] target:self action:@selector(onCheckin:)];
         btn.tag = i + 1; // 1, 2, 3
-        btn.frame = NSMakeRect(20 + i * (btnW + 10), 15, btnW, 30);
+        btn.frame = NSMakeRect(20 + i * (btnW + 10), 41, btnW, 30);
         btn.bezelStyle = NSBezelStyleRounded;
         [vev addSubview:btn];
     }
 
+    // [MINDFUL] Chấm nhịp v2 — "Bỏ qua" LÀ điều kiện để khung được phép ở lại. Có nó thì khung nằm
+    // chờ = tôn trọng (không biến mất lúc người ta đang nghĩ); không có nó thì khung nằm chờ = cái
+    // bẫy, cứ mỗi nhịp lại chặn người dùng, không đáp không cho đi — đúng thứ HIẾN CHƯƠNG gọi là
+    // hối thúc. Câu chữ lấy nguyên artifact "Vòng Soi lại" đã duyệt (.skip): bỏ qua KHÔNG mất nhịp,
+    // app vẫn tự ghi điểm — nói rõ để người dùng không thấy có lỗi khi im lặng.
+    // Link mờ tông đá, KHÔNG phải nút CTA: đây là lối thoát, không phải lời mời chào.
+    NSButton *skip = [NSButton buttonWithTitle:@"" target:self action:@selector(onCheckinSkip:)];
+    skip.bordered = NO;
+    skip.bezelStyle = NSBezelStyleInline;
+    [(NSButtonCell *)skip.cell setBackgroundColor:[NSColor clearColor]];
+    skip.attributedTitle = [[NSAttributedString alloc] initWithString:@"Bỏ qua — app vẫn tự ghi nhịp này"
+        attributes:@{ NSForegroundColorAttributeName: [Brand stone],
+                      NSFontAttributeName: [NSFont systemFontOfSize:12 weight:NSFontWeightRegular] }];
+    skip.frame = NSMakeRect(20, 12, w - 40, 20);
+    [vev addSubview:skip];
+
     [panel orderFront:nil];
-    
-    // Tự đóng sau 8s
-    __weak NSPanel *weakPanel = panel;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 8 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        if (weakPanel && weakPanel.isVisible) {
-            [weakPanel close];
-        }
-    });
+    g_checkinPanel = panel;   // KHÔNG còn tự đóng theo giờ — chỉ đóng khi người dùng chạm, hoặc khi nhịp sau tới
+}
+
+- (void)mk_closeCheckinPanel {
+    if (g_checkinPanel) {
+        [g_checkinPanel close];
+        g_checkinPanel = nil;
+    }
 }
 
 - (void)onCheckin:(NSButton *)sender {
     MoodStoreMac_LogCheckinEvent(sender.tag);
-    [sender.window close];
+    [self mk_closeCheckinPanel];
+}
+
+// [MINDFUL] Bỏ qua = KHÔNG ghi checkin (nhịp lấy mẫu tự động vẫn chạy riêng ở MoodWatchMac —
+// đúng như câu chữ đã hứa với người dùng). Chỉ đóng, không log, không đếm, không nhắc lại.
+- (void)onCheckinSkip:(NSButton *)sender {
+    [self mk_closeCheckinPanel];
 }
 
 - (void)buildHeader {
@@ -432,19 +472,11 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
     // [MINDFUL] Cập nhật dòng sông
     extern int vBellInterval;
     int intervalMins = vBellInterval > 0 ? vBellInterval : 60;
+    // [MINDFUL] Vá trục thời gian (2026-07-16) — đưa thẳng mẫu KÈM timestamp xuống sông để chấm
+    // nằm đúng giờ. Bản cũ tự chép một vòng lặp gom NSNull rồi VỨT ts đi, nên sông chỉ còn biết
+    // thứ tự: 7 mẫu buổi sáng bị giãn ra thành trọn một ngày, chấm 10h08 rơi xuống dưới "Tối".
     NSArray<NSDictionary *> *raw = MoodStoreMac_FetchTodaySamples();
-    NSMutableArray *samples = [NSMutableArray array];
-    for (int i = 0; i < raw.count; i++) {
-        [samples addObject:raw[i][@"value"]];
-        if (i < raw.count - 1) {
-            long long ts1 = [raw[i][@"ts"] longLongValue];
-            long long ts2 = [raw[i+1][@"ts"] longLongValue];
-            if (ts2 - ts1 > intervalMins * 60.0 * 1.5) {
-                [samples addObject:[NSNull null]];
-            }
-        }
-    }
-    [_river setSamples:samples.count > 0 ? samples : nil];
+    [_river setTodaySamples:raw.count > 0 ? raw : nil gapSeconds:intervalMins * 60.0 * 1.5];
 
     [self reflow];
 }
