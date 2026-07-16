@@ -2,78 +2,149 @@
   <img src="brand/marketing/readme-hero.png" width="100%" alt="Mindful Keyboard — Bộ gõ Tiếng Việt chánh niệm">
 </p>
 
-# Mindful Keyboard
+<h1 align="center">Mindful Keyboard</h1>
 
-> Bộ gõ Tiếng Việt giúp bạn gõ trong tỉnh thức — người gác cổng cảm xúc trước khi bạn gửi đi
-> thứ 5 phút sau sẽ hối hận. macOS trước (công dân hạng nhất), rồi Windows → Android → Linux → iOS.
+<p align="center">
+  <strong>Bộ gõ Tiếng Việt giúp bạn gõ trong tỉnh thức.</strong><br>
+  Người gác cổng cảm xúc — chèn một nhịp thở trước khi bạn gửi đi điều 5 phút sau sẽ hối tiếc.
+</p>
 
-Đây là **repo sạch, đa nền tảng, đã rebrand** của `mindful-keyboard` — dựng lại từ bộ đang phát
-triển ở repo gốc theo đúng cấu trúc đích trong `docs/AGENT-BRIEF.md` §3.2. Lõi gõ Tiếng Việt kế
-thừa từ **[OpenKey](https://github.com/tuyenvm/OpenKey) của Mai Vũ Tuyên** (GPL v3) — xem
-[`LICENSE`](LICENSE) và mục Ghi nhận nguồn bên dưới.
+<p align="center">
+  <img alt="Giấy phép GPL v3" src="https://img.shields.io/badge/license-GPL_v3-teal">
+  <img alt="Nền tảng" src="https://img.shields.io/badge/macOS-s%E1%BA%B5n_sàng-teal">
+  <img alt="Windows" src="https://img.shields.io/badge/Windows-sắp_có-lightgrey">
+  <img alt="Một sản phẩm GNH" src="https://img.shields.io/badge/GNH-Lan_toả_điều_tử_tế-teal">
+</p>
 
-## Cấu trúc
+<p align="center">
+  <a href="#cài-đặt">Cài đặt</a> ·
+  <a href="#nó-làm-gì">Nó làm gì</a> ·
+  <a href="#cách-nó-cảm-và-ghi-nhận">Cách nó cảm</a> ·
+  <a href="#riêng-tư-mặc-định">Riêng tư</a> ·
+  <a href="#phát-triển">Phát triển</a> ·
+  <a href="#ghi-nhận-nguồn--giấy-phép">Ghi nhận nguồn</a>
+</p>
+
+---
+
+Ngày xưa, một tiếng chuông giữa ngày đủ để ta dừng lại và thở. Lá thư đi mất mấy hôm; giận thì "để mai
+tính". Đời tự cài sẵn những khoảng dừng.
+
+Hôm nay, từ cơn giận đến nút **Gửi** chỉ còn hai giây và một ngón tay. Mặt kính đã lấy mất khoảng dừng
+ấy. **Mindful Keyboard** đặt nó trở lại — ngay trong bàn phím, nơi con chữ vừa thành hình. Không phán
+xét, không chấm điểm, chỉ **mời** bạn thở một nhịp.
+
+> **Chánh niệm trước, tính năng sau.** Đây là một bộ gõ Tiếng Việt tử tế, không phải một bảng liệt kê
+> tính năng.
+
+## Nó làm gì
+
+- **Gõ Tiếng Việt mượt** — Telex / VNI / VIQR, bỏ dấu thông minh, macro gõ tắt, chuyển mã. Lõi kế thừa
+  từ [OpenKey](https://github.com/tuyenvm/OpenKey), chuẩn và nhanh ở mọi app.
+- **Người gác cổng** — khi câu bạn sắp gửi đang nóng, một nhịp thở hiện lên. Bạn vẫn toàn quyền gửi;
+  chỉ là không phải trong lúc chưa kịp thở. *(macOS)*
+- **Con sóng, không phải điểm số** — trạng thái tâm hiện qua **biên độ** của dấu ngã `~`, sắc độ trung
+  tính. Mô tả hiện tượng ("Mặt hồ đang gợn sóng"), không dán nhãn tốt–xấu, không đèn đỏ, không mặt mếu.
+- **Tiếng chuông tự đến** — nhắc nhẹ theo nhịp, tôn vinh cả những quãng lặng, không streak/điểm/huy chương.
+
+## Cách nó cảm và ghi nhận
+
+Nhiều người hỏi: app "tính điểm cảm xúc" thế nào? Câu trả lời: nó cảm *cách bạn gõ*, không phán xét
+*bạn là ai* — và con số nội bộ đó **không bao giờ hiện ra cho bạn xem**.
+
+- **Nhìn cách gõ** — chỉ khi bộ gõ bật và đang gõ Tiếng Việt; không đụng ô mật khẩu, không đọc khi tắt bộ gõ.
+- **Mỗi câu → một mức cường độ** từ `0` (êm) đến `1` (căng). Con số ấy chỉ quyết định con sóng gợn cao hay thấp — **không hiển thị**.
+- **Mỗi nhịp chuông ghi một chấm** lên dòng sông (bạn chọn 30 hay 60 phút). Lúc không gõ, sông để trống — không bịa số.
+- **Ở lại trên máy** — nhật ký mã hoá cục bộ, khóa giữ trong Keychain.
+
+> **Vì sao giấu con số?** Vì khoảnh khắc bạn thấy "hôm nay 7/10" là khoảnh khắc bạn bắt đầu thi đua với
+> chính mình — đúng thứ chánh niệm muốn buông. App đưa tấm gương, không đưa điểm thi.
+
+Cố ý **không** có: điểm số/phần trăm hiện ra · streak/huy hiệu/xếp hạng · đèn đỏ–xanh, mặt cười–mếu · lời khiển trách.
+
+## Các màn hình
+
+- **Bảng nhanh** (biểu tượng `~` trên thanh menu) — liếc là thấy, ba thẻ: **Hôm nay** (dòng sông cảm xúc +
+  "Độ nhạy"), **Chuông** (nhịp lấy mẫu + bộ tiếng), **Bộ gõ** (Telex/VNI, bảng mã, tùy chọn).
+- **Cửa sổ đầy đủ** — sáu mục: Hôm nay · Chuông · Bộ gõ · Riêng tư · Hệ thống · Giới thiệu.
+- **Soi lại cuối ngày** — một câu hỏi để mang theo, không phải biểu đồ.
+
+Hướng dẫn có hình đầy đủ (bản minh hoạ): [`docs/HUONG-DAN-SU-DUNG.html`](docs/HUONG-DAN-SU-DUNG.html) — mở trong trình duyệt.
+
+## Riêng tư mặc định
+
+Cảm xúc của bạn **không rời khỏi máy**. Mọi phân tích chạy ngay tại chỗ; nhật ký tâm trạng mã hóa cục
+bộ, khóa giữ trong Keychain. Không máy chủ, không tài khoản, không một dòng nội dung nào được gửi đi.
+
+## Cài đặt
+
+- **macOS** (công dân hạng nhất) — tải bản `.dmg` mới nhất ở trang
+  [Releases](../../releases/latest), kéo vào Applications, cấp quyền **Trợ năng** + **Giám sát nhập
+  liệu**. Chưa tới một phút.
+- **Windows** — đang phát triển, sẽ có ở Releases khi sẵn sàng.
+
+> Bản hiện tại ký ad-hoc (chưa notarize) — xem `docs/INSTALL.md` nếu macOS chặn lần mở đầu.
+
+## Phát triển
+
+Bộ não gõ dùng chung (C++ thuần) + vỏ native từng hệ điều hành. Yêu cầu: Xcode +
+[XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`).
+
+```bash
+make generate   # xcodegen generate → sinh .xcodeproj
+make build      # build app macOS (Debug, ký ad-hoc)
+make run        # build rồi mở app
+make test       # regression engine + test vỏ macOS/iOS
+make brand      # xuất lại icon/asset từ brand/svg/ (1 nguồn → nhiều đích)
+```
+
+<details>
+<summary><strong>Cấu trúc thư mục</strong></summary>
 
 ```
 mindful-key/
 ├── core/
-│   ├── engine/     ← Bộ não OpenKey nguyên vẹn 100% (Telex/VNI/VIQR, bảng mã, macro...).
-│   │                 KHÔNG sửa "mù" — mọi PR chạm vào đây phải kèm test ở tests/core/.
-│   └── mood/       ← MoodBuffer (gom từ→câu) + BreathingPause (hợp đồng "nhịp thở") — C++
-│                     thuần, dùng chung mọi nền tảng, không phụ thuộc core/engine.
+│   ├── engine/   ← Bộ não OpenKey (Telex/VNI/VIQR, bảng mã, macro). KHÔNG sửa "mù" — PR chạm
+│   │               vào đây phải kèm test ở tests/core/.
+│   └── mood/     ← MoodBuffer (gom từ→câu) + BreathingPause ("nhịp thở") — C++ thuần, dùng chung.
 ├── platforms/
-│   ├── apple/      ← macOS (đầy đủ tính năng) + iOS/shared (chưa mở). XcodeGen: project.yml.
-│   ├── windows/    ← vỏ Win32 gốc, mang sang chưa rebrand/chưa build trong monorepo này.
-│   ├── android/    ← chưa có code, chỉ ghi chú lộ trình.
-│   └── linux/      ← chỉ có README thượng nguồn, chưa có vỏ thật.
-├── models/         ← coreml/onnx/tflite — spec cho bước thay lexicon bằng model sentiment
-│                     thật (xem docs/SEND-RISK-MODEL-SPEC.md); chưa có model file nào.
-├── brand/          ← Nhận diện NOW BRAND OS: SVG nguồn + export.sh xuất PNG/.icns.
-├── docs/           ← Hiến chương, PRD, spec kỹ thuật, ghi chú riêng tư.
-├── scripts/        ← build-dmg.sh (đóng gói ad-hoc), sign-and-notarize.sh (placeholder).
-├── tests/
-│   ├── core/       ← Regression test core/engine (Telex→Unicode, 5/5) — đội core sở hữu.
-│   ├── macos/      ← Test riêng vỏ macOS — đội macOS sở hữu (chưa có test tự động).
-│   └── ios/        ← Test riêng vỏ iOS — đội iOS sở hữu (chưa có gì, chưa mở vỏ).
-└── .github/workflows/  ← CI: build macOS + regression engine.
+│   ├── apple/    ← macOS (đầy đủ) + iOS (keyboard extension). XcodeGen: project.yml.
+│   ├── windows/  ← vỏ Win32 gốc, chưa rebrand/chưa build trong monorepo này.
+│   ├── android/  ← ghi chú lộ trình.
+│   └── linux/    ← README thượng nguồn.
+├── brand/        ← Nhận diện NOW BRAND OS: tokens.json + svg/ + export-*.sh (NGUỒN DUY NHẤT của màu).
+├── site/         ← Landing page (HTML tĩnh, đọc cùng brand).
+├── docs/         ← Hiến chương, PRD, spec, ghi chú riêng tư, REPO-TOPOLOGY.
+├── scripts/      ← đóng gói .dmg, ký & notarize, phát hành.
+└── tests/        ← core (regression engine) · macos · ios.
 ```
 
-## Build & chạy (macOS)
-
-```bash
-make generate   # xcodegen generate
-make build      # generate + xcodebuild (Debug, ký ad-hoc)
-make run        # build rồi mở app
-make test       # test cả 3 đội: test-core (regression engine) + test-macos + test-ios
-make brand      # xuất lại icon/asset từ brand/svg/
-```
-
-Yêu cầu: Xcode + [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`).
-
-## Trạng thái rebrand
-
-- **Chuỗi hiển thị** (menu bar, About, NSAlert, tiêu đề cửa sổ): đã đổi "OpenKey" →
-  "Mindful Keyboard". Tên class/hàm/biến/file kế thừa (`OpenKeyManager`, `OpenKeyCallback`,
-  `vTempOffOpenKey`...) và bundle-id allow-list app chat (`com.vng.zalo`, `com.hnc.Discord`)
-  **giữ nguyên** — đổi nhầm vỡ tương thích/logic gác cổng.
-- **Bundle ID**: `vn.gnh.mindfulkey` (đề xuất, đổi từ `com.tuyenmai.openkey`). ⚠️ Đổi bundle ID
-  nghĩa là macOS coi đây là app MỚI — người dùng cũ (nếu có) sẽ phải **cấp lại quyền
-  Accessibility + Input Monitoring** trong System Settings. Nếu chủ dự án muốn giữ ID gốc
-  hoặc chọn ID khác, sửa `PRODUCT_BUNDLE_IDENTIFIER` trong `platforms/apple/project.yml`.
-- **OpenKeyHelper**: KHÔNG mang sang. Đây là code chết — `OpenKeyHelper/` trong dự án gốc chỉ
-  còn là group thư mục + scheme cũ, không phải build target thật (chỉ 1 target `OpenKey` tồn
-  tại trong `.xcodeproj` gốc), và lời gọi `SMLoginItemSetEnabled(@"com.tuyenmai.OpenKeyHelper", ...)`
-  trong `AppDelegate.m` đang trỏ tới một helper app không hề được nhúng/build — no-op khi chạy.
+**Nhận diện chảy 1 nguồn → nhiều đích:** sửa màu/logo CHỈ ở `brand/tokens.json` + `brand/svg/`.
+`make brand` sinh asset vào app; `make public-brand` sinh bộ mặt-tiền. Không hard-code màu ở nơi khác.
+Chi tiết: `docs/REPO-TOPOLOGY.md`.
+</details>
 
 ## Ghi nhận nguồn & giấy phép
 
-Lõi engine gõ tiếng Việt fork từ **[OpenKey](https://github.com/tuyenvm/OpenKey)** của
-**Mai Vũ Tuyên** — xin ghi nhận và cảm ơn tác giả. OpenKey là GPL v3, nên `mindful-key`
-**cũng là GPL v3** (copyleft kế thừa). Phần kế thừa (`core/engine/`) giữ nguyên; phần viết
-thêm (`core/mood/`, `platforms/apple/macos/{Mood,Bell,Nudge,Reflection,SendGatekeeper}*`)
-ghi rõ là dựa trên/mở rộng OpenKey. Credit hiển thị trong About (menu bar → Giới thiệu).
+Lõi engine gõ Tiếng Việt được **fork từ [OpenKey](https://github.com/tuyenvm/OpenKey) của
+[Mai Vũ Tuyên](https://github.com/tuyenvm)** — xin trân trọng ghi nhận và cảm ơn tác giả. OpenKey là
+**GPL v3**, nên Mindful Keyboard **cũng là GPL v3** (copyleft kế thừa).
+
+- Phần kế thừa (`core/engine/`) giữ gần nguyên vẹn; phần viết thêm (`core/mood/`, lớp gác cổng &
+  chánh niệm trên macOS) ghi rõ là dựa trên / mở rộng OpenKey.
+- Toàn văn giấy phép: [`LICENSE`](LICENSE). Credit cũng hiển thị trong app (menu bar → Giới thiệu).
+- Phát hành bản chạy (.dmg/.exe) luôn kèm mã nguồn tương ứng, theo đúng nghĩa vụ GPL v3.
 
 ## Hiến chương
 
-Mọi quyết định kỹ thuật/nhận diện quy chiếu `docs/AGENT-BRIEF.md`. Tự kiểm mọi UI:
-*"Cái này đang mô tả hay đang phán xét?"* — phán xét thì bỏ.
+Mọi quyết định kỹ thuật & nhận diện quy chiếu [`docs/AGENT-BRIEF.md`](docs/AGENT-BRIEF.md). Điều bất khả
+xâm phạm: không đèn đỏ/xanh mã hóa cảm xúc · không emoji chấm điểm · không gamification · không copy
+khiển trách. Tự kiểm mọi giao diện: *"Cái này đang mô tả hay đang phán xét?"* — phán xét thì bỏ.
+
+## Ủng hộ
+
+Mindful Keyboard miễn phí và mã nguồn mở, không quảng cáo, không bán dữ liệu. Nếu nó tặng bạn một nhịp
+dừng, bạn có thể **tiếp sức tuỳ tâm** để nó đến với nhiều người hơn — hoặc chỉ cần **chia sẻ cho một
+người** đang hay gõ vội lúc lòng nóng. Đó cũng là lan toả điều tử tế.
+
+<p align="center"><sub>Một sản phẩm GNH · <em>Lan toả điều tử tế</em></sub></p>
