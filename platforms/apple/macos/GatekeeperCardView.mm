@@ -44,7 +44,7 @@ static const CGFloat kSubRowH     = 34.0;  // hàng phụ đề/link — chừa 
 @implementation GatekeeperCardView {
     EmotionRiverView *_river;   // cửa sổ 6 tiếng, mép phải = ngay lúc mở (thay EmotionWaveView 1-giá-trị)
     NSTextField *_title;    // câu TRẠNG THÁI động ("Mặt hồ đang gợn nhẹ"...) — KHÔNG còn tít tĩnh
-    NSTextField *_caption;  // "Gác cổng đang canh khi anh gõ" / "Bật lại trong Cài đặt..."
+    NSTextField *_caption;  // "Gác cổng đang canh khi bạn gõ" / "Bật lại trong Cài đặt..."
     NSButton *_reflectLink; // "Soi lại hôm nay →" — cam, link (KHÔNG phải CTA)
 }
 
