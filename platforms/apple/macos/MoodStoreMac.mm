@@ -537,23 +537,32 @@ void MoodStoreMac_SeedFakeSamplesForTesting(NSInteger numDays) {
         "INSERT INTO mood_events (ts, event_type, send_risk, app_bundle_id) "
         "VALUES (?, 'sample', ?, ?);";
 
-    // Vài mẫu rải rác mỗi ngày trong khung giờ hợp lý (9h-21h), biên độ dao động ngẫu nhiên
-    // nhẹ — đủ để đường sông có hình dạng thay vì 1 đường phẳng giả tạo.
-    for (NSInteger d = 0; d < numDays; d++) {
-        NSDate *day = [cal dateByAddingUnit:NSCalendarUnitDay value:-d toDate:now options:0];
-        NSDateComponents *dayComps = [cal components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay) fromDate:day];
-        NSInteger samplesThisDay = 4 + (NSInteger)arc4random_uniform(3); // 4-6 mẫu/ngày
+    // [MINDFUL] Vá 2026-07-16 (chủ dự án khoanh đỏ ảnh popover: "dòng cảm xúc hôm nay" chỉ có chấm
+    // trôi lơ lửng, KHÔNG có dòng). Nguyên nhân là DỮ LIỆU GIẢ SAI BẢN CHẤT, không phải view sai:
+    //
+    //  · Bản cũ rải 4-6 mẫu ở giờ NGẪU NHIÊN 9h-21h → 2 mẫu bất kỳ cách nhau ~2-3 TIẾNG, vượt xa
+    //    ngưỡng "quãng không gõ" (vBellInterval × 1.5 = 22.5 phút) → EmotionRiverView chèn NSNull
+    //    giữa MỌI cặp → mọi mẫu bị cô lập → không vẽ nổi một đoạn nước nào. View làm ĐÚNG luật
+    //    dec.4 ("cấm bịa nước ở chỗ không có dữ liệu"); chính dữ liệu giả mới là thứ phi thực tế.
+    //  · Bản cũ còn đặt mẫu ở 9h-21h CỦA HÔM NAY kể cả khi bây giờ mới 1h sáng → chấm nằm ở TƯƠNG LAI.
+    //
+    // Người gõ thật đi theo PHIÊN: trong phiên, mỗi nhịp chuông ghi 1 mẫu cách đều đúng
+    // vBellInterval phút → nước liền mạch; giữa các phiên mới là quãng trống thật. Biên độ cũng đi
+    // bộ dần (random walk) chứ không nhảy cóc 0.1↔0.8 mỗi 15 phút — nhờ vậy sóng có hình dâng/lắng
+    // đọc được, đúng thứ cần nhìn để kiểm "sông có bám trạng thái không".
+    extern int vBellInterval;
+    NSTimeInterval stepSecs = (vBellInterval > 0 ? vBellInterval : 15) * 60.0;
+    NSTimeInterval nowTs = [now timeIntervalSince1970];
 
-        for (NSInteger s = 0; s < samplesThisDay; s++) {
-            NSDateComponents *tsComps = [dayComps copy];
-            tsComps.hour = 9 + (NSInteger)arc4random_uniform(13);   // 9h..21h
-            tsComps.minute = (NSInteger)arc4random_uniform(60);
-            NSDate *ts = [cal dateFromComponents:tsComps];
-            double risk = (arc4random_uniform(70) + 10) / 100.0;    // 0.10..0.79 — tránh giả 1.0 phi thực tế
-
+    // Ghi 1 phiên gõ: runLen mẫu cách đều stepSecs, biên độ đi bộ dần. Bỏ qua mẫu rơi vào tương lai.
+    void (^writeSession)(NSTimeInterval, NSInteger) = ^(NSTimeInterval startTs, NSInteger runLen) {
+        double risk = (arc4random_uniform(35) + 10) / 100.0;   // mở phiên êm: 0.10..0.44
+        NSTimeInterval t = startTs;
+        for (NSInteger i = 0; i < runLen; i++) {
+            if (t > nowTs) break;                              // KHÔNG bịa mẫu ở tương lai
             sqlite3_stmt *stmt = NULL;
             if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
-                sqlite3_bind_int64(stmt, 1, (sqlite3_int64)[ts timeIntervalSince1970]);
+                sqlite3_bind_int64(stmt, 1, (sqlite3_int64)t);
                 sqlite3_bind_double(stmt, 2, risk);
                 sqlite3_bind_text(stmt, 3, kSeedFakeMarker.UTF8String, -1, SQLITE_TRANSIENT);
                 if (sqlite3_step(stmt) != SQLITE_DONE) {
@@ -561,11 +570,37 @@ void MoodStoreMac_SeedFakeSamplesForTesting(NSInteger numDays) {
                 }
                 sqlite3_finalize(stmt);
             }
+            t += stepSecs;
+            risk += ((double)arc4random_uniform(21) - 10.0) / 100.0;   // trôi ±0.10 mỗi nhịp
+            if (risk < 0.05) risk = 0.05;
+            if (risk > 0.85) risk = 0.85;
+        }
+    };
+
+    for (NSInteger d = 0; d < numDays; d++) {
+        if (d == 0) {
+            // HÔM NAY: neo phiên KẾT THÚC ngay lúc này (vừa gõ xong). Không neo theo giờ cố định
+            // 9h-21h — test lúc 1h sáng sẽ ra ngày trống trơn vì cả khung đó đều ở tương lai.
+            NSInteger runLen = 8 + (NSInteger)arc4random_uniform(9);   // 8-16 mẫu = 2-4 tiếng gõ
+            writeSession(nowTs - (runLen - 1) * stepSecs, runLen);
+        } else {
+            NSDate *day = [cal dateByAddingUnit:NSCalendarUnitDay value:-d toDate:now options:0];
+            NSDateComponents *dayComps = [cal components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay) fromDate:day];
+            dayComps.hour = 0; dayComps.minute = 0; dayComps.second = 0;
+            NSTimeInterval midnight = [[cal dateFromComponents:dayComps] timeIntervalSince1970];
+
+            NSInteger sessions = 2 + (NSInteger)arc4random_uniform(2);   // 2-3 phiên gõ/ngày
+            NSInteger hour = 9;
+            for (NSInteger s = 0; s < sessions && hour < 21; s++) {
+                NSInteger runLen = 6 + (NSInteger)arc4random_uniform(11);  // 6-16 mẫu
+                writeSession(midnight + hour * 3600.0 + arc4random_uniform(40) * 60.0, runLen);
+                hour += 3 + (NSInteger)arc4random_uniform(3);             // nghỉ 3-5 tiếng giữa 2 phiên
+            }
         }
     }
 
     FlushAndCloseDB(db, tempPath);
-    NSLog(@"[MoodStoreMac][SEED] Đã giả lập %ld ngày (đánh dấu, KHÔNG lẫn dữ liệu thật) — DEBUG-ONLY.", (long)numDays);
+    NSLog(@"[MoodStoreMac][SEED] Đã giả lập %ld ngày theo phiên gõ (đánh dấu, KHÔNG lẫn dữ liệu thật) — DEBUG-ONLY.", (long)numDays);
 }
 
 void MoodStoreMac_DeleteSimulatedData(void) {
