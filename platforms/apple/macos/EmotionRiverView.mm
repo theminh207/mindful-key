@@ -21,19 +21,59 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
 
 // Tách riêng phần vẽ khỏi EmotionRiverView để giữ đúng 1 trách nhiệm: view cha lo layout/nhãn,
 // canvas này chỉ lo vẽ — và tự khoá luật "không mẫu = không vẽ gì" ngay tại nguồn.
+//
+// [MINDFUL] Vá trục thời gian (2026-07-16, chủ dự án chốt sau khi bắt được lỗi trên máy thật):
+// canvas KHÔNG còn tự suy vị trí từ THỨ TỰ mẫu nữa. Trước đây `mx = m/(k-1)*w` — chấm cuối LUÔN
+// dính mép phải, tức luôn nằm dưới nhãn "Tối", kể cả khi nó được ghi lúc 10h sáng. Máy chủ dự án
+// có 7 mẫu trong 48 phút buổi sáng mà sông vẽ ra như trọn một ngày. Nhãn Sáng/Trưa/Chiều/Tối
+// thành ra nói dối, và cãi luôn màn Soi lại (màn đó đọc giờ THẬT từ peakTs).
+// Nay view cha tính sẵn VỊ TRÍ (xf = 0..1 trên bề ngang) cho từng mẫu rồi đưa xuống:
+//   - Hôm nay  → xf từ giờ thật  ⇒ nhãn giờ nói thật.
+//   - Tuần/Tháng → xf = m/(k-1)  ⇒ 1 chấm = 1 ngày, giãn đều VẪN ĐÚNG, hành vi y như cũ.
 @interface MKRiverCanvas : NSView
-@property (nonatomic, copy, nullable) NSArray *samples;
+/// NSValue(NSPoint{x = vị trí 0..1 trên bề ngang, y = biên độ 0..1}), hoặc NSNull = NGẮT nước
+/// giữa 2 mẫu kề nó (quãng không gõ). Rỗng/nil = chưa có mẫu → KHÔNG vẽ gì (dec.4).
+@property (nonatomic, copy, nullable) NSArray *entries;
 @end
 
 @implementation MKRiverCanvas
 
-- (void)setSamples:(NSArray *)samples {
-    _samples = samples;
+- (void)setEntries:(NSArray *)entries {
+    _entries = entries;
     [self setNeedsDisplay:YES];
 }
 
+// Biên độ nội suy tại vị trí xf, hoặc NO nếu chỗ đó là quãng trống (không có nước).
+// Trả NO ở: trước mẫu đầu, sau mẫu cuối, và giữa 2 mẫu bị NSNull ngăn — đúng luật dec.4
+// "không bịa nước giả ở chỗ không có dữ liệu".
+- (BOOL)ampAt:(CGFloat)xf out:(CGFloat *)outAmp {
+    NSUInteger k = _entries.count;
+    NSInteger i = -1;
+    for (NSUInteger m = 0; m < k; m++) {
+        id e = _entries[m];
+        if (e == [NSNull null]) continue;
+        if ([(NSValue *)e pointValue].x <= xf) i = (NSInteger)m; else break;
+    }
+    if (i < 0) return NO;                       // xf nằm trước mẫu đầu tiên
+
+    NSPoint a = [(NSValue *)_entries[(NSUInteger)i] pointValue];
+    NSUInteger n = (NSUInteger)i + 1;
+    id nx = (n < k) ? _entries[n] : nil;
+
+    // Hết mẫu phía sau, hoặc mẫu kế bị NSNull ngăn → chỉ còn đúng điểm mẫu đó có nước.
+    if (nx == nil || nx == [NSNull null]) {
+        if (fabs(xf - a.x) < 1e-6) { *outAmp = a.y; return YES; }
+        return NO;
+    }
+
+    NSPoint b = [(NSValue *)nx pointValue];
+    if (b.x <= a.x) { *outAmp = a.y; return YES; }   // 2 mẫu trùng vị trí — khỏi chia cho 0
+    *outAmp = a.y + (b.y - a.y) * ((xf - a.x) / (b.x - a.x));
+    return YES;
+}
+
 - (void)drawRect:(NSRect)dirtyRect {
-    NSUInteger k = _samples.count;
+    NSUInteger k = _entries.count;
     if (k == 0) return;   // trống thật — KHÔNG vẽ đường/chấm giả (HIẾN CHƯƠNG §2.2, decision-log dec.4)
 
     NSRect b = self.bounds;
@@ -42,48 +82,43 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
     CGFloat maxWaveH = NSHeight(b) * 0.42;
 
     // [MINDFUL] Chặn phòng ngừa (2026-07-16): bounds rộng 0 (vd 1 nhịp layout sớm) làm (x/w) =
-    // 0/0 = NaN; ép NaN sang NSUInteger là hành vi không xác định. Đây KHÔNG phải nguyên nhân
-    // crash tối 2026-07-16 (đó là [NSNull doubleValue], vá ở vòng lặp dưới) — chỉ là mối nguy
-    // tiềm tàng phát hiện lúc đọc code, giữ lại vì rẻ và chặn đúng gốc.
+    // 0/0 = NaN. Nguy cơ ép NaN sang NSUInteger đã hết từ khi bỏ lối chỉ-số (2026-07-16, vá trục
+    // thời gian), nhưng giữ chặn ở đây vì rẻ và vẫn đúng gốc: rộng 0 thì không có gì để vẽ.
     if (w <= 0) return;
 
     NSColor *teal = [[Brand teal] colorUsingColorSpace:[NSColorSpace sRGBColorSpace]];
+
+    // [MINDFUL] "Một dòng sông liền mạch": trục thời-gian nét đứt mờ chạy suốt cả ngày để mắt nối
+    // buổi sáng→tối thành MỘT dòng, thay vì mấy khúc sóng rời trôi lơ lửng. Đây là TRỤC (cùng họ
+    // với nhãn Sáng/Trưa/Chiều/Tối) — nét đứt + màu stone mờ, KHÔNG phải mặt nước "phẳng lặng".
+    // Không đụng luật dec.4: nước teal đặc + chấm vẫn CHỈ hiện ở chỗ có mẫu thật; quãng trống chỉ
+    // còn lại trục, tuyệt nhiên không có nước giả.
+    NSBezierPath *axis = [NSBezierPath bezierPath];
+    axis.lineWidth = 1.0;
+    CGFloat axisDash[2] = {2.0, 4.0};
+    [axis setLineDash:axisDash count:2 phase:0];
+    [axis moveToPoint:NSMakePoint(0, midY)];
+    [axis lineToPoint:NSMakePoint(w, midY)];
+    [[[Brand stone] colorWithAlphaComponent:0.5] setStroke];
+    [axis stroke];
 
     NSBezierPath *path = [NSBezierPath bezierPath];
     path.lineWidth = 2.2;
     path.lineCapStyle = NSLineCapStyleRound;
     path.lineJoinStyle = NSLineJoinStyleRound;
 
-    NSMutableArray<NSValue *> *points = [NSMutableArray arrayWithCapacity:(NSUInteger)(w / 3.0) + 1];
+    // Sóng lượn dùng CHÍNH x pixel (không phải chỉ số mẫu) nên nhịp gợn không đổi khi mẫu thưa/dày.
     BOOL lastWasGap = YES;
     for (CGFloat x = 0; x <= w; x += 3.0) {
-        CGFloat f = (k > 1) ? (x / w) * (CGFloat)(k - 1) : 0;
-        NSUInteger i = MIN((NSUInteger)floor(f), k - 1);   // kẹp cứng — không bao giờ vượt bounds dù f bất thường
-        CGFloat fr = f - (CGFloat)i;
-
-        id val0 = _samples[i];
-        id val1 = _samples[MIN(i + 1, k - 1)];
-        
-        if (val0 == [NSNull null] || (fr > 0 && val1 == [NSNull null])) {
+        CGFloat amp = 0;
+        // [MINDFUL] Giữ nguyên bài học vá crash 2026-07-16 ("-[NSNull doubleValue]: unrecognized
+        // selector"): NSNull KHÔNG bao giờ được đọc như số. Nay việc đó khoá hẳn trong ampAt: —
+        // chỗ duy nhất chạm _entries — thay vì rải guard ở vòng lặp vẽ.
+        if (![self ampAt:(x / w) out:&amp]) {
             lastWasGap = YES;
             continue;
         }
-        
-        // [MINDFUL] Vá crash (2026-07-16, xác nhận qua log hệ thống: "-[NSNull doubleValue]:
-        // unrecognized selector"). Guard phía trên CỐ Ý chỉ kiểm val1 khi fr > 0 — đúng, vì khi
-        // fr == 0 thì amp = a0 + (a1-a0)*0 = a0, val1 hoàn toàn vô nghĩa. Nhưng code cũ vẫn đọc
-        // [val1 doubleValue] VÔ ĐIỀU KIỆN → nổ ngay khi val1 là NSNull (quãng trống) và fr == 0
-        // (xảy ra ở x=0, tức NGAY vòng lặp đầu tiên, nếu mẫu thứ 2 là quãng trống).
-        // Nay chỉ đọc val1 đúng lúc cần nội suy — khớp lại với ý định của guard.
-        CGFloat a0 = [val0 doubleValue];
-        CGFloat amp = a0;
-        if (fr > 0) {
-            amp = a0 + ([val1 doubleValue] - a0) * fr;
-        }
-        CGFloat y = midY - amp * maxWaveH * sin(x * 0.19);
-        NSPoint p = NSMakePoint(x, y);
-        [points addObject:[NSValue valueWithPoint:p]];
-        
+        NSPoint p = NSMakePoint(x, midY - amp * maxWaveH * sin(x * 0.19));
         if (lastWasGap) {
             [path moveToPoint:p];
             lastWasGap = NO;
@@ -94,31 +129,23 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
     [teal setStroke];
     [path stroke];
 
-    // Chấm trắng-viền-teal đúng vị trí mỗi mẫu (1 nhịp chuông = 1 điểm ghi lên dòng sông).
+    // Chấm đúng vị trí mỗi mẫu (1 nhịp chuông = 1 điểm ghi lên dòng sông). Toạ độ tính THẲNG từ
+    // cùng công thức sóng ở trên — bản cũ phải dò "điểm vẽ gần nhất" rồi bỏ chấm nếu lệch > 5px,
+    // cách đó vừa thừa vừa âm thầm nuốt mất chấm.
     for (NSUInteger m = 0; m < k; m++) {
-        if (_samples[m] == [NSNull null]) continue;
-        CGFloat mx = (k == 1) ? w / 2.0 : (CGFloat)m / (CGFloat)(k - 1) * w;
-        
-        // Find closest drawn point to mx
-        NSPoint closestP = NSZeroPoint;
-        CGFloat minDiff = CGFLOAT_MAX;
-        for (NSValue *val in points) {
-            NSPoint p = val.pointValue;
-            if (fabs(p.x - mx) < minDiff) {
-                minDiff = fabs(p.x - mx);
-                closestP = p;
-            }
-        }
-        
-        if (minDiff > 5.0) continue; // Should not happen, but safeguard
-        
-        NSRect dot = NSMakeRect(closestP.x - 2.6, closestP.y - 2.6, 5.2, 5.2);
+        id e = _entries[m];
+        if (e == [NSNull null]) continue;
+        NSPoint s = [(NSValue *)e pointValue];
+        CGFloat mx = s.x * w;
+        NSPoint closestP = NSMakePoint(mx, midY - s.y * maxWaveH * sin(mx * 0.19));
+
+        // [MINDFUL] Chấm = 1 nhịp chuông ghi 1 điểm. Trước đây tô TRẮNG trên thẻ nền cũng gần
+        // trắng → gần như tàng hình, chỉ còn cái viền mỏng, nên caption hứa "vòng tròn" mà mắt
+        // không thấy. Nay tô teal đặc, to hơn chút → thành cái chấm rõ nằm trên dòng nước.
+        NSRect dot = NSMakeRect(closestP.x - 3.3, closestP.y - 3.3, 6.6, 6.6);
         NSBezierPath *dotPath = [NSBezierPath bezierPathWithOvalInRect:dot];
-        [[NSColor whiteColor] setFill];
+        [teal setFill];
         [dotPath fill];
-        dotPath.lineWidth = 1.6;
-        [teal setStroke];
-        [dotPath stroke];
     }
 }
 
@@ -126,12 +153,25 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
 
 #pragma mark - EmotionRiverView
 
+// [MINDFUL] Vá trục thời gian (2026-07-16) — mốc GIỜ của 4 nhãn, khớp đúng ranh giới buổi mà
+// ReflectionScreenMac.mm/TimeOfDayLabel() đang dùng (sáng 5-11, trưa 11-13, chiều 13-18, tối 18-24).
+// Hai nơi phải cùng một ranh giới, lệch là màn Soi lại nói "buổi sáng" mà chấm nằm chỗ khác.
+static const CGFloat kDayStartHour       = 5.0;    // sông bắt đầu lúc 5h — trước đó gần như không ai gõ
+static const CGFloat kDayEndHour         = 24.0;
+static const CGFloat kAxisHourMorning    = 8.0;    // giữa buổi sáng  (5-11)
+static const CGFloat kAxisHourNoon       = 12.0;   // giữa buổi trưa  (11-13)
+static const CGFloat kAxisHourAfternoon  = 15.5;   // giữa buổi chiều (13-18)
+static const CGFloat kAxisHourEvening    = 21.0;   // giữa buổi tối   (18-24)
+
 @implementation EmotionRiverView {
     MKRiverCanvas *_riverArea;
     NSTextField *_axisMorning, *_axisNoon, *_axisAfternoon, *_axisEvening;
     NSTextField *_caption;
-    NSArray<NSNumber *> *_samples;
     BOOL _captionHidden;
+    // Chế độ trục: NO = giãn đều theo thứ tự (Tuần/Tháng — 1 chấm = 1 ngày, giãn đều là ĐÚNG).
+    // YES = đặt theo giờ thật trong ngày (Hôm nay) → nhãn cũng nhảy về đúng mốc giờ của nó.
+    BOOL _timeBased;
+    CGFloat _axisFractions[4];
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect {
@@ -191,28 +231,85 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
     return l;
 }
 
-- (void)setSamples:(nullable NSArray *)samples {
-    _samples = samples.count > 0 ? [samples copy] : nil;
-    _riverArea.samples = _samples;
-    
-    // Đếm số mẫu có dữ liệu thật (bỏ qua NSNull)
-    NSInteger validCount = 0;
-    if (_samples) {
-        for (id val in _samples) {
-            if (val != [NSNull null]) validCount++;
-        }
-    }
-    
-    // Nếu dưới 3 mẫu, coi như chưa đủ nét
+// Chốt trạng thái sau khi đã dựng xong `entries`: dưới 3 mẫu thật thì coi như chưa đủ nét.
+// Dùng chung cho cả 2 lối vào (setSamples: và setTodaySamples:gapSeconds:) để luật "chưa đủ nét"
+// chỉ tồn tại ở ĐÚNG một chỗ.
+- (void)applyEntries:(nullable NSArray *)entries validCount:(NSInteger)validCount {
     if (validCount < 3) {
-        _riverArea.samples = nil;
+        _riverArea.entries = nil;
         // [MINDFUL] Story 3.6 v2 — khớp tông ấm hơn của thiết kế duyệt (artifact "Vòng Soi lại"
         // panel 3 "Ngày gõ ít"): vẫn 1 câu mô tả (không phán xét), chỉ đổi giọng bớt khô.
         _caption.stringValue = @"Hôm nay bàn phím nghỉ nhiều — và điều đó cũng chẳng sao.";
     } else {
+        _riverArea.entries = entries;
         _caption.stringValue = @"Mỗi vòng tròn là một nhịp chuông — lúc app lặng lẽ ghi một điểm.";
     }
     self.needsLayout = YES;
+}
+
+// Lối CŨ, giữ nguyên nghĩa: mẫu giãn ĐỀU theo thứ tự. Đúng cho Tuần/Tháng (1 chấm = 1 ngày, các
+// ngày vốn cách đều nhau). KHÔNG dùng cho "Hôm nay" — nhịp chuông trong ngày cách nhau không đều.
+- (void)setSamples:(nullable NSArray *)samples {
+    _timeBased = NO;
+    NSArray *src = samples.count > 0 ? [samples copy] : nil;
+
+    NSMutableArray *entries = [NSMutableArray arrayWithCapacity:src.count];
+    NSInteger validCount = 0;
+    NSUInteger k = src.count;
+    for (NSUInteger m = 0; m < k; m++) {
+        id val = src[m];
+        if (val == [NSNull null]) {
+            [entries addObject:[NSNull null]];
+            continue;
+        }
+        validCount++;
+        CGFloat xf = (k > 1) ? (CGFloat)m / (CGFloat)(k - 1) : 0.5;
+        [entries addObject:[NSValue valueWithPoint:NSMakePoint(xf, [val doubleValue])]];
+    }
+    [self applyEntries:entries validCount:validCount];
+}
+
+// [MINDFUL] Vá trục thời gian (2026-07-16) — lối MỚI cho "Hôm nay": đặt mẫu theo GIỜ THẬT.
+// Nhận thẳng dạng MoodStoreMac_FetchTodaySamples() trả về, nên 3 màn (popover / cửa sổ Hôm nay /
+// Soi lại) hết phải mỗi nơi tự chép một vòng lặp gom NSNull rồi vứt mất timestamp.
+- (void)setTodaySamples:(nullable NSArray<NSDictionary *> *)samples gapSeconds:(double)gapSeconds {
+    _timeBased = YES;
+
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDate *midnight = [cal startOfDayForDate:[NSDate date]];
+    double dayOrigin = [midnight timeIntervalSince1970];
+
+    // Cửa sổ ngày = [kDayStartHour, 24h]. Nếu có mẫu trước mốc đó (người gõ đêm, hoặc chuông được
+    // đặt reo sớm hơn) thì NỚI cửa sổ về 0h — thà trục dài hơn còn hơn đặt sai chỗ một cái chấm.
+    CGFloat startHour = kDayStartHour;
+    for (NSDictionary *s in samples) {
+        double h = ([s[@"ts"] doubleValue] - dayOrigin) / 3600.0;
+        if (h < startHour) startHour = 0.0;
+    }
+    double spanSec = (kDayEndHour - startHour) * 3600.0;
+    double originSec = dayOrigin + startHour * 3600.0;
+
+    _axisFractions[0] = (kAxisHourMorning   - startHour) / (kDayEndHour - startHour);
+    _axisFractions[1] = (kAxisHourNoon      - startHour) / (kDayEndHour - startHour);
+    _axisFractions[2] = (kAxisHourAfternoon - startHour) / (kDayEndHour - startHour);
+    _axisFractions[3] = (kAxisHourEvening   - startHour) / (kDayEndHour - startHour);
+
+    NSMutableArray *entries = [NSMutableArray arrayWithCapacity:samples.count];
+    NSInteger validCount = 0;
+    long long prevTs = 0;
+    for (NSUInteger m = 0; m < samples.count; m++) {
+        long long ts = [samples[m][@"ts"] longLongValue];
+        // Cách mẫu trước quá xa = quãng không gõ → chèn dấu NGẮT, nước không nối qua (dec.4).
+        if (m > 0 && gapSeconds > 0 && (double)(ts - prevTs) > gapSeconds) {
+            [entries addObject:[NSNull null]];
+        }
+        prevTs = ts;
+        validCount++;
+        CGFloat xf = (CGFloat)(((double)ts - originSec) / spanSec);
+        xf = MAX(0.0, MIN(1.0, xf));
+        [entries addObject:[NSValue valueWithPoint:NSMakePoint(xf, [samples[m][@"value"] doubleValue])]];
+    }
+    [self applyEntries:entries validCount:validCount];
 }
 
 - (CGFloat)preferredHeight {
@@ -231,10 +328,22 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
     top -= kWaveAreaH + kAxisGap;
 
     CGFloat axisW = (w - 2 * kPad) / 4.0;
-    _axisMorning.frame   = NSMakeRect(kPad, top - kAxisH, axisW, kAxisH);
-    _axisNoon.frame      = NSMakeRect(kPad + axisW, top - kAxisH, axisW, kAxisH);
-    _axisAfternoon.frame = NSMakeRect(kPad + 2 * axisW, top - kAxisH, axisW, kAxisH);
-    _axisEvening.frame   = NSMakeRect(kPad + 3 * axisW, top - kAxisH, axisW, kAxisH);
+    if (_timeBased) {
+        // Trục theo giờ thật: mỗi nhãn canh GIỮA quanh mốc giờ của buổi đó, thay vì chia đều 4
+        // phần. Nếu vẫn chia đều thì nhãn lại nói dối lần nữa — chỉ khác là dối ở chỗ khác.
+        NSTextField *labels[4] = {_axisMorning, _axisNoon, _axisAfternoon, _axisEvening};
+        CGFloat innerW = w - 2 * kPad;
+        for (int i = 0; i < 4; i++) {
+            CGFloat cx = kPad + _axisFractions[i] * innerW;
+            labels[i].alignment = NSTextAlignmentCenter;
+            labels[i].frame = NSMakeRect(cx - axisW / 2.0, top - kAxisH, axisW, kAxisH);
+        }
+    } else {
+        _axisMorning.frame   = NSMakeRect(kPad, top - kAxisH, axisW, kAxisH);
+        _axisNoon.frame      = NSMakeRect(kPad + axisW, top - kAxisH, axisW, kAxisH);
+        _axisAfternoon.frame = NSMakeRect(kPad + 2 * axisW, top - kAxisH, axisW, kAxisH);
+        _axisEvening.frame   = NSMakeRect(kPad + 3 * axisW, top - kAxisH, axisW, kAxisH);
+    }
 
     if (!_captionHidden) {
         top -= kAxisH + kCaptionGap;

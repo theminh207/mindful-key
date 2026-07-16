@@ -10,6 +10,16 @@
 #import "MoodStoreMac.h"
 #import "EmotionRiverView.h"
 #import "BrandColors.h"
+// Cho link chuông gọi onBellSettingsSelected. Cùng lối ViewController.m / InputMethodCardView.mm /
+// ConvertToolViewController.mm / OpenKey.mm đã dùng: import AppDelegate.h + global `appDelegate`.
+#import "AppDelegate.h"
+
+extern AppDelegate* appDelegate;
+
+static NSInteger HourOf(long long epochSeconds) {
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    return [cal components:NSCalendarUnitHour fromDate:[NSDate dateWithTimeIntervalSince1970:epochSeconds]].hour;
+}
 
 // [MINDFUL] Story 3.6 (AC3) — mô tả THỜI ĐIỂM trong ngày, không phải ĐỘ LỚN bằng số (xem
 // DESIGN.md §1.2/§2.2 "KHÔNG nhãn số"). Ranh giới buổi dùng giờ THẬT (NSCalendar), độc lập với
@@ -17,13 +27,32 @@
 // xem EmotionRiverView.mm dòng 197-200, chỉ chia đều bề rộng, không theo mốc giờ) — 2 cách chia
 // khác nhau có chủ đích, câu mô tả ưu tiên đúng giờ thật hơn là khớp tuyệt đối với trục vẽ.
 static NSString *TimeOfDayLabel(long long epochSeconds) {
-    NSCalendar *cal = [NSCalendar currentCalendar];
-    NSDateComponents *comps = [cal components:NSCalendarUnitHour fromDate:[NSDate dateWithTimeIntervalSince1970:epochSeconds]];
-    NSInteger hour = comps.hour;
+    NSInteger hour = HourOf(epochSeconds);
     if (hour >= 5 && hour < 11)  return @"buổi sáng";
     if (hour >= 11 && hour < 13) return @"buổi trưa";
     if (hour >= 13 && hour < 18) return @"buổi chiều";
     return @"buổi tối";
+}
+
+// [MINDFUL] Soi lại v2.1 (2026-07-16) — HÌNH DẠNG NGÀY. Trước đây câu hỏi + gợi ý bốc ngẫu nhiên
+// từ 1 rổ chung, nên ngày phẳng lặng vẫn bị hỏi "điều gì khiến bạn dễ nóng lên nhất?" — câu hỏi
+// cãi thẳng cái quan sát nằm ngay trên nó ("Hôm nay mặt hồ khá phẳng lặng"). Nay phân 3 hình dạng
+// từ dữ liệu ĐÃ CÓ (peakAmp/gkCount) rồi hỏi đúng cái ngày đó thật sự có. Xem decision-log
+// 2026-07-16 "Cải tiến 3 màn cảm xúc", mục 2.
+typedef NS_ENUM(NSInteger, MKDayShape) {
+    MKDayShapeCalm = 0,   // không gợn đáng kể cả ngày
+    MKDayShapeRippled,    // có gợn thật, nhưng gác cổng chưa lần nào phải dừng
+    MKDayShapeGated,      // gác cổng đã dừng ≥ 1 lần — bằng chứng mạnh nhất, thắng mọi thứ khác
+};
+
+// Ngưỡng "có gợn hay không". DÙNG CHUNG với ObservationParagraph có chủ đích: câu quan sát và
+// câu hỏi phải đọc cùng một ngày, lệch ngưỡng là chúng nói ngược nhau ngay trên cùng màn hình.
+static const double kRippleThreshold = 0.4;
+
+static MKDayShape DayShapeOf(double peakAmp, int gkCount) {
+    if (gkCount > 0) return MKDayShapeGated;
+    if (peakAmp >= kRippleThreshold) return MKDayShapeRippled;
+    return MKDayShapeCalm;
 }
 
 // [MINDFUL] Story 3.6 v2 (2026-07-16, khớp artifact "Vòng Soi lại" chủ dự án gửi) — tiêu đề cửa
@@ -52,7 +81,7 @@ static NSString *CapitalizeFirst(NSString *s) {
 static NSString *ObservationParagraph(double peakAmp, long long peakTs,
                                        long long maxQuietStart, long long maxQuietEnd) {
     NSMutableArray<NSString *> *parts = [NSMutableArray array];
-    if (peakAmp < 0.4) {
+    if (peakAmp < kRippleThreshold) {
         [parts addObject:@"Hôm nay mặt hồ khá phẳng lặng."];
     } else {
         [parts addObject:[NSString stringWithFormat:@"Mặt hồ gợn nhiều nhất vào %@.", TimeOfDayLabel(peakTs)]];
@@ -87,30 +116,71 @@ static inline CGFloat ReflY(CGFloat contentH, CGFloat topOffset, CGFloat elemH) 
     return contentH - topOffset - elemH;
 }
 
-// Câu hỏi phản chiếu — MỞ, không phán xét, không chấm điểm. Chọn ngẫu nhiên 1 câu mỗi lần xem,
-// để không nhàm và không biến thành "câu cố định máy móc".
-static NSArray<NSString *> *ReflectivePrompts(void) {
+// Câu hỏi phản chiếu — MỞ, không phán xét, không chấm điểm. Mỗi hình dạng ngày có rổ riêng: ngày
+// phẳng lặng được hỏi về cái đã giữ cho nó nhẹ, KHÔNG bị hỏi về cơn nóng không hề xảy ra.
+static NSArray<NSString *> *ReflectivePromptsFor(MKDayShape shape) {
+    if (shape == MKDayShapeGated) {
+        return @[
+            @"Có lúc bạn dừng lại trước khi gửi. Lúc đó trong người bạn đang có gì?",
+            @"Điều gì đang thật sự nằm sau những lúc căng hôm nay — mệt, áp lực, hay điều gì khác?",
+            @"Nếu ngày mai gặp lại đúng tình huống đó, bạn muốn mình phản ứng khác đi thế nào?",
+            @"Nhìn lại, khoảng dừng đó đã đổi được gì — hay không đổi gì cả?",
+        ];
+    }
+    if (shape == MKDayShapeRippled) {
+        return @[
+            @"Có lúc mặt hồ gợn lên hôm nay — bạn còn nhớ mình đang làm gì lúc đó không?",
+            @"Cơn gợn hôm nay đến từ đâu — người, việc, hay chỉ là mệt?",
+            @"Sau lúc gợn nhất, điều gì đã giúp bạn lắng lại?",
+            @"Nếu ngày mai gợn lên đúng như vậy, bạn muốn mình để ý điều gì sớm hơn?",
+        ];
+    }
     return @[
-        @"Nhìn lại hôm nay, điều gì khiến bạn dễ nóng lên nhất?",
-        @"Có khoảnh khắc nào hôm nay bạn ước mình đã chậm lại một nhịp trước khi phản ứng?",
-        @"Nếu ngày mai gặp lại đúng tình huống đó, bạn muốn mình phản ứng khác đi thế nào?",
-        @"Điều gì đang thật sự nằm sau những lúc căng thẳng hôm nay — mệt, áp lực, hay điều gì khác?",
+        @"Hôm nay mặt hồ khá phẳng. Điều gì đã giữ cho ngày nhẹ như vậy?",
+        @"Ngày êm cũng đáng nhìn lại: hôm nay bạn đã làm gì khác với những ngày căng?",
+        @"Có điều gì của hôm nay bạn muốn giữ lại cho ngày mai không?",
+        @"Khi ngày trôi êm, bạn thường đang ở cùng ai, làm việc gì?",
     ];
 }
 
-// Gợi ý nhỏ — nhỏ thật sự, làm được ngay, không phải lời khuyên to tát.
-static NSArray<NSString *> *TinySuggestions(void) {
+// Gợi ý nhỏ — nhỏ thật sự, làm được ngay, không phải lời khuyên to tát. Cũng khớp hình dạng ngày:
+// ngày êm thì không có gì để "khắc phục", gợi ý là giữ lấy cái đang tốt.
+static NSArray<NSString *> *TinySuggestionsFor(MKDayShape shape) {
+    if (shape == MKDayShapeGated) {
+        return @[
+            @"Nhắn cho chính mình 1 câu nhẹ nhàng, như cách bạn sẽ an ủi một người bạn.",
+            @"Trước khi trả lời một tin nhắn khó, thử đọc lại một lượt rồi mới bấm gửi.",
+            @"Uống một ly nước, hít thở sâu 3 lần trước khi đóng máy tối nay.",
+        ];
+    }
+    if (shape == MKDayShapeRippled) {
+        return @[
+            @"Lúc thấy gợn lên, thử đứng dậy đi vài bước trước khi gõ tiếp.",
+            @"Uống một ly nước, hít thở sâu 3 lần trước khi đóng máy tối nay.",
+            @"Ngày mai, thử để điện thoại xa tay hơn quanh khung giờ dễ căng nhất.",
+        ];
+    }
     return @[
         @"Trước khi ngủ, thử viết 1 câu về điều bạn biết ơn hôm nay.",
-        @"Ngày mai, thử để điện thoại xa tay hơn trong khung giờ dễ căng thẳng nhất.",
-        @"Uống một ly nước, hít thở sâu 3 lần trước khi đóng máy tối nay.",
-        @"Nhắn cho chính mình 1 câu nhẹ nhàng, như cách bạn sẽ an ủi một người bạn.",
+        @"Ngày êm là lúc dễ tập thở nhất — thử 3 hơi thật sâu trước khi đóng máy.",
+        @"Nếu ngày mai bận hơn, thử giữ lại một quãng trống giống hôm nay.",
     ];
 }
 
-static NSString *RandomFrom(NSArray<NSString *> *items) {
+// [MINDFUL] Soi lại v2.1 — chọn câu theo NGÀY, không bốc lại mỗi lần mở. Mở Soi lại lần thứ hai
+// trong cùng một ngày phải thấy ĐÚNG câu hỏi đó: câu nhảy giữa chừng biến việc được hỏi thành
+// việc bị máy quay số, và làm mất luôn cái "mang câu hỏi theo cả ngày" mà chân trang đang hứa.
+static NSUInteger DaySeed(void) {
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDateComponents *c = [cal components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay)
+                                 fromDate:[NSDate date]];
+    return (NSUInteger)(c.year * 10000 + c.month * 100 + c.day);
+}
+
+// salt: để câu hỏi và gợi ý không dính cứng vào nhau thành một cặp cố định.
+static NSString *PickForToday(NSArray<NSString *> *items, NSUInteger salt) {
     if (items.count == 0) return @"";
-    return items[arc4random_uniform((uint32_t)items.count)];
+    return items[(DaySeed() + salt) % items.count];
 }
 
 @interface MKReflectionWindowController : NSWindowController
@@ -118,17 +188,23 @@ static NSString *RandomFrom(NSArray<NSString *> *items) {
 
 @implementation MKReflectionWindowController
 
-- (void)onClose:(id)sender {
+// [MINDFUL] Soi lại v2.1 (2026-07-16) — chủ dự án chốt: link chuông MỞ Cài đặt → Chuông, KHÔNG tự
+// ghi cài đặt. Bản cũ (`onSuggestAction:`) set vBellFrom=15/vBellTo=17 và sai ở 3 tầng:
+//   1. vBellFrom/vBellTo là khung giờ chuông ĐƯỢC PHÉP reo (BellMac.mm isInBellRange), mặc định
+//      8→22. Set 15/17 = CÂM chuông 22 tiếng còn lại — ngược hẳn nhãn "Đặt chuông 15-17h".
+//   2. Chỉ ghi NSUserDefaults, không cập nhật biến in-memory (chỉ đọc 1 lần ở BellMac_Init) →
+//      bấm xong không có tác dụng gì tới khi khởi động lại app.
+//   3. Là UI chuông THỨ BA cùng ghi mấy key này — đúng thứ F13 (2026-07-15) vừa dọn ("2 UI đá
+//      nhau"); BellSettingsView map ĐẢO CHIỀU sang "Giờ yên lặng" nên màn Cài đặt sẽ hiện
+//      "giờ yên lặng 17h→15h".
+// Nay tái dùng onBellSettingsSelected của AppDelegate — đúng "1 UI chuông duy nhất", và giữ đúng
+// tinh thần lời-mời: app không đổi lén cài đặt người dùng đã chọn.
+// Gọi thẳng qua global `appDelegate` (lối sẵn của vỏ này) chứ KHÔNG qua
+// [NSApp sendAction:to:nil] — sau khi cửa sổ này đóng thì responder chain không còn gì chắc chắn
+// để bám, và bản cũ từng để lại đúng một dòng sendAction bị comment lại ở chỗ này.
+- (void)onOpenBellSettings:(id)sender {
     [self.window close];
-}
-
-- (void)onSuggestAction:(id)sender {
-    // Hành động nuôi dưỡng: mở Cài đặt -> Chuông
-    // [NSApp sendAction:@selector(onSettingsSelected) to:nil from:nil];
-    // Dùng URL scheme hoặc trực tiếp. Chúng ta lưu mặc định trước nếu cần.
-    [[NSUserDefaults standardUserDefaults] setInteger:15 forKey:@"vBellFrom"];
-    [[NSUserDefaults standardUserDefaults] setInteger:17 forKey:@"vBellTo"];
-    [self.window close];
+    [appDelegate onBellSettingsSelected];
 }
 
 @end
@@ -173,16 +249,17 @@ void ReflectionScreenMac_Show(void) {
             return;
         }
 
-        NSMutableArray *samples = [NSMutableArray array];
+        // [MINDFUL] Vá trục thời gian (2026-07-16) — vòng lặp này không còn dựng mảng cho sông
+        // nữa (sông nhận thẳng `raw` kèm timestamp, xem setTodaySamples: bên dưới). Nó chỉ còn
+        // một việc: đọc ra đỉnh + quãng lặng cho câu quan sát.
         double peakAmp = -1;
         long long peakTs = -1;
         long long maxQuietStart = -1, maxQuietEnd = -1, curQuietStart = -1;
-        
+
         for (int i = 0; i < raw.count; i++) {
             double v = [raw[i][@"value"] doubleValue];
             long long ts = [raw[i][@"ts"] longLongValue];
-            [samples addObject:@(v)];
-            
+
             if (v > peakAmp) {
                 peakAmp = v;
                 peakTs = ts;
@@ -202,7 +279,6 @@ void ReflectionScreenMac_Show(void) {
                 long long ts1 = [raw[i][@"ts"] longLongValue];
                 long long ts2 = [raw[i+1][@"ts"] longLongValue];
                 if (ts2 - ts1 > intervalMins * 60.0 * 1.5) {
-                    [samples addObject:[NSNull null]];
                     curQuietStart = -1; // Ngắt quãng lặng
                 }
             }
@@ -216,30 +292,41 @@ void ReflectionScreenMac_Show(void) {
         // [MINDFUL] Epic 3 Chặng 1 (F14) — dòng thống kê gác cổng, khớp mockup A1 đã duyệt
         // ("Gác cổng đã cùng anh dừng lại 3 lần — 2 lần anh chọn đợi."). Gate copy: mô tả, không
         // phán xét — kể cả câu 0 lần cũng chỉ nói sự thật, không khen/chê.
+        // Soi lại v2.1 (2026-07-16): mockup trên xưng "anh", app xưng "bạn" ở mọi chỗ khác → đã
+        // thống nhất về "bạn". Trích dẫn mockup giữ nguyên để còn truy được nguồn, ĐỪNG chép lại.
         int gkCount = [summary[@"gatekeeperCount"] intValue];
         int gkWait = [summary[@"waitCount"] intValue];
         NSString *gkLine;
         if (gkCount <= 0) {
-            gkLine = @"Gác cổng chưa cần dừng anh lần nào hôm nay.";
+            gkLine = @"Gác cổng chưa cần dừng bạn lần nào hôm nay.";
         } else {
-            gkLine = [NSString stringWithFormat:@"Gác cổng đã cùng anh dừng lại %d lần — %d lần anh chọn đợi.", gkCount, gkWait];
+            gkLine = [NSString stringWithFormat:@"Gác cổng đã cùng bạn dừng lại %d lần — %d lần bạn chọn đợi.", gkCount, gkWait];
         }
 
         NSString *obsText = ObservationParagraph(peakAmp, peakTs, maxQuietStart, maxQuietEnd);
 
+        // [MINDFUL] Soi lại v2.1 — hình dạng ngày quyết định câu hỏi, gợi ý, VÀ việc có mời chỉnh
+        // chuông hay không. Ngày phẳng lặng không có "giờ đỉnh" đáng để canh → không mời (mời đặt
+        // chuông canh một cơn nóng không xảy ra chính là kiểu tự-tạo-vấn-đề mà màn này phải tránh).
+        MKDayShape shape = DayShapeOf(peakAmp, gkCount);
+        BOOL showBellLink = (shape != MKDayShapeCalm) && (peakTs >= 0);
+
         // [MINDFUL] Story 3.6 (AC1/AC2) — sông thật thay khung chữ phẳng. TÁI DÙNG nguyên
-        // EmotionRiverView (đã chạy ở popover + cửa sổ Cài đặt từ 2.4), nhồi CHÍNH mảng `samples`
-        // vừa build ở vòng lặp trên — không fetch/transform lại lần 2. Story 3.6 v2 — ẩn caption
-        // tự sinh của view (obsText bên dưới đã thay thế, tránh 2 câu chồng nhau).
+        // EmotionRiverView (đã chạy ở popover + cửa sổ Cài đặt từ 2.4), nhồi CHÍNH `raw` đã fetch
+        // ở trên — không fetch/transform lại lần 2. Story 3.6 v2 — ẩn caption tự sinh của view
+        // (obsText bên dưới đã thay thế, tránh 2 câu chồng nhau).
+        // Vá trục thời gian (2026-07-16): dùng setTodaySamples: để chấm nằm đúng giờ — nếu không,
+        // màn này nói "gợn nhiều nhất vào buổi sáng" (giờ thật từ peakTs) trong khi cái chấm lại
+        // chường ra dưới nhãn "Tối". Hai câu cãi nhau trên cùng một màn hình.
         EmotionRiverView *riverView = [[EmotionRiverView alloc] initWithFrame:NSZeroRect];
-        [riverView setSamples:samples];
+        [riverView setTodaySamples:raw gapSeconds:intervalMins * 60.0 * 1.5];
         [riverView setCaptionHidden:YES];
         CGFloat riverH = [riverView preferredHeight];
 
         // [MINDFUL] Story 3.6 v2 (2026-07-16) — viết lại theo artifact "Vòng Soi lại" chủ dự án
         // gửi: 3 nhịp Nhận ra/Soi/Nuôi dưỡng (bỏ nhịp "Cho phép" riêng — nội dung của nó gộp vào
         // obsText ở nhịp 1), có đường ngăn giữa các nhịp, câu hỏi kèm caption phụ, thẻ gợi ý tách
-        // nền + 2 nút (CTA cam + "Để sau"), chân trang 3 dòng tin cậy. Mọi khoảng cách cộng dồn
+        // nền + link chuông cam nhẹ, chân trang 3 dòng tin cậy. Mọi khoảng cách cộng dồn
         // TỪ ĐỈNH XUỐNG rồi lật toạ độ qua ReflY() — một nguồn duy nhất cho contentH lẫn vị trí
         // từng phần tử, tránh đúng lớp lỗi 2-công-thức-tưởng-khớp-nhau vừa vá ở SettingsWindowController.
         CGFloat contentW = 440.0, pad = 20.0, winW = 480.0;
@@ -250,7 +337,7 @@ void ReflectionScreenMac_Show(void) {
         CGFloat qGap = 8.0, qH = 78.0;
         CGFloat qcapGap = 6.0, qcapH = 15.0;
         CGFloat sugGap = 10.0;
-        CGFloat cardPad = 14.0, sugTextH = 34.0, btnGap = 10.0, btnH = 30.0;
+        CGFloat cardPad = 14.0, sugTextH = 34.0, linkGap = 10.0, linkH = 20.0;
         CGFloat bottomPad = 18.0, footerH = 34.0;
 
         CGFloat yTop = 22.0; // đỉnh nội dung -> eyebrow đầu tiên
@@ -268,7 +355,7 @@ void ReflectionScreenMac_Show(void) {
 
         CGFloat eyebrow3Y = yTop; yTop += eyebrowH + sugGap;
         CGFloat cardY     = yTop;
-        CGFloat cardH     = cardPad * 2 + sugTextH + btnGap + btnH;
+        CGFloat cardH     = cardPad * 2 + sugTextH + (showBellLink ? (linkGap + linkH) : 0.0);
         yTop += cardH + bottomPad;
 
         CGFloat contentH = yTop + footerH;
@@ -318,7 +405,7 @@ void ReflectionScreenMac_Show(void) {
         ebSoi.frame = NSMakeRect(pad, ReflY(contentH, eyebrow2Y, eyebrowH), contentW, eyebrowH);
         [content addSubview:ebSoi];
 
-        NSTextField *qLabel = [NSTextField wrappingLabelWithString:RandomFrom(ReflectivePrompts())];
+        NSTextField *qLabel = [NSTextField wrappingLabelWithString:PickForToday(ReflectivePromptsFor(shape), 0)];
         qLabel.font = [NSFont systemFontOfSize:18 weight:NSFontWeightSemibold];
         qLabel.textColor = [Brand charcoal];
         qLabel.frame = NSMakeRect(pad, ReflY(contentH, qY, qH), contentW, qH);
@@ -348,31 +435,33 @@ void ReflectionScreenMac_Show(void) {
         card.layer.cornerRadius = 10.0;
         [content addSubview:card];
 
-        NSTextField *sugLabel = [NSTextField wrappingLabelWithString:RandomFrom(TinySuggestions())];
+        NSTextField *sugLabel = [NSTextField wrappingLabelWithString:PickForToday(TinySuggestionsFor(shape), 1)];
         sugLabel.font = [NSFont systemFontOfSize:13 weight:NSFontWeightRegular];
         sugLabel.textColor = [Brand charcoal];
         sugLabel.backgroundColor = [NSColor clearColor];
         sugLabel.frame = NSMakeRect(cardPad, cardH - cardPad - sugTextH, contentW - 2 * cardPad, sugTextH);
         [card addSubview:sugLabel];
 
-        NSButton *ctaBtn = [NSButton buttonWithTitle:@"Đặt chuông 15-17h" target:g_reflWC action:@selector(onSuggestAction:)];
-        ctaBtn.bezelStyle = NSBezelStyleRounded;
-        ctaBtn.bezelColor = [Brand orange];
-        ctaBtn.frame = NSMakeRect(cardPad, 0, 150, btnH);
-        [card addSubview:ctaBtn];
-
-        // "Để sau" — bỏ qua gợi ý, KHÔNG đổi giờ chuông. Tái dùng nguyên onClose: (đã đúng nghĩa
-        // "đóng, không làm gì thêm"), không cần thêm action mới.
-        NSButton *ghostBtn = [NSButton buttonWithTitle:@"" target:g_reflWC action:@selector(onClose:)];
-        ghostBtn.bordered = NO;
-        ghostBtn.bezelStyle = NSBezelStyleInline;
-        [(NSButtonCell *)ghostBtn.cell setBackgroundColor:[NSColor clearColor]];
-        ghostBtn.attributedTitle = [[NSAttributedString alloc] initWithString:@"Để sau" attributes:@{
-            NSForegroundColorAttributeName : [Brand stone],
-            NSFontAttributeName : [NSFont systemFontOfSize:12.5 weight:NSFontWeightMedium],
-        }];
-        ghostBtn.frame = NSMakeRect(cardPad + 150.0 + btnGap, 0, 100, btnH);
-        [card addSubview:ghostBtn];
+        // [MINDFUL] Soi lại v2.1 — nút cam ĐẶC "Đặt chuông 15-17h" hạ xuống LINK cam nhẹ: nút đặc
+        // kéo mắt khỏi câu hỏi, mà câu hỏi mới là trọng tâm màn này (chủ dự án chốt 2026-07-16).
+        // Giờ trong nhãn là giờ đỉnh THẬT của ngày, đọc từ peakTs — không còn 15-17h hardcode.
+        // "Để sau" đi cùng nút đặc cũng bỏ theo: một lời mời thì bỏ qua bằng cách... bỏ qua, không
+        // cần nút để từ chối. Cửa sổ vẫn đóng được bằng nút đóng sẵn có.
+        if (showBellLink) {
+            NSString *linkTitle = [NSString stringWithFormat:@"Chỉnh chuông quanh %ldh →", (long)HourOf(peakTs)];
+            NSButton *bellLink = [NSButton buttonWithTitle:@"" target:g_reflWC action:@selector(onOpenBellSettings:)];
+            bellLink.bordered = NO;
+            bellLink.bezelStyle = NSBezelStyleInline;
+            [(NSButtonCell *)bellLink.cell setBackgroundColor:[NSColor clearColor]];
+            bellLink.attributedTitle = [[NSAttributedString alloc] initWithString:linkTitle attributes:@{
+                NSForegroundColorAttributeName : [Brand orange],
+                NSFontAttributeName : [NSFont systemFontOfSize:12.5 weight:NSFontWeightMedium],
+            }];
+            // Bề rộng đo từ chính chuỗi: NSButton canh giữa nhãn, khung rộng dư sẽ đẩy chữ ra giữa thẻ.
+            CGFloat linkW = ceil(bellLink.attributedTitle.size.width) + 8.0;
+            bellLink.frame = NSMakeRect(cardPad, cardPad, linkW, linkH);
+            [card addSubview:bellLink];
+        }
 
         // Chân trang — 3 dòng tin cậy tĩnh, khớp mockup .rfoot.
         NSBox *footerDiv = [[NSBox alloc] initWithFrame:NSMakeRect(0, footerH, winW, dividerH)];

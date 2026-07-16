@@ -584,19 +584,10 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
             [_settingsRiver setAxisLabels:@[@"Sáng", @"Trưa", @"Chiều", @"Tối"]];
             extern int vBellInterval;
             int intervalMins = vBellInterval > 0 ? vBellInterval : 60;
+            // [MINDFUL] Vá trục thời gian (2026-07-16) — xem PanelViewController.mm cùng chỗ sửa.
             NSArray<NSDictionary *> *raw = MoodStoreMac_FetchTodaySamples();
-            NSMutableArray *samples = [NSMutableArray array];
-            for (int i = 0; i < raw.count; i++) {
-                [samples addObject:raw[i][@"value"]];
-                if (i < raw.count - 1) {
-                    long long ts1 = [raw[i][@"ts"] longLongValue];
-                    long long ts2 = [raw[i+1][@"ts"] longLongValue];
-                    if (ts2 - ts1 > intervalMins * 60.0 * 1.5) {
-                        [samples addObject:[NSNull null]];
-                    }
-                }
-            }
-            [_settingsRiver setSamples:samples.count > 0 ? samples : nil];
+            [_settingsRiver setTodaySamples:raw.count > 0 ? raw : nil
+                                 gapSeconds:intervalMins * 60.0 * 1.5];
             break;
         }
     }

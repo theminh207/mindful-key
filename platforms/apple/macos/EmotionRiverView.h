@@ -21,9 +21,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EmotionRiverView : NSView
 
-/// Biên độ mỗi nhịp lấy mẫu trong ngày (0.0..1.0), hoặc NSNull cho quãng trống (chưa/không gõ).
+/// Biên độ mỗi mẫu (0.0..1.0), hoặc NSNull cho quãng trống (chưa/không gõ) — mẫu giãn ĐỀU theo
+/// thứ tự. Đúng cho Tuần/Tháng (1 chấm = 1 ngày, các ngày vốn cách đều nhau).
+/// KHÔNG dùng cho "Hôm nay" — nhịp chuông trong ngày cách nhau không đều, dùng
+/// setTodaySamples:gapSeconds: để chấm nằm đúng giờ.
 /// nil hoặc rỗng = CHƯA có dữ liệu → view hiện trạng thái trống thật thà (KHÔNG vẽ đường/chấm giả).
 - (void)setSamples:(nullable NSArray *)samples;
+
+/// [MINDFUL] Vá trục thời gian (2026-07-16) — mẫu của HÔM NAY, đặt theo GIỜ THẬT trong ngày.
+/// Trước đó "Hôm nay" cũng đi qua setSamples: (giãn đều theo thứ tự) nên chấm cuối LUÔN dính mép
+/// phải — tức luôn nằm dưới nhãn "Tối", kể cả khi nó vừa được ghi lúc 10h sáng. Bắt được trên máy
+/// chủ dự án 2026-07-16: 7 mẫu trong 48 phút buổi sáng bị vẽ như trọn một ngày.
+///
+/// @param samples Mảng dict `{@"ts": epoch giây (NSNumber), @"value": biên độ 0..1 (NSNumber)}`,
+///                xếp tăng dần theo ts — đúng dạng `MoodStoreMac_FetchTodaySamples()` trả về.
+/// @param gapSeconds 2 mẫu cách nhau quá ngần này = quãng không gõ → không nối nước qua (dec.4).
+///                   Thường là `vBellInterval * 60 * 1.5`. Truyền 0 để không bao giờ ngắt.
+- (void)setTodaySamples:(nullable NSArray<NSDictionary *> *)samples gapSeconds:(double)gapSeconds;
 
 /// [MINDFUL] Story 3.7 — đổi 4 nhãn trục (mặc định "Sáng"/"Trưa"/"Chiều"/"Tối" khi không gọi
 /// method này). Dùng khi 1 điểm không còn nghĩa là "1 nhịp trong ngày" mà là "1 ngày trong
