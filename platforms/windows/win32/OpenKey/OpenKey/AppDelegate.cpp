@@ -60,29 +60,18 @@ bool AppDelegate::isDialogMsg(MSG & msg) const {
 }
 
 void AppDelegate::checkUpdate() {
-	string newVersion;
-	if (OpenKeyManager::checkUpdate(newVersion)) {
-		WCHAR msg[256];
-		wsprintf(msg,
-			TEXT("Mindful Keyboard Có phiên bản mới (%s), bạn có muốn cập nhật không?"),
-			utf8ToWideString(newVersion).c_str());
-
-		int msgboxID = MessageBox(
-			0,
-			msg,
-			_T("Mindful Keyboard Update"),
-			MB_ICONEXCLAMATION | MB_YESNO
-		);
-		if (msgboxID == IDYES) {
-			//Call OpenKeyUpdate
-			WCHAR path[MAX_PATH];
-			GetCurrentDirectory(MAX_PATH, path);
-			wsprintf(path, TEXT("%s\\OpenKeyUpdate.exe"), path);
-			ShellExecute(0, L"", path, 0, 0, SW_SHOWNORMAL);
-			AppDelegate::getInstance()->onOpenKeyExit();
-		}
-
-	}
+	// [MINDFUL] 2026-07-17 — CỐ Ý rỗng, không xoá hàm: `vCheckNewVersion` vẫn còn checkbox trong
+	// cửa sổ Điều khiển và onInit() vẫn gọi vào đây.
+	//
+	// Bản cũ GỌI MẠNG NGẦM lúc khởi động tới repo OpenKey gốc (raw.githubusercontent.com/tuyenvm/
+	// OpenKey) — app đi hỏi phiên bản của người khác mà người dùng không hề biết. Bỏ hẳn.
+	//
+	// KHÔNG thay bằng "tự mở trang Releases lúc khởi động": bật trình duyệt khi chưa ai yêu cầu là
+	// HỐI THÚC, thứ HIẾN CHƯƠNG cấm. Kiểm bản mới là hành động CHỦ ĐỘNG — người dùng bấm nút trong
+	// hộp Giới thiệu.
+	//
+	// Hệ quả: checkbox "Kiểm tra bản mới" nay không điều khiển gì. Bỏ 1 checkbox khỏi UI là quyết
+	// định của chủ dự án, không phải của tôi — đã ghi docs/FRICTION-LOG.md 2026-07-17.
 }
 
 AppDelegate::AppDelegate() {

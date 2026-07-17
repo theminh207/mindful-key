@@ -51,54 +51,23 @@ void OpenKeyManager::freeEngine() {
 	OpenKeyFree();
 }
 
-bool OpenKeyManager::checkUpdate(string& newVersion) {
-	wstring dataW = OpenKeyHelper::getContentOfUrl(L"https://raw.githubusercontent.com/tuyenvm/OpenKey/master/version.json");
-	string data = wideStringToUtf8(dataW);
-
-	//simple parse
-	constexpr char versionNameStr[] = "\"versionName\":";
-	constexpr char versionCodeStr[] = "\"versionCode\":";
-	constexpr char numbers[] = "0123456789";
-	size_t posBegin = string::npos;
-	size_t posEnd = string::npos;
-
-	posBegin = data.find("latestWinVersion");
-	posBegin = data.find(versionNameStr, posBegin);
-	posBegin += (sizeof(versionNameStr) - 1);
-	posBegin = data.find('\"', posBegin);
-	posBegin = data.find_first_of(numbers, posBegin);
-
-	posEnd = data.find('\"', posBegin);
-
-	if (posBegin == string::npos || posEnd == string::npos) {
-		return false;
-	}
-
-	newVersion = data.substr(posBegin, posEnd - posBegin);
-
-	posBegin = posEnd;
-	posBegin = data.find(versionCodeStr, posBegin);
-	posBegin += (sizeof(versionCodeStr) - 1);
-
-	posEnd = data.find("}", posBegin);
-
-	if (posBegin == string::npos || posEnd == string::npos) {
-		return false;
-	}
-
-	auto shiftVersion = [](DWORD version) {
-		return (version << 16) | (version & 0x00FF00) | (version >> 16 & 0xFF);
-		};
-
-	string newVersionCodeStr = data.substr(posBegin, posEnd - posBegin);
-	DWORD newVersionCode = (DWORD)atoi(newVersionCodeStr.data());
-	newVersionCode = shiftVersion(newVersionCode);
-
-	DWORD currentVersionCode = OpenKeyHelper::getVersionNumber();
-	currentVersionCode = shiftVersion(currentVersionCode);
-
-	return newVersionCode > currentVersionCode;
+// [MINDFUL] 2026-07-17 — chủ dự án chốt: nút "Kiểm tra bản mới" mở thẳng trang Releases.
+//
+// Bản trước hỏng ở BA tầng, không tầng nào lộ ra lúc build:
+//   1. Nó tải https://raw.githubusercontent.com/tuyenvm/OpenKey/master/version.json — repo của
+//      OpenKey GỐC. App của ta đi hỏi phiên bản của người khác, rồi đem so với chính mình.
+//   2. So với cái gì? VERSIONINFO trong .rc ghi 2.0.5.0 — cũng là số của OpenKey (version.env
+//      của dự án là 0.2.1). Hai số sai đem so nhau.
+//   3. Người dùng bấm "có, cập nhật" -> chạy OpenKeyUpdate.exe, tệp mà bộ cài KHÔNG kèm. Nếu có
+//      thì nó tải về... bản OpenKey.
+// Cộng thêm: một cú gọi mạng ra repo bên thứ ba mỗi lần khởi động (nếu bật vCheckNewVersion).
+//
+// Nay: không gọi mạng, không so phiên bản, không updater. Mở trang Releases để người dùng tự
+// nhìn bản mới nhất — thành thật về thứ ta thật sự biết.
+void OpenKeyManager::openReleasesPage() {
+	ShellExecute(NULL, _T("open"), _T("https://github.com/theminh207/mindful-key/releases"), NULL, NULL, SW_SHOWNORMAL);
 }
+
 
 void OpenKeyManager::createDesktopShortcut() {
 	CoInitialize(NULL);

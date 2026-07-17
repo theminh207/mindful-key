@@ -13,12 +13,10 @@ redistribute your new version, it MUST be open source.
 -----------------------------------------------------------*/
 #include "OpenKeyHelper.h"
 #include <stdarg.h>
-#include <Urlmon.h>
 #include <fstream>
 #include <sstream>
 
 #pragma comment(lib, "version.lib")
-#pragma comment(lib, "Urlmon.lib")
 
 static BYTE* _regData = 0;
 
@@ -334,27 +332,4 @@ wstring OpenKeyHelper::getVersionString() {
 	if (GetModuleFileName(NULL, szFilename, MAX_PATH) == 0) { 
 		return _T("");
 	}
-}
-
-wstring OpenKeyHelper::getContentOfUrl(LPCTSTR url){
-	WCHAR path[MAX_PATH];
-	GetTempPath2(MAX_PATH, path);
-	wsprintf(path, TEXT("%s\\_OpenKey.tempf"), path);
-	HRESULT res = URLDownloadToFile(NULL, url, path, 0, NULL);
-	
-	if (res == S_OK) {
-		std::wifstream t(path);
-		std::wstringstream buffer;
-		buffer << t.rdbuf();
-		t.close();
-		DeleteFile(path);
-		return buffer.str();
-	} else if (res == E_OUTOFMEMORY) {
-		
-	} else if (res == INET_E_DOWNLOAD_FAILURE) {
-		
-	} else {
-		
-	}
-	return L"";
 }

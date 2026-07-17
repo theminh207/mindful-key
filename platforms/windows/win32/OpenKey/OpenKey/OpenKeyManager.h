@@ -23,7 +23,8 @@ public:
 	static void initEngine();
 	static void freeEngine();
 
-	static bool checkUpdate(string& newVersion);
+	// Mở trang Releases trên GitHub. Thay cho checkUpdate() cũ — xem lý do ở .cpp.
+	static void openReleasesPage();
 
 	static void createDesktopShortcut();
 };
