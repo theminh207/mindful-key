@@ -29,6 +29,12 @@
 #include "Bell.h"
 #include "BrandPalette.h"
 #include "../../../../../core/mood/MoodPhrasing.h"
+#include <objidl.h>    // PHẢI đứng TRƯỚC gdiplus.h: GdiplusHeaders/GdiplusImaging dùng kiểu COM
+                      // (PROPID, IStream, IImageBytes) mà WIN32_LEAN_AND_MEAN trong stdafx.h cắt
+                      // khỏi windows.h. Thiếu nó thì lỗi nổ ra TRONG header của Microsoft, nhìn
+                      // như SDK hỏng — thật ra là thiếu include của mình. Lần thứ 3 cờ này cắn
+                      // trong cùng 1 phiên (trước đó: mmsystem.h cho chuông, commdlg.h cho hộp
+                      // chọn tệp). ĐỪNG "dọn cho gọn".
 #include <gdiplus.h>
 #include <vector>
 #include <string>
