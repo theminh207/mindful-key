@@ -84,6 +84,34 @@ chữ ra không dấu, phải tắt/bật lại app mới gõ tiếp được. N
 
 ---
 
+## 4b. E2E — Gác cổng gửi tin (Feature #1)
+
+> **Danh sách app RỖNG lúc mới cài** — cố ý. Máy dev là macOS nên không xác minh được tên tiến
+> trình Windows của Zalo/Discord, và luật dự án cấm bịa. Người dùng tự thêm app đang mở qua menu
+> khay. **Lợi cho QA:** test được ngay trong **Notepad**, không cần cài app chat nào.
+
+| # | Bước | Phải xảy ra |
+|---|---|---|
+| G0 | Mở Notepad → bấm icon khay → xem menu | Có mục **"Gác cổng gửi tin cho app này"**, **chưa** có dấu tích |
+| G1 | Bấm mục đó → mở lại menu | Giờ **có dấu tích** (đã thêm `notepad.exe`) |
+| G2 | Trong Notepad gõ `tooi vui` + dấu cách, rồi bấm **Enter** | Xuống dòng **bình thường** — risk 0.0, không gác |
+| G3 | Gõ `tooi giaanj` + dấu cách, rồi **Enter** | Xuống dòng **bình thường** — risk 0.3297, **dưới ngưỡng** |
+| G4 | Gõ `ddm` + dấu cách, rồi **Enter** | 🔴 **Enter bị NUỐT** (không xuống dòng) + hiện hộp **"Mindful Keyboard"** với 2 nút **"Đợi chút"** / **"Vẫn gửi"** |
+| G5 | Ở hộp G4 bấm **"Vẫn gửi"** | Hộp đóng, con trỏ **xuống dòng ngay** (Enter được gửi lại). Đây là **cam kết không chặn cứng** — phải luôn đúng |
+| G6 | Lặp G4, bấm **"Đợi chút"** | Hộp đóng, **KHÔNG** xuống dòng. Chữ vẫn còn nguyên để sửa |
+| G7 | Lặp G4, **không bấm gì**, chờ ~3 giây | Hộp tự đóng, **KHÔNG** xuống dòng (hết giờ = Dismissed, không suy thành gửi) |
+| G8 | Lặp G4, khi hộp hiện thì bấm **Enter** trên bàn phím | Chọn **"Đợi chút"** (nút mặc định) — bấm Enter theo quán tính phải là dừng lại, không phải gửi |
+| G9 | Gõ `ddm` + dấu cách, **Shift+Enter** | Xuống dòng **bình thường**, không gác (Shift+Enter = xuống dòng, không phải gửi) |
+| G10 | Bỏ tích ở menu khay → gõ `ddm` + dấu cách → Enter | Xuống dòng bình thường, **không gác nữa** |
+| G11 | Tắt app, mở lại, xem menu khay | Dấu tích **vẫn còn** (danh sách lưu registry, sống qua lần chạy) |
+
+**Bẫy dễ báo nhầm bug:** ở G4 **phải gõ dấu cách sau `ddm`** trước khi bấm Enter. Engine chỉ giao
+từ cho lớp cảm xúc khi từ tiếp theo bắt đầu — gõ `ddm` rồi Enter luôn thì risk vẫn là của câu
+TRƯỚC đó, nên không gác. **Đây là hạn chế đã biết, bản macOS cũng y hệt** (ghi ở `OpenKey.mm` +
+`docs/BREATHING-PAUSE-CONTRACT.md`), không phải lỗi riêng Windows.
+
+---
+
 ## 5. Bất biến riêng tư — test cả điều KHÔNG được xảy ra
 
 | # | Kịch bản | Bất biến |
@@ -122,6 +150,7 @@ chữ ra không dấu, phải tắt/bật lại app mới gõ tiếp được. N
 - [ ] **T1–T6** PASS trên Windows thật
 - [ ] **T7** PASS — gõ nhanh 30s không mất hook 🔴
 - [ ] **M1–M6** PASS — đặc biệt M2 (dưới ngưỡng thì im) và M6 (cooldown)
+- [ ] **G0–G11** PASS — đặc biệt **G5** ("Vẫn gửi" phải gửi được NGAY — cam kết không chặn cứng, vỡ cái này là vỡ hiến chương) và **G7** (hết giờ ≠ gửi)
 - [ ] **P1–P3** PASS — P1 là cổng chặn phát hành
 - [ ] **B2–B3** PASS
 - [ ] Ca chập chờn (hook, popup) → **PASS 2 lần liên tiếp** mới tính
