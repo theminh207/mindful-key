@@ -1,17 +1,23 @@
 //
 //  BrandPalette.h
-//  mindful-key — shared (macOS + iOS)
+//  mindful-key — vỏ Windows (Win32)
 //
 //  TỰ SINH từ brand/tokens.json bởi brand/gen-palette.py — ĐỪNG SỬA TAY.
 //
-//  DATA thuần (hex, không phụ thuộc AppKit/UIKit) để mỗi vỏ tự bọc theo API màu riêng — NSColor
-//  bên macOS, UIColor bên iOS — mà không lệch giá trị.
+//  Cùng giá trị hex với platforms/apple/shared/BrandPalette.h vì cùng sinh từ brand/tokens.json —
+//  đó là điểm của việc sinh tự động: 3 vỏ không thể trôi lệch màu.
 //
-//  Nhận diện theo Hiến chương §2.3: đây là token thẩm mỹ trung tính (chữ, nền, CTA/nhịp thở) —
-//  KHÔNG dùng bất kỳ màu nào ở đây để MÃ HOÁ trạng thái cảm xúc (đèn đỏ/xanh).
+//  Nhận diện theo Hiến chương §2.3: token thẩm mỹ trung tính — KHÔNG dùng màu nào ở đây để MÃ HOÁ
+//  trạng thái cảm xúc (đèn đỏ/xanh). Biên độ sóng mới là tín hiệu.
 
 #ifndef BrandPalette_h
 #define BrandPalette_h
+
+// BẪY BYTE-ORDER: hex dưới đây là 0xRRGGBB (đọc như người). GDI của Win32 lại dùng COLORREF =
+// 0x00BBGGRR — ĐẢO NGƯỢC. Truyền thẳng hằng số vào hàm nhận COLORREF là ra sai màu mà vẫn build
+// sạch (teal #1D7C91 hoá thành #917C1D — cam đất). LUÔN đi qua 2 macro dưới.
+#define MK_COLORREF(hex)  RGB((((hex) >> 16) & 0xFF), (((hex) >> 8) & 0xFF), ((hex) & 0xFF))
+#define MK_ARGB(hex)      ((Gdiplus::ARGB)(0xFF000000 | (hex)))   // GDI+ dùng 0xAARRGGBB, đục
 
 #define kBrandPaletteTeal        0x1D7C91   // thương hiệu chính, tiêu đề
 #define kBrandPaletteTealLight   0xE8F2F4   // hover, nền phụ

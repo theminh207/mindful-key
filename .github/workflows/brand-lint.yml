@@ -10,5 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # Khoá chống trôi lệch: file màu đã sinh phải khớp brand/tokens.json. Sửa TAY một file sinh
+      # ra (hoặc đổi tokens.json mà quên chạy lại) là đỏ ở đây. Không có bước này thì "nguồn duy
+      # nhất" chỉ là lời hứa — đúng kiểu lời hứa đã đẻ ra bug lexicon.
+      - name: Bảng màu khớp brand/tokens.json (nguồn màu duy nhất)
+        run: python3 brand/gen-palette.py --check
+
       - name: Ràng buộc nhận diện NOW BRAND OS (hiến chương §2)
         run: bash scripts/brand-lint.sh

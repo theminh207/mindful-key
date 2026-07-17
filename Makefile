@@ -111,6 +111,12 @@ universal:       ## Build bản chạy được cả máy chip M lẫn Intel (ch
 brand:           ## Xuất lại brand-asset từ SVG nguồn
 	bash brand/export.sh
 
+brand-palette:   ## Sinh lại bảng màu MỌI vỏ (macOS colorset + BrandPalette.h apple/windows) từ brand/tokens.json
+	python3 brand/gen-palette.py
+
+brand-palette-check:  ## Báo đỏ nếu bảng màu đã sinh lệch brand/tokens.json (CI chạy cái này)
+	python3 brand/gen-palette.py --check
+
 public-brand:    ## Gói bộ nhận diện CÔNG KHAI (tier ③) → release-out/public-brand/ để copy sang repo public
 	bash scripts/pack-public-brand.sh
 
