@@ -80,7 +80,13 @@ def lint(files):
         except Exception:
             continue
         rel = os.path.relpath(f, ROOT)
-        critical = bool(BRAND_CRITICAL.search(rel))
+        # Mọi thứ trong `brand/` là brand-critical THEO ĐỊNH NGHĨA — đó LÀ nhận diện, không phải
+        # code tình cờ đụng tới nó. Không có dòng này thì `BRAND_CRITICAL` xét theo TÊN FILE, và
+        # `Status.svg` (con sóng ~, dấu ấn của cả thương hiệu) không khớp tên nào -> đèn đỏ trong
+        # chính nó chỉ là CẢNH BÁO và CI vẫn xanh. Đã đo: nhét #FF0000 vào Status.svg -> exit 0.
+        # Ảnh hưởng DUY NHẤT là luật đỏ/xanh-lá: cảnh báo "hardcode màu" vẫn miễn cho .svg (dòng
+        # dưới, `not is_svg`), nên màu truyền thông/wordmark không bị báo bừa.
+        critical = bool(BRAND_CRITICAL.search(rel)) or rel.startswith("brand/")
         is_svg = f.lower().endswith(".svg")
         for i, line in enumerate(txt.splitlines(), 1):
             if EMOJI.search(line):
