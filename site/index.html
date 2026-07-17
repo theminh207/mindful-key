@@ -362,6 +362,15 @@
     <a class="btn btn-primary" href="https://github.com/theminh207/mindful-key/releases/latest/download/MindfulKey.dmg">Tải cho macOS</a>
     <a class="btn btn-ghost" href="https://github.com/theminh207/mindful-key/releases">Tải cho Windows <span class="soon">sắp có</span></a>
   </div>
+  <!-- [MINDFUL] Kênh cài qua Terminal: bản beta chưa notarize, tải bằng trình duyệt sẽ bị macOS
+       dán cờ kiểm dịch rồi báo "damaged". curl không dán cờ nên đường này mở là chạy.
+       Chi tiết + vì sao: docs/INSTALL-MACOS-BETA.md -->
+  <details style="margin:22px auto 0;max-width:640px;text-align:left">
+    <summary style="cursor:pointer;color:var(--teal)">macOS báo “damaged”? Cài nhanh qua Terminal (khuyên dùng cho bản beta)</summary>
+    <p style="font-size:14.5px;margin-top:10px">Bản beta chưa đăng ký công chứng với Apple, nên tệp tải bằng trình duyệt bị macOS chặn. Dán lệnh này vào Terminal — tải đường này không bị đóng dấu kiểm dịch, cài xong mở là chạy:</p>
+    <pre style="overflow-x:auto;padding:12px 14px;border:1px solid var(--faint);border-radius:10px;font-size:13px"><code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/theminh207/mindful-key/main/scripts/install-macos.sh)"</code></pre>
+    <p style="font-size:13.5px;color:var(--faint)">Đã lỡ tải bằng trình duyệt? Chạy <code>xattr -dr com.apple.quarantine /Applications/MindfulKey.app</code> — chỉ làm vậy với tệp tải từ trang chính thức này.</p>
+  </details>
   <p style="margin-top:16px;font-size:14.5px"><a href="https://github.com/theminh207/mindful-key/releases" style="color:var(--teal);text-decoration:none">Xem trên GitHub ↗</a></p>
 </div></section>
 
