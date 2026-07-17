@@ -167,6 +167,7 @@
     <ClInclude Include="..\..\..\..\..\core\engine\Vietnamese.h" />
     <ClInclude Include="..\..\..\..\..\core\mood\BreathingPause.h" />
     <ClInclude Include="..\..\..\..\..\core\mood\MoodBuffer.h" />
+    <ClInclude Include="..\..\..\..\..\core\mood\MoodPhrasing.h" />
     <ClInclude Include="..\..\..\..\..\core\mood\SendRiskAnalyzer.h" />
     <ClInclude Include="AboutDialog.h" />
     <ClInclude Include="AppDelegate.h" />
@@ -176,7 +177,9 @@
     <ClInclude Include="MacroDialog.h" />
     <ClInclude Include="MainControlDialog.h" />
     <ClInclude Include="MoodWatch.h" />
+    <ClInclude Include="BrandPalette.h" />
     <ClInclude Include="MoodStore.h" />
+    <ClInclude Include="ReflectionScreen.h" />
     <ClInclude Include="NudgeCoordinator.h" />
     <ClInclude Include="OpenKeyHelper.h" />
     <ClInclude Include="OpenKeyManager.h" />
@@ -194,6 +197,7 @@
     <ClCompile Include="..\..\..\..\..\core\engine\Vietnamese.cpp" />
     <ClCompile Include="..\..\..\..\..\core\mood\BreathingPause.cpp" />
     <ClCompile Include="..\..\..\..\..\core\mood\MoodBuffer.cpp" />
+    <ClCompile Include="..\..\..\..\..\core\mood\MoodPhrasing.cpp" />
     <ClCompile Include="..\..\..\..\..\core\mood\SendRiskAnalyzer.cpp" />
     <ClCompile Include="AboutDialog.cpp" />
     <ClCompile Include="AppDelegate.cpp" />
@@ -206,6 +210,7 @@
     <ClCompile Include="MoodWatch.cpp" />
     <ClCompile Include="OpenKey.cpp" />
     <ClCompile Include="MoodStore.cpp" />
+    <ClCompile Include="ReflectionScreen.cpp" />
     <ClCompile Include="NudgeCoordinator.cpp" />
     <ClCompile Include="OpenKeyHelper.cpp" />
     <ClCompile Include="OpenKeyManager.cpp" />

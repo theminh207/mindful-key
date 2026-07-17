@@ -62,6 +62,15 @@ static void checkLabel(int hour, const wchar_t* expect) {
            hour, toUtf8(got).c_str(), toUtf8(expect).c_str(), ok ? "✅" : "❌ SAI");
 }
 
+
+static void checkShapeOf(const char* label, double peak, int gk, MoodDayShape expect) {
+    MoodDayShape got = MoodPhrasingCore_DayShapeOf(peak, gk, 0.5);
+    bool ok = (got == expect);
+    if (!ok) gFail++;
+    static const char* names[] = {"Calm","Rippled","Gated"};
+    printf("  %-30s %-8s [mong đợi: %-8s] %s\n", label, names[got], names[expect], ok ? "✅" : "❌ SAI");
+}
+
 int main() {
     printf("=== MOOD PHRASING (core/mood — dùng chung 3 vỏ) ===\n");
 
@@ -101,6 +110,44 @@ int main() {
     checkLabel(17, L"buổi chiều");
     checkLabel(18, L"buổi tối");
     checkLabel(23, L"buổi tối");
+
+
+    printf("\n--- Loại 6: hình dạng ngày (gác cổng thắng mọi thứ) ---\n");
+    checkShapeOf("êm cả ngày",                 0.2, 0, MoodDayShapeCalm);
+    checkShapeOf("có gợn, chưa gác lần nào",   0.9, 0, MoodDayShapeRippled);
+    checkShapeOf("gác 1 lần dù đỉnh thấp",     0.1, 1, MoodDayShapeGated);
+    checkShapeOf("đúng biên 0.5 -> có gợn",    0.5, 0, MoodDayShapeRippled);
+
+    printf("\n--- Loại 7: RỔ CÂU HỎI khớp hình dạng (ràng buộc hiến chương) ---\n");
+    // Ngày êm KHÔNG BAO GIỜ được hỏi về cơn nóng không hề xảy ra. Đây là cả điểm của bản v2.1:
+    // trước đó mọi câu bốc từ 1 rổ chung nên ngày phẳng lặng vẫn bị hỏi "điều gì khiến bạn dễ nóng
+    // lên nhất?" — câu hỏi cãi thẳng cái quan sát nằm ngay trên nó.
+    {
+        bool calmClean = true, gatedRight = true;
+        for (int i = 0; i < 8; i++) {   // 8 > 4 -> kiểm luôn việc quay vòng
+            wstring q = MoodPhrasingCore_ReflectionQuestion(MoodDayShapeCalm, i);
+            if (q.find(L"nóng") != wstring::npos || q.find(L"căng thẳng") != wstring::npos ||
+                q.find(L"dừng lại trước khi gửi") != wstring::npos)
+                calmClean = false;
+            if (q.empty()) calmClean = false;
+        }
+        for (int i = 0; i < 8; i++) {
+            wstring q = MoodPhrasingCore_ReflectionQuestion(MoodDayShapeGated, i);
+            if (q.empty()) gatedRight = false;
+        }
+        if (!calmClean) gFail++;
+        if (!gatedRight) gFail++;
+        printf("  %-30s %s\n", "ngày êm không bị hỏi về cơn nóng", calmClean ? "✅" : "❌ SAI");
+        printf("  %-30s %s\n", "rổ Gated quay vòng, không rỗng", gatedRight ? "✅" : "❌ SAI");
+
+        // 3 rổ phải KHÁC nhau — cùng rổ nghĩa là phân loại hình dạng chẳng để làm gì.
+        bool distinct = MoodPhrasingCore_ReflectionQuestion(MoodDayShapeCalm, 0) !=
+                        MoodPhrasingCore_ReflectionQuestion(MoodDayShapeGated, 0) &&
+                        MoodPhrasingCore_ReflectionQuestion(MoodDayShapeCalm, 0) !=
+                        MoodPhrasingCore_ReflectionQuestion(MoodDayShapeRippled, 0);
+        if (!distinct) gFail++;
+        printf("  %-30s %s\n", "3 rổ khác nhau thật", distinct ? "✅" : "❌ SAI");
+    }
 
     if (gFail == 0)
         printf("\n=== XONG — TẤT CẢ PASS ===\n");

@@ -64,6 +64,11 @@
 #define IDD_DIALOG_TAB_INFO             149
 #define IDD_DIALOG_BELL                 250
 #define IDD_DIALOG_PAUSE                251
+#define IDD_DIALOG_REFLECT              252
+#define IDC_STATIC_REFLECT_OBSERVE      1120
+#define IDC_STATIC_REFLECT_RIVER        1121
+#define IDC_STATIC_REFLECT_QUESTION     1122
+#define IDC_STATIC_REFLECT_CONTEXT      1123
 #define IDC_STATIC_PAUSE_MSG            1110
 #define IDC_BUTTON_PAUSE_WAIT           1111
 #define IDC_BUTTON_PAUSE_SEND           1112

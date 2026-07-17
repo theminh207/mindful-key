@@ -50,4 +50,24 @@ std::wstring MoodPhrasingCore_TimeOfDayLabel(long long epochSeconds);
 std::wstring MoodPhrasingCore_DayShapeSentence(const std::vector<MoodSample>& todaySamples,
                                            double rippleThreshold);
 
+// ── Hình dạng một ngày ──
+// Rút từ platforms/apple/macos/ReflectionScreenMac.mm (chuẩn hành vi), 2026-07-17. Cùng lý do như
+// phần trên: nó là "cách ta nói về một ngày", và để nó trong vỏ macOS là vỏ Windows phải chép.
+enum MoodDayShape {
+    MoodDayShapeCalm = 0,   // không gợn đáng kể cả ngày
+    MoodDayShapeRippled,    // có gợn thật, nhưng gác cổng chưa lần nào phải dừng
+    MoodDayShapeGated,      // gác cổng đã dừng >= 1 lần — bằng chứng MẠNH NHẤT, thắng mọi thứ khác
+};
+
+// `rippleThreshold` PHẢI là ngưỡng đang dùng cho chuông và cho câu quan sát. Lệch ngưỡng là màn
+// Soi lại nói "phẳng lặng" trong khi thẻ Gác cổng nói "có gợn" — người dùng biết tin ai?
+MoodDayShape MoodPhrasingCore_DayShapeOf(double peakAmp, int gatekeeperCount, double rippleThreshold);
+
+// Câu hỏi phản chiếu — MỞ, không phán xét, không chấm điểm. MỖI hình dạng có rổ RIÊNG, và đó là
+// cả điểm của nó: ngày phẳng lặng được hỏi về cái đã giữ cho ngày nhẹ, KHÔNG bị hỏi về cơn nóng
+// không hề xảy ra. Trước v2.1 mọi câu bốc từ 1 rổ chung, nên ngày êm vẫn bị hỏi "điều gì khiến bạn
+// dễ nóng lên nhất?" — câu hỏi cãi thẳng cái quan sát nằm ngay trên nó.
+// `index` tự quay vòng, không cần gọi biết rổ dài bao nhiêu.
+std::wstring MoodPhrasingCore_ReflectionQuestion(MoodDayShape shape, int index);
+
 #endif /* MoodPhrasing_h */

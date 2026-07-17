@@ -108,6 +108,15 @@
     <ClInclude Include="MoodStore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ReflectionScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BrandPalette.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\core\mood\MoodPhrasing.h">
+      <Filter>mood</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\core\mood\SendRiskAnalyzer.h">
       <Filter>mood</Filter>
     </ClInclude>
@@ -184,6 +193,12 @@
     </ClCompile>
     <ClCompile Include="MoodStore.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ReflectionScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\core\mood\MoodPhrasing.cpp">
+      <Filter>mood</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\core\mood\SendRiskAnalyzer.cpp">
       <Filter>mood</Filter>

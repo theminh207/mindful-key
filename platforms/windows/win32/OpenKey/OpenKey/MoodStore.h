@@ -33,6 +33,8 @@
 #pragma once
 #include <windows.h>
 #include <string>
+#include <vector>
+#include "../../../../../core/mood/MoodPhrasing.h"   // MoodSample
 
 // ── Consent ──
 // Hỏi MỘT LẦN lúc khởi động. CỐ Ý không hỏi giữa lúc đang căng thẳng — hỏi đúng lúc người ta
@@ -57,8 +59,15 @@ struct MoodTodaySummary {
     int    gatekeeperCount = 0;   // số lần gác cổng hôm nay
     int    sampleCount = 0;
     double avgRisk = 0.0;         // trung bình các sample hôm nay
+    double peakRisk = 0.0;        // đỉnh — dùng phân loại hình dạng ngày
     int    peakHour = -1;         // giờ có risk cao nhất; -1 = chưa đủ dữ liệu
 };
 MoodTodaySummary MoodStore_FetchTodaySummary();
+
+// Mẫu hôm nay, theo thứ tự thời gian. Dòng sông cần TỪNG điểm (kèm giờ thật) chứ không chỉ tổng
+// kết — vị trí ngang của mỗi chấm tính từ GIỜ THẬT, không từ thứ tự. Bản macOS từng suy vị trí từ
+// chỉ số mẫu và chấm cuối luôn dính mép phải: 7 mẫu trong 48 phút buổi sáng vẽ ra như trọn một
+// ngày, nhãn Sáng/Trưa/Chiều/Tối thành ra nói dối (vá 2026-07-16). Đừng lặp lại.
+std::vector<MoodSample> MoodStore_FetchTodaySamples();
 
 void MoodStore_DeleteAll();       // xoá tệp. Hành động CHỦ ĐỘNG của người dùng, không bao giờ tự động.

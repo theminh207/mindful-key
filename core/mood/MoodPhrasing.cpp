@@ -115,3 +115,37 @@ wstring MoodPhrasingCore_DayShapeSentence(const vector<MoodSample>& todaySamples
         s += L", phần lớn êm";
     return s;
 }
+
+MoodDayShape MoodPhrasingCore_DayShapeOf(double peakAmp, int gatekeeperCount,
+                                         double rippleThreshold) {
+    // Gác cổng đã phải dừng ít nhất 1 lần = bằng chứng mạnh nhất về ngày đó, thắng mọi thứ khác.
+    if (gatekeeperCount > 0) return MoodDayShapeGated;
+    if (peakAmp >= rippleThreshold) return MoodDayShapeRippled;
+    return MoodDayShapeCalm;
+}
+
+wstring MoodPhrasingCore_ReflectionQuestion(MoodDayShape shape, int index) {
+    static const wchar_t* kGated[] = {
+        L"Có lúc bạn dừng lại trước khi gửi. Lúc đó trong người bạn đang có gì?",
+        L"Điều gì đang thật sự nằm sau những lúc căng hôm nay — mệt, áp lực, hay điều gì khác?",
+        L"Nếu ngày mai gặp lại đúng tình huống đó, bạn muốn mình phản ứng khác đi thế nào?",
+        L"Nhìn lại, khoảng dừng đó đã đổi được gì — hay không đổi gì cả?",
+    };
+    static const wchar_t* kRippled[] = {
+        L"Có lúc mặt hồ gợn lên hôm nay — bạn còn nhớ mình đang làm gì lúc đó không?",
+        L"Cơn gợn hôm nay đến từ đâu — người, việc, hay chỉ là mệt?",
+        L"Sau lúc gợn nhất, điều gì đã giúp bạn lắng lại?",
+        L"Nếu ngày mai gợn lên đúng như vậy, bạn muốn mình để ý điều gì sớm hơn?",
+    };
+    static const wchar_t* kCalm[] = {
+        L"Hôm nay mặt hồ khá phẳng. Điều gì đã giữ cho ngày nhẹ như vậy?",
+        L"Ngày êm cũng đáng nhìn lại: hôm nay bạn đã làm gì khác với những ngày căng?",
+        L"Có điều gì của hôm nay bạn muốn giữ lại cho ngày mai không?",
+        L"Khi ngày trôi êm, bạn thường đang ở cùng ai, làm việc gì?",
+    };
+    const wchar_t** pool = kCalm;
+    if (shape == MoodDayShapeGated)       pool = kGated;
+    else if (shape == MoodDayShapeRippled) pool = kRippled;
+    if (index < 0) index = -index;
+    return pool[index % 4];   // cả 3 rổ đều 4 câu
+}

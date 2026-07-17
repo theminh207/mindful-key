@@ -243,7 +243,45 @@ MoodTodaySummary MoodStore_FetchTodaySummary() {
     }
     if (s.sampleCount > 0)
         s.avgRisk = sum / s.sampleCount;
+    if (peakRisk > 0)
+        s.peakRisk = peakRisk;
     return s;
+}
+
+vector<MoodSample> MoodStore_FetchTodaySamples() {
+    vector<MoodSample> out;
+    if (!MoodStore_HasConsent())
+        return out;
+
+    lock_guard<mutex> lock(g_mutex);
+    wstring all;
+    if (!ReadAll(all))
+        return out;
+
+    time_t now = time(NULL);
+    struct tm lt;
+    localtime_s(&lt, &now);
+    lt.tm_hour = 0; lt.tm_min = 0; lt.tm_sec = 0;
+    time_t startOfDay = mktime(&lt);
+
+    wistringstream in(all);
+    wstring line;
+    getline(in, line);   // bỏ header
+    while (getline(in, line)) {
+        if (line.empty()) continue;
+        wistringstream f(line);
+        wstring tsStr, type, riskStr;
+        getline(f, tsStr, L'\t');
+        getline(f, type, L'\t');
+        getline(f, riskStr, L'\t');
+        if (tsStr.empty() || type != L"sample" || riskStr.empty()) continue;
+        MoodSample m;
+        m.ts = _wtoi64(tsStr.c_str());
+        if ((time_t)m.ts < startOfDay) continue;
+        m.value = _wtof(riskStr.c_str());
+        out.push_back(m);
+    }
+    return out;
 }
 
 void MoodStore_DeleteAll() {
