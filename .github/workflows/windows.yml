@@ -66,35 +66,49 @@ jobs:
       # học `release.yml` đã ghi sẵn — và nó vừa cắn thật: run Windows đầu tiên fail lúc 23:12
       # ngày 16/07, annotation chỉ nói "exit code 1", nên không ai biết vì sao hỏng. Máy dev là
       # macOS, không chạy lại MSVC được, nên đây là ĐƯỜNG DUY NHẤT để thấy lỗi mà không phải đoán.
+      # CỐ Ý không `set -e` và cố ý lọc lỗi bằng Python chứ không bash: bản trước bật lại `set -e`
+      # ngay trước khối in lỗi, nên chỉ cần 1 lệnh trả non-zero là script chết TRƯỚC khi kịp bắn
+      # annotation — hỏng đúng lúc cần nó nhất, và ta lại mù thêm một vòng.
       - name: Build app Windows (${{ matrix.configuration }} x64)
         shell: bash
         run: |
           set +e
-          msbuild platforms\\windows\\win32\\OpenKey\\OpenKey.sln \
+          msbuild "platforms/windows/win32/OpenKey/OpenKey.sln" \
             /t:OpenKey \
             /p:Configuration=${{ matrix.configuration }} \
             /p:Platform=x64 \
-            /nologo /verbosity:normal \
-            "/flp:errorsonly;logfile=msbuild-errors.txt" > msbuild.log 2>&1
+            /nologo /verbosity:normal > msbuild.log 2>&1
           code=$?
-          set -e
+          echo "msbuild thoát với mã: $code"
+          echo "----- 150 dòng cuối msbuild.log -----"
+          tail -150 msbuild.log
+          echo "-------------------------------------"
 
-          if [[ $code -ne 0 ]]; then
-            echo "----- 80 dòng cuối của msbuild.log -----"
-            tail -80 msbuild.log || true
-            # Mỗi dòng lỗi -> 1 annotation. Cắt 30 dòng đầu: đủ để chẩn, không ngập bảng.
-            if [[ -f msbuild-errors.txt ]]; then
-              head -30 msbuild-errors.txt | while IFS= read -r line; do
-                [[ -n "${line//[[:space:]]/}" ]] && echo "::error::${line}"
-              done
-            else
-              grep -iE "error [A-Z]+[0-9]+|fatal error" msbuild.log | head -30 | while IFS= read -r line; do
-                [[ -n "${line//[[:space:]]/}" ]] && echo "::error::${line}"
-              done
-            fi
-            exit $code
-          fi
-          tail -5 msbuild.log
+          # Log run cần quyền mới đọc (API trả 403) — annotation thì API CÔNG KHAI đọc được. Máy
+          # dev là macOS nên đây là đường DUY NHẤT để thấy lỗi MSVC mà không phải đoán.
+          python3 - "$code" <<'PY'
+          import re, sys
+          code = int(sys.argv[1])
+          if code == 0:
+              sys.exit(0)
+          try:
+              lines = open("msbuild.log", encoding="utf-8", errors="ignore").read().splitlines()
+          except OSError:
+              print("::error::Không mở nổi msbuild.log — msbuild có thể chưa từng chạy")
+              sys.exit(0)
+          pat = re.compile(r"error [A-Z]+\d+|fatal error|MSB\d{4}|cannot open|No such file")
+          hits = [l.strip() for l in lines if pat.search(l)]
+          # Không khớp mẫu nào -> vẫn phải nói được gì đó: lấy đuôi log.
+          if not hits:
+              hits = [l.strip() for l in lines[-25:] if l.strip()]
+          seen = set()
+          for l in hits[:25]:
+              if l in seen:
+                  continue
+              seen.add(l)
+              print("::error::" + l)
+          PY
+          exit $code
 
       - name: Thu .exe build ra
         if: success()
