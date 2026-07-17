@@ -60,13 +60,41 @@ jobs:
       # Chỉ nhắm target `OpenKey` (app chính). Build qua .sln để $(SolutionDir)
       # resolve đúng, nhưng KHÔNG build `OpenKeyUpdate` (updater gốc OpenKey,
       # ngoài phạm vi Mốc 1 — hỏng ở đó không được phép chặn app chính).
+      #
+      # Lỗi compiler PHẢI đi ra annotation (`::error::`), không chỉ nằm trong log: log của run cần
+      # quyền mới đọc được (API trả 403), còn annotation thì API CÔNG KHAI đọc được. Đây là bài
+      # học `release.yml` đã ghi sẵn — và nó vừa cắn thật: run Windows đầu tiên fail lúc 23:12
+      # ngày 16/07, annotation chỉ nói "exit code 1", nên không ai biết vì sao hỏng. Máy dev là
+      # macOS, không chạy lại MSVC được, nên đây là ĐƯỜNG DUY NHẤT để thấy lỗi mà không phải đoán.
       - name: Build app Windows (${{ matrix.configuration }} x64)
-        run: >
-          msbuild platforms\windows\win32\OpenKey\OpenKey.sln
-          /t:OpenKey
-          /p:Configuration=${{ matrix.configuration }}
-          /p:Platform=x64
-          /verbosity:normal
+        shell: bash
+        run: |
+          set +e
+          msbuild platforms\\windows\\win32\\OpenKey\\OpenKey.sln \
+            /t:OpenKey \
+            /p:Configuration=${{ matrix.configuration }} \
+            /p:Platform=x64 \
+            /nologo /verbosity:normal \
+            "/flp:errorsonly;logfile=msbuild-errors.txt" > msbuild.log 2>&1
+          code=$?
+          set -e
+
+          if [[ $code -ne 0 ]]; then
+            echo "----- 80 dòng cuối của msbuild.log -----"
+            tail -80 msbuild.log || true
+            # Mỗi dòng lỗi -> 1 annotation. Cắt 30 dòng đầu: đủ để chẩn, không ngập bảng.
+            if [[ -f msbuild-errors.txt ]]; then
+              head -30 msbuild-errors.txt | while IFS= read -r line; do
+                [[ -n "${line//[[:space:]]/}" ]] && echo "::error::${line}"
+              done
+            else
+              grep -iE "error [A-Z]+[0-9]+|fatal error" msbuild.log | head -30 | while IFS= read -r line; do
+                [[ -n "${line//[[:space:]]/}" ]] && echo "::error::${line}"
+              done
+            fi
+            exit $code
+          fi
+          tail -5 msbuild.log
 
       - name: Thu .exe build ra
         if: success()
