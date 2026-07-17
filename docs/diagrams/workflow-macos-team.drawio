@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0">
+  <diagram name="Workflow doi macOS">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1820" pageHeight="1500" math="0" shadow="0">
+    <root>
+      <mxCell id="0" />
+      <mxCell id="1" parent="0" />
+
+      <mxCell id="title" value="Workflow đội macOS — mindful-key" style="text;html=1;fontSize=22;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+        <mxGeometry x="60" y="10" width="900" height="30" as="geometry" />
+      </mxCell>
+      <mxCell id="subtitle" value="Đọc sổ nào → chọn việc gì → làm tới đâu → ghi lại chỗ nào. Ảnh chụp ngày 15/07/2026." style="text;html=1;fontSize=13;align=left;verticalAlign=middle;fontColor=#666666;" vertex="1" parent="1">
+        <mxGeometry x="60" y="42" width="900" height="24" as="geometry" />
+      </mxCell>
+
+      <mxCell id="A" value="① MỞ PHIÊN — 4 sổ cái, mỗi sổ trả lời ĐÚNG 1 câu hỏi (đọc trái → phải)" style="swimlane;startSize=30;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+        <mxGeometry x="60" y="80" width="1140" height="210" as="geometry" />
+      </mxCell>
+      <mxCell id="a1" value="🧭 bmad-output/macos/sprint-status.yaml&#xa;&#xa;❓ LÀM GÌ TIẾP THEO?&#xa;&#xa;Nguồn sự thật DUY NHẤT về status.&#xa;Đọc khối comment 30 dòng đầu trước." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=3;fontSize=12;fontStyle=1;" vertex="1" parent="A">
+        <mxGeometry x="20" y="50" width="260" height="140" as="geometry" />
+      </mxCell>
+      <mxCell id="a2" value="docs/TEST_MATRIX.md&#xa;&#xa;❓ CÁI ĐÓ ĐÃ AI CHẠY THẬT CHƯA?&#xa;&#xa;Sổ bằng chứng. Cấm tự suy ra&#xa;&quot;build sạch = chạy đúng&quot;." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=3;fontSize=12;" vertex="1" parent="A">
+        <mxGeometry x="300" y="50" width="260" height="140" as="geometry" />
+      </mxCell>
+      <mxCell id="a3" value="bmad-output/decision-log.md&#xa;&#xa;❓ VÌ SAO LẠI LÀM THẾ?&#xa;&#xa;Append-only, mới nhất ở TRÊN CÙNG.&#xa;Không bao giờ sửa/xoá entry cũ." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="A">
+        <mxGeometry x="580" y="50" width="260" height="140" as="geometry" />
+      </mxCell>
+      <mxCell id="a4" value="docs/FRICTION-LOG.md&#xa;&#xa;❓ CHỖ NÀO CÒN MƠ HỒ?&#xa;&#xa;Câu hỏi treo chờ chủ dự án chốt.&#xa;Đừng đoán lại cái đã đoán." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="A">
+        <mxGeometry x="860" y="50" width="260" height="140" as="geometry" />
+      </mxCell>
+
+      <mxCell id="B" value="② CHỌN VIỆC — luật tự tìm (cố ý KHÔNG có con trỏ cứng)" style="swimlane;startSize=30;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+        <mxGeometry x="60" y="330" width="1140" height="200" as="geometry" />
+      </mxCell>
+      <mxCell id="b1" value="Luật ghi ngay trong sprint-status.yaml:&#xa;&#xa;Đọc mục stories: (Epic 1) rồi v2_roadmap.steps (Epic 2)&#xa;TỪ TRÊN XUỐNG. File đã sắp sẵn đúng thứ tự phụ thuộc.&#xa;&#xa;Vì sao không ghi thẳng &quot;story kế là X&quot;? Vì con trỏ cứng sẽ&#xa;trôi lệch — y hệt chuyện đã xảy ra với epics.md." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;align=left;spacingLeft=12;" vertex="1" parent="B">
+        <mxGeometry x="20" y="50" width="480" height="130" as="geometry" />
+      </mxCell>
+      <mxCell id="b2" value="Dòng ĐẦU TIÊN có&#xa;status ≠ done&#xa;và ≠ superseded?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="B">
+        <mxGeometry x="550" y="60" width="220" height="110" as="geometry" />
+      </mxCell>
+      <mxCell id="b3" value="CÓ → làm đúng dòng đó.&#xa;Mở file ở field file: của story." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="B">
+        <mxGeometry x="820" y="45" width="300" height="60" as="geometry" />
+      </mxCell>
+      <mxCell id="b4" value="KHÔNG → cả 2 epic đã đóng về CODE.&#xa;Việc còn lại là NGHIỆM THU TAY.&#xa;◀ Đội macOS đang đứng ở đây (15/07)." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" vertex="1" parent="B">
+        <mxGeometry x="820" y="120" width="300" height="60" as="geometry" />
+      </mxCell>
+
+      <mxCell id="C" value="③ LÀM — 3 ranh giới không được vượt" style="swimlane;startSize=30;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+        <mxGeometry x="60" y="570" width="1140" height="180" as="geometry" />
+      </mxCell>
+      <mxCell id="c1" value="Chỉ sửa file nằm trong owned_scope&#xa;của chính story đó.&#xa;Cần đụng ra ngoài → báo, đừng lặng lẽ sửa." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="C">
+        <mxGeometry x="20" y="50" width="350" height="100" as="geometry" />
+      </mxCell>
+      <mxCell id="c2" value="KHÔNG đụng core/ (bộ não C++ dùng chung)&#xa;để vá một lỗi riêng của macOS.&#xa;Lỗi riêng macOS → sửa ở platforms/apple/macos/." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="C">
+        <mxGeometry x="395" y="50" width="350" height="100" as="geometry" />
+      </mxCell>
+      <mxCell id="c3" value="⚠️ Chạm NHẬN DIỆN / PHÁP LÝ / RIÊNG TƯ&#xa;→ DỪNG, hỏi chủ dự án, ghi NGAY 1 dòng FRICTION-LOG.&#xa;Hỏi trong .story.md mà không ghi sổ = coi như CHƯA hỏi." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="C">
+        <mxGeometry x="770" y="50" width="350" height="100" as="geometry" />
+      </mxCell>
+
+      <mxCell id="D" value="④ CỔNG CHẤT LƯỢNG — chưa qua đủ 5 cái thì chưa được gọi là xong (CLAUDE.md)" style="swimlane;startSize=30;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+        <mxGeometry x="60" y="790" width="1140" height="160" as="geometry" />
+      </mxCell>
+      <mxCell id="d1" value="make test&#xa;engine C++ xanh&#xa;0 case fail" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="D">
+        <mxGeometry x="20" y="50" width="200" height="80" as="geometry" />
+      </mxCell>
+      <mxCell id="d2" value="make build&#xa;xcodebuild sạch&#xa;0 warning MỚI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="D">
+        <mxGeometry x="240" y="50" width="200" height="80" as="geometry" />
+      </mxCell>
+      <mxCell id="d3" value="make brand-lint&#xa;0 vi phạm&#xa;nhận diện" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="D">
+        <mxGeometry x="460" y="50" width="200" height="80" as="geometry" />
+      </mxCell>
+      <mxCell id="d4" value="CI macos.yml&#xa;xanh sau khi push" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="D">
+        <mxGeometry x="680" y="50" width="200" height="80" as="geometry" />
+      </mxCell>
+      <mxCell id="d5" value="Debt delta = 0&#xa;không tăng error /&#xa;warning / test-fail" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="D">
+        <mxGeometry x="900" y="50" width="200" height="80" as="geometry" />
+      </mxCell>
+
+      <mxCell id="E" value="⑤ GHI SỔ — bắt buộc CÙNG LÚC commit code, KHÔNG tách lượt sau" style="swimlane;startSize=30;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+        <mxGeometry x="60" y="990" width="1140" height="250" as="geometry" />
+      </mxCell>
+      <mxCell id="e1" value="① sprint-status.yaml&#xa;→ đổi status của chính story đó" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=3;fontSize=12;fontStyle=1;" vertex="1" parent="E">
+        <mxGeometry x="20" y="50" width="330" height="80" as="geometry" />
+      </mxCell>
+      <mxCell id="e2" value="② docs/TEST_MATRIX.md&#xa;→ thêm 1 dòng bằng chứng mới" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=3;fontSize=12;fontStyle=1;" vertex="1" parent="E">
+        <mxGeometry x="380" y="50" width="330" height="80" as="geometry" />
+      </mxCell>
+      <mxCell id="e3" value="⚠️ Thiếu 1 trong 2 = CHƯA XONG&#xa;dù code chạy sạch, dù đã commit." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;" vertex="1" parent="E">
+        <mxGeometry x="740" y="50" width="380" height="80" as="geometry" />
+      </mxCell>
+      <mxCell id="e4" value="Có quyết định mới? → thêm entry lên ĐẦU decision-log.md. Nếu quyết định đó làm 1 file spec&#xa;(DESIGN* / EXPERIENCE* / TEST-PLAN* / tech-spec*) hết đúng → dán banner SUPERSEDED lên&#xa;ĐẦU chính file đó NGAY. Lý do: field Supersedes: chỉ ghi 1 chiều — file cũ không tự biết mình đã chết." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=left;spacingLeft=12;" vertex="1" parent="E">
+        <mxGeometry x="20" y="150" width="690" height="80" as="geometry" />
+      </mxCell>
+      <mxCell id="e5" value="Commit thoải mái như checkpoint.&#xa;PUSH chỉ khi chủ dự án nói rõ.&#xa;Im lặng / than phiền ≠ đồng ý." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="E">
+        <mxGeometry x="740" y="150" width="380" height="80" as="geometry" />
+      </mxCell>
+
+      <mxCell id="P1" value="⚠️ KHÔNG phải nguồn sự thật — 3 cái bẫy đang sống" style="swimlane;startSize=30;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#b85450;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+        <mxGeometry x="1250" y="80" width="520" height="380" as="geometry" />
+      </mxCell>
+      <mxCell id="p1a" value="Field Status trong *.story.md&#xa;2.3 / 2.4 / 2.5 / 2.6 vẫn ghi backlog — nhưng cả 4&#xa;ĐÃ code xong và commit. Mở thẳng story → tưởng&#xa;chưa làm → làm lại việc đã xong." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="P1">
+        <mxGeometry x="20" y="45" width="480" height="95" as="geometry" />
+      </mxCell>
+      <mxCell id="p1b" value="Banner Epic 1 trong epics.md&#xa;Vẫn tả UI &quot;card nổi trên cửa sổ 4-tab&quot; là hướng thật&#xa;— hướng đó đã chết từ 13/07 (popover 3-tab thay thế)." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="P1">
+        <mxGeometry x="20" y="155" width="480" height="85" as="geometry" />
+      </mxCell>
+      <mxCell id="p1c" value="dependency-graph.json · waves.json&#xa;parallelization-plan.md&#xa;Đồ của Epic 1, không có banner báo hết dùng.&#xa;1.1 vẫn ghi ready-for-dev dù đã done từ lâu." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="P1">
+        <mxGeometry x="20" y="255" width="480" height="95" as="geometry" />
+      </mxCell>
+
+      <mxCell id="P2" value="Việc thật đang treo (theo TEST_MATRIX)" style="swimlane;startSize=30;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+        <mxGeometry x="1250" y="490" width="520" height="370" as="geometry" />
+      </mxCell>
+      <mxCell id="p2a" value="Gác cổng Enter-không-Shift (Feature #1)&#xa;Trái tim sản phẩm. E2E ❌ — CHƯA có một bằng&#xa;chứng E2E nào. Đây là lỗ hổng lớn nhất." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;spacingLeft=10;fontStyle=1;" vertex="1" parent="P2">
+        <mxGeometry x="20" y="45" width="480" height="85" as="geometry" />
+      </mxCell>
+      <mxCell id="p2b" value="Nghiệm thu tay bước 2 → 6 của Epic 2&#xa;Chỉ bước 1 được chủ dự án duyệt bằng mắt (13/07).&#xa;Bước 4/5/6 ghi done nhưng mới ở mức build-verified&#xa;— tức đã đi tiếp mà chưa qua cổng &quot;duyệt mới sang bước kế&quot;." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="P2">
+        <mxGeometry x="20" y="145" width="480" height="95" as="geometry" />
+      </mxCell>
+      <mxCell id="p2c" value="Commit 15/07 (hotkeys, cuộn popover, độ nhạy)&#xa;Chỉ tồn tại dạng VĂN XUÔI trong sprint-status.&#xa;Không id, không status, không dòng TEST_MATRIX&#xa;→ theo đúng luật ⑤ thì khối việc này CHƯA xong." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="P2">
+        <mxGeometry x="20" y="255" width="480" height="95" as="geometry" />
+      </mxCell>
+
+      <mxCell id="P3" value="Tiến trình đội macOS — 15/07/2026" style="swimlane;startSize=30;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+        <mxGeometry x="1250" y="890" width="520" height="350" as="geometry" />
+      </mxCell>
+      <mxCell id="p3a" value="Epic 1 · Bảng điều khiển macOS&#xa;10 story → 8 done · 2 superseded (1.3, 1.6)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=left;spacingLeft=10;" vertex="1" parent="P3">
+        <mxGeometry x="20" y="45" width="480" height="70" as="geometry" />
+      </mxCell>
+      <mxCell id="p3b" value="Epic 2 · Diện mạo v2 (popover 3-tab)&#xa;6 bước → 6 done (mới ở mức build-verified)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=left;spacingLeft=10;" vertex="1" parent="P3">
+        <mxGeometry x="20" y="130" width="480" height="70" as="geometry" />
+      </mxCell>
+      <mxCell id="p3c" value="→ CODE đã đóng cả 2 epic.&#xa;Nghẽn hiện tại KHÔNG phải code —&#xa;là nghiệm thu tay + bằng chứng E2E cho gác cổng." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;align=left;spacingLeft=10;" vertex="1" parent="P3">
+        <mxGeometry x="20" y="215" width="480" height="95" as="geometry" />
+      </mxCell>
+
+      <mxCell id="gold" value="Quy tắc vàng: chỉ HAI file quyết định &quot;tiến trình đang ở đâu&quot; — sprint-status.yaml (làm gì tiếp theo) và TEST_MATRIX.md (đã chứng minh tới đâu).&#xa;Mọi file khác chỉ là tra cứu. Thấy mâu thuẫn giữa các file → hai file này thắng." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=3;fontSize=13;fontStyle=1;align=left;spacingLeft=14;verticalAlign=middle;" vertex="1" parent="1">
+        <mxGeometry x="440" y="1290" width="1330" height="80" as="geometry" />
+      </mxCell>
+
+      <mxCell id="legend" value="Chú giải" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;verticalAlign=top;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+        <mxGeometry x="60" y="1290" width="340" height="160" as="geometry" />
+      </mxCell>
+      <mxCell id="lg1" value="" style="rounded=0;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=3;" vertex="1" parent="legend">
+        <mxGeometry x="12" y="30" width="30" height="16" as="geometry" />
+      </mxCell>
+      <mxCell id="lg1t" value="Nguồn sự thật — đọc VÀ phải cập nhật" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="legend">
+        <mxGeometry x="52" y="28" width="280" height="20" as="geometry" />
+      </mxCell>
+      <mxCell id="lg2" value="" style="rounded=0;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="legend">
+        <mxGeometry x="12" y="54" width="30" height="16" as="geometry" />
+      </mxCell>
+      <mxCell id="lg2t" value="Nhật ký append-only (chỉ thêm, không sửa)" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="legend">
+        <mxGeometry x="52" y="52" width="280" height="20" as="geometry" />
+      </mxCell>
+      <mxCell id="lg3" value="" style="rounded=0;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="legend">
+        <mxGeometry x="12" y="78" width="30" height="16" as="geometry" />
+      </mxCell>
+      <mxCell id="lg3t" value="Việc / bước thực thi" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="legend">
+        <mxGeometry x="52" y="76" width="280" height="20" as="geometry" />
+      </mxCell>
+      <mxCell id="lg4" value="" style="rounded=0;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="legend">
+        <mxGeometry x="12" y="102" width="30" height="16" as="geometry" />
+      </mxCell>
+      <mxCell id="lg4t" value="Luật / ranh giới / cần lưu ý" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="legend">
+        <mxGeometry x="52" y="100" width="280" height="20" as="geometry" />
+      </mxCell>
+      <mxCell id="lg5" value="" style="rounded=0;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="legend">
+        <mxGeometry x="12" y="126" width="30" height="16" as="geometry" />
+      </mxCell>
+      <mxCell id="lg5t" value="Bẫy / lỗ hổng đang mở" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="legend">
+        <mxGeometry x="52" y="124" width="280" height="20" as="geometry" />
+      </mxCell>
+
+      <mxCell id="ed_a1b1" value="mở sổ này TRƯỚC" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#d79b00;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="a1" target="b1">
+        <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+      <mxCell id="ed_b1b2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="b1" target="b2">
+        <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+      <mxCell id="ed_b2b3" value="CÓ" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="b2" target="b3">
+        <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+      <mxCell id="ed_b2b4" value="KHÔNG" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="b2" target="b4">
+        <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+      <mxCell id="ed_b3c1" value="bắt tay vào code" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.955;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="b3" target="C">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="1215" y="405" />
+            <mxPoint x="1215" y="545" />
+            <mxPoint x="1150" y="545" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="ed_c3fric" value="ghi ngay" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;labelBackgroundColor=#ffffff;dashed=1;strokeColor=#d6b656;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="c3" target="a4">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="1235" y="670" />
+            <mxPoint x="1235" y="310" />
+            <mxPoint x="1050" y="310" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+      <mxCell id="ed_cd" value="code xong" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="C" target="D">
+        <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+      <mxCell id="ed_de" value="qua đủ 5 cổng" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="D" target="E">
+        <mxGeometry relative="1" as="geometry" />
+      </mxCell>
+      <mxCell id="ed_loop" value="xong 1 story → quay lại ① đọc lại sổ" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#d79b00;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="E" target="A">
+        <mxGeometry relative="1" as="geometry">
+          <Array as="points">
+            <mxPoint x="30" y="1115" />
+            <mxPoint x="30" y="185" />
+          </Array>
+        </mxGeometry>
+      </mxCell>
+
+    </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

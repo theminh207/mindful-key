@@ -112,6 +112,33 @@ TRƯỚC đó, nên không gác. **Đây là hạn chế đã biết, bản macO
 
 ---
 
+## 4c. E2E — Chuông tỉnh thức + tiếng cá nhân hoá (GĐ4)
+
+> Bản cũ KHÔNG phát tiếng nào — chỉ ding mặc định của Windows. Ca B0 dưới là ca **quan trọng
+> nhất** của giai đoạn này: nó chứng minh đúng thứ chủ dự án yêu cầu.
+
+| # | Bước | Phải xảy ra |
+|---|---|---|
+| B0 | Khay → "Chuông tỉnh thức..." → bấm **"Nghe thử"** | 🔴 Nghe **tiếng chuông chùa** — KHÔNG phải tiếng "ding" của Windows. Đây là điều bản cũ làm sai |
+| B1 | Đổi ô "Tiếng chuông" sang **Chuông gió** → Nghe thử | Nghe tiếng **khác hẳn** B0 |
+| B2 | Đổi sang **Chuông reo** → Nghe thử | Nghe tiếng thứ ba, khác 2 tiếng trên |
+| B3 | Đặt Âm lượng **20** → Nghe thử · rồi **100** → Nghe thử | Nghe **nhỏ hẳn** rồi **to hẳn**. Âm lượng app KHÁC phải **không đổi** (mở YouTube kiểm) |
+| B4 | Đặt Âm lượng **0** → Nghe thử | **Im hoàn toàn** — có chủ đích, không phải lỗi |
+| B5 | Chọn **Im** → Nghe thử | **Im hoàn toàn** |
+| B6 | Bấm **"Chọn tệp .wav của tôi..."** → chọn 1 tệp `.wav` bất kỳ | Ô tiếng nhảy sang **"Tiếng của tôi..."** và **phát ngay tệp vừa chọn** |
+| B7 | Thử chọn tệp **`.mp3`** | Hộp chọn tệp **không cho thấy** tệp mp3 (chỉ lọc `.wav`). Đây là **khác biệt có chủ đích** với macOS |
+| B8 | Chọn tệp `.wav` xong → xoá tệp GỐC đi → Nghe thử | Vẫn **nghe được** (app đã chép vào kho riêng) |
+| B9 | Xoá `%LOCALAPPDATA%\MindfulKeyboard\CustomBell.wav` → Nghe thử | Rơi về **Chuông chùa** — KHÔNG rơi về beep hệ thống, KHÔNG im |
+| B10 | Đặt "Nhắc mỗi" = **5** → Lưu → mở lại | Hiện **15**, không hiện 5 — sàn 15 phút (quyết định riêng tư 2026-07-15). UI phải nói thật về thứ đang chạy |
+| B11 | Bật chuông, đặt nhắc mỗi 15 phút, chờ | Reo **1 lần** kèm hộp nhắc; nội dung quan sát không phán xét |
+
+**Chuỗi câu căng (chuông data-driven):** gõ liên tiếp 3 câu có risk ≥ 0.5 (vd `ddm` + cách,
+`ddijt mej` + cách, `ddm` + cách) → chuông rung với câu **khác** chuông theo lịch ("Nãy giờ có vẻ
+căng..."). Độ nhạy đổi ngưỡng: registry `vBellSensitivity` 1=ít nhạy (cần 5 câu) · 2=vừa (3) ·
+3=nhạy (2).
+
+---
+
 ## 5. Bất biến riêng tư — test cả điều KHÔNG được xảy ra
 
 | # | Kịch bản | Bất biến |
@@ -150,6 +177,7 @@ TRƯỚC đó, nên không gác. **Đây là hạn chế đã biết, bản macO
 - [ ] **T1–T6** PASS trên Windows thật
 - [ ] **T7** PASS — gõ nhanh 30s không mất hook 🔴
 - [ ] **M1–M6** PASS — đặc biệt M2 (dưới ngưỡng thì im) và M6 (cooldown)
+- [ ] **B0–B11** PASS — đặc biệt **B0** (nghe đúng chuông chùa, không phải ding Windows) và **B9** (mất tệp riêng vẫn nghe chuông app)
 - [ ] **G0–G11** PASS — đặc biệt **G5** ("Vẫn gửi" phải gửi được NGAY — cam kết không chặn cứng, vỡ cái này là vỡ hiến chương) và **G7** (hết giờ ≠ gửi)
 - [ ] **P1–P3** PASS — P1 là cổng chặn phát hành
 - [ ] **B2–B3** PASS
