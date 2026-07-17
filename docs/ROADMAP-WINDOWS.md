@@ -42,7 +42,21 @@ Vỏ Windows hiện có: engine gõ chữ (dùng chung core) + `MoodWatch.cpp`/`
 
 > Đây là giai đoạn rẻ nhất và **quan trọng nhất**. Bỏ qua nó = viết ~6.000 dòng UI trong bóng tối.
 
-### 0.1 `brand-lint` đang MÙ với toàn bộ vỏ Windows — chặn cứng
+### 0.1 ✅ XONG (2026-07-17, `97327e0`) — `brand-lint` đã hết mù với vỏ Windows
+
+Thực tế còn tệ hơn mô tả dưới: **cả BA lớp gác** đều giữ danh sách đuôi file RIÊNG và cả ba đều
+thiếu `.cpp`. Đã thêm `.cpp/.rc/.iss/.svg`, và gộp về **một danh sách duy nhất** trong
+`brand_lint.py` (2 lớp kia hỏi nó, không tự giữ bản chép — chính là bài học lexicon). Kiểm bằng
+cách **đâm vào từng lớp**: `make brand-lint` đỏ, `brand-guard.sh` exit 2 (chặn agent), pre-commit
+exit 1. Quét 133 → 155 file. Tiện thể vá 1 bug ẩn: `[...] or walk_ui()` — list rỗng là falsy nên
+hook nhận file không-UI sẽ âm thầm quét TOÀN REPO.
+
+⚠️ **Còn hở, chờ chủ dự án:** `core.hooksPath` chưa set trên máy chủ dự án → lớp pre-commit có mà
+**không chạy**. Bật bằng `make hooks` (1 lần/máy).
+
+<details><summary>Mô tả gốc lúc phát hiện</summary>
+
+
 
 `scripts/brand_lint.py:41` liệt kê `UI_EXT = {".m", ".mm", ".swift", ".h", ".html", ".css", ".js",
 ".ts", ".tsx", ".kt", ".xml", ".storyboard", ".xib"}` — **không có `.cpp`, `.rc`, `.iss`**.
@@ -55,6 +69,8 @@ nhận diện nhất lại là phần duy nhất không ai gác.
 → **Việc:** thêm `.cpp`, `.rc`, `.iss` vào `UI_EXT`; chạy lint; sửa vi phạm lộ ra (nếu có).
 → **Bằng chứng:** `make brand-lint` quét được file Windows (số file quét tăng từ 133).
 
+</details>
+
 ### 0.2 Mốc 1 chưa verify — mọi thứ phía sau là giả định
 
 Vỏ Windows chưa từng biên dịch. `.github/workflows/windows.yml` đã viết sẵn (CI build Debug +
@@ -64,7 +80,28 @@ push**. Port 6.000 dòng lên một vỏ chưa biết có compile nổi không l
 → **Việc:** push → đọc log → sửa tới khi xanh.
 → **Bằng chứng:** CI Windows xanh + `.exe` tải về gõ được tiếng Việt (cần người trên Windows).
 
-### 0.3 Bảng màu brand cho Windows — và một cái bẫy đã từng cắn
+### 0.3 ✅ XONG (2026-07-17, `fe50b38`) — bảng màu sinh từ `tokens.json` cho cả 3 vỏ
+
+Chủ dự án chốt **dứt điểm cả 3 vỏ** thay vì chỉ vá Windows. Thực tế màu tồn tại ở **4 dạng chép
+tay** (không phải 2 như ghi dưới): `tokens.json` · 9 file `.colorset` · `shared/BrandPalette.h` ·
+comment hex trong `BrandColors.h`. Nay `brand/gen-palette.py` sinh: 9 colorset + header Apple +
+header Windows (mới). `tokens.json` thêm `_notes` để lời giải thích sống cạnh giá trị.
+
+**Khoá:** `make brand-palette-check` + bước CI trong `brand-lint.yml` — sửa tay file sinh ra, hoặc
+đổi `tokens.json` mà quên sinh lại, đều ĐỎ. Đã thử cả 2 chiều, đều chặn.
+
+**Bằng chứng trung thành:** máy sinh tái tạo 9 colorset **y hệt từng byte** (git diff rỗng) → định
+dạng JSON của Xcode là đọc ra chứ không phải đoán. Đối chiếu bằng máy với `git HEAD`: **0 màu bị
+đổi**, 0 mất, +1 thêm (`CardWhite` — có trong tokens.json nhưng header thiếu), header Windows khớp
+Apple từng giá trị. `make test` xanh · `brand-lint` sạch · `make build` BUILD SUCCEEDED.
+
+Header Windows kèm 2 macro mà 2 vỏ kia không cần: hex là `0xRRGGBB` nhưng `COLORREF` của GDI là
+`0x00BBGGRR` — **đảo ngược**. Truyền thẳng hằng số vào là teal `#1D7C91` hoá `#917C1D` (cam đất),
+build vẫn sạch.
+
+<details><summary>Mô tả gốc lúc phát hiện</summary>
+
+
 
 Bản Mac lấy màu qua `NSColor colorNamed:` (Asset Catalog) — Windows không có thứ đó.
 `platforms/apple/shared/BrandPalette.h` là "data thuần" (hex) cho iOS dùng, **nhưng nó được CHÉP
@@ -79,6 +116,8 @@ chép tay = lặp lại đúng sai lầm vừa mất công đi sửa.
 không chép tay. Cân nhắc sinh luôn cho cả macOS/iOS để dứt điểm — **cần chủ dự án chốt** vì đụng
 code 2 đội.
 → **Bằng chứng:** đổi 1 giá trị trong `tokens.json` → chạy script → 3 vỏ đổi theo; `make brand-lint` xanh.
+
+</details>
 
 ---
 
