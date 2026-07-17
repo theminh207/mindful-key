@@ -57,7 +57,13 @@ SKIP = ("/.git/", "/DerivedData/", "/backup-original/", "/node_modules/")
 
 def walk_ui():
     out = []
-    for base in ("platforms", "site"):
+    # `brand` thêm 2026-07-17: tài sản brand NGUỒN vốn nằm ngoài chính cái gác của nó — quét
+    # `platforms`+`site` mà bỏ `brand` nghĩa là đèn đỏ/emoji/gamification lọt vào SVG nguồn thì
+    # không ai bắt, rồi từ đó xuất thẳng ra .icns/.ico của mọi vỏ.
+    # An toàn, không sinh nhiễu: dòng `not is_svg` bên dưới đã MIỄN cho .svg khỏi kiểm palette từ
+    # trước, nên màu của truyền thông/wordmark/icon-nền-tảng (vốn tokens.json không có nghĩa vụ
+    # phủ) không bị báo bừa. Đã thử: 46 file brand/svg -> 0 lỗi, 0 cảnh báo.
+    for base in ("platforms", "site", "brand"):
         for dp, _, fs in os.walk(os.path.join(ROOT, base)):
             if any(s in dp + "/" for s in SKIP):
                 continue
