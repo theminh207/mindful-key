@@ -72,15 +72,43 @@ int BellMac_MinutesUntilNextRing(void);
 // thật; playBellSound() nhận sentinel này và không phát gì (không rơi về tiếng mặc định dưới đây).
 extern NSString * const kBellSoundMuteName;
 
-// [MINDFUL] 2026-07-17 — tiếng người CÀI MỚI nghe khi chưa tự chọn gì. MỘT nguồn sự thật cho cả
-// lối PHÁT (playBellSound) lẫn lối HIỆN (BellSettingsView refresh): trước đây hai nơi tự đoán mặc
-// định KHÁC nhau nên màn Chuông sáng "Chuông chùa" còn tai nghe "Glass" — ping hệ thống macOS,
-// chưa bao giờ là thiết kế. 3 file .wav đã vào bundle từ d377eaf nhưng 2 fallback này bị bỏ quên
-// (xem TEST_MATRIX.md dòng 73). Người dùng chỉ thoát Glass nếu tình cờ tự bấm 1 nút chuông.
+// [MINDFUL] 2026-07-17 — ĐỊNH DANH bộ tiếng, tức thứ MÁY đọc (giá trị của khoá UserDefaults
+// `vBellSoundName`) nên phải tiếng Anh theo CLAUDE.md "định danh = tiếng Anh, UI = tiếng Việt".
+// Trước đây kho lưu thẳng nhãn tiếng Việt ("Chuông chùa") — vừa nghịch luật, vừa kẹt cứng ngay khi
+// có chuông của người dùng: tiếng riêng không có "tên" nào để lưu, chỉ có ĐƯỜNG DẪN tệp.
 //
-// ⚠️ Giá trị PHẢI là 1 trong 3 tên của SoundNameForIndex() (BellSettingsView.mm), nếu không màn
-// Chuông sẽ sáng nhầm nút so với tiếng đang thật sự phát — đúng lại con bug vừa vá.
-extern NSString * const kBellSoundDefaultName;
+// ⚠️ Ba id dưới ánh xạ sang tên FILE .wav (vẫn tiếng Việt) ở ResourceNameForSoundId() trong
+// BellMac.mm — đó là chỗ DUY NHẤT biết tên file, đừng rải tên file ra nơi khác.
+extern NSString * const kBellSoundIdTemple;   // → "Chuông chùa.wav" (23.8s)
+extern NSString * const kBellSoundIdChime;    // → "Chuông gió.wav"  (10.3s)
+extern NSString * const kBellSoundIdWind;     // → "Chuông reo.wav"  (2.0s)
+extern NSString * const kBellSoundIdCustom;   // → tệp người dùng tự chọn (kBellCustomPathKey)
+
+// Tiếng người CÀI MỚI nghe khi chưa tự chọn gì. MỘT nguồn sự thật cho cả lối PHÁT (playBellSound)
+// lẫn lối HIỆN (BellSettingsView refresh): trước 2026-07-17 hai nơi tự đoán mặc định KHÁC nhau nên
+// màn Chuông sáng "Chuông chùa" còn tai nghe "Glass" — ping hệ thống macOS, chưa bao giờ là thiết
+// kế (3 file .wav vào bundle từ d377eaf nhưng 2 fallback bị bỏ quên, xem TEST_MATRIX.md dòng 73).
+//
+// ⚠️ PHẢI là 1 trong các id trên, nếu không màn Chuông sẽ sáng nhầm nút so với tiếng thật sự phát.
+extern NSString * const kBellSoundDefaultId;
+
+// Khoá UserDefaults chứa ĐƯỜNG DẪN tệp chuông riêng (tệp đã được chép vào kho của app).
+extern NSString * const kBellCustomPathKey;
+
+// Đọc giá trị thô trong UserDefaults → id hiện hành. Nuốt luôn dữ liệu ĐỜI CŨ (nhãn tiếng Việt
+// "Chuông chùa"…, tên system sound thời placeholder "Glass"/"Tink") nên KHÔNG cần bước migrate
+// riêng: giá trị lạ/rỗng đều rơi về kBellSoundDefaultId. Cả lối phát lẫn lối hiện PHẢI gọi hàm này
+// thay vì tự so chuỗi — tự so là mở lại đúng cửa bug "mắt một đằng tai một nẻo".
+NSString * BellMac_SoundIdFromStored(NSString *stored);
+
+// Đường dẫn tệp chuông riêng đang dùng, hoặc nil nếu chưa chọn / tệp đã biến mất.
+NSString * BellMac_CustomSoundPath(void);
+
+// Chép tệp người dùng chọn vào kho riêng của app rồi ghi nhận làm chuông riêng. Chép chứ không
+// giữ đường dẫn gốc: người dùng xoá file nguồn / rút USB thì chuông vẫn phải kêu.
+// Trả NO + `outMessage` (câu tiếng Việt hiện thẳng cho người dùng) nếu macOS không phát được tệp
+// đó hoặc chép hỏng. KHÔNG tự đổi lựa chọn hiện tại khi thất bại.
+BOOL BellMac_InstallCustomSound(NSURL *src, NSString **outMessage);
 
 NSDate * BellMac_NextRingDate(void);
 #endif

@@ -18,7 +18,115 @@ int vBellHotkey = 0x6200060B;
 
 // [MINDFUL] Áo mới v2 — xem BellMac.h cho hợp đồng.
 NSString * const kBellSoundMuteName = @"__silent__";
-NSString * const kBellSoundDefaultName = @"Chuông chùa";
+
+NSString * const kBellSoundIdTemple = @"temple";
+NSString * const kBellSoundIdChime  = @"chime";
+NSString * const kBellSoundIdWind   = @"wind";
+NSString * const kBellSoundIdCustom = @"custom";
+NSString * const kBellSoundDefaultId = @"temple";   // = kBellSoundIdTemple (hằng compile-time, không tự tham chiếu được)
+NSString * const kBellCustomPathKey  = @"vBellCustomSoundPath";
+
+// [MINDFUL] Chỗ DUY NHẤT biết tên file .wav. Tên file vẫn tiếng Việt (nghịch luật "định danh =
+// tiếng Anh" — nợ có sẵn, đổi tên file là đụng bundle/đóng gói nên tách việc, xem FRICTION-LOG
+// 2026-07-17); bù lại mọi nơi khác trong app chỉ nói chuyện bằng id tiếng Anh qua hàm này.
+static NSString *ResourceNameForSoundId(NSString *sid) {
+    if ([sid isEqualToString:kBellSoundIdChime]) return @"Chuông gió";
+    if ([sid isEqualToString:kBellSoundIdWind])  return @"Chuông reo";
+    return @"Chuông chùa";
+}
+
+NSString *BellMac_SoundIdFromStored(NSString *stored) {
+    if (stored.length == 0) return kBellSoundDefaultId;   // cài mới, chưa ai chọn gì
+    if ([stored isEqualToString:kBellSoundMuteName]) return stored;
+    for (NSString *sid in @[kBellSoundIdTemple, kBellSoundIdChime, kBellSoundIdWind, kBellSoundIdCustom]) {
+        if ([stored isEqualToString:sid]) return sid;
+    }
+    // Đời cũ: kho từng lưu thẳng nhãn tiếng Việt (trước 2026-07-17).
+    if ([stored isEqualToString:@"Chuông chùa"]) return kBellSoundIdTemple;
+    if ([stored isEqualToString:@"Chuông gió"])  return kBellSoundIdChime;
+    if ([stored isEqualToString:@"Chuông reo"])  return kBellSoundIdWind;
+    return kBellSoundDefaultId;   // tên lạ: "Glass"/"Tink" thời placeholder, hoặc rác
+}
+
+// Kho riêng của app — CÙNG thư mục MoodStoreMac dùng cho mood.enc (một chỗ duy nhất chứa đồ của
+// người dùng). An toàn: MoodStoreMac_DeleteAll() chỉ xoá đúng file mood.enc, không quét cả thư mục.
+static NSURL *CustomSoundDirURL(void) {
+    NSURL *base = [[NSFileManager defaultManager] URLForDirectory:NSApplicationSupportDirectory
+                                                         inDomain:NSUserDomainMask
+                                                appropriateForURL:nil
+                                                           create:YES
+                                                            error:nil];
+    NSURL *dir = [base URLByAppendingPathComponent:@"MindfulKeyboard" isDirectory:YES];
+    [[NSFileManager defaultManager] createDirectoryAtURL:dir
+                            withIntermediateDirectories:YES
+                                             attributes:nil
+                                                  error:nil];
+    return dir;
+}
+
+NSString *BellMac_CustomSoundPath(void) {
+    NSString *p = [[NSUserDefaults standardUserDefaults] stringForKey:kBellCustomPathKey];
+    if (p.length == 0) return nil;
+    if (![[NSFileManager defaultManager] fileExistsAtPath:p]) return nil;   // tệp bốc hơi → coi như chưa có
+    return p;
+}
+
+// Bộ nhớ đệm cho tiếng riêng: NSSound hệ thống tự cache theo tên, tệp ngoài thì không — nạp lại
+// 1 file 20s mỗi lần reo là phí. Khoá theo path KHÔNG đủ (tệp đích luôn tên CustomBell.<đuôi> nên
+// đổi tệp khác cùng đuôi ⇒ path y hệt) → BellMac_InstallCustomSound phải tự dội cache.
+static NSSound *g_customSound = nil;
+static NSString *g_customSoundPath = nil;
+
+static NSSound *CustomSound(void) {
+    NSString *p = BellMac_CustomSoundPath();
+    if (p.length == 0) return nil;
+    if (g_customSound && [g_customSoundPath isEqualToString:p]) return g_customSound;
+    NSSound *s = [[NSSound alloc] initWithContentsOfFile:p byReference:NO];
+    if (!s) return nil;
+    g_customSound = s;
+    g_customSoundPath = p;
+    return s;
+}
+
+// Trả nil nếu id không dựng được thành tiếng (thiếu file trong bundle / tệp riêng hỏng-mất).
+static NSSound *SoundForId(NSString *sid) {
+    if ([sid isEqualToString:kBellSoundIdCustom]) return CustomSound();
+    return [NSSound soundNamed:ResourceNameForSoundId(sid)];
+}
+
+BOOL BellMac_InstallCustomSound(NSURL *src, NSString **outMessage) {
+    // Thử phát TRƯỚC khi chép: NSOpenPanel không lọc kiểu tệp (lọc bằng API mới đòi macOS 11+ /
+    // API cũ đã deprecated ⇒ thêm warning), nên đây là chỗ duy nhất chặn tệp macOS không mở nổi.
+    NSSound *probe = [[NSSound alloc] initWithContentsOfURL:src byReference:NO];
+    if (!probe) {
+        if (outMessage) *outMessage = @"macOS không mở được tệp này. Thử tệp .wav, .aiff, .mp3 hoặc .m4a nhé.";
+        return NO;
+    }
+
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSString *ext = src.pathExtension.length ? src.pathExtension : @"wav";
+    NSURL *dst = [CustomSoundDirURL() URLByAppendingPathComponent:
+                  [NSString stringWithFormat:@"CustomBell.%@", ext]];
+
+    // Dọn mọi bản cũ (kể cả đuôi khác) — nếu không, đổi từ .wav sang .mp3 sẽ để lại tệp mồ côi.
+    NSURL *dir = CustomSoundDirURL();
+    for (NSURL *f in [fm contentsOfDirectoryAtURL:dir includingPropertiesForKeys:nil options:0 error:nil]) {
+        if ([f.lastPathComponent hasPrefix:@"CustomBell."])
+            [fm removeItemAtURL:f error:nil];
+    }
+
+    NSError *err = nil;
+    if (![fm copyItemAtURL:src toURL:dst error:&err]) {
+        if (outMessage) *outMessage = [NSString stringWithFormat:@"Không chép được tệp vào kho của app: %@",
+                                       err.localizedDescription ?: @"lý do không rõ"];
+        return NO;
+    }
+
+    g_customSound = nil;        // dội cache: path có thể trùng y hệt bản trước
+    g_customSoundPath = nil;
+    [[NSUserDefaults standardUserDefaults] setObject:dst.path forKey:kBellCustomPathKey];
+    return YES;
+}
 
 static NSTimer *g_bellTimer = nil;
 static NSTimeInterval g_snoozeUntil = 0; // [MINDFUL] "dễ tắt tạm" — bước 7
@@ -52,15 +160,15 @@ static BOOL isInBellRange(NSInteger hour) {
 // NSUserNotification.soundName KHÔNG chỉnh được âm lượng → tách phần phát âm sang NSSound (Dev Notes #1).
 static void playBellSound(void) {
     NSUserDefaults *d = [NSUserDefaults standardUserDefaults];
-    NSString *name = [d stringForKey:@"vBellSoundName"];
-    if (name.length == 0) name = kBellSoundDefaultName;   // cài mới, chưa ai chọn gì (xem BellMac.h)
-    if ([name isEqualToString:kBellSoundMuteName]) return;   // "Im" — không phát gì, có chủ đích.
+    NSString *sid = BellMac_SoundIdFromStored([d stringForKey:@"vBellSoundName"]);
+    if ([sid isEqualToString:kBellSoundMuteName]) return;   // "Im" — không phát gì, có chủ đích.
     float vol = [d objectForKey:@"vBellVolume"] ? (float)[d doubleForKey:@"vBellVolume"] : 0.6f;
     if (vol < 0) vol = 0;
     if (vol > 1) vol = 1;                            // user kéo về 0 = im lặng (có chủ đích)
 
-    // Tên lạ (nhật ký cũ, file bị gỡ khỏi bundle) → rơi về tiếng THIẾT KẾ, không rơi về ping hệ thống.
-    NSSound *sound = [NSSound soundNamed:name] ?: [NSSound soundNamed:kBellSoundDefaultName];
+    // Dựng không nổi (tệp riêng bị xoá, file thiếu trong bundle) → rơi về tiếng THIẾT KẾ, KHÔNG rơi
+    // về ping hệ thống: người dùng mất tệp riêng vẫn nghe chuông của app, không nghe tiếng lạ hoắc.
+    NSSound *sound = SoundForId(sid) ?: SoundForId(kBellSoundDefaultId);
     if (sound) {
         if (sound.isPlaying) [sound stop];           // cho phép reo lại liên tiếp
         sound.volume = vol;
@@ -110,8 +218,9 @@ void BellMac_PlayCheckinChime(void) {
     vol *= 0.6f;   // "nhỏ" — nhẹ hơn hẳn chuông chính: đây là lời mời, không phải tiếng gọi
 
     // Chủ dự án chỉ đích danh file 2026-07-16 ("Lấy tiếng chuông này khi hiển thị khung chấm nhịp
-    // ngay" → platforms/apple/macos/Chuông reo.wav). CỐ ĐỊNH, không theo tiếng người dùng chọn.
-    NSSound *sound = [NSSound soundNamed:@"Chuông reo"];
+    // ngay" → platforms/apple/macos/Chuông reo.wav). CỐ ĐỊNH, không theo tiếng người dùng chọn —
+    // kể cả khi họ đã chọn tiếng riêng: khung này phải nghe ra ngay là việc KHÁC chuông tỉnh thức.
+    NSSound *sound = [NSSound soundNamed:ResourceNameForSoundId(kBellSoundIdWind)];
     if (!sound) return;   // thiếu file thì IM — KHÔNG NSBeep, beep hệ thống nghe như báo lỗi
     if (sound.isPlaying) [sound stop];
     sound.volume = vol;

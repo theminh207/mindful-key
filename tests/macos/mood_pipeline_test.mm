@@ -282,6 +282,33 @@ int main(void) {
                        secs > 0 && secs <= (NSTimeInterval)vBellInterval * 60.0 + 1.0);
         }
 
+        // ===== Ca 8: đọc lựa chọn bộ tiếng — KHÔNG ai bị mất tiếng chuông khi app đổi cách lưu =====
+        // [MINDFUL] 2026-07-17. Đây là hàm CHUNG cho lối phát (playBellSound) và lối hiện
+        // (BellSettingsView refresh) — dựng ra chính vì 2 nơi từng tự đoán mặc định khác nhau
+        // (người dùng thật báo: màn sáng "Chuông chùa" mà tai nghe ping "Glass" của macOS).
+        // Ca này khoá 2 thứ: (a) dữ liệu ĐỜI CŨ (nhãn tiếng Việt) vẫn ra đúng tiếng cũ — không ai
+        // tỉnh dậy thấy chuông mình chọn bị đổi; (b) giá trị rỗng/lạ rơi về tiếng THIẾT KẾ, không
+        // rơi về tiếng hệ thống. Hàm thuần, không đụng đĩa/UserDefaults nên chạy được ở đây.
+        printf("\n-- Ca 8: BellMac_SoundIdFromStored — dịch lựa chọn đời cũ + rơi về mặc định --\n");
+        expectTrue("cài mới (nil)        → tiếng thiết kế, KHÔNG phải ping hệ thống",
+                   [BellMac_SoundIdFromStored(nil) isEqualToString:kBellSoundDefaultId]);
+        expectTrue("chuỗi rỗng           → tiếng thiết kế",
+                   [BellMac_SoundIdFromStored(@"") isEqualToString:kBellSoundDefaultId]);
+        expectTrue("đời cũ 'Chuông chùa' → temple (giữ đúng tiếng người dùng đã chọn)",
+                   [BellMac_SoundIdFromStored(@"Chuông chùa") isEqualToString:kBellSoundIdTemple]);
+        expectTrue("đời cũ 'Chuông gió'  → chime",
+                   [BellMac_SoundIdFromStored(@"Chuông gió") isEqualToString:kBellSoundIdChime]);
+        expectTrue("đời cũ 'Chuông reo'  → wind",
+                   [BellMac_SoundIdFromStored(@"Chuông reo") isEqualToString:kBellSoundIdWind]);
+        expectTrue("rác đời placeholder 'Glass' → tiếng thiết kế (đúng bug đã vá)",
+                   [BellMac_SoundIdFromStored(@"Glass") isEqualToString:kBellSoundDefaultId]);
+        expectTrue("id đời mới 'chime'   → giữ nguyên",
+                   [BellMac_SoundIdFromStored(kBellSoundIdChime) isEqualToString:kBellSoundIdChime]);
+        expectTrue("id 'custom'          → giữ nguyên (tiếng của người dùng)",
+                   [BellMac_SoundIdFromStored(kBellSoundIdCustom) isEqualToString:kBellSoundIdCustom]);
+        expectTrue("'__silent__'         → giữ nguyên, KHÔNG bị dịch thành tiếng nào",
+                   [BellMac_SoundIdFromStored(kBellSoundMuteName) isEqualToString:kBellSoundMuteName]);
+
         // Dọn: xóa kho fake-home (build.sh cũng rm -rf cả HOME tạm).
         MoodStoreMac_SetConsent(NO);
 

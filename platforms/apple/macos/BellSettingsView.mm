@@ -56,13 +56,24 @@ static const NSInteger kIntervalCeil  = 240;
 static const CGFloat kBellGap     = kGapMd; // khoảng cách giữa 2 icon chuông liền kề (dùng chung
                                              // với updateBellIndicatorAnimated: — đổi thì đổi cả 2 chỗ)
 
-// Ánh xạ nhãn thân thiện (mockup "Bộ tiếng") → tên NSSound hệ thống thật (hoặc sentinel "Im").
-static NSString *SoundNameForIndex(NSInteger i) {
-    switch (i) { case 1: return @"Chuông gió"; case 2: return @"Chuông reo"; default: return @"Chuông chùa"; }
+// [MINDFUL] Ánh xạ ô icon (trái→phải) ↔ id bộ tiếng. Id là thứ MÁY đọc và tên file .wav chỉ có
+// BellMac.mm biết — xem hợp đồng ở BellMac.h. Ô thứ 4 = tiếng của người dùng (chủ dự án chốt
+// 2026-07-17, đè story 2.5 "không thêm ô thứ 4" + SCREEN-REFERENCE §2.2 — xem decision-log).
+static const NSInteger kBellSlotCount  = 4;
+static const NSInteger kBellSlotCustom = 3;   // ô "tiếng của bạn" — bấm là mở hộp chọn tệp
+
+static NSString *SoundIdForIndex(NSInteger i) {
+    switch (i) {
+        case 1:  return kBellSoundIdChime;
+        case 2:  return kBellSoundIdWind;
+        case 3:  return kBellSoundIdCustom;
+        default: return kBellSoundIdTemple;
+    }
 }
-static NSInteger IndexForSoundName(NSString *name) {
-    if ([name isEqualToString:@"Chuông gió"]) return 1;
-    if ([name isEqualToString:@"Chuông reo"]) return 2;
+static NSInteger IndexForSoundId(NSString *sid) {
+    if ([sid isEqualToString:kBellSoundIdChime])  return 1;
+    if ([sid isEqualToString:kBellSoundIdWind])   return 2;
+    if ([sid isEqualToString:kBellSoundIdCustom]) return kBellSlotCustom;
     return 0;
 }
 
@@ -178,6 +189,7 @@ static NSInteger ParseHour(NSString *s) {
     NSButton    *_btnBell1;
     NSButton    *_btnBell2;
     NSButton    *_btnBell3;
+    NSButton    *_btnBellCustom;
     NSView      *_bellIndicator;
     NSInteger    _bellSelectedIndex;
     NSTextField *_lblVolume;
@@ -447,19 +459,25 @@ static NSString *StringFromHotkey(int hotkey) {
 
     _lblSound = [self label:@"Bộ tiếng" font:[self fFieldLbl] color:[Brand muted]];
     
-    // Nút hình ảnh (3 loại chuông)
-    // [MINDFUL] tag → tiếng (SoundNameForIndex) KHÓA CỨNG: 0=Chuông chùa, 1=Chuông gió,
-    // 2=Chuông reo — đổi ánh xạ này sẽ khiến `vBellSoundName` đã lưu của người dùng đột nhiên
-    // phát ra tiếng khác, nên mọi chỉnh sửa chỉ được đụng vào ẢNH.
+    // Nút hình ảnh (3 tiếng có sẵn + 1 ô tiếng của bạn)
+    // [MINDFUL] tag → tiếng (SoundIdForIndex) KHÓA CỨNG: 0=Chuông chùa, 1=Chuông gió,
+    // 2=Chuông reo, 3=tiếng của bạn — đổi ánh xạ này sẽ khiến `vBellSoundName` đã lưu của người
+    // dùng đột nhiên phát ra tiếng khác, nên mọi chỉnh sửa chỉ được đụng vào ẢNH.
     // 2026-07-16 (chủ dự án chốt qua ảnh chú thích, đè lần vá theo-afinfo cùng ngày): nút giữa
     // (tiếng Chuông gió) mang hình chuông CẦM `bell_chime`, nút phải (tiếng Chuông reo) mang hình
     // chuông GIÓ `bell_wind` — hoán đổi ảnh giữa tag 1/2, tiếng giữ nguyên.
     _btnBell1 = [self createBellButtonWithTag:0 image:@"bell_temple"];   // → Chuông chùa (23.8s)
     _btnBell2 = [self createBellButtonWithTag:1 image:@"bell_chime"];    // → Chuông gió  (10.3s)
     _btnBell3 = [self createBellButtonWithTag:2 image:@"bell_wind"];     // → Chuông reo  (2.0s)
+    // [MINDFUL] 2026-07-17 — ô thứ 4. Hình `bell-idle` là asset brand CÓ SẴN (brand/svg/bell-idle.svg,
+    // xuất qua brand/export.sh) — không vẽ hình mới. 3 ô kia không có nhãn chữ nên ô này PHẢI có
+    // tooltip, nếu không nó chỉ là "cái chuông thứ 4" vô nghĩa với người nhìn lần đầu.
+    _btnBellCustom = [self createBellButtonWithTag:kBellSlotCustom image:@"bell-idle"];
+    [self updateCustomBellTooltip];
     [self addSubview:_btnBell1];
     [self addSubview:_btnBell2];
     [self addSubview:_btnBell3];
+    [self addSubview:_btnBellCustom];
 
     // Dấu chấm cam báo hiệu trạng thái được chọn
     // [MINDFUL] Epic 3 G2 (F7) — trước đây [Brand orange]: chấm này di chuyển theo _bellSelectedIndex
@@ -562,10 +580,15 @@ static NSString *StringFromHotkey(int hotkey) {
     _customIntervalField.integerValue = curInterval;
 
 
-    // Âm thanh — mặc định lấy từ BellMac.h, KHÔNG tự đoán tại chỗ: lối hiện (đây) và lối phát
-    // (playBellSound) phải rơi về CÙNG một tiếng, nếu không nút sáng một đằng tai nghe một nẻo.
-    NSString *sound = [d stringForKey:kKeySoundName] ?: kBellSoundDefaultName;
-    _bellSelectedIndex = IndexForSoundName(sound);
+    // Âm thanh — CHUNG hàm giải mã với lối phát (playBellSound), không tự so chuỗi tại chỗ: hai nơi
+    // tự đoán mặc định khác nhau chính là con bug "nút sáng một đằng, tai nghe một nẻo" (2026-07-17).
+    NSString *sid = BellMac_SoundIdFromStored([d stringForKey:kKeySoundName]);
+    // Đã chọn tiếng riêng nhưng tệp bốc hơi → sáng đúng ô sẽ THẬT SỰ kêu (playBellSound cũng rơi về
+    // tiếng mặc định y hệt), thay vì sáng ô 4 rồi phát ra tiếng chuông chùa.
+    if ([sid isEqualToString:kBellSoundIdCustom] && BellMac_CustomSoundPath() == nil)
+        sid = kBellSoundDefaultId;
+    _bellSelectedIndex = IndexForSoundId(sid);
+    [self updateCustomBellTooltip];
     [self updateBellIndicatorAnimated:NO];
 
     // Âm lượng
@@ -713,9 +736,24 @@ static NSString *StringFromHotkey(int hotkey) {
 - (CGFloat)bellRowStartX {
     CGFloat btnSize = kBellBtnSize;
     CGFloat gap = kBellGap;
-    CGFloat rowW = 3 * btnSize + 2 * gap;
+    CGFloat rowW = kBellSlotCount * btnSize + (kBellSlotCount - 1) * gap;
     CGFloat contentW = NSWidth(self.bounds) - 2 * kCardPadX;
     return kCardPadX + (contentW - rowW) / 2.0;
+}
+
+// [MINDFUL] 4 nút theo đúng thứ tự trái→phải = thứ tự tag. Dùng chung cho relayout: và
+// updateBellIndicatorAnimated: — 1 nguồn, để thêm/bớt ô không phải sửa 2 nơi rồi lệch nhau.
+- (NSArray<NSButton *> *)bellButtons {
+    return @[_btnBell1, _btnBell2, _btnBell3, _btnBellCustom];
+}
+
+// Ô thứ 4 không có nhãn chữ (giống 3 ô kia) nên tooltip là chỗ DUY NHẤT nói nó là gì + đang giữ
+// tệp nào. Gọi lại mỗi lần đổi tệp, nếu không tooltip sẽ nói tên tệp cũ.
+- (void)updateCustomBellTooltip {
+    NSString *p = BellMac_CustomSoundPath();
+    _btnBellCustom.toolTip = p.length
+        ? [NSString stringWithFormat:@"Tiếng của bạn: %@ — bấm để chọn tệp khác", p.lastPathComponent]
+        : @"Tiếng của bạn — bấm để chọn một tệp âm thanh";
 }
 
 - (void)updateBellIndicatorAnimated:(BOOL)animated {
@@ -740,7 +778,7 @@ static NSString *StringFromHotkey(int hotkey) {
     // chấm 12x12 bên dưới báo icon nào đang chọn — dễ lướt qua, không rõ trạng thái "đang chọn"
     // (10-point audit "Interactive States"). Làm mờ 2 icon KHÔNG chọn (cùng màu teal, chỉ giảm
     // alpha) — không đổi màu ngoài token, không thêm icon/emoji, chỉ tăng độ tương phản chọn/không.
-    NSArray<NSButton *> *bellButtons = @[_btnBell1, _btnBell2, _btnBell3];
+    NSArray<NSButton *> *bellButtons = [self bellButtons];
     for (NSInteger i = 0; i < (NSInteger)bellButtons.count; i++) {
         CGFloat targetAlpha = (i == _bellSelectedIndex) ? 1.0 : 0.38;
         if (animated) {
@@ -752,12 +790,48 @@ static NSString *StringFromHotkey(int hotkey) {
 }
 
 - (void)onBellClick:(NSButton *)sender {
+    if (sender.tag == kBellSlotCustom) { [self chooseCustomBellSound]; return; }
+
     _bellSelectedIndex = sender.tag;
     [self updateBellIndicatorAnimated:YES];
-    
-    [[NSUserDefaults standardUserDefaults] setObject:SoundNameForIndex(_bellSelectedIndex)
+
+    [[NSUserDefaults standardUserDefaults] setObject:SoundIdForIndex(_bellSelectedIndex)
                                               forKey:kKeySoundName];
     BellMac_PreviewSound();
+}
+
+// [MINDFUL] 2026-07-17 — ô "tiếng của bạn". Bấm vào là mở hộp chọn tệp NGAY (kể cả khi đã chọn rồi
+// → cho đổi tệp khác), vì ô này không có chỗ nào khác để đổi.
+//
+// Huỷ hộp chọn, hoặc tệp không phát được → GIỮ NGUYÊN lựa chọn cũ, không ghi gì. Người dùng chỉ tò
+// mò bấm thử thì không được phép mất tiếng chuông họ đang dùng.
+- (void)chooseCustomBellSound {
+    NSOpenPanel *panel = [NSOpenPanel openPanel];
+    panel.canChooseFiles = YES;
+    panel.canChooseDirectories = NO;
+    panel.allowsMultipleSelection = NO;
+    panel.message = @"Chọn một tệp âm thanh làm tiếng chuông của bạn (.wav, .aiff, .mp3, .m4a).";
+    panel.prompt = @"Dùng tiếng này";
+    // Cố ý KHÔNG lọc theo kiểu tệp: API lọc đời mới đòi macOS 11+ (deployment target đang là 10.15),
+    // API cũ thì đã deprecated ⇒ thêm warning mới, nghịch luật "debt delta = 0". Chặn tệp hỏng bằng
+    // BellMac_InstallCustomSound (nó thử phát trước khi chép) — kiểm bằng tai máy, chắc hơn kiểm đuôi tệp.
+    if ([panel runModal] != NSModalResponseOK || panel.URL == nil) return;
+
+    NSString *msg = nil;
+    if (!BellMac_InstallCustomSound(panel.URL, &msg)) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        alert.messageText = @"Chưa dùng được tệp này";
+        alert.informativeText = msg ?: @"Tệp không dùng làm chuông được.";
+        [alert addButtonWithTitle:@"OK"];
+        [alert runModal];
+        return;
+    }
+
+    _bellSelectedIndex = kBellSlotCustom;
+    [self updateCustomBellTooltip];
+    [self updateBellIndicatorAnimated:YES];
+    [[NSUserDefaults standardUserDefaults] setObject:kBellSoundIdCustom forKey:kKeySoundName];
+    BellMac_PreviewSound();   // nghe ngay tiếng vừa chọn, ở đúng âm lượng đang đặt
 }
 
 - (void)onVolume:(NSSlider *)sender {
@@ -932,9 +1006,10 @@ static NSString *StringFromHotkey(int hotkey) {
     // số ở 2 nơi để tránh lệch nhau như trước.
     CGFloat startX = [self bellRowStartX];
 
-    SET(_btnBell1, startX, soundTop + cy, btnSize, btnSize);
-    SET(_btnBell2, startX + btnSize + gap, soundTop + cy, btnSize, btnSize);
-    SET(_btnBell3, startX + 2 * btnSize + 2 * gap, soundTop + cy, btnSize, btnSize);
+    NSArray<NSButton *> *bells = [self bellButtons];
+    for (NSInteger i = 0; i < (NSInteger)bells.count; i++) {
+        SET(bells[i], startX + i * (btnSize + gap), soundTop + cy, btnSize, btnSize);
+    }
     
     cy += btnSize + 8.0; // Khoảng cách tới dấu chấm
     SET(_bellIndicator, 0, soundTop + cy, 12, 12);
