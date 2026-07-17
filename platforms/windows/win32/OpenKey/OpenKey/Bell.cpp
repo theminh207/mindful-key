@@ -23,8 +23,11 @@
 #include <vector>
 #include <string>
 #include <shlobj.h>
+#include <mmsystem.h>   // PlaySound + SND_* — stdafx.h có WIN32_LEAN_AND_MEAN nên windows.h KHÔNG kéo theo
+#include <commdlg.h>    // OPENFILENAME + GetOpenFileName — cùng lý do
 
 #pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "comdlg32.lib")
 
 using namespace std;
 
