@@ -69,8 +69,19 @@ int BellMac_MinutesUntilNextRing(void);
 #ifdef __OBJC__
 #import <Foundation/Foundation.h>
 // [MINDFUL] Áo mới v2 — "Im" trong Bộ tiếng segmented (BellSettingsView). KHÔNG phải tên NSSound
-// thật; playBellSound() nhận sentinel này và không phát gì (không rơi về "Glass" mặc định).
+// thật; playBellSound() nhận sentinel này và không phát gì (không rơi về tiếng mặc định dưới đây).
 extern NSString * const kBellSoundMuteName;
+
+// [MINDFUL] 2026-07-17 — tiếng người CÀI MỚI nghe khi chưa tự chọn gì. MỘT nguồn sự thật cho cả
+// lối PHÁT (playBellSound) lẫn lối HIỆN (BellSettingsView refresh): trước đây hai nơi tự đoán mặc
+// định KHÁC nhau nên màn Chuông sáng "Chuông chùa" còn tai nghe "Glass" — ping hệ thống macOS,
+// chưa bao giờ là thiết kế. 3 file .wav đã vào bundle từ d377eaf nhưng 2 fallback này bị bỏ quên
+// (xem TEST_MATRIX.md dòng 73). Người dùng chỉ thoát Glass nếu tình cờ tự bấm 1 nút chuông.
+//
+// ⚠️ Giá trị PHẢI là 1 trong 3 tên của SoundNameForIndex() (BellSettingsView.mm), nếu không màn
+// Chuông sẽ sáng nhầm nút so với tiếng đang thật sự phát — đúng lại con bug vừa vá.
+extern NSString * const kBellSoundDefaultName;
+
 NSDate * BellMac_NextRingDate(void);
 #endif
 

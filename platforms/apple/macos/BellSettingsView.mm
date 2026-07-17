@@ -562,8 +562,9 @@ static NSString *StringFromHotkey(int hotkey) {
     _customIntervalField.integerValue = curInterval;
 
 
-    // Âm thanh
-    NSString *sound = [d stringForKey:kKeySoundName] ?: SoundNameForIndex(0);
+    // Âm thanh — mặc định lấy từ BellMac.h, KHÔNG tự đoán tại chỗ: lối hiện (đây) và lối phát
+    // (playBellSound) phải rơi về CÙNG một tiếng, nếu không nút sáng một đằng tai nghe một nẻo.
+    NSString *sound = [d stringForKey:kKeySoundName] ?: kBellSoundDefaultName;
     _bellSelectedIndex = IndexForSoundName(sound);
     [self updateBellIndicatorAnimated:NO];
 

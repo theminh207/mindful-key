@@ -18,6 +18,7 @@ int vBellHotkey = 0x6200060B;
 
 // [MINDFUL] Áo mới v2 — xem BellMac.h cho hợp đồng.
 NSString * const kBellSoundMuteName = @"__silent__";
+NSString * const kBellSoundDefaultName = @"Chuông chùa";
 
 static NSTimer *g_bellTimer = nil;
 static NSTimeInterval g_snoozeUntil = 0; // [MINDFUL] "dễ tắt tạm" — bước 7
@@ -52,13 +53,14 @@ static BOOL isInBellRange(NSInteger hour) {
 static void playBellSound(void) {
     NSUserDefaults *d = [NSUserDefaults standardUserDefaults];
     NSString *name = [d stringForKey:@"vBellSoundName"];
-    if (name.length == 0) name = @"Glass";           // mặc định = "Tiếng chuông"
+    if (name.length == 0) name = kBellSoundDefaultName;   // cài mới, chưa ai chọn gì (xem BellMac.h)
     if ([name isEqualToString:kBellSoundMuteName]) return;   // "Im" — không phát gì, có chủ đích.
     float vol = [d objectForKey:@"vBellVolume"] ? (float)[d doubleForKey:@"vBellVolume"] : 0.6f;
     if (vol < 0) vol = 0;
     if (vol > 1) vol = 1;                            // user kéo về 0 = im lặng (có chủ đích)
 
-    NSSound *sound = [NSSound soundNamed:name] ?: [NSSound soundNamed:@"Glass"];
+    // Tên lạ (nhật ký cũ, file bị gỡ khỏi bundle) → rơi về tiếng THIẾT KẾ, không rơi về ping hệ thống.
+    NSSound *sound = [NSSound soundNamed:name] ?: [NSSound soundNamed:kBellSoundDefaultName];
     if (sound) {
         if (sound.isPlaying) [sound stop];           // cho phép reo lại liên tiếp
         sound.volume = vol;
