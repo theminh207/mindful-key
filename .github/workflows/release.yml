@@ -221,13 +221,29 @@ jobs:
           fi
           rm -f "${APPLE_API_KEY_PATH:-}"
 
-      - name: Chèn cảnh báo ad-hoc vào release notes (nếu chưa ký thật)
-        if: steps.signing.outputs.available != 'true'
+      # [MINDFUL] Cảnh báo Windows chạy LUÔN, không phụ thuộc secrets ký của Apple: bộ cài .exe
+      # chưa ký Authenticode nên SmartScreen sẽ chặn, và điều đó đúng dù Apple có ký hay không.
+      # Trước đây khối này chỉ nói về Gatekeeper — tức bản đầu tiên CÓ bộ cài Windows lại im lặng
+      # về đúng thứ người dùng Windows đập mặt vào đầu tiên.
+      - name: Chèn cảnh báo vào release notes
         run: |
           {
-            echo "> ⚠️ **Bản ad-hoc thử nghiệm — CHƯA notarize.** Người tải về sẽ bị macOS Gatekeeper"
-            echo "> chặn (\"không thể xác minh nhà phát triển\"). Chỉ dùng để tự test. Bản ký thật +"
-            echo "> notarize sẽ có khi cấu hình xong Developer ID — xem docs/RELEASE.md."
+            if [[ "${{ steps.signing.outputs.available }}" != "true" ]]; then
+              echo "> ⚠️ **macOS — bản ad-hoc, CHƯA notarize.** Người tải về sẽ bị Gatekeeper chặn"
+              echo "> (\"không thể xác minh nhà phát triển\"). Chỉ dùng để tự test. Bản ký thật +"
+              echo "> notarize sẽ có khi cấu hình xong Developer ID — xem docs/RELEASE.md."
+              echo ""
+            fi
+            echo "> ⚠️ **Windows — bộ cài CHƯA ký Authenticode.** SmartScreen sẽ hiện \"Windows"
+            echo "> protected your PC / Unknown publisher\". Muốn chạy: bấm **More info → Run anyway**."
+            echo ">"
+            echo "> ⚠️ **CHƯA AI CHẠY BẢN WINDOWS NÀY.** CI chứng minh nó biên dịch được, KHÔNG chứng"
+            echo "> minh nó chạy đúng. Đây là bản để **thử**, không phải bản để dùng hằng ngày."
+            echo ">"
+            echo "> **Lớp cảm xúc TẮT SẴN trên Windows** (macOS/iOS thì bật). Không phải quên bật:"
+            echo "> hook bàn phím của Windows thấy mọi phím kể cả ô mật khẩu, và Windows không có cơ"
+            echo "> chế nào chặn như Secure Input Mode của macOS. Bật là lựa chọn có ý thức, và app"
+            echo "> sẽ nói thẳng điều này lúc bạn bật. Đang vá."
             echo ""
             cat release-out/release-notes.md
           } > release-out/release-notes-final.md
