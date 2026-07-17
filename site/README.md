@@ -11,7 +11,16 @@ NOW BRAND OS (`brand/tokens.json`). Deploy bằng **Coolify** nhà trồng.
 
 ## Nội dung
 - Hero sóng nước (canvas, phản ứng con trỏ), demo "gác cổng" (bấm Gửi → nhịp thở), thang biên độ An→Cuộn.
-- Nút tải → GitHub Releases (`releases/latest/download/MindfulKey.dmg`). Đổi repo thì sửa link trong `index.html`.
+- **Nút "Tải cho macOS"** → `releases/latest/download/MindfulKey.dmg` — bấm phát tải luôn, không thả
+  người dùng vào trang Releases đầy `.zip`/`.dSYM.zip`/`.exe` bắt họ đoán (đối tượng của app không
+  phải dev). Link cố định được vì `scripts/release.sh` publish kèm **bản copy tên không đổi**
+  `MindfulKey.dmg` bên cạnh bản có version — xem `docs/RELEASE.md`. Đổi repo thì sửa link trong `index.html`.
+- **Nút "Tải cho Windows"** → còn là trang Releases + nhãn "sắp có". Bộ cài `MindfulKey-setup.exe`
+  (link cố định đối xứng) đã được `release.yml` sinh sẵn, **nhưng chưa bản phát hành nào chứa nó**
+  — nối nút vào bây giờ là ra lỗi 404. Đợi tag đầu tiên có Windows publish xong rồi mới nối,
+  cùng lúc bỏ nhãn "sắp có".
+- ⚠️ Release đăng ở dạng **nháp (draft)** — `releases/latest/download/...` chỉ sống sau khi vào tab
+  Releases bấm **Publish**. Nháp chưa publish = nút tải trên web gãy.
 - Không webfont, không ảnh ngoài — nhẹ, tự chứa.
 
 ## Test tại chỗ

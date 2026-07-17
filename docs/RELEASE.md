@@ -1,8 +1,29 @@
 # Release thật (ký Developer ID + notarize) — checklist
 
-Mục tiêu: gắn tag `vX.Y.Z` → GitHub Actions tự build + ký thật + notarize + đăng Release với
-4 asset (`.dmg` theo version, `.dmg` tên ổn định, `.zip` universal, `.dSYM.zip`) — giống cấu
-trúc repo tham chiếu `github.com/sonpiaz/haynoi`.
+Mục tiêu: gắn tag `vX.Y.Z` → GitHub Actions tự build + ký thật + notarize + đăng **1 Release có
+cả macOS lẫn Windows** — giống cấu trúc repo tham chiếu `github.com/sonpiaz/haynoi`.
+
+**Luật đặt tên asset (chủ dự án chốt 2026-07-17):** mọi asset mang **tên app + số version** để
+phân biệt được. Ngoại lệ DUY NHẤT là 2 bản copy tên-không-đổi phục vụ nút tải trên web — chúng
+tồn tại chính vì cái tên không bao giờ đổi (thêm version vào là link đổi mỗi bản → hết tác dụng):
+
+| Asset | Vai trò |
+|---|---|
+| `MindfulKey-X.Y.Z.dmg` | bản macOS theo version (bản chuẩn để lưu/đối chiếu) |
+| `MindfulKey.dmg` | copy y hệt, **tên cố định** → nút "Tải cho macOS" trên web |
+| `MindfulKey-X.Y.Z-universal.zip` | bản .app nén (universal) |
+| `MindfulKey-X.Y.Z-universal.dSYM.zip` | ký hiệu debug, để giải mã crash log |
+| `MindfulKey_X.Y.Z_x64-setup.exe` | bộ cài Windows theo version |
+| `MindfulKey-setup.exe` | copy y hệt, **tên cố định** → nút "Tải cho Windows" (chưa nối, xem `site/README.md`) |
+
+> Người tải bản tên-cố-định vẫn biết mình cầm bản nào: ổ đĩa `.dmg` khi mount hiện
+> "Mindful Keyboard X.Y.Z", bộ cài Windows hiện "Mindful Key X.Y.Z", và pane **Hệ thống** trong
+> app hiện số bản thật.
+
+⚠️ **Release đăng ra ở dạng NHÁP (draft)** — chạy xong workflow là *chưa ai thấy gì*. Vào tab
+**Releases**, soi đủ 6 asset rồi bấm **Publish release**. Chừng nào chưa bấm thì
+`releases/latest/download/...` chưa tồn tại ⇒ **nút tải trên web gãy**. Draft là cố ý: v0.2.1 từng
+chết 3 lần liên tiếp ở bước đăng, và bản Windows chưa từng đi qua đường release lần nào.
 
 Code (script + workflow) đã viết xong. Phần **dưới đây chỉ bạn làm được** — cần quyền truy
 cập Apple Developer Program + GitHub repo settings mà tôi không có.
@@ -108,3 +129,6 @@ SKIP_SIGN=1 bash scripts/release.sh
 - File tên ổn định `MindfulKey.dmg` (bản mới nhất, link không đổi) hiện chỉ là **bản copy nội
   dung y hệt** `MindfulKey-X.Y.Z.dmg`, publish lại mỗi release — đúng cách haynoi làm (2 file
   `Haynoi-0.3.7.dmg` + `Haynoi.dmg` trong ảnh tham chiếu cũng trùng SHA256 với nhau).
+  **[2026-07-17] Nay đã có người dùng:** nút "Tải cho macOS" ở `site/index.html` trỏ thẳng
+  `releases/latest/download/MindfulKey.dmg`. Trước đó nút trỏ trang Releases còn `site/README.md`
+  thì ghi là trỏ file — tài liệu nói dối suốt, và bản copy này thực tế chẳng ai dùng.

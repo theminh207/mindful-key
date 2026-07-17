@@ -70,17 +70,44 @@ jobs:
         shell: bash
         run: |
           choco install innosetup --no-progress -y
+
+          # Không đoán đường dẫn ISCC.exe — cùng lý do bước "Tìm .exe vừa build" ở trên không đoán
+          # OutDir. Choco đổi thư mục cài (Inno 7, hoặc Program Files thay vì Program Files (x86))
+          # là hardcode gãy ngay, mà lỗi sẽ đọc thành "release hỏng" chứ không ai ngờ tới cái path.
+          ISCC=""
+          for p in "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" \
+                   "/c/Program Files/Inno Setup 6/ISCC.exe" \
+                   "$(command -v iscc 2>/dev/null || true)"; do
+            if [[ -n "$p" && -f "$p" ]]; then ISCC="$p"; break; fi
+          done
+          if [[ -z "$ISCC" ]]; then
+            ISCC=$(find "/c/Program Files (x86)" "/c/Program Files" -maxdepth 3 -name "ISCC.exe" -type f 2>/dev/null | head -1)
+          fi
+          if [[ -z "$ISCC" ]]; then
+            echo "::error::Cài Inno Setup xong nhưng không tìm thấy ISCC.exe — choco đổi đường dẫn?" >&2
+            exit 1
+          fi
+          echo "Dùng: $ISCC"
+
           mkdir -p release-out
-          "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" \
+          "$ISCC" \
             "/DMyAppVersion=$VERSION" \
             "/DSourceExe=$SOURCE_EXE" \
             platforms/windows/installer/MindfulKey.iss
+
+          # [MINDFUL] Bản tên ổn định cho Windows — ĐỐI XỨNG với MindfulKey.dmg bên macOS. Nút tải
+          # trên web cần 1 địa chỉ không đổi qua từng version (releases/latest/download/...), nếu
+          # không thì mỗi lần phát hành lại phải sửa tay landing page. Nội dung y hệt bản có version;
+          # người dùng vẫn biết mình đang cài bản nào vì bộ cài tự hiện "Mindful Key <ver>".
+          cp "release-out/MindfulKey_${VERSION}_x64-setup.exe" "release-out/MindfulKey-setup.exe"
           ls -lh release-out/
 
       - uses: actions/upload-artifact@v4
         with:
           name: windows-setup
-          path: release-out/MindfulKey_*_x64-setup.exe
+          path: |
+            release-out/MindfulKey_*_x64-setup.exe
+            release-out/MindfulKey-setup.exe
           if-no-files-found: error
 
   release:
@@ -213,12 +240,14 @@ jobs:
             gh release create "$GITHUB_REF_NAME" \
               --title "MindfulKey $GITHUB_REF_NAME" \
               --notes-file release-out/release-notes.md \
+              --draft \
               $PRERELEASE_FLAG \
               release-out/MindfulKey-*.dmg \
               release-out/MindfulKey.dmg \
               release-out/MindfulKey-*-universal.zip \
               release-out/MindfulKey-*-universal.dSYM.zip \
-              release-out/MindfulKey_*_x64-setup.exe
+              release-out/MindfulKey_*_x64-setup.exe \
+              release-out/MindfulKey-setup.exe
           }
 
           # PAT trước (Release đứng tên chủ tài khoản). PAT hết hạn / thiếu quyền `contents:write`
@@ -230,6 +259,7 @@ jobs:
             export GITHUB_TOKEN="$RELEASE_PAT"
             if ERR=$(publish 2>&1); then
               echo "Đã đăng bằng RELEASE_PAT — Release đứng tên chủ tài khoản."
+              echo "::notice::Release đang ở dạng NHÁP (draft) — chưa ai thấy. Vào tab Releases, kiểm asset rồi bấm 'Publish release'. Nút tải trên web (releases/latest/download/...) chỉ sống sau khi bấm."
               exit 0
             fi
             echo "::warning::RELEASE_PAT có mặt nhưng đăng không được (hết hạn hoặc thiếu quyền Contents: Read and write) — lùi về token mặc định. Lỗi gh: ${ERR//$'\n'/ | }"
@@ -241,6 +271,7 @@ jobs:
           export GITHUB_TOKEN="$DEFAULT_TOKEN"
           if ERR=$(publish 2>&1); then
             echo "Đã đăng bằng token mặc định — Release đứng tên bot github-actions."
+            echo "::notice::Release đang ở dạng NHÁP (draft) — chưa ai thấy. Vào tab Releases, kiểm asset rồi bấm 'Publish release'. Nút tải trên web (releases/latest/download/...) chỉ sống sau khi bấm."
             exit 0
           fi
           echo "::error::Đăng thất bại với CẢ HAI token. Lỗi gh: ${ERR//$'\n'/ | }"
