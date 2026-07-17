@@ -125,7 +125,11 @@ void OpenKeyHelper::registerRunOnStartup(const int& val) {
 		} else {
 			RegOpenKeyEx(HKEY_CURRENT_USER, _runOnStartupKeyPath, NULL, KEY_ALL_ACCESS, &hKey);
 			wstring path = getFullPath();
-			RegSetValueEx(hKey, _T("OpenKey"), 0, REG_SZ, (byte*)path.c_str(), ((DWORD)path.size() + 1) * sizeof(TCHAR));
+			// (BYTE*) chứ không (byte*): `byte` viết thường vốn KHÔNG do file này khai báo — nó lọt vào
+			// nhờ <Urlmon.h> tình cờ kéo theo rpcndr.h. Gỡ Urlmon (code mạng duy nhất của app,
+			// 2026-07-17) là dòng này sập theo dù chẳng liên quan gì. BYTE là type Windows chuẩn,
+			// file này đã dùng ở 6 chỗ khác.
+			RegSetValueEx(hKey, _T("OpenKey"), 0, REG_SZ, (BYTE*)path.c_str(), ((DWORD)path.size() + 1) * sizeof(TCHAR));
 			RegCloseKey(hKey);
 		}
 	} else {
