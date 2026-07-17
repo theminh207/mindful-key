@@ -5,6 +5,46 @@ Phiên bản lấy từ `version.env`.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-07-17
+
+**Bản THỬ NGHIỆM cho Windows — chưa ai chạy thật lần nào.** Xem cảnh báo ở release notes.
+
+### Added
+
+- **Vỏ Windows biên dịch và chạy được** — lần đầu trong lịch sử repo. Trước đó chưa từng có một
+  lần build thành công nào.
+- **Lớp cảm xúc đủ 6 module trên Windows**: MoodWatch (chấm send-risk thay vì dán nhãn cảm xúc) ·
+  gác cổng gửi tin (Feature #1) · chuông + nhắc gộp 1 mạch · nhật ký mã hoá (DPAPI, không SQLite) ·
+  màn Soi lại · dòng sông cảm xúc (GDI+).
+- **Chuông phát ĐÚNG 3 tiếng của dự án** (Chuông chùa/gió/reo) thay vì tiếng "ding" mặc định của
+  Windows, có âm lượng riêng không đè lên app khác, và nhận tệp `.wav` cá nhân hoá.
+- **Nhận diện thật trên Windows**: icon app + icon khay là con sóng `~` teal (trước là chữ "V" của
+  OpenKey 2019), 4 icon tab, và `StatusAlert` — sóng biên độ cao khi tâm đang động (asset brand
+  vẽ sẵn từ lâu, cả macOS lẫn Windows đều chưa từng nối).
+- **Bộ cài `.exe`** (Inno Setup) + CI Windows build Debug/Release mỗi lần push.
+
+### Changed
+
+- **`core/mood` nay có 6 module dùng chung** cả 3 vỏ. Năm mảnh logic từng kẹt trong vỏ macOS/iOS
+  đã gom về: bảng lexicon send-risk, bảng màu brand, câu chữ kể hình dạng ngày, phân loại hình
+  dạng ngày + rổ câu hỏi, và đường cong biên độ sóng.
+- Tên tệp chạy: `OpenKey64.exe` → `MindfulKey.exe`.
+- Nút "Kiểm tra bản mới" nay mở trang Releases, thay vì hỏi repo của OpenKey gốc rồi chạy một
+  updater mà bộ cài không kèm.
+
+### Fixed
+
+- **Lexicon send-risk từng trôi lệch giữa macOS và iOS**: `"tôi giận."` chấm 0.33 trên macOS
+  nhưng 0.00 trên iOS — lớp cảm xúc iOS mù với mọi câu kết thúc bằng dấu câu. Nay 1 bản dùng chung.
+- Bản Windows từng khoe "Phiên bản 2.0.5.0" — số của OpenKey, không phải của dự án này.
+- Gỡ code gọi mạng cuối cùng khỏi vỏ Windows: app **không còn khả năng** kết nối mạng.
+
+### Security
+
+- **Lớp cảm xúc TẮT MẶC ĐỊNH trên Windows.** `WH_KEYBOARD_LL` thấy mọi phím kể cả ô mật khẩu, và
+  Windows không có cơ chế nào chặn hook như Secure Input Mode của macOS. Bật là hành động có ý
+  thức, kèm cảnh báo nói thẳng giới hạn này. Đang vá bằng UI Automation.
+
 ## [0.2.1] - 2026-07-16
 
 Bản vá — không có tính năng mới.

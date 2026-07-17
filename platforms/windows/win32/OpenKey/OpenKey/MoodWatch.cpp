@@ -35,7 +35,14 @@
 
 using namespace std;
 
-int vMoodWatch = 1;                    // bật mặc định (nạp lại từ registry lúc khởi động)
+// [MINDFUL] 2026-07-17 — TẮT mặc định trên Windows (macOS/iOS bật). KHÔNG phải chọn tuỳ tiện:
+// `WH_KEYBOARD_LL` thấy MỌI phím, kể cả ô mật khẩu, và Windows KHÔNG có cơ chế nào chặn hook như
+// Secure Input Mode của macOS. Bật sẵn = mật khẩu người dùng vào MoodBuffer và bị chấm điểm ngay
+// từ lần cài đầu, trước khi họ kịp biết. Đó là cột trụ riêng tư.
+// Chủ dự án chốt 2026-07-17: bản Windows đầu tiên tắt sẵn, bật là hành động CÓ Ý THỨC của người
+// dùng và có cảnh báo (xem MoodWatch_SetEnabled). Bật lại mặc định khi đã vá bằng UI Automation —
+// xem docs/FRICTION-LOG.md 2026-07-17 "CHẶN PHÁT HÀNH".
+int vMoodWatch = 0;
 
 // Khớp MoodWatchMac.mm: risk >= 0.5 mới nhắc, và 15 giây nghỉ giữa 2 lần nhắc.
 static const double kSendRiskThreshold = 0.5;
@@ -201,7 +208,22 @@ void MoodWatch_OnWord(const wstring& word) {
     g_cv.notify_one();
 }
 
+// Nói THẲNG cái đang đánh đổi, ngay lúc người ta quyết định — không giấu trong tài liệu mà không
+// ai đọc. Trả về true nếu sau lời này lớp cảm xúc được BẬT.
+bool MoodWatch_ConfirmEnable(HWND parent) {
+    return MessageBoxW(parent,
+        L"Bật lớp cảm xúc?\n\n"
+        L"Nó đọc những từ bạn gõ (chỉ trong máy, không gửi đi đâu) để biết khi nào mặt hồ đang gợn.\n\n"
+        L"BẢN WINDOWS NÀY CÒN MỘT GIỚI HẠN THẬT: nó chưa phân biệt được ô mật khẩu. Bản macOS được "
+        L"hệ điều hành che chỗ đó, Windows thì không. Nghĩa là mật khẩu bạn gõ cũng sẽ được đọc và "
+        L"chấm điểm — không lưu lại chữ, nhưng vẫn là đã đọc.\n\n"
+        L"Đang vá. Tới khi xong, chỉ bật nếu bạn hiểu và chấp nhận điều này.",
+        L"Mindful Keyboard", MB_YESNO | MB_ICONWARNING) == IDYES;
+}
+
 void MoodWatch_Toggle() {
+    if (!vMoodWatch && !MoodWatch_ConfirmEnable(NULL))
+        return;   // muốn bật nhưng đọc xong đổi ý -> giữ nguyên tắt
     APP_SET_DATA(vMoodWatch, !vMoodWatch);   // đảo + lưu registry
     if (!vMoodWatch) {
         lock_guard<mutex> lock(g_mutex);

@@ -130,7 +130,7 @@ void OpenKeyInit() {
 	pData = (vKeyHookState*)vKeyInit();
 
 	//[MINDFUL] nạp cài đặt bật/tắt + bật lớp nghe cảm xúc (dự án mindful-keyboard)
-	{ extern int vMoodWatch; APP_GET_DATA(vMoodWatch, 1); }
+	{ extern int vMoodWatch; APP_GET_DATA(vMoodWatch, 0); }   // TẮT mặc định — xem MoodWatch.cpp
 	{ extern void MoodWatch_Init(); MoodWatch_Init(); }
 	{ extern void Bell_Init(); Bell_Init(); }
 	{ SendGatekeeper_Init(); }

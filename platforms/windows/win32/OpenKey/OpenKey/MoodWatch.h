@@ -14,6 +14,10 @@ void MoodWatch_Init();
 // Đảo bật/tắt + lưu cài đặt (gọi từ menu khay).
 void MoodWatch_Toggle();
 
+// Hỏi + nói thẳng giới hạn ô mật khẩu của bản Windows. true = người dùng đồng ý bật.
+// Gọi TRƯỚC khi bật ở BẤT KỲ đường nào (menu khay, checkbox cửa sổ Điều khiển).
+bool MoodWatch_ConfirmEnable(HWND parent);
+
 // Được engine gọi mỗi khi một TỪ vừa hoàn chỉnh (qua con trỏ vOnWordCommitted).
 // CHẠY TRÊN LUỒNG HOOK BÀN PHÍM — chỉ xếp hàng rồi trả về ngay, không phân tích tại chỗ.
 void MoodWatch_OnWord(const std::wstring& word);

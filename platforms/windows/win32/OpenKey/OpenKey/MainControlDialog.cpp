@@ -510,6 +510,12 @@ void MainControlDialog::onCheckboxClicked(const HWND& hWnd) {
     }
     else if (hWnd == checkMoodWatch) {
         val = (int)SendMessage(hWnd, BM_GETCHECK, 0, 0);
+        // Bật qua checkbox cũng phải qua đúng cổng cảnh báo như menu khay — không thì có 1 đường
+        // vòng bật được lớp cảm xúc mà không ai nói cho người dùng biết chuyện ô mật khẩu.
+        if (val && !vMoodWatch && !MoodWatch_ConfirmEnable(hDlg)) {
+            SendMessage(checkMoodWatch, BM_SETCHECK, 0, 0);   // trả checkbox về đúng sự thật
+            return;
+        }
         APP_SET_DATA(vMoodWatch, val ? 1 : 0);
     }
     else if (hWnd == checkRestoreIfWrongSpelling) {
