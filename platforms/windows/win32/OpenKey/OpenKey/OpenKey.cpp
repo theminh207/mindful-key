@@ -12,6 +12,7 @@ You can fork, modify, improve this program. If you
 redistribute your new version, it MUST be open source.
 -----------------------------------------------------------*/
 #include "stdafx.h"
+#include "SendGatekeeper.h"
 #include "AppDelegate.h"
 
 #pragma comment(lib, "imm32")
@@ -131,6 +132,7 @@ void OpenKeyInit() {
 	{ extern int vMoodWatch; APP_GET_DATA(vMoodWatch, 1); }
 	{ extern void MoodWatch_Init(); MoodWatch_Init(); }
 	{ extern void Bell_Init(); Bell_Init(); }
+	{ SendGatekeeper_Init(); }
 
 	//pre-create back key
 	backspaceEvent[0].type = INPUT_KEYBOARD;
@@ -501,6 +503,17 @@ LRESULT CALLBACK keyboardHookProcess(int nCode, WPARAM wParam, LPARAM lParam) {
 		return CallNextHookEx(hKeyboardHook, nCode, wParam, lParam);
 	}
 	
+	// [MINDFUL] Feature #1 — gác cổng gửi tin. Đặt TRƯỚC mọi xử lý gõ dấu để không đụng vào
+	// logic engine. Chỉ can thiệp khi: Enter không Shift + app nằm trong danh sách người dùng tự
+	// thêm + send-risk vượt ngưỡng. Trả 1 = NUỐT phím Enter này.
+	// KHÔNG chặn cứng: "Vẫn gửi" gửi lại Enter ngay (kèm dwExtraInfo nên nhánh trên bỏ qua).
+	// Hạn chế đã biết, giống hệt bản macOS (xem OpenKey.mm): từ CUỐI ngay trước Enter chưa được
+	// tính vào risk nếu chưa có dấu cách — engine chỉ giao từ khi startNewSession() chạy.
+	if (SendGatekeeper_ShouldIntercept(wParam, keyboardData)) {
+		SendGatekeeper_ShowPause();
+		return 1;
+	}
+
 	//ignore if IME pad is open when typing Japanese/Chinese...
 	HWND hWnd = GetForegroundWindow();
 	HWND hIME = ImmGetDefaultIMEWnd(hWnd);

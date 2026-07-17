@@ -14,6 +14,7 @@ redistribute your new version, it MUST be open source.
 #include "SystemTrayHelper.h"
 #include "AppDelegate.h"
 #include "MoodWatch.h"
+#include "SendGatekeeper.h"
 #include "Bell.h"
 
 #define WM_TRAYMESSAGE (WM_USER + 1)
@@ -25,6 +26,7 @@ redistribute your new version, it MUST be open source.
 #define POPUP_USE_MACRO 903
 #define POPUP_MOODWATCH 905
 #define POPUP_BELL_SETTINGS 906
+#define POPUP_GATEKEEPER_APP 907
 
 #define POPUP_TELEX 910
 #define POPUP_VNI 911
@@ -63,6 +65,7 @@ map<UINT, LPCTSTR> menuData = {
 	{POPUP_USE_MACRO, _T("Bật gõ tắt")},
 	{POPUP_MOODWATCH, _T("Bật nhắc tâm (cảm xúc)")},
 	{POPUP_BELL_SETTINGS, _T("Chuông tỉnh thức...")},
+	{POPUP_GATEKEEPER_APP, _T("Gác cổng gửi tin cho app này")},
 	{POPUP_TELEX, _T("Kiểu gõ Telex")},
 	{POPUP_VNI, _T("Kiểu gõ VNI")},
 	{POPUP_SIMPLE_TELEX, _T("Kiểu gõ Simple Telex")},
@@ -127,6 +130,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				break;
 			case POPUP_BELL_SETTINGS:
 				Bell_ShowSettings(NULL);
+				break;
+			case POPUP_GATEKEEPER_APP:
+				SendGatekeeper_ToggleLastApp();
 				break;
 			case POPUP_MACRO_TABLE:
 				AppDelegate::getInstance()->onMacroTable();
@@ -220,6 +226,7 @@ void SystemTrayHelper::createPopupMenu() {
 	AppendMenu(popupMenu, MF_CHECKED, POPUP_USE_MACRO, menuData[POPUP_USE_MACRO]);
 	AppendMenu(popupMenu, MF_CHECKED, POPUP_MOODWATCH, menuData[POPUP_MOODWATCH]);
 	AppendMenu(popupMenu, MF_STRING, POPUP_BELL_SETTINGS, menuData[POPUP_BELL_SETTINGS]);
+	AppendMenu(popupMenu, MF_UNCHECKED, POPUP_GATEKEEPER_APP, menuData[POPUP_GATEKEEPER_APP]);
 	AppendMenu(popupMenu, MF_SEPARATOR, 0, 0);
 	AppendMenu(popupMenu, MF_UNCHECKED, POPUP_MACRO_TABLE, menuData[POPUP_MACRO_TABLE]);
 	AppendMenu(popupMenu, MF_UNCHECKED, POPUP_CONVERT_TOOL, menuData[POPUP_CONVERT_TOOL]);
@@ -275,6 +282,9 @@ void SystemTrayHelper::updateData() {
 	MODIFY_MENU(popupMenu, POPUP_SMART_SWITCH, vUseSmartSwitchKey);
 	MODIFY_MENU(popupMenu, POPUP_USE_MACRO, vUseMacro);
 	MODIFY_MENU(popupMenu, POPUP_MOODWATCH, vMoodWatch);
+	// Dấu tích = app ĐANG DÙNG có đang được gác cổng không. Đọc getLastAppExecuteName() nên
+	// nó là app trước khi bấm vào khay, không phải chính bộ gõ.
+	MODIFY_MENU(popupMenu, POPUP_GATEKEEPER_APP, SendGatekeeper_IsAppWatched(SendGatekeeper_LastAppName()));
 	MODIFY_MENU(popupMenu, POPUP_TELEX, vInputType == 0);
 	MODIFY_MENU(popupMenu, POPUP_VNI, vInputType == 1);
 	MODIFY_MENU(popupMenu, POPUP_SIMPLE_TELEX, vInputType == 2);

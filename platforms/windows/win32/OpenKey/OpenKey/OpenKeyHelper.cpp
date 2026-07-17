@@ -67,6 +67,32 @@ int OpenKeyHelper::getRegInt(LPCTSTR key, const int & defaultValue) {
 	return val;
 }
 
+void OpenKeyHelper::setRegString(LPCTSTR key, LPCTSTR val) {
+	openKey();
+	RegSetValueEx(hKey, key, 0, REG_SZ, (LPBYTE)val, (DWORD)((lstrlen(val) + 1) * sizeof(TCHAR)));
+	RegCloseKey(hKey);
+}
+
+wstring OpenKeyHelper::getRegString(LPCTSTR key, LPCTSTR defaultValue) {
+	openKey();
+	// Hỏi kích thước trước rồi mới cấp bộ đệm — KHÔNG dùng buffer cố định: danh sách app gác cổng
+	// do người dùng tự thêm nên không có trần biết trước.
+	DWORD size = 0;
+	wstring result;
+	if (ERROR_SUCCESS == RegQueryValueEx(hKey, key, 0, 0, NULL, &size) && size > sizeof(TCHAR)) {
+		result.resize(size / sizeof(TCHAR));
+		if (ERROR_SUCCESS == RegQueryValueEx(hKey, key, 0, 0, (LPBYTE)&result[0], &size)) {
+			// RegQueryValueEx đếm CẢ ký tự kết thúc chuỗi -> cắt đi, không thì so chuỗi luôn lệch.
+			while (!result.empty() && result.back() == L'\0')
+				result.pop_back();
+		} else {
+			result.clear();
+		}
+	}
+	RegCloseKey(hKey);
+	return result.empty() ? wstring(defaultValue) : result;
+}
+
 void OpenKeyHelper::setRegBinary(LPCTSTR key, const BYTE * pData, const int & size) {
 	openKey();
 	RegSetValueEx(hKey, key, 0, REG_BINARY, pData, size);

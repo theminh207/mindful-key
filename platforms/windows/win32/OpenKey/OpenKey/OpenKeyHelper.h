@@ -25,6 +25,10 @@ public:
 	static void setRegInt(LPCTSTR key, const int& val);
 	static int getRegInt(LPCTSTR key, const int& defaultValue);
 
+	// [MINDFUL] Danh sách app gác cổng cần lưu CHUỖI — registry helper gốc chỉ có int/binary.
+	static void setRegString(LPCTSTR key, LPCTSTR val);
+	static wstring getRegString(LPCTSTR key, LPCTSTR defaultValue);
+
 	static void setRegBinary(LPCTSTR key, const BYTE* pData, const int& size);
 	static BYTE* getRegBinary(LPCTSTR key, DWORD& outSize);
 
