@@ -96,6 +96,9 @@
     <ClInclude Include="..\..\..\..\..\core\mood\BreathingPause.h">
       <Filter>mood</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\core\mood\EmotionWaveAmplitude.h">
+      <Filter>mood</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\core\mood\MoodBuffer.h">
       <Filter>mood</Filter>
     </ClInclude>
@@ -180,6 +183,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\core\mood\BreathingPause.cpp">
+      <Filter>mood</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\core\mood\EmotionWaveAmplitude.cpp">
       <Filter>mood</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\core\mood\MoodBuffer.cpp">

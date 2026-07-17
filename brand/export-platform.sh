@@ -55,6 +55,10 @@ ico_from_svg "$SVG/Status.svg"       "$OUT/windows/StatusViet.ico"   ""       "$
 ico_from_svg "$SVG/StatusEng.svg"    "$OUT/windows/StatusEng.ico"    ""       "${TRAY_SIZES[@]}"
 ico_from_svg "$SVG/Status.svg"       "$OUT/windows/StatusViet10.ico" "$STONE" "${TRAY_SIZES[@]}"
 ico_from_svg "$SVG/StatusEng.svg"    "$OUT/windows/StatusEng10.ico"  "$STONE" "${TRAY_SIZES[@]}"
+# Sóng biên độ CAO — "tâm đang động". Teal, KHÔNG cam: nhận diện là BIÊN ĐỘ, không phải màu cảnh
+# báo (BRAND-ASSETS §4/§5, HIẾN CHƯƠNG §2.3). Asset này brand vẽ sẵn từ lâu, §6 ghi "cần wire" —
+# và tới 2026-07-17 thì CẢ macOS lẫn Windows đều chưa nối. Windows nối trước.
+ico_from_svg "$SVG/StatusAlert.svg"  "$OUT/windows/StatusAlert.ico"  ""       "${TRAY_SIZES[@]}"
 
 echo "== Windows: icon nút =="
 ico_from_svg "$SVG/OK.svg"           "$OUT/windows/OKButton.ico"     ""       "${BTN_SIZES[@]}"

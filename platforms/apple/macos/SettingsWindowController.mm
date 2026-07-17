@@ -542,7 +542,17 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
         [_navRows[(NSUInteger)i] setSelectedRow:(i == index)];
     }
 
-    _subNavBar.hidden = (index != MKSettingsSectionInput);
+    BOOL isBoGo = (index == MKSettingsSectionInput);
+    _subNavBar.hidden = !isBoGo;
+
+    // [MINDFUL] Giảm bớt vùng đỏ ở trên cùng khi không có sub nav bar
+    NSRect scrollFrame = _paneScroll.frame;
+    if (isBoGo) {
+        scrollFrame.size.height = kMaxPaneH;
+    } else {
+        scrollFrame.size.height = kMaxPaneH + kSubNavH + kSubNavGap;
+    }
+    _paneScroll.frame = scrollFrame;
 
     switch ((MKSettingsSection)index) {
         case MKSettingsSectionToday:

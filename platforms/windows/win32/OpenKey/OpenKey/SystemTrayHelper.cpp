@@ -20,6 +20,17 @@ redistribute your new version, it MUST be open source.
 #include "Bell.h"
 
 #define WM_TRAYMESSAGE (WM_USER + 1)
+// [MINDFUL] GĐ6 — MoodWatch (LUỒNG WORKER) báo "tâm đang động". Phải đi qua PostMessage chứ không
+// gọi thẳng: hẹn giờ "lắng về" dùng SetTimer, mà SetTimer cần VÒNG LẶP THÔNG ĐIỆP — worker không
+// có, nên gọi thẳng thì icon đổi rồi KẸT LUÔN ở trạng thái động, không bao giờ lắng lại.
+#define WM_WAVE_ALERT  (WM_USER + 2)
+#define TIMER_WAVE_SETTLE 0xA1
+
+// "rồi lắng về Status sau VÀI GIÂY" (BRAND-ASSETS.md §6). "Vài giây" không phải con số — 3s lấy
+// theo mỏ neo có sẵn của chính sản phẩm: BreathingPausePrompt::durationSeconds mặc định 3.0
+// (core/mood/BreathingPause.h). Xem docs/FRICTION-LOG.md 2026-07-17.
+static const UINT kWaveAlertMs = 3000;
+static bool g_waveAlert = false;
 #define TRAY_ICONUID 100
 
 #define POPUP_VIET_ON_OFF 900
@@ -94,6 +105,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	switch (message) {
 	case WM_CREATE:
 		taskbarCreated = RegisterWindowMessage(_T("TaskbarCreated"));
+		break;
+	case WM_WAVE_ALERT:
+		// Chạy trên luồng CỦA CỬA SỔ -> SetTimer có vòng lặp thông điệp để nổ.
+		g_waveAlert = true;
+		SystemTrayHelper::updateData();
+		KillTimer(hWnd, TIMER_WAVE_SETTLE);          // gợn tiếp trong lúc đang động -> gia hạn,
+		SetTimer(hWnd, TIMER_WAVE_SETTLE, kWaveAlertMs, NULL);   // không chồng nhiều hẹn giờ
+		return 0;
+	case WM_TIMER:
+		if (wParam == TIMER_WAVE_SETTLE) {
+			KillTimer(hWnd, TIMER_WAVE_SETTLE);
+			g_waveAlert = false;
+			SystemTrayHelper::updateData();          // lắng về mặt hồ thường
+			return 0;
+		}
 		break;
 	case WM_USER+2019:
 		AppDelegate::getInstance()->onControlPanel();
@@ -284,6 +310,13 @@ void SystemTrayHelper::createPopupMenu() {
 
 static void loadTrayIcon() {
 	int icon = 0;
+	// Sóng biên độ cao thắng mọi trạng thái khác: lúc tâm đang động thì đó là thứ đáng nói nhất.
+	// TEAL, không cam — nhận diện là BIÊN ĐỘ, không phải màu cảnh báo (HIẾN CHƯƠNG §2.3).
+	if (g_waveAlert) {
+		nid.hIcon = LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICON_STATUS_ALERT));
+		LoadString(GetModuleHandle(0), IDS_TRAY_TITLE_2, nid.szTip, 128);
+		return;
+	}
 	if (vLanguage) {
 		icon = vUseGrayIcon ? IDI_ICON_STATUS_VIET_10 : IDI_ICON_STATUS_VIET;
 		LoadString(GetModuleHandle(0), IDS_TRAY_TITLE_2, nid.szTip, 128);
@@ -410,4 +443,10 @@ void SystemTrayHelper::createSystemTrayIcon(const HINSTANCE& hIns) {
 
 void SystemTrayHelper::removeSystemTray() {
 	Shell_NotifyIcon(NIM_DELETE, &nid);
+}
+// [MINDFUL] GĐ6 — gọi được từ BẤT KỲ luồng nào (MoodWatch gọi từ worker). Chỉ đặt tin nhắn rồi
+// về ngay; mọi việc đụng UI xảy ra trên luồng cửa sổ. Xem WM_WAVE_ALERT ở trên.
+void SystemTrayHelper::showWaveAlert() {
+	if (nid.hWnd)
+		PostMessage(nid.hWnd, WM_WAVE_ALERT, 0, 0);
 }

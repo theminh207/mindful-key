@@ -26,6 +26,8 @@
 #include "NudgeCoordinator.h"
 #include "../../../../../core/mood/MoodBuffer.h"
 #include "../../../../../core/mood/SendRiskAnalyzer.h"
+#include "../../../../../core/mood/EmotionWaveAmplitude.h"
+#include "SystemTrayHelper.h"
 #include <thread>
 #include <mutex>
 #include <condition_variable>
@@ -101,6 +103,21 @@ static void analyzeOnWorker(const wstring& word) {
         lock_guard<mutex> lock(g_sampleMutex);
         g_sampleSum += scored.risk;
         g_sampleCount++;
+    }
+
+    // [MINDFUL] GĐ6 — "tâm đang động": icon khay đổi sang sóng biên độ cao rồi tự lắng về sau vài
+    // giây (BRAND-ASSETS.md §6). Nhận diện là BIÊN ĐỘ, không phải màu — icon vẫn teal, không cam.
+    //
+    // NGƯỠNG KHÔNG PHẢI SỐ TỰ NGHĨ. §6 nói "khi MoodWatcher báo mức 4-5"; §5 neo nghĩa 2 mức đó
+    // vào chính cơ chế đang chạy: mức 4 "Sóng" = "chuông có thể ngân mời" (ngưỡng gợn của
+    // NudgeCoordinator), mức 5 "Cuộn" = "kích hoạt lớp nhịp thở" (gác cổng). Nên mức 4-5 bắt đầu
+    // đúng ở ngưỡng gợn — và như vậy nó tự tôn trọng lựa chọn Độ nhạy của người dùng.
+    //
+    // Còn EmotionWaveAmplitude() lo phần dead-zone 0.3 + dâng mượt: dưới đó mặt hồ PHẲNG TUYỆT ĐỐI,
+    // không rung rinh vì một chữ hơi nặng.
+    if (EmotionWaveAmplitude(scored.risk) > 0.0 &&
+        scored.risk >= NudgeCoordinator_RippleThreshold()) {
+        SystemTrayHelper::showWaveAlert();   // an toàn từ luồng worker: nó chỉ PostMessage
     }
 
     // [MINDFUL] GĐ4 — đếm chuỗi câu căng LIÊN TIẾP, độc lập với ngưỡng nhắc thụ động bên dưới.

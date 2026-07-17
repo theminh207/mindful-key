@@ -52,6 +52,10 @@ IDI_ICON_STATUS_VIET_10 ICON                    "../../../../../brand/platform/w
 
 IDI_ICON_STATUS_ENG_10  ICON                    "../../../../../brand/platform/windows/StatusEng10.ico"
 
+// Sóng biên độ CAO — "tâm đang động". Brand vẽ sẵn từ lâu; BRAND-ASSETS §6 ghi "cần wire" và tới
+// 2026-07-17 CẢ macOS lẫn Windows đều chưa nối. Windows nối trước.
+IDI_ICON_STATUS_ALERT   ICON                    "../../../../../brand/platform/windows/StatusAlert.ico"
+
 IDI_ICON_OK_BUTTON      ICON                    "../../../../../brand/platform/windows/OKButton.ico"
 
 IDI_ICON_EXIT_BUTTON    ICON                    "../../../../../brand/platform/windows/ExitButton.ico"

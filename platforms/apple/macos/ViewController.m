@@ -12,6 +12,12 @@
 #import "MyTextField.h"
 #import "BrandColors.h"          // [MINDFUL] Story 1.7 — [Brand teal]/[Brand charcoal]/[Brand divider]
 
+@interface FlippedDocumentView : NSView
+@end
+@implementation FlippedDocumentView
+- (BOOL)isFlipped { return YES; }
+@end
+
 extern AppDelegate* appDelegate;
 extern void OnSpellCheckingChanged(void);
 
@@ -80,6 +86,18 @@ extern int vPerformLayoutCompat;
     tabButtonBackground.layer.backgroundColor = [[NSColor windowBackgroundColor] CGColor];
     [self.view addSubview:tabButtonBackground];
     tabViewRect = self.tabviewPrimary.frame;
+    
+    // [MINDFUL] Expand tab boxes to fill the available space (bottom and right)
+    CGFloat parentWidth = NSWidth(self.viewParent.bounds);
+    CGFloat rightMargin = 20.0;
+    CGFloat bottomMargin = 20.0;
+    
+    tabViewRect.size.width = parentWidth - tabViewRect.origin.x - rightMargin;
+    
+    CGFloat currentTop = tabViewRect.origin.y + tabViewRect.size.height;
+    tabViewRect.origin.y = bottomMargin;
+    tabViewRect.size.height = currentTop - bottomMargin;
+
     for (NSBox* b in tabviews) {
         b.frame = tabViewRect;
     }
@@ -99,6 +117,7 @@ extern int vPerformLayoutCompat;
     
     [self initKey];
     
+    [self rebuildPrimaryTabUI];
     [self fillData];
     
     // set version info
@@ -467,6 +486,139 @@ extern int vPerformLayoutCompat;
 
 - (IBAction)onTerminateApp:(id)sender {
     [NSApp terminate:0];
+}
+
+- (void)rebuildPrimaryTabUI {
+    NSView *contentView = self.tabviewPrimary.contentView;
+    if (!contentView) return;
+
+    // Retain PillSwitches strongly locally before removing
+    PillSwitch *sw1 = self.CheckSpellingButton;
+    PillSwitch *sw2 = self.UseModernOrthography;
+    PillSwitch *sw3 = self.UpperCaseFirstChar;
+    PillSwitch *sw4 = self.RestoreIfInvalidWord;
+    
+    PillSwitch *sw5 = self.AutoRememberSwitchKey;
+    PillSwitch *sw6 = self.FixRecommendBrowser;
+    PillSwitch *sw7 = self.AllowZWJF;
+    PillSwitch *sw8 = self.RememberTableCode;
+    PillSwitch *sw9 = self.OtherLanguage;
+    
+    PillSwitch *sw10 = self.TempOffSpellChecking;
+    PillSwitch *sw11 = self.TempOffOpenKey;
+
+    // Remove all old subviews (including old labels)
+    NSArray *oldSubviews = [contentView.subviews copy];
+    for (NSView *v in oldSubviews) {
+        [v removeFromSuperview];
+    }
+
+    NSScrollView *scrollView = [[NSScrollView alloc] init];
+    scrollView.hasVerticalScroller = YES;
+    scrollView.drawsBackground = NO;
+    scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+    [contentView addSubview:scrollView];
+    [NSLayoutConstraint activateConstraints:@[
+        [scrollView.topAnchor constraintEqualToAnchor:contentView.topAnchor],
+        [scrollView.leadingAnchor constraintEqualToAnchor:contentView.leadingAnchor],
+        [scrollView.trailingAnchor constraintEqualToAnchor:contentView.trailingAnchor],
+        [scrollView.bottomAnchor constraintEqualToAnchor:contentView.bottomAnchor]
+    ]];
+
+    FlippedDocumentView *docView = [[FlippedDocumentView alloc] init];
+    docView.translatesAutoresizingMaskIntoConstraints = NO;
+    scrollView.documentView = docView;
+    
+    [NSLayoutConstraint activateConstraints:@[
+        [docView.topAnchor constraintEqualToAnchor:scrollView.contentView.topAnchor],
+        [docView.leadingAnchor constraintEqualToAnchor:scrollView.contentView.leadingAnchor],
+        [docView.trailingAnchor constraintEqualToAnchor:scrollView.contentView.trailingAnchor],
+        [docView.widthAnchor constraintEqualToAnchor:scrollView.contentView.widthAnchor]
+    ]];
+
+    NSStackView *mainStack = [[NSStackView alloc] init];
+    mainStack.orientation = NSUserInterfaceLayoutOrientationVertical;
+    mainStack.alignment = NSLayoutAttributeLeading;
+    mainStack.spacing = 16;
+    mainStack.translatesAutoresizingMaskIntoConstraints = NO;
+    [docView addSubview:mainStack];
+
+    [NSLayoutConstraint activateConstraints:@[
+        [mainStack.topAnchor constraintEqualToAnchor:docView.topAnchor constant:16],
+        [mainStack.leadingAnchor constraintEqualToAnchor:docView.leadingAnchor constant:24],
+        [mainStack.trailingAnchor constraintEqualToAnchor:docView.trailingAnchor constant:-24],
+        [mainStack.bottomAnchor constraintEqualToAnchor:docView.bottomAnchor constant:-16]
+    ]];
+
+    // Helper block to create section header
+    NSTextField* (^createHeader)(NSString *) = ^NSTextField*(NSString *title) {
+        NSTextField *lbl = [NSTextField labelWithString:title];
+        lbl.font = [NSFont systemFontOfSize:13 weight:NSFontWeightSemibold];
+        lbl.textColor = [Brand teal];
+        return lbl;
+    };
+
+    // Helper block to create row
+    NSView* (^createRow)(PillSwitch *, NSString *) = ^NSView*(PillSwitch *sw, NSString *title) {
+        NSStackView *row = [[NSStackView alloc] init];
+        row.orientation = NSUserInterfaceLayoutOrientationHorizontal;
+        row.alignment = NSLayoutAttributeCenterY;
+        row.spacing = 12;
+        
+        NSTextField *lbl = [NSTextField labelWithString:title];
+        lbl.font = [NSFont systemFontOfSize:13 weight:NSFontWeightRegular];
+        lbl.textColor = [Brand charcoal];
+        lbl.lineBreakMode = NSLineBreakByWordWrapping;
+        lbl.maximumNumberOfLines = 0;
+        lbl.translatesAutoresizingMaskIntoConstraints = NO;
+        [lbl setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow forOrientation:NSLayoutConstraintOrientationHorizontal];
+        
+        if (sw) {
+            sw.translatesAutoresizingMaskIntoConstraints = NO;
+            [NSLayoutConstraint activateConstraints:@[
+                [sw.widthAnchor constraintEqualToConstant:40],
+                [sw.heightAnchor constraintEqualToConstant:24]
+            ]];
+            [row addArrangedSubview:sw];
+        }
+        [row addArrangedSubview:lbl];
+        return row;
+    };
+
+    // Section 1: Chính tả & Cú pháp
+    NSStackView *sec1 = [[NSStackView alloc] init];
+    sec1.orientation = NSUserInterfaceLayoutOrientationVertical;
+    sec1.alignment = NSLayoutAttributeLeading;
+    sec1.spacing = 10;
+    [sec1 addArrangedSubview:createHeader(@"Chính tả & Cú pháp")];
+    [sec1 addArrangedSubview:createRow(sw1, @"Kiểm tra chính tả")];
+    [sec1 addArrangedSubview:createRow(sw2, @"Đặt dấu oà, uý (kiểu mới)")];
+    [sec1 addArrangedSubview:createRow(sw3, @"Viết hoa chữ cái đầu câu")];
+    [sec1 addArrangedSubview:createRow(sw4, @"Tự khôi phục phím với từ sai")];
+    [mainStack addArrangedSubview:sec1];
+
+    // Section 2: Gõ thông minh
+    NSStackView *sec2 = [[NSStackView alloc] init];
+    sec2.orientation = NSUserInterfaceLayoutOrientationVertical;
+    sec2.alignment = NSLayoutAttributeLeading;
+    sec2.spacing = 10;
+    [sec2 addArrangedSubview:createHeader(@"Gõ thông minh")];
+    [sec2 addArrangedSubview:createRow(sw5, @"Chuyển chế độ thông minh")];
+    [sec2 addArrangedSubview:createRow(sw6, @"Sửa lỗi gợi ý (trình duyệt, Excel,...)")];
+    [sec2 addArrangedSubview:createRow(sw7, @"Cho phép \"z w j f\" làm phụ âm")];
+    [sec2 addArrangedSubview:createRow(sw8, @"Tự ghi nhớ bảng mã theo ứng dụng")];
+    [sec2 addArrangedSubview:createRow(sw9, @"Tắt tiếng Việt khi bộ gõ hệ thống khác tiếng Anh")];
+    [mainStack addArrangedSubview:sec2];
+
+    // Section 3: Phím tắt thao tác nhanh
+    NSStackView *sec3 = [[NSStackView alloc] init];
+    sec3.orientation = NSUserInterfaceLayoutOrientationVertical;
+    sec3.alignment = NSLayoutAttributeLeading;
+    sec3.spacing = 10;
+    [sec3 addArrangedSubview:createHeader(@"Phím tắt thao tác nhanh")];
+    [sec3 addArrangedSubview:createRow(sw10, @"Tạm tắt chính tả bằng phím ^")];
+    [sec3 addArrangedSubview:createRow(sw11, @"Tạm tắt bộ gõ bằng phím ⌘")];
+    [mainStack addArrangedSubview:sec3];
 }
 
 -(void)fillData {

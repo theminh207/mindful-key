@@ -26,10 +26,22 @@ static const CGFloat kDisabledAlpha = 0.4; // 40% opacity khi disabled
 
 - (instancetype)initWithFrame:(NSRect)frameRect {
     if ((self = [super initWithFrame:frameRect])) {
-        _on = NO;
-        _focused = NO;
+        [self commonInit];
     }
     return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    if ((self = [super initWithCoder:coder])) {
+        [self commonInit];
+    }
+    return self;
+}
+
+- (void)commonInit {
+    _on = NO;
+    _focused = NO;
+    self.enabled = YES; // Khắc phục lỗi customView từ Nib bị gán cứng enabled=NO
 }
 
 - (NSSize)intrinsicContentSize { return NSMakeSize(kPillWidth, kPillHeight); }

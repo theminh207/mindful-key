@@ -4,13 +4,14 @@
 # không sửa build.sh/mood_bridge_build.sh hiện có (script riêng, đúng tiền lệ story 2.2).
 set -e
 HERE="$(cd "$(dirname "$0")" && pwd)"
+MOOD="$HERE/../../core/mood"
 IOSEXT="$HERE/../../platforms/apple/ios/KeyboardExtension"
 
 # EmotionWaveAmplitude.{h,cpp} là hàm THUẦN (không UIKit/Foundation) — chỉ cần chính nó + test,
 # không cần link engine/mood/bridge như bridge_test/mood_bridge_test.
 clang++ -std=c++14 -fobjc-arc \
-  -I "$IOSEXT" \
-  "$HERE/emotion_wave_test.mm" "$IOSEXT/EmotionWaveAmplitude.cpp" \
+  -I "$IOSEXT" -I "$MOOD" \
+  "$HERE/emotion_wave_test.mm" "$MOOD/EmotionWaveAmplitude.cpp" \
   -framework Foundation \
   -o "$HERE/emotion_wave_test"
 echo "OK -> $HERE/emotion_wave_test"

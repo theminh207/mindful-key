@@ -24,6 +24,9 @@ private:
 public:
 	static void createSystemTrayIcon(const HINSTANCE& hIns);
 	static void updateData();
+	// [MINDFUL] GĐ6 — "tâm đang động": icon khay đổi sang sóng biên độ cao rồi tự lắng về sau vài
+	// giây (BRAND-ASSETS.md §6). An toàn gọi từ luồng nền.
+	static void showWaveAlert();
 	static void removeSystemTray();
 };
 
