@@ -38,7 +38,21 @@ EMOJI = re.compile("[\U0001F600-\U0001F64F☹☺]")
 GAMIF = re.compile(r"\b(streak|badge|leaderboard|achievement|combo)\b|huy hiệu|bảng xếp hạng|điểm thưởng", re.I)
 HEX = re.compile(r"#[0-9A-Fa-f]{6}\b|#[0-9A-Fa-f]{3}\b")
 BRAND_CRITICAL = re.compile(r"(SendGatekeeper|Nudge|Bell|Reflection|MoodWatch|About|BrandColors|Onboarding|Breathing|Reflect)", re.I)
-UI_EXT = {".m", ".mm", ".swift", ".h", ".html", ".css", ".js", ".ts", ".tsx", ".kt", ".xml", ".storyboard", ".xib"}
+# NGUỒN DUY NHẤT cho câu hỏi "file nào là bề mặt nhận diện". `brand-guard.sh` (hook chặn agent)
+# và `.githooks/pre-commit` KHÔNG được giữ danh sách riêng — chúng đưa file vào đây rồi để hàm
+# is_ui_file() dưới quyết định. Trước 2026-07-17 mỗi nơi một danh sách chép tay và CẢ BA đều
+# thiếu .cpp/.rc/.iss, nên toàn bộ vỏ Windows (15 file .cpp) lọt lưới dù CLAUDE.md mô tả
+# brand-lint là ràng buộc CỨNG "chặn mọi tool/agent". Ba bản chép tay phải-tự-nhớ-giữ-khớp chính
+# là mô hình đã đẻ ra bug lexicon (2 bản trôi lệch trong 3 ngày) — không lặp lại lần nữa.
+#
+# .cpp/.rc/.iss = UI vỏ Windows (dialog Win32, chuỗi hiển thị, bộ cài); UI Windows sắp viết
+# (~6.000 dòng, xem docs/ROADMAP-WINDOWS.md) nằm gần hết trong .cpp. Cả 2 file .rc trong repo đã
+# kiểm: UTF-8 đọc được, không phải UTF-16.
+UI_EXT = {".m", ".mm", ".swift", ".h", ".cpp", ".rc", ".iss", ".svg",
+          ".html", ".css", ".js", ".ts", ".tsx", ".kt", ".xml", ".storyboard", ".xib"}
+
+def is_ui_file(path):
+    return os.path.splitext(path)[1].lower() in UI_EXT
 SKIP = ("/.git/", "/DerivedData/", "/backup-original/", "/node_modules/")
 
 def walk_ui():
@@ -48,7 +62,7 @@ def walk_ui():
             if any(s in dp + "/" for s in SKIP):
                 continue
             for f in fs:
-                if os.path.splitext(f)[1].lower() in UI_EXT:
+                if is_ui_file(f):
                     out.append(os.path.join(dp, f))
     return out
 
@@ -78,7 +92,15 @@ def lint(files):
     return errors, warns
 
 def main():
-    files = [os.path.abspath(a) for a in sys.argv[1:]] or walk_ui()
+    args = sys.argv[1:]
+    if args:
+        # Lọc ngay TẠI ĐÂY, để script gọi (hook, pre-commit) cứ ném cả nắm file vào mà không cần
+        # tự biết đuôi nào là UI. CỐ Ý dùng if/else chứ KHÔNG `[...] or walk_ui()`: danh sách rỗng
+        # là falsy, nên caller đưa toàn file không-UI (vd hook vừa sửa 1 file .png) sẽ âm thầm rơi
+        # vào quét TOÀN REPO — chậm và sai ngữ cảnh.
+        files = [os.path.abspath(a) for a in args if is_ui_file(a)]
+    else:
+        files = walk_ui()
     errors, warns = lint(files)
     for rel, i, msg in warns:
         print(f"⚠️  {rel}:{i} — {msg}")

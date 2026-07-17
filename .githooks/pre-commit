@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # Chặn commit nếu vi phạm nhận diện NOW BRAND OS. Bật hook: make hooks
-files=$(git diff --cached --name-only --diff-filter=ACM | grep -Ei '\.(m|mm|swift|h|html|css|js|ts|tsx|kt|xml|storyboard|xib|svg)$' || true)
+# CỐ Ý không lọc đuôi file ở đây: brand_lint.py (UI_EXT) là nguồn DUY NHẤT quyết định file nào là
+# bề mặt nhận diện — cứ đưa hết file staged vào, nó tự bỏ qua thứ không phải UI. Trước 2026-07-17
+# chỗ này giữ regex riêng và thiếu cpp|rc|iss, nên vỏ Windows lọt lưới.
+files=$(git diff --cached --name-only --diff-filter=ACM || true)
 [ -z "$files" ] && exit 0
 exec "$(git rev-parse --show-toplevel)/scripts/brand-lint.sh" $files
