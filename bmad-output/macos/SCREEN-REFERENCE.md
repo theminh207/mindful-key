@@ -1,7 +1,8 @@
 > ⚠️ **SUPERSEDED MỘT PHẦN (2026-07-17)** — xem `decision-log.md` entry "Bộ tiếng có Ô THỨ 4 'tiếng
 > của bạn'; kho lưu đổi sang id tiếng Anh". Không còn đúng: thẻ **Bộ tiếng nay có 4 ô, không phải 3**
 > (§2.2 mục 3 và §5 "3 icon brand GIỮ NGUYÊN") — ô thứ 4 mở hộp chọn tệp âm thanh của người dùng,
-> hình lấy từ asset brand có sẵn `bell-idle`. Vẫn còn hiệu lực và KHÔNG được phá: 3 icon
+> hình là **nốt nhạc** `bell-custom` (asset brand mới, `brand/svg/bell-custom.svg`; bản đầu dùng
+> `bell-idle` đã bị chủ dự án bác vì trùng icon với ô "Chuông gió"). Vẫn còn hiệu lực và KHÔNG được phá: 3 icon
 > `bell_temple`/`bell_chime`/`bell_wind` giữ nguyên đúng vị trí + ánh xạ tiếng, chỉ báo chọn vẫn là
 > `_bellIndicator`, và luật **cấm icon ngoài brand** (ô thứ 4 tuân thủ: `bell-idle` là asset brand,
 > sinh từ `brand/svg/bell-idle.svg` qua `brand/export.sh`).

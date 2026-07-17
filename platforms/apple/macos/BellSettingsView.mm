@@ -469,10 +469,13 @@ static NSString *StringFromHotkey(int hotkey) {
     _btnBell1 = [self createBellButtonWithTag:0 image:@"bell_temple"];   // → Chuông chùa (23.8s)
     _btnBell2 = [self createBellButtonWithTag:1 image:@"bell_chime"];    // → Chuông gió  (10.3s)
     _btnBell3 = [self createBellButtonWithTag:2 image:@"bell_wind"];     // → Chuông reo  (2.0s)
-    // [MINDFUL] 2026-07-17 — ô thứ 4. Hình `bell-idle` là asset brand CÓ SẴN (brand/svg/bell-idle.svg,
-    // xuất qua brand/export.sh) — không vẽ hình mới. 3 ô kia không có nhãn chữ nên ô này PHẢI có
-    // tooltip, nếu không nó chỉ là "cái chuông thứ 4" vô nghĩa với người nhìn lần đầu.
-    _btnBellCustom = [self createBellButtonWithTag:kBellSlotCustom image:@"bell-idle"];
+    // [MINDFUL] 2026-07-17 — ô thứ 4. Hình là NỐT NHẠC (`brand/svg/bell-custom.svg`, xuất qua
+    // brand/export.sh), CỐ Ý không phải hình chuông: bản đầu dùng `bell-idle` (chuông trơn) và chủ
+    // dự án nhìn app thật đã bác ngay — trùng icon với ô "Chuông gió" bên cạnh. Nốt nhạc còn đúng
+    // nghĩa ở cả 2 trạng thái (chưa nạp = "tiếng của bạn", nạp rồi = chính tiếng đó), khác dấu "+"
+    // vốn chỉ đúng lúc chưa có gì. Xem decision-log 2026-07-17.
+    // 3 ô kia không có nhãn chữ nên ô này PHẢI có tooltip mới nói được nó là gì + đang giữ tệp nào.
+    _btnBellCustom = [self createBellButtonWithTag:kBellSlotCustom image:@"bell-custom"];
     [self updateCustomBellTooltip];
     [self addSubview:_btnBell1];
     [self addSubview:_btnBell2];

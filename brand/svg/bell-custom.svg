@@ -1,0 +1,11 @@
+<!-- [MINDFUL] Ô thứ 4 của thẻ "Bộ tiếng" (BellSettingsView.mm) — tiếng chuông người dùng tự nạp.
+     Cố ý KHÔNG vẽ hình chuông: 3 ô kia đã là chuông, thêm cái chuông thứ 4 thì người dùng thật đọc
+     ra "trùng icon" (phản hồi kèm ảnh, 2026-07-17) — xem decision-log cùng ngày.
+     Nốt nhạc đúng nghĩa ở CẢ 2 trạng thái: chưa nạp = "tiếng của bạn (còn trống)", nạp rồi = chính
+     tiếng đó. Nét theo đúng họ brand: teal #1D7C91, stroke-width 6, đầu bo tròn (khớp bell-idle.svg
+     / bell_wind.svg). KHÔNG dùng cam — cam chỉ dành cho CTA + link active (DESIGN.md §5 điều 6). -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <ellipse cx="38" cy="73" rx="12" ry="9.5" fill="#1D7C91"/>
+  <line x1="50" y1="73" x2="50" y2="25" stroke="#1D7C91" stroke-width="6" stroke-linecap="round"/>
+  <path d="M50 25 C63 29, 72 37, 70 50" fill="none" stroke="#1D7C91" stroke-width="6" stroke-linecap="round"/>
+</svg>

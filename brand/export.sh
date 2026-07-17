@@ -48,12 +48,14 @@ iconutil -c icns "$ICONSET" -o "$RES/Icon.icns"
 
 echo "== Icon 'Bộ tiếng' — ô thứ 4 'tiếng của bạn' (48 / 96) =="
 # [MINDFUL] 2026-07-17 — nút thứ 4 ở thẻ Bộ tiếng (BellSettingsView.mm) nạp qua
-# `[NSImage imageNamed:@"bell-idle"]`, nên hình PHẢI nằm cạnh 3 icon chuông kia trong
+# `[NSImage imageNamed:@"bell-custom"]`, nên hình PHẢI nằm cạnh 3 icon chuông kia trong
 # platforms/apple/macos/ (thư mục đó cũng được XcodeGen copy vào bundle như Resources/).
+# Bản đầu dùng `bell-idle` (hình chuông trơn) — chủ dự án nhìn app thật rồi bác: trùng icon với ô
+# "Chuông gió" bên cạnh. Nay là nốt nhạc `bell-custom.svg`, xem decision-log 2026-07-17.
 # ⚠️ Lệch pha đã biết: 3 icon bell_temple/bell_chime/bell_wind có SVG nguồn trong brand/svg/
 # nhưng KHÔNG do file này sinh ra (ai đó xuất tay) — xem FRICTION-LOG 2026-07-17.
-png bell-idle 48 "$MACOS_UI/bell-idle.png"
-png bell-idle 96 "$MACOS_UI/bell-idle@2x.png"
+png bell-custom 48 "$MACOS_UI/bell-custom.png"
+png bell-custom 96 "$MACOS_UI/bell-custom@2x.png"
 
 echo "== Preview: chuông + thang mặt hồ (chưa wire vào code, để dùng cho HUD/biểu đồ) =="
 png bell-idle 64 "$PREVIEW/bell-idle.png"
