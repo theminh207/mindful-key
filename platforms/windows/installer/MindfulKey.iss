@@ -1,13 +1,11 @@
 ; MindfulKey.iss — bộ cài Windows (Inno Setup 6).
 ;
 ; Sinh ra MindfulKey_<ver>_x64-setup.exe, tương đương vai trò của scripts/build-dmg.sh bên macOS.
-; CI gọi: iscc /DMyAppVersion=$(VERSION) /DSourceExe=<đường dẫn OpenKey64.exe> MindfulKey.iss
+; CI gọi: iscc /DMyAppVersion=$(VERSION) /DSourceExe=<đường dẫn MindfulKey.exe> MindfulKey.iss
 ;
-; VÌ SAO file bên trong vẫn tên OpenKey64.exe: lằn ranh cứng của nhiệm vụ Windows — rebrand CHỈ
-; đổi chuỗi hiển thị, KHÔNG đổi tên file/class/project. `TargetName` của cấu hình Release|x64 là
-; $(ProjectName)64 nên binary luôn là OpenKey64.exe. Người dùng thấy "Mindful Key" ở mọi nơi
-; (Start Menu, Programs and Features, thư mục cài); chỉ ai mở thư mục cài mới thấy tên file gốc.
-; Đây là chuyện chờ chủ dự án chốt — xem docs/FRICTION-LOG.md 2026-07-16.
+; Tên file thật = MindfulKey.exe (chủ dự án chốt 2026-07-17, nới lằn ranh "không đổi tên file"
+; ban đầu). `TargetName` trong OpenKey.vcxproj đặt MindfulKey cho cả 4 cấu hình. Tên PROJECT/
+; SOLUTION/class vẫn giữ nguyên OpenKey — chỉ tên file xuất ra đổi.
 ;
 ; GPL v3: kèm LICENSE và giữ credit Mai Vũ Tuyên (OpenKey) trong trang giới thiệu của bộ cài —
 ; đây là nghĩa vụ pháp lý kế thừa, không phải phép lịch sự.
@@ -16,11 +14,11 @@
   #error Thiếu MyAppVersion — CI phải truyền /DMyAppVersion=$(VERSION) đọc từ version.env
 #endif
 #ifndef SourceExe
-  #error Thiếu SourceExe — CI phải truyền /DSourceExe=<đường dẫn tới OpenKey64.exe>
+  #error Thiếu SourceExe — CI phải truyền /DSourceExe=<đường dẫn tới MindfulKey.exe>
 #endif
 
 #define MyAppName "Mindful Key"
-#define MyExeName "OpenKey64.exe"
+#define MyExeName "MindfulKey.exe"
 
 [Setup]
 AppId={{7C4E2A16-9E3B-4E51-A0D7-3F1B6C2D8E94}

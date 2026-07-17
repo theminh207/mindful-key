@@ -136,8 +136,13 @@ string& OpenKeyHelper::getFrontMostAppExecuteName() {
 		return _unknownProgram;
 	}
 	_exeName = _tcsrchr(_exePath, '\\') + 1;
-	if (wcscmp(_exeName, _T("OpenKey64.exe")) == 0 ||
-		wcscmp(_exeName, _T("OpenKey32.exe")) == 0 || 
+	// Cửa sổ trước mặt là CHÍNH MÌNH (hoặc explorer/taskbar) -> giữ tên app trước đó, đừng coi là
+	// người dùng vừa chuyển app. Không có nhánh này thì bấm vào cửa sổ cài đặt của chính app sẽ
+	// khiến SmartSwitchKey nhớ nhầm chế độ ngôn ngữ cho... chính bộ gõ.
+	// Tên file đổi OpenKey64/32.exe -> MindfulKey.exe (chủ dự án chốt 2026-07-17, `TargetName` cả
+	// 4 cấu hình). Quên sửa chỗ này là nhánh trên không bao giờ khớp nữa — build vẫn SẠCH, lỗi chỉ
+	// lộ lúc dùng.
+	if (wcscmp(_exeName, _T("MindfulKey.exe")) == 0 ||
 		wcscmp(_exeName, _T("explorer.exe")) == 0) {
 		return _exeNameUtf8;
 	}

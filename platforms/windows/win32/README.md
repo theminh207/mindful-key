@@ -48,7 +48,7 @@ Mặc định, OpenKey cho phép gõ với chế độ bỏ dấu tự do, khôn
 
 ## Cài đặt
 - Vào [đây](https://github.com/tuyenvm/OpenKey/releases/latest) tải file `.zip` phiên bản mới nhất về máy, giải nén vào nơi bất kỳ.
-- Nhấp đúp vô `OpenKey.exe` để chạy chương trình.
+- Nhấp đúp vô `MindfulKey.exe` để chạy chương trình.
 - Lưu ý, khi chạy chương trình lần đầu, Windows sẽ mở một hộp thoại để hỏi bạn, bấm `yes` để đồng ý OpenKey chạy với quyền `admin`
 - Xong rồi một biểu tượng chữ `V` sẽ hiện trên system tray, đúp click vô đó để mở bảng điều khiển, cấu hình những thứ bạn cần.
 - Xong.

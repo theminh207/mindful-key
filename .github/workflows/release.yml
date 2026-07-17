@@ -57,9 +57,9 @@ jobs:
       - name: Tìm .exe vừa build (không đoán đường dẫn OutDir)
         shell: bash
         run: |
-          EXE=$(find platforms/windows -name "OpenKey64.exe" -type f | head -1)
+          EXE=$(find platforms/windows -name "MindfulKey.exe" -type f | head -1)
           if [[ -z "$EXE" ]]; then
-            echo "::error::Build xong nhưng không tìm thấy OpenKey64.exe — OutDir khác dự đoán." >&2
+            echo "::error::Build xong nhưng không tìm thấy MindfulKey.exe — OutDir khác dự đoán." >&2
             find platforms/windows -name "*.exe" -type f || true
             exit 1
           fi
