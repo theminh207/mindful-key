@@ -185,6 +185,7 @@
     <ClInclude Include="OpenKeyHelper.h" />
     <ClInclude Include="OpenKeyManager.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SecureField.h" />
     <ClInclude Include="SendGatekeeper.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SystemTrayHelper.h" />
@@ -216,6 +217,7 @@
     <ClCompile Include="NudgeCoordinator.cpp" />
     <ClCompile Include="OpenKeyHelper.cpp" />
     <ClCompile Include="OpenKeyManager.cpp" />
+    <ClCompile Include="SecureField.cpp" />
     <ClCompile Include="SendGatekeeper.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

@@ -105,6 +105,9 @@
     <ClInclude Include="SendGatekeeper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SecureField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="NudgeCoordinator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -192,6 +195,9 @@
       <Filter>mood</Filter>
     </ClCompile>
     <ClCompile Include="SendGatekeeper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SecureField.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NudgeCoordinator.cpp">
