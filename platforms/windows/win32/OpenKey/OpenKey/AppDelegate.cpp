@@ -64,13 +64,13 @@ void AppDelegate::checkUpdate() {
 	if (OpenKeyManager::checkUpdate(newVersion)) {
 		WCHAR msg[256];
 		wsprintf(msg,
-			TEXT("OpenKey Có phiên bản mới (%s), bạn có muốn cập nhật không?"),
+			TEXT("Mindful Keyboard Có phiên bản mới (%s), bạn có muốn cập nhật không?"),
 			utf8ToWideString(newVersion).c_str());
 
 		int msgboxID = MessageBox(
 			0,
 			msg,
-			_T("OpenKey Update"),
+			_T("Mindful Keyboard Update"),
 			MB_ICONEXCLAMATION | MB_YESNO
 		);
 		if (msgboxID == IDYES) {
@@ -263,7 +263,7 @@ void AppDelegate::onQuickConvert() {
 		if (!convertToolDontAlertWhenCompleted) {
 			TCHAR msg[256];
 			LoadString(hInstance, IDS_STRING_CONVERT_COMPLETED, msg, 256);
-			MessageBox(NULL, msg, _T("OpenKey"), MB_OK);
+			MessageBox(NULL, msg, _T("Mindful Keyboard"), MB_OK);
 		}
 	}
 }

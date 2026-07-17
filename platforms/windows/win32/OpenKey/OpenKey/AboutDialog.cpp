@@ -50,9 +50,9 @@ INT_PTR AboutDialog::eventProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 		case NM_RETURN: {
 			PNMLINK link = (PNMLINK)lParam;
 			if (link->hdr.idFrom == IDC_SYSLINK_HOME_PAGE)
-				ShellExecute(NULL, _T("open"), _T("https://github.com/tuyenvm/OpenKey"), NULL, NULL, SW_SHOWNORMAL);
+				ShellExecute(NULL, _T("open"), _T("https://github.com/theminh207/mindful-key"), NULL, NULL, SW_SHOWNORMAL);
 			else if (link->hdr.idFrom == IDC_SYSLINK_NEW_VERSION)
-				ShellExecute(NULL, _T("open"), _T("https://github.com/tuyenvm/OpenKey/releases"), NULL, NULL, SW_SHOWNORMAL);
+				ShellExecute(NULL, _T("open"), _T("https://github.com/theminh207/mindful-key/releases"), NULL, NULL, SW_SHOWNORMAL);
 			else if (link->hdr.idFrom == IDC_SYSLINK_FANPAGE)
 				ShellExecute(NULL, _T("open"), _T("https://www.facebook.com/OpenKeyVN"), NULL, NULL, SW_SHOWNORMAL);
 		}
@@ -88,14 +88,14 @@ void AboutDialog::onUpdateButton() {
 	string newVersion;
 	if (OpenKeyManager::checkUpdate(newVersion)) {
 		WCHAR msg[256];
-		wsprintf(msg, 
-			TEXT("OpenKey Có phiên bản mới (%s), bạn có muốn cập nhật không?"),
+		wsprintf(msg,
+			TEXT("Mindful Keyboard Có phiên bản mới (%s), bạn có muốn cập nhật không?"),
 			utf8ToWideString(newVersion).c_str());
 
 		int msgboxID = MessageBox(
 			hDlg,
 			msg,
-			_T("OpenKey Update"),
+			_T("Mindful Keyboard Update"),
 			MB_ICONEXCLAMATION | MB_YESNO
 		);
 		if (msgboxID == IDYES) {
@@ -109,7 +109,7 @@ void AboutDialog::onUpdateButton() {
 		}
 		
 	} else {
-		MessageBox(hDlg, _T("Bạn đang dùng phiên bản mới nhất!"), _T("OpenKey Update"), MB_OK);
+		MessageBox(hDlg, _T("Bạn đang dùng phiên bản mới nhất!"), _T("Mindful Keyboard Update"), MB_OK);
 	}
 	EnableWindow(hUpdateButton, true);
 }

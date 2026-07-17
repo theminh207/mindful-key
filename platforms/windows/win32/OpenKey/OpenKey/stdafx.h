@@ -40,7 +40,7 @@ redistribute your new version, it MUST be open source.
 
 #include "resource.h"
 
-#include "../../../engine/Engine.h"
+#include "../../../../../core/engine/Engine.h"
 
 #include "OpenKeyManager.h"
 #include "OpenKeyHelper.h"
