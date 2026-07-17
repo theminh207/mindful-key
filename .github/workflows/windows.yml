@@ -87,11 +87,16 @@ jobs:
           MSBUILD=$(cygpath -u "$MSBUILD_WIN")
           echo "MSBuild: $MSBUILD"
 
+          # Cờ dùng dấu `-` chứ KHÔNG `/`: Git Bash tự dịch mọi tham số mở đầu bằng `/` thành
+          # đường dẫn Windows, nên `/t:OpenKey` hoá ra một đường dẫn và MSBuild tưởng đó là
+          # project thứ hai -> "error MSB1008: Only one project can be specified". MSBuild nhận
+          # cả hai kiểu cờ; `-` thì bash không đụng vào. ĐỪNG đổi lại thành `/` cho "đẹp".
+
           "$MSBUILD" "platforms/windows/win32/OpenKey/OpenKey.sln" \
-            /t:OpenKey \
-            /p:Configuration=${{ matrix.configuration }} \
-            /p:Platform=x64 \
-            /nologo /verbosity:normal > msbuild.log 2>&1
+            -t:OpenKey \
+            -p:Configuration=${{ matrix.configuration }} \
+            -p:Platform=x64 \
+            -nologo -verbosity:normal > msbuild.log 2>&1
           code=$?
           echo "msbuild thoát với mã: $code"
           echo "----- 150 dòng cuối msbuild.log -----"
