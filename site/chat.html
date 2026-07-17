@@ -82,11 +82,15 @@
     </div>
   </div>
 
+<script src="/config.js"></script>
 <script>
 /* ============================================================
-   CẤU HÌNH — URL Web App của Google Apps Script
+   CẤU HÌNH — link Apps Script đọc từ config.js (đổi ở /admin hoặc config.js)
    ============================================================ */
-const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbyR6PMbjmWwRf_zTHCQ5i7Ypt1He3rPHGL9uCwflObKqnQMFZIfaZjXc9ALrkedCWw9fA/exec";
+const SHEET_ENDPOINT =
+  (window.localStorage && localStorage.getItem('gnh_endpoint')) ||
+  window.GNH_ENDPOINT ||
+  "https://script.google.com/macros/s/AKfycbyR6PMbjmWwRf_zTHCQ5i7Ypt1He3rPHGL9uCwflObKqnQMFZIfaZjXc9ALrkedCWw9fA/exec";
 
 /* ---------- Logo GNH ---------- */
 const GNH_LOGO = `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">

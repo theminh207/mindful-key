@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cấu hình endpoint — Bot phản hồi</title>
+<style>
+  :root{--brand:#1f9d63;--brand-dark:#157a4c;--teal:#1C8C86;--ink:#1e2a24;--ink-soft:#5c6b63;
+    --line:#e3ebe6;--soft:#eef4f1;--bg:#f2f7f4;--warn:#b45309;--warn-bg:#fef3e2}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);padding:32px 16px;line-height:1.5}
+  .wrap{max-width:640px;margin:0 auto}
+  h1{font-size:22px;margin:0 0 4px}
+  .sub{color:var(--ink-soft);font-size:14px;margin:0 0 22px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px;
+    box-shadow:0 8px 26px rgba(24,80,52,.06)}
+  .card h2{font-size:15px;margin:0 0 12px;color:var(--teal)}
+  label{font-size:13px;font-weight:600;color:var(--ink-soft);display:block;margin-bottom:6px}
+  input[type=text]{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;
+    font-size:14px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;outline:none}
+  input[type=text]:focus{border-color:var(--brand)}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  button{border:none;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+  .primary{background:var(--brand);color:#fff}.primary:hover{background:var(--brand-dark)}
+  .ghost{background:#fff;border:1.5px solid var(--brand);color:var(--brand-dark)}.ghost:hover{background:var(--soft)}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;word-break:break-all}
+  .cur{background:var(--soft);border-radius:10px;padding:12px;margin-bottom:4px}
+  .cur .lbl{font-size:12px;color:var(--ink-soft);font-weight:600;margin-bottom:4px}
+  .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;margin-left:6px}
+  .tag.local{background:#e0edff;color:#1d4ed8}.tag.file{background:var(--soft);color:var(--brand-dark)}
+  .msg{margin-top:10px;font-size:13.5px;padding:10px 12px;border-radius:10px;display:none}
+  .msg.ok{background:#e7f5ec;color:var(--brand-dark);display:block}
+  .msg.err{background:#fde8e8;color:#b91c1c;display:block}
+  pre{background:#0f1a14;color:#d6ede0;padding:12px 14px;border-radius:10px;overflow-x:auto;font-size:12.5px;margin:8px 0 0}
+  .note{background:var(--warn-bg);border:1px solid #f5d9a8;border-radius:12px;padding:14px 16px;font-size:13.5px;color:#7c4a06}
+  .note b{color:var(--warn)}
+  code{background:var(--soft);padding:1px 6px;border-radius:5px;font-size:13px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>⚙️ Cấu hình endpoint bot phản hồi</h1>
+    <p class="sub">Dán link Apps Script (kết thúc bằng <code>/exec</code>) để bot ghi vào Google Sheet.</p>
+
+    <div class="card">
+      <h2>Link đang dùng</h2>
+      <div class="cur">
+        <div class="lbl">Endpoint hiện hành <span id="src" class="tag file">config.js</span></div>
+        <div class="mono" id="curEndpoint">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Dán link mới</h2>
+      <label for="ep">URL Web app /exec</label>
+      <input type="text" id="ep" placeholder="https://script.google.com/macros/s/..../exec" />
+      <div class="row">
+        <button class="ghost" id="btnOpen">🔍 Mở kiểm tra (tab mới)</button>
+        <button class="ghost" id="btnTest">📨 Gửi 1 phiếu thử</button>
+        <button class="primary" id="btnSave">💾 Lưu cho trình duyệt này</button>
+        <button class="ghost" id="btnClear">↩︎ Xóa lưu tạm</button>
+      </div>
+      <div class="msg" id="msg"></div>
+    </div>
+
+    <div class="card">
+      <h2>Áp dụng cho MỌI người (bắt buộc để chạy thật)</h2>
+      <p style="font-size:13.5px;color:var(--ink-soft);margin:0 0 6px">
+        Nút "Lưu" ở trên chỉ đổi link cho <b>đúng trình duyệt này</b> (để bạn test nhanh).
+        Muốn mọi khách đều dùng link mới, sửa <code>config.js</code> thành dòng dưới rồi commit + push:</p>
+      <pre id="cfgLine">window.GNH_ENDPOINT = "...";</pre>
+      <button class="ghost" id="btnCopy" style="margin-top:8px">📋 Copy dòng config.js</button>
+    </div>
+
+    <div class="note">
+      <b>Cơ chế:</b> site tĩnh không có nơi lưu chung. Nên có 2 tầng:<br>
+      • <b>Lưu tạm (trình duyệt này)</b> = <code>localStorage</code>, chỉ ảnh hưởng máy bạn — tiện để thử link trước.<br>
+      • <b>config.js đã commit</b> = áp cho tất cả khách. Đây mới là bản chính thức.
+    </div>
+  </div>
+
+<script src="/config.js"></script>
+<script>
+  const $ = id => document.getElementById(id);
+  const DEFAULT_EP = window.GNH_ENDPOINT || "";
+
+  function activeEndpoint(){
+    return (window.localStorage && localStorage.getItem('gnh_endpoint')) || DEFAULT_EP || "";
+  }
+  function refresh(){
+    const local = window.localStorage && localStorage.getItem('gnh_endpoint');
+    $('curEndpoint').textContent = activeEndpoint() || '(chưa có)';
+    const tag = $('src');
+    if(local){ tag.textContent='lưu tạm (trình duyệt này)'; tag.className='tag local'; }
+    else{ tag.textContent='config.js'; tag.className='tag file'; }
+    $('cfgLine').textContent = 'window.GNH_ENDPOINT = "'+(activeEndpoint()||'...')+'";';
+  }
+  function show(text, ok){ const m=$('msg'); m.textContent=text; m.className='msg '+(ok?'ok':'err'); }
+  function val(){ return $('ep').value.trim(); }
+  function valid(u){ return /^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(u); }
+
+  $('btnOpen').onclick = ()=>{
+    const u = val() || activeEndpoint();
+    if(!u) return show('Chưa có link để mở.', false);
+    window.open(u, '_blank');
+    show('Đã mở tab mới — nếu thấy "BKE feedback endpoint đang hoạt động." là link sống.', true);
+  };
+  $('btnTest').onclick = ()=>{
+    const u = val() || activeEndpoint();
+    if(!u) return show('Chưa có link để thử.', false);
+    const id = 'TEST-ADMIN-' + Math.floor(Math.random()*9000+1000);
+    fetch(u, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({ticket_id:id, loai:'Báo lỗi', noi_dung:'Phiếu thử từ trang admin',
+        ten:'admin-test', lien_he:'', thoi_gian:new Date().toISOString(), trang:'/admin'}) })
+      .then(()=>show('Đã gửi phiếu thử '+id+'. Mở Google Sheet xem có dòng này không (trình duyệt không đọc được kết quả trả về).', true))
+      .catch(()=>show('Không gửi được — kiểm tra lại link.', false));
+  };
+  $('btnSave').onclick = ()=>{
+    const u = val();
+    if(!valid(u)) return show('Link không hợp lệ. Phải bắt đầu bằng https://script.google.com/macros/s/ và kết thúc /exec', false);
+    localStorage.setItem('gnh_endpoint', u); refresh();
+    show('Đã lưu cho trình duyệt này. Widget/trang feedback trên máy bạn sẽ dùng link này ngay.', true);
+  };
+  $('btnClear').onclick = ()=>{ localStorage.removeItem('gnh_endpoint'); refresh();
+    show('Đã xóa lưu tạm — quay về dùng link trong config.js.', true); };
+  $('btnCopy').onclick = ()=>{ navigator.clipboard.writeText($('cfgLine').textContent)
+    .then(()=>show('Đã copy dòng config.js. Dán đè vào file config.js rồi commit + push.', true)); };
+
+  $('ep').value = activeEndpoint();
+  refresh();
+</script>
+</body>
+</html>
