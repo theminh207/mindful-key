@@ -22,6 +22,8 @@
 //
 #include "stdafx.h"        // windows.h + Engine.h + OpenKeyHelper.h (APP_SET_DATA)
 #include "MoodWatch.h"
+#include "Bell.h"
+#include "NudgeCoordinator.h"
 #include "../../../../../core/mood/MoodBuffer.h"
 #include "../../../../../core/mood/SendRiskAnalyzer.h"
 #include <thread>
@@ -40,6 +42,7 @@ static const DWORD  kWarnCooldownMs    = 15000;
 // CHỈ luồng worker được chạm g_buffer -> không cần khoá cho nó.
 static MoodBuffer g_buffer(15);
 static double     g_lastSendRisk = -1.0;
+static int        g_tenseStreak = 0;   // chỉ worker chạm -> không cần khoá
 static DWORD      g_lastWarn = 0;
 static volatile LONG g_popupShowing = 0;
 
@@ -89,6 +92,19 @@ static void analyzeOnWorker(const wstring& word) {
     g_buffer.pushWord(word);
     SendRiskResult scored = SendRiskAnalyzer_Analyze(g_buffer.recentText());
     g_lastSendRisk = scored.risk;
+
+    // [MINDFUL] GĐ4 — đếm chuỗi câu căng LIÊN TIẾP, độc lập với ngưỡng nhắc thụ động bên dưới.
+    // Đặt ĐÚNG chỗ macOS đặt (MoodWatchMac.mm: ngay sau khi gán g_lastSendRisk). Ngưỡng "gợn"
+    // thấp hơn kSendRiskThreshold có chủ đích: đây là phát hiện "đang dồn nén dần", không phải
+    // "sắp gửi thứ gây hại" -> bắt sớm hơn. Câu dịu lại thì reset — "chuỗi" nghĩa là LIÊN TỤC.
+    if (scored.risk >= NudgeCoordinator_RippleThreshold())
+        g_tenseStreak++;
+    else
+        g_tenseStreak = 0;
+    if (g_tenseStreak >= NudgeCoordinator_TenseStreakTrigger()) {
+        g_tenseStreak = 0;   // reset NGAY, không thì rung lại liên tục cho cùng 1 đợt căng
+        Bell_RingForTenseStreak();
+    }
 
     if (scored.risk < kSendRiskThreshold)
         return;

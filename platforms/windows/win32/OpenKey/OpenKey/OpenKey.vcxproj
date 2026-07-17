@@ -176,6 +176,7 @@
     <ClInclude Include="MacroDialog.h" />
     <ClInclude Include="MainControlDialog.h" />
     <ClInclude Include="MoodWatch.h" />
+    <ClInclude Include="NudgeCoordinator.h" />
     <ClInclude Include="OpenKeyHelper.h" />
     <ClInclude Include="OpenKeyManager.h" />
     <ClInclude Include="Resource.h" />
@@ -203,6 +204,7 @@
     <ClCompile Include="MainControlDialog.cpp" />
     <ClCompile Include="MoodWatch.cpp" />
     <ClCompile Include="OpenKey.cpp" />
+    <ClCompile Include="NudgeCoordinator.cpp" />
     <ClCompile Include="OpenKeyHelper.cpp" />
     <ClCompile Include="OpenKeyManager.cpp" />
     <ClCompile Include="SendGatekeeper.cpp" />

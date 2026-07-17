@@ -71,6 +71,13 @@
 #define IDC_EDIT_BELL_INTERVAL          1101
 #define IDC_EDIT_BELL_FROM              1102
 #define IDC_EDIT_BELL_TO                1103
+#define IDC_EDIT_BELL_VOLUME            1104
+#define IDC_COMBO_BELL_SOUND            1105
+#define IDC_BUTTON_BELL_PREVIEW         1106
+#define IDC_BUTTON_BELL_PICK            1107
+#define IDR_WAVE_TEMPLE                 300
+#define IDR_WAVE_CHIME                  301
+#define IDR_WAVE_WIND                   302
 #define IDS_STRING_OTHER_LANGUAGES		150
 #define IDC_COMBO1                      1000
 #define IDC_COMBO_INPUT_TYPE            1000
