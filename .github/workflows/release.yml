@@ -90,10 +90,30 @@ jobs:
           echo "Dùng: $ISCC"
 
           mkdir -p release-out
+          # Lỗi của iscc PHẢI đi ra annotation: log run cần quyền mới đọc (API trả 403), annotation
+          # thì công khai. windows.yml đã học bài này; bước đây thì chưa — nên vòng đầu của v0.3.0
+          # chết đúng ở đây và không ai đọc được vì sao.
+          set +e
           "$ISCC" \
             "/DMyAppVersion=$VERSION" \
             "/DSourceExe=$SOURCE_EXE" \
-            platforms/windows/installer/MindfulKey.iss
+            platforms/windows/installer/MindfulKey.iss > iscc.log 2>&1
+          iscc_code=$?
+          echo "----- iscc.log -----"; cat iscc.log; echo "--------------------"
+          if [ $iscc_code -ne 0 ]; then
+            python3 - <<'PY_ERR'
+          lines = open("iscc.log", encoding="utf-8", errors="ignore").read().splitlines()
+          hits = [l.strip() for l in lines if "rror" in l or "annot" in l or "not found" in l.lower()]
+          if not hits:
+              hits = [l.strip() for l in lines[-12:] if l.strip()]
+          seen = set()
+          for l in hits[:12]:
+              if l not in seen:
+                  seen.add(l); print("::error::" + l)
+          PY_ERR
+            exit $iscc_code
+          fi
+          set -e
 
           # [MINDFUL] Bản tên ổn định cho Windows — ĐỐI XỨNG với MindfulKey.dmg bên macOS. Nút tải
           # trên web cần 1 địa chỉ không đổi qua từng version (releases/latest/download/...), nếu
