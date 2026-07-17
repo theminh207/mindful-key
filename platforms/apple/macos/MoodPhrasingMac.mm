@@ -4,103 +4,51 @@
 //
 //  [MINDFUL] Xem MoodPhrasingMac.h cho lý do tồn tại + ràng buộc hiến chương.
 //
+//  [MINDFUL] 2026-07-17 — LOGIC + CÂU CHỮ đã dời sang `core/mood/MoodPhrasing` (C++ thuần). File
+//  này nay chỉ còn là lớp BỌC: đổi NSArray/NSDictionary <-> vector<MoodSample>, wstring <->
+//  NSString, và đưa ngưỡng độ nhạy vào.
+//
+//  Vì sao dời: chính comment cũ ở đây đã tự cảnh báo "giữ bản chép riêng là sắp có 3 bản trôi lệch
+//  nhau" — đúng, nhưng nó chỉ gom về tới ranh giới vỏ macOS. Vỏ Windows tới lượt mình vẫn phải
+//  chép lại, thành đúng cái vừa đi sửa. Đây là lần THỨ BA dự án gặp mô hình này (lexicon
+//  send-risk, bảng màu brand, nay câu chữ) — nên lần này gom về `core/` để hết đường lặp lại.
+//
+//  Hành vi KHÔNG đổi: đã đối chiếu bản core cạnh bản cũ trong cùng 1 binary, 18/18 ca trùng khít
+//  (gồm ca đúng biên ngưỡng + mọi ranh giới giờ). Khoá bằng tests/core/test_phrasing.cpp.
+//
 
 #import "MoodPhrasingMac.h"
 #import "NudgeCoordinatorMac.h"
+#include "MoodPhrasing.h"
 
 // [MINDFUL] 2026-07-16 — xem hợp đồng ở .h. Uỷ thác cho NudgeCoordinatorMac: nơi đó ĐÃ đọc
 // vBellSensitivity cho chuông từ story 1.5. Tự đọc lại UserDefaults ở đây = nguồn thứ 2, sớm muộn
 // lệch — mà lệch ở đây nghĩa là chuông và câu chữ nói ngược nhau về cùng một ngày.
+//
+// Đây cũng là lý do `core/mood/MoodPhrasing` NHẬN ngưỡng qua tham số thay vì tự đọc: cài đặt nằm
+// ở UserDefaults (Apple) / registry (Windows), `core/` không được biết tới hai thứ đó.
 double MoodPhrasing_RippleThreshold(void) {
     return NudgeCoordinatorMac_RippleThreshold();
 }
 
-// Ranh giới buổi — NGUỒN DUY NHẤT. Khớp `kAxisHour*` (EmotionRiverView.mm) đang đặt nhãn trục:
-// sáng 5-11, trưa 11-13, chiều 13-18, tối 18-24. Đổi ở đây thì phải đổi kèm bên đó, và ngược lại.
-typedef NS_ENUM(NSInteger, MKTimeOfDay) {
-    MKTimeOfDayMorning = 0,
-    MKTimeOfDayNoon,
-    MKTimeOfDayAfternoon,
-    MKTimeOfDayEvening,
-    MKTimeOfDayCount
-};
-
-static MKTimeOfDay TimeOfDayOf(long long epochSeconds) {
-    NSCalendar *cal = [NSCalendar currentCalendar];
-    NSInteger hour = [cal components:NSCalendarUnitHour
-                            fromDate:[NSDate dateWithTimeIntervalSince1970:epochSeconds]].hour;
-    if (hour >= 5 && hour < 11)  return MKTimeOfDayMorning;
-    if (hour >= 11 && hour < 13) return MKTimeOfDayNoon;
-    if (hour >= 13 && hour < 18) return MKTimeOfDayAfternoon;
-    return MKTimeOfDayEvening;
+static NSString *NSStringFromWide(const std::wstring &w) {
+    return [[NSString alloc] initWithBytes:w.data()
+                                    length:w.size() * sizeof(wchar_t)
+                                  encoding:NSUTF32LittleEndianStringEncoding];
 }
 
 NSString *MoodPhrasing_TimeOfDayLabel(long long epochSeconds) {
-    switch (TimeOfDayOf(epochSeconds)) {
-        case MKTimeOfDayMorning:   return @"buổi sáng";
-        case MKTimeOfDayNoon:      return @"buổi trưa";
-        case MKTimeOfDayAfternoon: return @"buổi chiều";
-        default:                   return @"buổi tối";
-    }
-}
-
-// Tên buổi dạng NGẮN để ghép vào câu ("Sáng và chiều có gợn"), khác dạng dài "buổi sáng" dùng khi
-// đứng một mình ("Mặt hồ gợn nhiều nhất vào buổi sáng").
-static NSString *ShortLabel(MKTimeOfDay t) {
-    switch (t) {
-        case MKTimeOfDayMorning:   return @"sáng";
-        case MKTimeOfDayNoon:      return @"trưa";
-        case MKTimeOfDayAfternoon: return @"chiều";
-        default:                   return @"tối";
-    }
-}
-
-static NSString *CapitalizeFirst(NSString *s) {
-    if (s.length == 0) return s;
-    return [[[s substringToIndex:1] uppercaseString] stringByAppendingString:[s substringFromIndex:1]];
-}
-
-// Nối kiểu người nói: "sáng" · "sáng và chiều" · "sáng, trưa và chiều".
-static NSString *JoinNatural(NSArray<NSString *> *parts) {
-    if (parts.count == 0) return @"";
-    if (parts.count == 1) return parts[0];
-    NSArray *head = [parts subarrayWithRange:NSMakeRange(0, parts.count - 1)];
-    return [NSString stringWithFormat:@"%@ và %@",
-            [head componentsJoinedByString:@", "], parts.lastObject];
+    return NSStringFromWide(MoodPhrasingCore_TimeOfDayLabel(epochSeconds));
 }
 
 NSString *MoodPhrasing_DayShapeSentence(NSArray<NSDictionary *> *todaySamples) {
-    if (todaySamples.count == 0) {
-        // Thật thà: chưa có gì thì nói chưa có gì. KHÔNG suy ra "hôm nay êm" từ chỗ không có dữ
-        // liệu — im lặng của bàn phím không phải bằng chứng của sự bình yên (dec.4 cùng tinh thần).
-        return @"Chưa có nhịp nào hôm nay";
-    }
-
-    BOOL rippled[MKTimeOfDayCount] = {NO, NO, NO, NO};
-    NSInteger calmCount = 0;
+    std::vector<MoodSample> samples;
+    samples.reserve(todaySamples.count);
     for (NSDictionary *s in todaySamples) {
-        double v = [s[@"value"] doubleValue];
-        if (v >= MoodPhrasing_RippleThreshold()) {
-            rippled[TimeOfDayOf([s[@"ts"] longLongValue])] = YES;
-        } else {
-            calmCount++;
-        }
+        MoodSample m;
+        m.ts = [s[@"ts"] longLongValue];
+        m.value = [s[@"value"] doubleValue];
+        samples.push_back(m);
     }
-
-    NSMutableArray<NSString *> *names = [NSMutableArray array];
-    for (NSInteger i = 0; i < MKTimeOfDayCount; i++) {
-        if (rippled[i]) [names addObject:ShortLabel((MKTimeOfDay)i)];
-    }
-
-    if (names.count == 0) {
-        return @"Hôm nay tới giờ vẫn êm";
-    }
-
-    NSString *s = [NSString stringWithFormat:@"%@ có gợn", CapitalizeFirst(JoinNatural(names))];
-    // "phần lớn êm" chỉ nói khi ĐÚNG là phần lớn — nói bừa cho dịu tai là phán xét trá hình, và
-    // sai sự thật thì người dùng mất tin vào mọi câu khác của app.
-    if (calmCount * 2 > (NSInteger)todaySamples.count) {
-        s = [s stringByAppendingString:@", phần lớn êm"];
-    }
-    return s;
+    return NSStringFromWide(MoodPhrasingCore_DayShapeSentence(samples, MoodPhrasing_RippleThreshold()));
 }

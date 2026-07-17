@@ -17,6 +17,7 @@ release-out/
 # Build artifact của tests/core
 tests/core/test_engine
 tests/core/test_send_risk
+tests/core/test_phrasing
 
 # Build artifact của tests/ios
 tests/ios/bridge_test

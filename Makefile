@@ -33,6 +33,8 @@ test-core:       ## Regression bộ não dùng chung (đội core sở hữu): e
 	./tests/core/test_engine
 	bash tests/core/send_risk_build.sh
 	./tests/core/test_send_risk
+	bash tests/core/phrasing_build.sh
+	./tests/core/test_phrasing
 
 test-macos:      ## Test riêng vỏ macOS (đội macOS sở hữu): E2E tầng dữ liệu chuỗi nhịp lấy mẫu (gõ→nhịp→ghi→đọc, host, cô lập kho + keychain)
 	bash tests/macos/mood_pipeline_build.sh
