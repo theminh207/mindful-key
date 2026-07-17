@@ -210,31 +210,31 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="icon.ico">
+    <Image Include="..\..\..\..\..\brand\platform\windows\icon.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="StatusViet.ico">
+    <Image Include="..\..\..\..\..\brand\platform\windows\StatusViet.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="StatusEng.ico">
+    <Image Include="..\..\..\..\..\brand\platform\windows\StatusEng.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="StatusViet10.ico">
+    <Image Include="..\..\..\..\..\brand\platform\windows\StatusViet10.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="StatusEng10.ico">
+    <Image Include="..\..\..\..\..\brand\platform\windows\StatusEng10.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="OKButton.ico">
+    <Image Include="..\..\..\..\..\brand\platform\windows\OKButton.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="ExitButton.ico">
+    <Image Include="..\..\..\..\..\brand\platform\windows\ExitButton.ico">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="DefaultButton.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="StartConvert.ico">
+    <Image Include="..\..\..\..\..\brand\platform\windows\StartConvert.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

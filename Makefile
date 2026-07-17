@@ -16,7 +16,7 @@ IOS_DD    := build/ios-dd
 IOS_APPID := vn.gnh.mindfulkey.ios
 VERSION   := $(shell . ./version.env >/dev/null 2>&1; grep '^VERSION=' version.env | cut -d= -f2)
 
-.PHONY: help generate test test-core test-macos test-ios build install run doctor run-ios universal brand public-brand brand-lint hooks version clean
+.PHONY: help generate brand-platform test test-core test-macos test-ios build install run doctor run-ios universal brand public-brand brand-lint hooks version clean
 help:
 	@echo "make generate | test | build | install | run | doctor | run-ios | universal | brand | public-brand | brand-lint | hooks | version | clean   (v$(VERSION))"
 	@echo ""
@@ -112,6 +112,9 @@ universal:       ## Build bản chạy được cả máy chip M lẫn Intel (ch
 
 brand:           ## Xuất lại brand-asset từ SVG nguồn
 	bash brand/export.sh
+
+brand-platform:  ## Sinh lại icon Windows/Android/Linux từ SVG nguồn (brand/export-platform.sh)
+	bash brand/export-platform.sh
 
 brand-palette:   ## Sinh lại bảng màu MỌI vỏ (macOS colorset + BrandPalette.h apple/windows) từ brand/tokens.json
 	python3 brand/gen-palette.py

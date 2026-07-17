@@ -32,23 +32,35 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_APP_ICON            ICON                    "icon.ico"
+// [MINDFUL] 2026-07-17 (GĐ6) — trỏ THẲNG sang bộ icon brand sinh từ SVG nguồn
+// (brand/export-platform.sh -> brand/platform/windows/), KHÔNG chép vào thư mục Windows: chép là
+// bản sao thứ hai của tài sản brand, đúng mô hình đã đẻ ra bug lexicon. Cùng cách .wav chuông đang
+// làm. Đổi SVG -> chạy `make brand-platform` -> cả app đổi theo.
+//
+// Trước đó vỏ Windows chạy nguyên bộ icon OpenKey 2019 (chữ "V") — kể cả ICON KHAY, thứ người
+// dùng nhìn cả ngày. Con sóng `~` nay là icon khay thật (Status.svg).
+IDI_APP_ICON            ICON                    "../../../../../brand/platform/windows/icon.ico"
 
-IDI_ICON_STATUS_VIET    ICON                    "StatusViet.ico"
+IDI_ICON_STATUS_VIET    ICON                    "../../../../../brand/platform/windows/StatusViet.ico"
 
-IDI_ICON_STATUS_ENG     ICON                    "StatusEng.ico"
+IDI_ICON_STATUS_ENG     ICON                    "../../../../../brand/platform/windows/StatusEng.ico"
 
-IDI_ICON_STATUS_VIET_10 ICON                    "StatusViet10.ico"
+// "*_10" là tên DI SẢN OpenKey và nó NÓI DỐI: không phải "kiểu Windows 10" mà là bản XÁM
+// (SystemTrayHelper.cpp:288 dùng khi vUseGrayIcon). Giữ tên vì đổi = đụng resource.h + mọi chỗ gọi,
+// ngoài phạm vi GĐ6.
+IDI_ICON_STATUS_VIET_10 ICON                    "../../../../../brand/platform/windows/StatusViet10.ico"
 
-IDI_ICON_STATUS_ENG_10  ICON                    "StatusEng10.ico"
+IDI_ICON_STATUS_ENG_10  ICON                    "../../../../../brand/platform/windows/StatusEng10.ico"
 
-IDI_ICON_OK_BUTTON      ICON                    "OKButton.ico"
+IDI_ICON_OK_BUTTON      ICON                    "../../../../../brand/platform/windows/OKButton.ico"
 
-IDI_ICON_EXIT_BUTTON    ICON                    "ExitButton.ico"
+IDI_ICON_EXIT_BUTTON    ICON                    "../../../../../brand/platform/windows/ExitButton.ico"
 
+// CHƯA đổi: brand không có hình cho hành động "Cài đặt gốc", và bịa một cái là tự chế nhận diện.
+// Giữ icon OpenKey gốc cho nút này — xem docs/FRICTION-LOG.md 2026-07-17.
 IDI_ICON_DEFAULT_BUTTON ICON                    "DefaultButton.ico"
 
-IDI_ICON_START_CONVERT  ICON                    "StartConvert.ico"
+IDI_ICON_START_CONVERT  ICON                    "../../../../../brand/platform/windows/StartConvert.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////

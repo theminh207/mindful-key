@@ -15,6 +15,58 @@ for s in "${WSIZES[@]}"; do
 done
 python3 "$ROOT/brand/pack-ico.py" "$OUT/windows/AppIcon.ico" "${args[@]}"
 
+# [MINDFUL] 2026-07-17 — icon KHAY + nút cho vỏ Windows.
+#
+# Trước đó script này CHỈ sinh AppIcon.ico, nên vỏ Windows vẫn chạy nguyên bộ icon OpenKey 2019
+# (chữ "V"), kể cả icon khay — thứ người dùng nhìn NHIỀU NHẤT, cả ngày. SVG nguồn đã có sẵn đúng
+# những hình cần (Status/StatusEng/OK/ExitButton/StartConvert), chỉ chưa ai nối sang .ico.
+#
+# BẢN XÁM (`vUseGrayIcon` -> *10.ico): macOS làm bằng `setTemplate:YES` — hệ thống TỰ chuyển sang
+# đơn sắc thích ứng thanh menu sáng/tối. Windows KHÔNG có gì tương đương, khay cần pixel thật. Nên
+# ta tô lại bằng token `stone` (#8A9BA0) — sắc độ trung tính của chính brand, đọc được trên cả khay
+# sáng lẫn tối. ĐÂY LÀ CÁCH ĐỌC BRAND, chưa phải quyết định của chủ dự án — xem docs/FRICTION-LOG.md
+# 2026-07-17. Tên "*10" là di sản OpenKey và NÓI DỐI: nó không phải "kiểu Windows 10", nó là bản
+# xám (SystemTrayHelper.cpp:288). Giữ tên vì đổi = đụng resource.h + .rc, ngoài phạm vi.
+STONE="#8A9BA0"
+TRAY_SIZES=(16 20 24 32 48 64 256)
+BTN_SIZES=(16 24 32 48)
+
+ico_from_svg() {   # $1=svg nguồn  $2=.ico đích  $3=màu thay thế (rỗng = giữ nguyên)  $4..=cỡ
+  local svg="$1" out="$2" recolor="$3"; shift 3
+  local tmpsvg="$svg" pngs=()
+  if [ -n "$recolor" ]; then
+    tmpsvg="$(mktemp -t mkicon).svg"
+    sed -E "s/(stroke|fill)=\"#[0-9A-Fa-f]{6}\"/\1=\"$recolor\"/g" "$svg" > "$tmpsvg"
+  fi
+  for s in "$@"; do
+    local png="$OUT/windows/png/tmp-$s.png"
+    rsvg-convert -w "$s" -h "$s" "$tmpsvg" -o "$png"
+    pngs+=("$png")
+  done
+  python3 "$ROOT/brand/pack-ico.py" "$out" "${pngs[@]}"
+  rm -f "${pngs[@]}"
+  # if/fi chứ KHÔNG `[ ... ] && rm`: recolor rỗng -> biểu thức trả non-zero -> `set -e` giết
+  # script ngay tại đây, và nó chết SAU khi đã sinh xong file đầu nên nhìn như lỗi SVG.
+  if [ -n "$recolor" ]; then rm -f "$tmpsvg"; fi
+}
+
+echo "== Windows: icon khay (con sóng ~) =="
+ico_from_svg "$SVG/Status.svg"       "$OUT/windows/StatusViet.ico"   ""       "${TRAY_SIZES[@]}"
+ico_from_svg "$SVG/StatusEng.svg"    "$OUT/windows/StatusEng.ico"    ""       "${TRAY_SIZES[@]}"
+ico_from_svg "$SVG/Status.svg"       "$OUT/windows/StatusViet10.ico" "$STONE" "${TRAY_SIZES[@]}"
+ico_from_svg "$SVG/StatusEng.svg"    "$OUT/windows/StatusEng10.ico"  "$STONE" "${TRAY_SIZES[@]}"
+
+echo "== Windows: icon nút =="
+ico_from_svg "$SVG/OK.svg"           "$OUT/windows/OKButton.ico"     ""       "${BTN_SIZES[@]}"
+ico_from_svg "$SVG/ExitButton.svg"   "$OUT/windows/ExitButton.ico"   ""       "${BTN_SIZES[@]}"
+ico_from_svg "$SVG/StartConvert.svg" "$OUT/windows/StartConvert.ico" ""       "${BTN_SIZES[@]}"
+
+echo "== Windows: icon app =="
+ico_from_svg "$SVG/AppIcon.svg"      "$OUT/windows/icon.ico"         ""       16 20 24 32 48 64 128 256
+
+# DefaultButton.ico ("Cài đặt gốc") CỐ Ý không sinh: brand chưa có hình cho hành động này, và bịa
+# một cái là tự chế nhận diện. Vỏ Windows giữ icon OpenKey gốc cho nút đó — xem FRICTION-LOG.
+
 echo "== Android (adaptive icon 432px: foreground / background / monochrome) =="
 mkdir -p "$OUT/android"
 rsvg-convert -w 432 -h 432 "$SVG/android-foreground.svg" -o "$OUT/android/ic_launcher_foreground.png"
