@@ -62,6 +62,15 @@ IDI_ICON_DEFAULT_BUTTON ICON                    "DefaultButton.ico"
 
 IDI_ICON_START_CONVERT  ICON                    "../../../../../brand/platform/windows/StartConvert.ico"
 
+// Icon 4 tab cửa sổ Điều khiển. Brand vẽ sẵn đúng 4 tab đang có, ĐÚNG THỨ TỰ — chưa ai nối.
+IDI_TAB_BOGO            ICON                    "../../../../../brand/platform/windows/TabBoGo.ico"
+
+IDI_TAB_GOTAT           ICON                    "../../../../../brand/platform/windows/TabGoTat.ico"
+
+IDI_TAB_HETHONG         ICON                    "../../../../../brand/platform/windows/TabHeThong.ico"
+
+IDI_TAB_THONGTIN        ICON                    "../../../../../brand/platform/windows/TabThongTin.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

@@ -17,6 +17,9 @@ redistribute your new version, it MUST be open source.
 class MainControlDialog : public BaseDialog {
 private:
 	HWND hTab, hTabPage1, hTabPage2, hTabPage3, hTabPage4;
+	// [MINDFUL] GĐ6 — icon 4 tab lấy từ brand. Giữ ở đây vì ImageList phải sống bằng tuổi thọ
+	// của tab control: huỷ sớm là tab mất icon (tab KHÔNG giữ bản sao, nó chỉ trỏ vào list).
+	HIMAGELIST hTabImages = NULL;
 	HWND comboBoxInputType;
 	HWND comboBoxTableCode;
 	HWND checkCtrl, checkAlt, checkWin, checkShift, textSwitchKey, checkBeep;

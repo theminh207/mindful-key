@@ -80,6 +80,10 @@
 #define IDC_COMBO_BELL_SOUND            1105
 #define IDC_BUTTON_BELL_PREVIEW         1106
 #define IDC_BUTTON_BELL_PICK            1107
+#define IDI_TAB_BOGO                    260
+#define IDI_TAB_GOTAT                   261
+#define IDI_TAB_HETHONG                 262
+#define IDI_TAB_THONGTIN                263
 #define IDR_WAVE_TEMPLE                 300
 #define IDR_WAVE_CHIME                  301
 #define IDR_WAVE_WIND                   302

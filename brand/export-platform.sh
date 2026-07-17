@@ -61,6 +61,14 @@ ico_from_svg "$SVG/OK.svg"           "$OUT/windows/OKButton.ico"     ""       "$
 ico_from_svg "$SVG/ExitButton.svg"   "$OUT/windows/ExitButton.ico"   ""       "${BTN_SIZES[@]}"
 ico_from_svg "$SVG/StartConvert.svg" "$OUT/windows/StartConvert.ico" ""       "${BTN_SIZES[@]}"
 
+# Icon 4 tab cửa sổ Điều khiển. Brand vẽ sẵn đúng 4 tab Windows đang có, ĐÚNG THỨ TỰ
+# (MainControlDialog.cpp: Bộ gõ · Gõ tắt · Hệ thống · Thông tin) — chưa ai nối.
+echo "== Windows: icon tab =="
+ico_from_svg "$SVG/ui-tab-bogo.svg"     "$OUT/windows/TabBoGo.ico"     "" "${BTN_SIZES[@]}"
+ico_from_svg "$SVG/ui-tab-gotat.svg"    "$OUT/windows/TabGoTat.ico"    "" "${BTN_SIZES[@]}"
+ico_from_svg "$SVG/ui-tab-hethong.svg"  "$OUT/windows/TabHeThong.ico"  "" "${BTN_SIZES[@]}"
+ico_from_svg "$SVG/ui-tab-thongtin.svg" "$OUT/windows/TabThongTin.ico" "" "${BTN_SIZES[@]}"
+
 echo "== Windows: icon app =="
 ico_from_svg "$SVG/AppIcon.svg"      "$OUT/windows/icon.ico"         ""       16 20 24 32 48 64 128 256
 

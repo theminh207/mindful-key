@@ -60,13 +60,40 @@ void MainControlDialog::initDialog() {
     hTab = GetDlgItem(hDlg, IDC_TAB_CONTROL);
     TCITEM tci = { 0 };
     tci.mask = TCIF_TEXT;
+    // [MINDFUL] GĐ6 — icon tab lấy từ brand (con sóng ~ trong khung, teal #1D7C91). Brand vẽ sẵn
+    // đúng 4 tab này và đúng thứ tự này từ lâu; trước đó tab chỉ có chữ trơ, không mang nhận diện.
+    //
+    // Cỡ theo DPI: 16px chuẩn, nhân theo DPI màn hình. Nhồi icon 16px cứng vào máy 200% là icon
+    // mờ nhoè — và mờ nhoè thì mắt đọc ra "app cẩu thả", không đọc ra "chánh niệm".
+    // LoadImage tự chọn cỡ khớp nhất TRONG .ico đa cỡ (ta sinh 16/24/32/48), nên không nội suy bừa.
+    UINT dpi = GetDpiForSystem();
+    int  iconPx = MulDiv(16, dpi ? dpi : 96, 96);
+    if (hTabImages == NULL) {
+        hTabImages = ImageList_Create(iconPx, iconPx, ILC_COLOR32 | ILC_MASK, 4, 0);
+        const int tabIcons[4] = { IDI_TAB_BOGO, IDI_TAB_GOTAT, IDI_TAB_HETHONG, IDI_TAB_THONGTIN };
+        for (int i = 0; i < 4; i++) {
+            HICON ico = (HICON)LoadImage(hIns, MAKEINTRESOURCE(tabIcons[i]), IMAGE_ICON,
+                                         iconPx, iconPx, LR_DEFAULTCOLOR);
+            if (ico) {
+                ImageList_AddIcon(hTabImages, ico);
+                DestroyIcon(ico);   // ImageList giữ bản sao riêng
+            }
+        }
+        TabCtrl_SetImageList(hTab, hTabImages);
+    }
+
+    tci.mask = TCIF_TEXT | TCIF_IMAGE;
     tci.pszText = (LPWSTR)_T("Bộ gõ");
+    tci.iImage = 0;
     TabCtrl_InsertItem(hTab, 0, &tci);
     tci.pszText = (LPWSTR)_T("Gõ tắt");
+    tci.iImage = 1;
     TabCtrl_InsertItem(hTab, 1, &tci);
     tci.pszText = (LPWSTR)_T("Hệ thống");
+    tci.iImage = 2;
     TabCtrl_InsertItem(hTab, 2, &tci);
     tci.pszText = (LPWSTR)_T("Thông tin");
+    tci.iImage = 3;
     TabCtrl_InsertItem(hTab, 3, &tci);
     RECT r;
     TabCtrl_GetItemRect(hTab, 0, &r);
