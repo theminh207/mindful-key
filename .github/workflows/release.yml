@@ -94,7 +94,12 @@ jobs:
           # thì công khai. windows.yml đã học bài này; bước đây thì chưa — nên vòng đầu của v0.3.0
           # chết đúng ở đây và không ai đọc được vì sao.
           set +e
-          "$ISCC" \
+          # MSYS2_ARG_CONV_EXCL="*": TẮT phép dịch tham số của Git Bash. Bash tự biến mọi tham số
+          # mở đầu bằng `/` thành đường dẫn Windows, nên `/DMyAppVersion=...` hoá ra một đường dẫn
+          # và ISCC báo "You may not specify more than one script filename" — đúng cái bẫy đã cắn
+          # MSBuild ở windows.yml (MSB1008). MSBuild thoát được vì nó nhận cả cờ `-`; ISCC CHỈ nhận
+          # `/`, nên phải tắt hẳn phép dịch. ĐỪNG gỡ dòng env này.
+          MSYS2_ARG_CONV_EXCL="*" "$ISCC" \
             "/DMyAppVersion=$VERSION" \
             "/DSourceExe=$SOURCE_EXE" \
             platforms/windows/installer/MindfulKey.iss > iscc.log 2>&1
