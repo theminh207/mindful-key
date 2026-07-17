@@ -73,7 +73,21 @@ jobs:
         shell: bash
         run: |
           set +e
-          msbuild "platforms/windows/win32/OpenKey/OpenKey.sln" \
+          # `microsoft/setup-msbuild` cắm MSBuild vào PATH cho PowerShell/cmd, KHÔNG cho bash —
+          # bước này chạy shell bash (để xử lý lỗi bằng Python), nên gọi thẳng `msbuild` là
+          # "command not found", và ta lại tưởng code Windows hỏng. Tự dò bằng vswhere, đúng cách
+          # bước engine ở trên đang dùng (bước đó PASS => cách này đã được chứng minh trên runner).
+          VSWHERE="/c/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe"
+          MSBUILD_WIN=$("$VSWHERE" -latest -products '*' -requires Microsoft.Component.MSBuild \
+                        -find 'MSBuild\**\Bin\MSBuild.exe' | head -1 | tr -d '\r')
+          if [[ -z "$MSBUILD_WIN" ]]; then
+            echo "::error::vswhere không tìm thấy MSBuild.exe trên runner"
+            exit 1
+          fi
+          MSBUILD=$(cygpath -u "$MSBUILD_WIN")
+          echo "MSBuild: $MSBUILD"
+
+          "$MSBUILD" "platforms/windows/win32/OpenKey/OpenKey.sln" \
             /t:OpenKey \
             /p:Configuration=${{ matrix.configuration }} \
             /p:Platform=x64 \
