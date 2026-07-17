@@ -17,6 +17,11 @@ redistribute your new version, it MUST be open source.
 #include <Shlobj.h>
 #include <Uxtheme.h>
 
+// [MINDFUL] GĐ6 — ImageList_* (icon tab) là HÀM THẬT trong comctl32, phải link. File này lẫn
+// stdafx.h đã include <Commctrl.h> từ đời OpenKey nhưng chưa bao giờ cần lib: TabCtrl_*/ListView_*
+// mà code cũ dùng đều là MACRO gói SendMessage, không đụng thư viện. ImageList_* thì khác.
+#pragma comment(lib, "comctl32.lib")
+
 #pragma comment(lib, "UxTheme.lib")
 
 static Uint16 _lastKeyCode;
