@@ -105,6 +105,9 @@
     <ClInclude Include="NudgeCoordinator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MoodStore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\..\core\mood\SendRiskAnalyzer.h">
       <Filter>mood</Filter>
     </ClInclude>
@@ -177,6 +180,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NudgeCoordinator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MoodStore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\core\mood\SendRiskAnalyzer.cpp">

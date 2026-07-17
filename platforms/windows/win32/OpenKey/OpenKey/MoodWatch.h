@@ -21,3 +21,8 @@ void MoodWatch_OnWord(const std::wstring& word);
 // Điểm send-risk [0,1] của câu gần nhất; -1.0 khi chưa phân tích lần nào.
 // Đối ứng của MoodWatchMac_LastSendRisk(). Gác cổng gửi tin (GĐ2) sẽ đọc cái này.
 double MoodWatch_LastSendRisk();
+
+// [MINDFUL] GĐ3 — nhịp chung (Bell_TimerProc) gọi để LẤY RA rồi XOÁ risk trung bình của nhịp vừa
+// qua. true = có mẫu. Mô hình lấy mẫu (SYNC-emotion-mechanism-v2.md §A): để ý liên tục trong RAM,
+// ghi 1 số trung bình mỗi nhịp; quãng KHÔNG gõ để TRỐNG (không bịa nước giả lên dòng sông).
+bool MoodWatch_DrainSampleAverage(double* outAvg);

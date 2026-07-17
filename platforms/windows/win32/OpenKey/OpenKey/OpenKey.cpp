@@ -13,6 +13,7 @@ redistribute your new version, it MUST be open source.
 -----------------------------------------------------------*/
 #include "stdafx.h"
 #include "SendGatekeeper.h"
+#include "MoodStore.h"
 #include "AppDelegate.h"
 
 #pragma comment(lib, "imm32")
@@ -133,6 +134,9 @@ void OpenKeyInit() {
 	{ extern void MoodWatch_Init(); MoodWatch_Init(); }
 	{ extern void Bell_Init(); Bell_Init(); }
 	{ SendGatekeeper_Init(); }
+	// Hỏi MỘT lần, lúc khởi động — CỐ Ý không hỏi giữa lúc người dùng đang căng thẳng.
+	// Hỏi đúng lúc người ta đang bực là ép đồng ý, không phải xin phép.
+	{ MoodStore_AskConsentIfNeeded(); }
 
 	//pre-create back key
 	backspaceEvent[0].type = INPUT_KEYBOARD;

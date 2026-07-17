@@ -43,6 +43,10 @@ static const DWORD  kWarnCooldownMs    = 15000;
 static MoodBuffer g_buffer(15);
 static double     g_lastSendRisk = -1.0;
 static int        g_tenseStreak = 0;   // chỉ worker chạm -> không cần khoá
+// Gom mẫu: worker CỘNG, luồng timer XẢ -> hai luồng khác nhau, phải khoá.
+static mutex      g_sampleMutex;
+static double     g_sampleSum = 0.0;
+static int        g_sampleCount = 0;
 static DWORD      g_lastWarn = 0;
 static volatile LONG g_popupShowing = 0;
 
@@ -93,6 +97,12 @@ static void analyzeOnWorker(const wstring& word) {
     SendRiskResult scored = SendRiskAnalyzer_Analyze(g_buffer.recentText());
     g_lastSendRisk = scored.risk;
 
+    {
+        lock_guard<mutex> lock(g_sampleMutex);
+        g_sampleSum += scored.risk;
+        g_sampleCount++;
+    }
+
     // [MINDFUL] GĐ4 — đếm chuỗi câu căng LIÊN TIẾP, độc lập với ngưỡng nhắc thụ động bên dưới.
     // Đặt ĐÚNG chỗ macOS đặt (MoodWatchMac.mm: ngay sau khi gán g_lastSendRisk). Ngưỡng "gợn"
     // thấp hơn kSendRiskThreshold có chủ đích: đây là phát hiện "đang dồn nén dần", không phải
@@ -141,6 +151,17 @@ static void workerLoop() {
 
 double MoodWatch_LastSendRisk() {
     return g_lastSendRisk;
+}
+
+bool MoodWatch_DrainSampleAverage(double* outAvg) {
+    lock_guard<mutex> lock(g_sampleMutex);
+    if (g_sampleCount <= 0)
+        return false;   // nhịp này không gõ gì -> để TRỐNG, không ghi 0 (0 nghĩa là "đã đo, thấy phẳng")
+    if (outAvg)
+        *outAvg = g_sampleSum / g_sampleCount;
+    g_sampleSum = 0.0;
+    g_sampleCount = 0;
+    return true;
 }
 
 void MoodWatch_OnWord(const wstring& word) {

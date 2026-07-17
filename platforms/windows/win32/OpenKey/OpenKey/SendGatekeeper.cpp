@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "SendGatekeeper.h"
 #include "MoodWatch.h"
+#include "MoodStore.h"
 #include "../../../../../core/mood/BreathingPause.h"
 #include <vector>
 #include <mutex>
@@ -130,10 +131,21 @@ static DWORD WINAPI pauseThread(LPVOID p) {
     g_pauseMessage = prompt->message;
     delete prompt;
 
+    // Chụp risk + app NGAY BÂY GIỜ, trước khi hộp thoại mở: người dùng có thể ngồi vài giây rồi
+    // mới bấm, lúc đó app đang-trước-mặt đã là hộp thoại của chính ta.
+    double risk = MoodWatch_LastSendRisk();
+    wstring app = SendGatekeeper_LastAppName();
+
     INT_PTR result = DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG_PAUSE),
                                     NULL, PauseDialogProc, (LPARAM)(int)(seconds * 1000));
     BreathingPauseChoice choice = (BreathingPauseChoice)result;
     BreathingPause_ReportChoice(choice);
+
+    // Ghi lại (nếu đã đồng ý): CHỈ điểm risk + tên app + lựa chọn. KHÔNG câu chữ.
+    const wchar_t* label = choice == BreathingPauseChoice::SendAnyway ? L"send_anyway"
+                         : choice == BreathingPauseChoice::Wait       ? L"wait"
+                                                                      : L"dismissed";
+    MoodStore_LogGatekeeperEvent(risk, app, label);
 
     if (choice == BreathingPauseChoice::SendAnyway) {
         // Gửi lại đúng 1 phím Enter THẬT, gắn kSelfSentTag để hook bỏ qua (không tự chặn lại).

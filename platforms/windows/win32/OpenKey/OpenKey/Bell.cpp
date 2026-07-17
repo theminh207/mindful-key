@@ -20,6 +20,8 @@
 #include "stdafx.h"
 #include "Bell.h"
 #include "NudgeCoordinator.h"
+#include "MoodWatch.h"
+#include "MoodStore.h"
 #include <vector>
 #include <string>
 #include <shlobj.h>
@@ -284,10 +286,12 @@ void Bell_Snooze(int minutes) {
 }
 
 static void CALLBACK Bell_TimerProc(HWND hwnd, UINT msg, UINT_PTR id, DWORD t) {
-    // [MINDFUL] NHỊP trước, TIẾNG sau — khớp hợp đồng BellMac.mm. Nhịp phải chạy KỂ CẢ khi người
-    // dùng tắt chuông / tạm hoãn / ngoài giờ: họ tắt TIẾNG, không phải tắt việc ghi nhận.
-    // Nhật ký (GĐ3, chưa port) sẽ móc vào ĐÂY. Giữ đúng thứ tự sẵn để lúc port không phải sửa mạch.
-    // Cổng chặn TIẾNG nằm dưới, KHÔNG nằm ở đồng hồ.
+    // [MINDFUL] NHỊP trước, TIẾNG sau — khớp hợp đồng BellMac.mm. Ghi nhật ký TRƯỚC mọi cổng
+    // chặn: nó phải chạy KỂ CẢ khi người dùng tắt chuông / tạm hoãn / ngoài giờ. Họ tắt TIẾNG,
+    // không phải tắt việc ghi nhận — tắt cả hai là âm thầm bỏ dữ liệu mà họ không hề yêu cầu.
+    double avg = 0.0;
+    if (MoodWatch_DrainSampleAverage(&avg))
+        MoodStore_LogSampleEvent(avg);   // tự im nếu chưa có consent
 
     if (!vBell || isSnoozed())
         return;
