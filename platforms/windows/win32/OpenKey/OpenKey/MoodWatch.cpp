@@ -24,6 +24,8 @@
 #include "MoodWatch.h"
 #include "Bell.h"
 #include "NudgeCoordinator.h"
+#include "SecureField.h"   // [MINDFUL] P1 — cổng ô mật khẩu, xem SecureField.h
+#include "MoodStore.h"     // consent hỏi lúc BẬT (MoodWatch_Toggle), không phải lúc khởi động
 #include "../../../../../core/mood/MoodBuffer.h"
 #include "../../../../../core/mood/SendRiskAnalyzer.h"
 #include "../../../../../core/mood/EmotionWaveAmplitude.h"
@@ -37,11 +39,15 @@ using namespace std;
 
 // [MINDFUL] 2026-07-17 — TẮT mặc định trên Windows (macOS/iOS bật). KHÔNG phải chọn tuỳ tiện:
 // `WH_KEYBOARD_LL` thấy MỌI phím, kể cả ô mật khẩu, và Windows KHÔNG có cơ chế nào chặn hook như
-// Secure Input Mode của macOS. Bật sẵn = mật khẩu người dùng vào MoodBuffer và bị chấm điểm ngay
-// từ lần cài đầu, trước khi họ kịp biết. Đó là cột trụ riêng tư.
-// Chủ dự án chốt 2026-07-17: bản Windows đầu tiên tắt sẵn, bật là hành động CÓ Ý THỨC của người
-// dùng và có cảnh báo (xem MoodWatch_SetEnabled). Bật lại mặc định khi đã vá bằng UI Automation —
-// xem docs/FRICTION-LOG.md 2026-07-17 "CHẶN PHÁT HÀNH".
+// Secure Input Mode của macOS.
+//
+// ĐÃ VÁ (cùng ngày, xem SecureField.h/.cpp): `MoodWatch_OnWord` nay hỏi `SecureField_IsActive()`
+// trước khi xếp hàng bất kỳ từ nào — ô mật khẩu không còn vào MoodBuffer nữa. NHƯNG mặc định VẪN
+// TẮT: máy dev là macOS, KHÔNG chạy được Windows thật để tự mắt xác nhận UI Automation phủ đủ mọi
+// loại ô mật khẩu (Win32 gốc chắc chắn được — lớp rẻ không cần UIA; Chrome/UWP phụ thuộc app đó có
+// làm accessibility tử tế hay không, kể cả Electron còn CHƯA rõ). Bật mặc định là quyết định của
+// chủ dự án, sau khi có người kiểm trên Windows thật (docs/QA-WINDOWS.md ca P1) — xem
+// docs/FRICTION-LOG.md 2026-07-17 "CHẶN PHÁT HÀNH".
 int vMoodWatch = 0;
 
 // Khớp MoodWatchMac.mm: risk >= 0.5 mới nhắc, và 15 giây nghỉ giữa 2 lần nhắc.
@@ -192,6 +198,19 @@ void MoodWatch_OnWord(const wstring& word) {
     if (!vMoodWatch || word.empty())
         return;
 
+    // [MINDFUL] P1 CHẶN PHÁT HÀNH (docs/FRICTION-LOG.md 2026-07-17) — đang ở ô mật khẩu, HOẶC
+    // chưa chắc là không (fail-closed). Đọc cờ này KHÔNG chạy UIA tại chỗ — chỉ đọc 1 biến đã có
+    // sẵn (xem SecureField.h), nên an toàn trên luồng hook. Dọn sạch MoodBuffer NGAY và giữ nó
+    // rỗng suốt lúc ở ô mật khẩu, để chữ gõ TRƯỚC lúc vào ô mật khẩu không lẫn với chữ gõ SAU khi
+    // rời khỏi (gọi lại mỗi từ bị chặn — idempotent, worker chỉ xoá một buffer vốn đã rỗng).
+    if (SecureField_IsActive()) {
+        lock_guard<mutex> lock(g_mutex);
+        g_queue.clear();
+        g_clearRequested = true;
+        g_cv.notify_one();
+        return;
+    }
+
     {
         lock_guard<mutex> lock(g_mutex);
         // Chống phình nếu worker kẹt ở hộp thoại: bỏ từ CŨ NHẤT, giữ từ mới (câu gần đây mới là
@@ -211,13 +230,19 @@ void MoodWatch_OnWord(const wstring& word) {
 // Nói THẲNG cái đang đánh đổi, ngay lúc người ta quyết định — không giấu trong tài liệu mà không
 // ai đọc. Trả về true nếu sau lời này lớp cảm xúc được BẬT.
 bool MoodWatch_ConfirmEnable(HWND parent) {
+    // [MINDFUL] Copy này PHẢI khớp đúng thứ SecureField.cpp đang làm — xem MoodWatch.cpp đầu file
+    // + docs/FRICTION-LOG.md 2026-07-17 "CHẶN PHÁT HÀNH". Giọng quan sát, không phán xét (HIẾN
+    // CHƯƠNG §2.2): nói thẳng cơ chế đang chạy VÀ giới hạn còn lại, không tô hồng cũng không doạ.
     return MessageBoxW(parent,
         L"Bật lớp cảm xúc?\n\n"
         L"Nó đọc những từ bạn gõ (chỉ trong máy, không gửi đi đâu) để biết khi nào mặt hồ đang gợn.\n\n"
-        L"BẢN WINDOWS NÀY CÒN MỘT GIỚI HẠN THẬT: nó chưa phân biệt được ô mật khẩu. Bản macOS được "
-        L"hệ điều hành che chỗ đó, Windows thì không. Nghĩa là mật khẩu bạn gõ cũng sẽ được đọc và "
-        L"chấm điểm — không lưu lại chữ, nhưng vẫn là đã đọc.\n\n"
-        L"Đang vá. Tới khi xong, chỉ bật nếu bạn hiểu và chấp nhận điều này.",
+        L"Ô mật khẩu được tự động bỏ qua: bộ gõ dùng UI Automation của Windows để nhận ra ô mật "
+        L"khẩu, và khi CHƯA CHẮC (vừa đổi focus, chưa kịp hỏi xong) thì luôn coi như đang ở ô mật "
+        L"khẩu — thà bỏ sót vài trăm mili-giây còn hơn đọc nhầm.\n\n"
+        L"Còn một giới hạn CHƯA kiểm chứng hết: cách này chắc chắn nhận ra ô mật khẩu chuẩn của "
+        L"Windows, nhưng với ô mật khẩu tự vẽ trong một số trình duyệt/ứng dụng thì phụ thuộc vào "
+        L"việc app đó có khai báo đúng cho Windows biết hay không — chưa có ai xác nhận đủ trên máy "
+        L"Windows thật cho từng loại.",
         L"Mindful Keyboard", MB_YESNO | MB_ICONWARNING) == IDYES;
 }
 
@@ -230,6 +255,14 @@ void MoodWatch_Toggle() {
         g_queue.clear();
         g_clearRequested = true;             // để worker tự dọn MoodBuffer (chỉ nó được chạm)
         g_cv.notify_one();
+    } else {
+        // Hỏi ghi nhật ký NGAY SAU khi người dùng bật lớp cảm xúc — đây là chỗ câu hỏi mới có
+        // nghĩa: từ giây này mới có thứ để ghi. Trước 2026-07-17 nó nằm trong OpenKeyInit() và
+        // treo cứng khởi động (xem OpenKey.cpp) — đừng đưa nó về đó.
+        // An toàn để modal ở đây: Toggle() chạy trên luồng giao diện, vốn đã có vòng lặp thông điệp
+        // và một cửa sổ để hộp thoại bám vào. Hai câu hỏi liên tiếp là CỐ Ý — đọc (sóng) và ghi
+        // (nhật ký) là hai quyền khác nhau, đồng ý cái này không kéo theo cái kia.
+        MoodStore_AskConsentIfNeeded();
     }
 }
 

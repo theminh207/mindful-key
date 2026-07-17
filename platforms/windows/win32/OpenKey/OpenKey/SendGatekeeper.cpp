@@ -6,6 +6,7 @@
 #include "SendGatekeeper.h"
 #include "MoodWatch.h"
 #include "MoodStore.h"
+#include "SecureField.h"   // [MINDFUL] P1 — cổng ô mật khẩu, xem SecureField.h
 #include "../../../../../core/mood/BreathingPause.h"
 #include <vector>
 #include <mutex>
@@ -84,6 +85,13 @@ bool SendGatekeeper_ShouldIntercept(WPARAM wParam, const KBDLLHOOKSTRUCT* key) {
         return false;
     // Shift+Enter = xuống dòng trong hầu hết app chat, không phải gửi.
     if (GetKeyState(VK_SHIFT) & 0x8000)
+        return false;
+    // [MINDFUL] P1 CHẶN PHÁT HÀNH — ô mật khẩu, hoặc chưa chắc là không (fail-closed). Đọc cờ,
+    // không chạy UIA tại chỗ — an toàn trên luồng hook. Không gác cổng, không đọc `MoodWatch_
+    // LastSendRisk()` thêm gì cả: risk đó vốn đã không được cập nhật bởi ô mật khẩu (MoodWatch.cpp
+    // đã chặn từ lúc xếp hàng), nhưng dừng sớm ở đây cho rõ ý — không có nhánh nào trong hàm này
+    // được chạy tiếp khi đang ở ô mật khẩu.
+    if (SecureField_IsActive())
         return false;
     if (g_pauseShowing)
         return false;   // đã có nhịp thở đang hiện -> để phím Enter đi bình thường
@@ -205,6 +213,7 @@ void SendGatekeeper_ToggleLastApp() {
         return;
 
     wstring joined;
+    bool added = false;
     {
         lock_guard<mutex> lock(g_mutex);
         bool removed = false;
@@ -215,9 +224,18 @@ void SendGatekeeper_ToggleLastApp() {
                 break;
             }
         }
-        if (!removed)
+        if (!removed) {
             g_apps.push_back(name);
+            added = true;
+        }
         joined = JoinList(g_apps);
     }
     OpenKeyHelper::setRegString(kAppsRegKey, joined.c_str());
+
+    // Vừa nhận canh một app -> từ giờ gác cổng có thứ để ghi. Hỏi consent ở đây, NGOÀI ổ khoá
+    // (modal khi đang giữ mutex là mời deadlock: worker gõ phím sẽ chờ ta, ta chờ người dùng).
+    // Không hỏi thì mọi lần gác cổng sau đó lặng lẽ không được ghi — MoodStore tự im khi chưa có
+    // consent, nên lỗi này sẽ KHÔNG kêu, chỉ để lại nhật ký rỗng.
+    if (added)
+        MoodStore_AskConsentIfNeeded();
 }

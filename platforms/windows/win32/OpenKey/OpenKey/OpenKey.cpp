@@ -13,7 +13,6 @@ redistribute your new version, it MUST be open source.
 -----------------------------------------------------------*/
 #include "stdafx.h"
 #include "SendGatekeeper.h"
-#include "MoodStore.h"
 #include "AppDelegate.h"
 
 #pragma comment(lib, "imm32")
@@ -130,13 +129,27 @@ void OpenKeyInit() {
 	pData = (vKeyHookState*)vKeyInit();
 
 	//[MINDFUL] nạp cài đặt bật/tắt + bật lớp nghe cảm xúc (dự án mindful-keyboard)
+	// SecureField_Init() PHẢI chạy TRƯỚC MoodWatch_Init(): cờ ô mật khẩu khởi sẵn fail-closed
+	// (SecureField.cpp), nên thứ tự ở đây không đổi tính đúng — nhưng dựng cổng trước khi dựng
+	// người cần đi qua cổng là đúng trình tự đọc.
+	{ extern void SecureField_Init(); SecureField_Init(); }   // P1 — xem SecureField.h
 	{ extern int vMoodWatch; APP_GET_DATA(vMoodWatch, 0); }   // TẮT mặc định — xem MoodWatch.cpp
 	{ extern void MoodWatch_Init(); MoodWatch_Init(); }
 	{ extern void Bell_Init(); Bell_Init(); }
 	{ SendGatekeeper_Init(); }
-	// Hỏi MỘT lần, lúc khởi động — CỐ Ý không hỏi giữa lúc người dùng đang căng thẳng.
-	// Hỏi đúng lúc người ta đang bực là ép đồng ý, không phải xin phép.
-	{ MoodStore_AskConsentIfNeeded(); }
+	// KHÔNG hỏi consent ở đây. Chỗ này từng gọi MoodStore_AskConsentIfNeeded() và nó là lỗi CHẶN
+	// KHỞI ĐỘNG (người dùng thật báo 2026-07-17: "cài xong không mở được"):
+	//   OpenKeyInit() chạy ở AppDelegate::run() dòng ~98 — TRƯỚC createSystemTrayIcon() (~101) và
+	//   TRƯỚC vòng lặp thông điệp (~115). MessageBoxW modal ở đây treo cả hàm, nên icon khay không
+	//   bao giờ được tạo và không có vòng lặp nào để bấm. Hộp thoại chủ NULL, lại vừa được bộ cài
+	//   sinh ra nên không có quyền foreground -> nằm sau cửa sổ khác. Tiến trình SỐNG mà vô hình:
+	//   không mở được, và giữ handle làm bộ cài không xoá nổi.
+	//   Bản macOS (AppDelegate.m:253) hỏi trong dispatch_async(main_queue) — tức ĐỂ LÁT NỮA, sau
+	//   khi giao diện đã dựng xong. Port sang đây đã đánh rơi đúng chữ "lát nữa" đó.
+	// Nay consent hỏi ở MoodWatch_Toggle/SendGatekeeper_ToggleLastApp — đúng lúc người dùng CHỦ
+	// ĐỘNG bật thứ cần ghi. Lớp cảm xúc xuất xưởng TẮT (vMoodWatch=0) và allow-list gác cổng rỗng,
+	// nên hỏi lúc khởi động là xin phép cho việc không thể xảy ra. Vẫn giữ nguyên tinh thần cũ —
+	// không hỏi giữa lúc đang căng thẳng: lúc bật là lúc bình tĩnh, còn đúng hơn lúc khởi động.
 
 	//pre-create back key
 	backspaceEvent[0].type = INPUT_KEYBOARD;
