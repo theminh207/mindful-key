@@ -163,6 +163,8 @@
     <ClInclude Include="..\..\..\..\..\core\engine\platforms\win32.h" />
     <ClInclude Include="..\..\..\..\..\core\engine\SmartSwitchKey.h" />
     <ClInclude Include="..\..\..\..\..\core\engine\Vietnamese.h" />
+    <ClInclude Include="..\..\..\..\..\core\mood\MoodBuffer.h" />
+    <ClInclude Include="..\..\..\..\..\core\mood\SendRiskAnalyzer.h" />
     <ClInclude Include="AboutDialog.h" />
     <ClInclude Include="AppDelegate.h" />
     <ClInclude Include="BaseDialog.h" />
@@ -184,6 +186,8 @@
     <ClCompile Include="..\..\..\..\..\core\engine\Macro.cpp" />
     <ClCompile Include="..\..\..\..\..\core\engine\SmartSwitchKey.cpp" />
     <ClCompile Include="..\..\..\..\..\core\engine\Vietnamese.cpp" />
+    <ClCompile Include="..\..\..\..\..\core\mood\MoodBuffer.cpp" />
+    <ClCompile Include="..\..\..\..\..\core\mood\SendRiskAnalyzer.cpp" />
     <ClCompile Include="AboutDialog.cpp" />
     <ClCompile Include="AppDelegate.cpp" />
     <ClCompile Include="BaseDialog.cpp" />

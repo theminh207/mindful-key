@@ -15,4 +15,9 @@ void MoodWatch_Init();
 void MoodWatch_Toggle();
 
 // Được engine gọi mỗi khi một TỪ vừa hoàn chỉnh (qua con trỏ vOnWordCommitted).
+// CHẠY TRÊN LUỒNG HOOK BÀN PHÍM — chỉ xếp hàng rồi trả về ngay, không phân tích tại chỗ.
 void MoodWatch_OnWord(const std::wstring& word);
+
+// Điểm send-risk [0,1] của câu gần nhất; -1.0 khi chưa phân tích lần nào.
+// Đối ứng của MoodWatchMac_LastSendRisk(). Gác cổng gửi tin (GĐ2) sẽ đọc cái này.
+double MoodWatch_LastSendRisk();

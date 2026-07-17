@@ -16,6 +16,9 @@
     <Filter Include="engine">
       <UniqueIdentifier>{cfe37309-a1de-44eb-b4df-ae77f0895ff4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="mood">
+      <UniqueIdentifier>{a7c31e42-9b58-4d16-8e07-2f5c9d1b6a30}</UniqueIdentifier>
+    </Filter>
     <Filter Include="engine\platforms">
       <UniqueIdentifier>{cc7371fe-a039-4fed-b052-980cf185eeda}</UniqueIdentifier>
     </Filter>
@@ -90,6 +93,12 @@
     <ClInclude Include="Bell.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\..\core\mood\MoodBuffer.h">
+      <Filter>mood</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\core\mood\SendRiskAnalyzer.h">
+      <Filter>mood</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -148,6 +157,12 @@
     </ClCompile>
     <ClCompile Include="Bell.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\core\mood\MoodBuffer.cpp">
+      <Filter>mood</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\core\mood\SendRiskAnalyzer.cpp">
+      <Filter>mood</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
