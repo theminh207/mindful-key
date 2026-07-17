@@ -200,6 +200,14 @@ void MoodWatchMac_Init() {
 }
 
 void MoodWatchMac_Flush(void) {
+    // [MINDFUL] Vá lỗi B (P0 — segfault) — TRƯỚC: nếu [NSApp terminate:] xảy ra TRƯỚC khi
+    // MoodWatchMac_Init() từng chạy (vd cú thoát câm khi phát hiện OpenKey đang chạy, ở
+    // AppDelegate.m applicationDidFinishLaunching), applicationWillTerminate: vẫn gọi hàm này,
+    // và g_moodQueue lúc đó là NULL -> dispatch_sync(NULL, ...) -> SIGSEGV ở 0x50 (crash log
+    // 2026-07-17, lặp 4-5 lần, khớp chính xác). Bất biến đúng: flush một hàng đợi CHƯA TỒN TẠI
+    // = không có gì để flush.
+    if (!g_moodQueue)
+        return;
     dispatch_sync(g_moodQueue, ^{
         if (g_sampleCount > 0) {
             double avgRisk = g_sampleSum / g_sampleCount;
@@ -213,7 +221,10 @@ void MoodWatchMac_Flush(void) {
 void MoodWatchMac_SetEnabled(int enabled) {
     vMoodWatch = enabled ? 1 : 0;
     [[NSUserDefaults standardUserDefaults] setInteger:vMoodWatch forKey:@"vMoodWatch"];
-    if (!enabled) {
+    // [MINDFUL] Vá lỗi B — cùng bất biến với MoodWatchMac_Flush(): hàm này chạm g_moodQueue nên
+    // cũng phải sống sót nếu lỡ được gọi trước MoodWatchMac_Init() (chưa xác nhận có đường gọi
+    // thật nào trước Init, nhưng rẻ để thủ chắc thay vì vá mù một chỗ).
+    if (!enabled && g_moodQueue) {
         dispatch_async(g_moodQueue, ^{
             g_buffer.clear();
         });

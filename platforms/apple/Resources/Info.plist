@@ -31,7 +31,7 @@
 	<key>LSUIElement</key>
 	<true/>
 	<key>NSAppleEventsUsageDescription</key>
-	<string>Used for keyboard</string>
+	<string>MindfulKey cần gửi Apple Event tới ứng dụng Cài đặt Hệ thống để tự mở đúng mục Trợ năng (Accessibility) khi bạn cấp quyền gõ tiếng Việt — không dùng vào việc gì khác.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>© 2026 GNH — Lan tỏa điều tử tế. Dựa trên OpenKey (Mai Vũ Tuyên), GPL v3.</string>
 	<key>NSMainStoryboardFile</key>

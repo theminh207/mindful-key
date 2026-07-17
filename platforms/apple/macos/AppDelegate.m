@@ -157,6 +157,9 @@ extern bool convertToolDontAlertWhenCompleted;
     NSArray<NSRunningApplication *>* runningApps = [[NSWorkspace sharedWorkspace] runningApplications];
     pid_t myPID = [[NSProcessInfo processInfo] processIdentifier];
     BOOL alreadyRunning = NO;
+    // [MINDFUL] Vá lỗi A — giữ lại app đang tranh chấp (không chỉ cờ boolean) để nêu TÊN thật
+    // trong hộp thoại bên dưới và để có thể tự tắt nó nếu người dùng chọn "tiếp tục".
+    NSRunningApplication *conflictApp = nil;
 
     for (NSRunningApplication *app in runningApps) {
         if ([app.bundleIdentifier isEqualToString:OPENKEY_BUNDLE] &&
@@ -166,16 +169,67 @@ extern bool convertToolDontAlertWhenCompleted;
             int size = proc_pidinfo(pid, PROC_PIDTBSDINFO, 0, &proc, sizeof(proc));
             if (size == sizeof(proc) && proc.pbi_uid == currentUID) {
                 alreadyRunning = YES;
+                conflictApp = app;
                 break;
             }
         }
     }
 
     if (alreadyRunning) {
-        [NSApp terminate:nil];
-        return;
+        // [MINDFUL] Vá lỗi A (P0 — im lặng) — TRƯỚC: [NSApp terminate:nil] câm, người dùng chỉ
+        // thấy app "nháy rồi tắt", không đời nào tự suy ra là do OpenKey đang chạy. NAY: giải
+        // thích rõ 2 bộ gõ tranh nhau bắt phím (CGEventTap chỉ 1 chủ tại 1 thời điểm), nêu tên
+        // app đang chạy, cho 2 lối ra rõ ràng.
+        //
+        // App là LSUIElement (menu-bar-only, xem Info.plist) — activationPolicy mặc định là
+        // Accessory nên KHÔNG có cửa sổ/Dock icon để hệ thống tự đưa app lên trước. Phải chuyển
+        // sang .regular RỒI activateIgnoringOtherApps: RỒI mới runModal — không thì alert bung
+        // ra SAU LƯNG app đang active, người dùng lại tưởng app crash y hệt lỗi cũ.
+        NSApplicationActivationPolicy previousPolicy = [NSApp activationPolicy];
+        [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+        [NSApp activateIgnoringOtherApps:YES];
+
+        NSAlert *alert = [[NSAlert alloc] init];
+        alert.messageText = @"Đang có bộ gõ khác chạy";
+        alert.informativeText = [NSString stringWithFormat:
+            @"“%@” đang chạy và cùng cần bắt phím với MindfulKey. Hai bộ gõ tranh nhau bắt phím (Accessibility) cùng lúc sẽ gõ sai — chỉ nên chạy MỘT bộ gõ tại một thời điểm.",
+            conflictApp.localizedName ?: @"Một bộ gõ khác"];
+        [alert addButtonWithTitle:@"Tắt bộ gõ kia và tiếp tục"];
+        [alert addButtonWithTitle:@"Thoát MindfulKey"];
+        alert.window.level = NSStatusWindowLevel;
+
+        NSModalResponse res = [alert runModal];
+
+        // Trả policy về như cũ ngay sau khi đóng alert — khối vShowIconOnDock phía dưới (chạy
+        // ngay sau đoạn này, không bị return chặn) sẽ tự nâng lại .regular nếu người dùng đã bật
+        // "hiện icon Dock" trong Cài đặt, nên không cần tự đọc lại giá trị đó ở đây.
+        [NSApp setActivationPolicy:previousPolicy];
+
+        if (res == NSAlertFirstButtonReturn) {
+            // "Tắt bộ gõ kia và tiếp tục" — KHÔNG return, để applicationDidFinishLaunching chạy
+            // tiếp bình thường (kể cả MoodWatchMac_Init() ở cuối hàm này).
+            [conflictApp terminate];
+        } else {
+            // [MINDFUL] Vá lỗi B (P0 — segfault), lớp phòng thủ THỨ HAI (lớp GỐC là guard
+            // g_moodQueue trong MoodWatchMac_Flush(), xem MoodWatchMac.mm) — KHÔNG gọi
+            // [NSApp terminate:] đồng bộ giữa applicationDidFinishLaunching: cú terminate đồng bộ
+            // post NSApplicationWillTerminateNotification NGAY LẬP TỨC, chạy
+            // applicationWillTerminate: (-> MoodWatchMac_Flush()) trong khi didFinishLaunching
+            // CHƯA return, tức TRƯỚC khi MoodWatchMac_Init() ở cuối hàm này kịp chạy. Đẩy cú
+            // terminate ra vòng lặp sự kiện kế tiếp để toàn bộ applicationDidFinishLaunching (gồm
+            // cả MoodWatchMac_Init) chạy xong trước khi terminate thật sự xảy ra.
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [NSApp terminate:nil];
+            });
+            // Người dùng chọn thoát -> KHÔNG chạy nốt phần còn lại của
+            // applicationDidFinishLaunching (dựng menu khay, MoodWatchMac_Init, hỏi consent...):
+            // vô nghĩa khi sắp thoát, và trước bản vá này nhánh thoát vốn return ngay. Cú terminate
+            // đã hoãn sang vòng lặp kế; guard g_moodQueue trong MoodWatchMac_Flush() lo phần an
+            // toàn dù Init chưa từng chạy.
+            return;
+        }
     }
-    
+
     // check if user granted Accessibility + Input Monitoring permission (cả 2 đều bắt buộc
     // cho CGEventTap trên macOS hiện đại — xem MJAccessibilityUtils.h)
     // [MINDFUL] Thiếu quyền: KHÔNG return/thoát app nữa. Chỉ ghi cờ + kích popup hệ thống ở đây;
