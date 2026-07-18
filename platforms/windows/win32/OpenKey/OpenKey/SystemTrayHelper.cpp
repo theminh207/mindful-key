@@ -176,6 +176,34 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		}
 		return 0;
 	}
+	// [MINDFUL] 2026-07-18 — trước dòng này, KHÔNG case nào xử WM_CLOSE/WM_QUERYENDSESSION/
+	// WM_ENDSESSION: cả ba đều rơi vào default -> DefWindowProc. Với WM_CLOSE, DefWindowProc chỉ
+	// DestroyWindow (gỡ cửa sổ) mà KHÔNG PostQuitMessage — tiến trình sống tiếp, vòng lặp thông
+	// điệp vẫn chạy, hook bàn phím WH_KEYBOARD_LL vẫn cắm, icon khay chưa gỡ, .exe vẫn bị khoá vì
+	// còn đang chạy. Đây CHÍNH XÁC là "zombie nửa sống nửa chết" audit 2026-07-18 (D3-B/D4-01) chỉ
+	// ra: người dùng tưởng đã đóng (cửa sổ biến mất) nhưng máy vẫn gõ xuyên qua app, và bộ cài lần
+	// sau vẫn báo "đang bị dùng bởi tiến trình khác" — im lặng tái hiện đúng sự cố 0.3.0.
+	// Nặng hơn: Inno Setup 6 CloseApplications mặc định=yes (xác minh tài liệu chính thức
+	// jrsoftware.org/is6help/topic_setup_closeapplications.htm) — bộ cài CÓ cố dùng Restart
+	// Manager xin app tự đóng trước khi ghi đè .exe. Cơ chế đó gửi WM_QUERYENDSESSION rồi
+	// WM_ENDSESSION. Không xử 2 thông điệp này thì lời xin đóng của Inno rơi vào khoảng không, Inno
+	// báo "không tự đóng được ứng dụng", và người dùng quay lại đúng màn hình bế tắc đã báo.
+	case WM_CLOSE:
+		// Dọn y hệt nút "Thoát" ở khay (AppDelegate::onOpenKeyExit: gỡ hook, xoá icon khay, PostQuit)
+		// — MỘT đường thoát sạch duy nhất, không tạo đường tắt thứ hai dễ trôi lệch.
+		AppDelegate::getInstance()->onOpenKeyExit();
+		return 0;
+	case WM_QUERYENDSESSION:
+		// Cho phép phiên/Restart Manager tiếp tục hỏi — CHƯA dọn dẹp ở đây vì phiên có thể không
+		// thực sự kết thúc (ứng dụng khác có quyền phủ quyết). Dọn thật ở WM_ENDSESSION.
+		return TRUE;
+	case WM_ENDSESSION:
+		if (wParam) {
+			// wParam=TRUE: phiên/khoá THẬT SỰ đang kết thúc (đăng xuất, tắt máy, hoặc Restart
+			// Manager của Inno đang đóng app để ghi đè .exe) — dọn sạch trước khi Windows giật.
+			AppDelegate::getInstance()->onOpenKeyExit();
+		}
+		return 0;
 	case WM_TRAYMESSAGE: {
 		if (lParam == WM_LBUTTONDBLCLK) {
 			AppDelegate::getInstance()->onControlPanel();

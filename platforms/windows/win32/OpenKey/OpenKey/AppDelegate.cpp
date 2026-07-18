@@ -85,11 +85,29 @@ AppDelegate * AppDelegate::getInstance() {
 int AppDelegate::run(HINSTANCE hInstance) {
 	this->hInstance = hInstance;
 
+	// [MINDFUL] 2026-07-18 — mutex có TÊN, sống suốt vòng đời tiến trình. KHÔNG dùng để tự kiểm
+	// (FindWindow ngay dưới vẫn làm việc đó) — mục đích DUY NHẤT là để bộ cài NHÌN THẤY được app
+	// đang chạy: Inno Setup 6 AppMutex (platforms/windows/installer/MindfulKey.iss) kiểm mutex
+	// CÙNG TÊN này lúc Setup VÀ Uninstall khởi động, và nếu thấy tồn tại thì CHẶN CỨNG bằng hộp
+	// thoại "hãy đóng ứng dụng trước" — khác hẳn FindWindow(APP_CLASS) là thứ Setup không biết soi
+	// tới. Audit 2026-07-18 (D3-E) chỉ ra trước khi vá: gỡ cài không có cách nào tự đóng app đang
+	// chạy — người dùng "gỡ" mà hook bàn phím vẫn sống, tưởng đã sạch mà chưa. Handle KHÔNG cần tự
+	// đóng — hệ điều hành giải phóng mutex khi tiến trình chết, dù chết kiểu gì.
+	CreateMutexW(NULL, FALSE, L"MindfulKeyboardAppMutex");
+
 	//check app has already run or not
 	HWND previousInstance = FindWindow(APP_CLASS, NULL);
 	if (previousInstance) {
 		MessageBeep(MB_OK);
-		SendMessage(previousInstance, WM_USER + 2019, 0, 0);
+		// [MINDFUL] 2026-07-18 (audit DIM1-F) — SendMessage xuyên tiến trình KHÔNG timeout từng
+		// đứng ở đây: nếu bản đang chạy vì lý do gì đó không bơm được thông điệp (treo), lệnh gọi
+		// này CHỜ VĨNH VIỄN — và lúc đó tiến trình MỚI này chưa có cửa sổ/khay/vòng lặp nào, nên nó
+		// treo vô hình y hệt sự cố 0.3.0, chỉ khác nguyên nhân. SendMessageTimeout với
+		// SMTO_ABORTIFHUNG đặt trần 3s: bản cũ khoẻ mạnh vẫn nhận được tin nhắn bình thường (đường
+		// đi không đổi); bản cũ treo thì sau 3s ta BỎ QUA nó và tự thoát như cũ — không góp thêm
+		// một tiến trình treo vô hình vào máy người dùng.
+		SendMessageTimeoutW(previousInstance, WM_USER + 2019, 0, 0,
+			SMTO_ABORTIFHUNG | SMTO_BLOCK, 3000, NULL);
 		PostQuitMessage(0);
 		return 0;
 	}

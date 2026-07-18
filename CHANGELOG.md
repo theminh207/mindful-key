@@ -5,6 +5,31 @@ Phiên bản lấy từ `version.env`.
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-07-18
+
+Vá đường **cài lại** trên Windows — kịch bản đúng người dùng thật đã dính ở 0.3.0. Sinh từ một
+cuộc rà soát có đối chứng (mỗi phát hiện được đọc lại tận mã nguồn trước khi tính là thật).
+
+### Fixed
+
+- **Windows: gỡ cài / cài đè lên bản đang chạy không còn bế tắc "file đang bị dùng"** — cửa sổ ẩn
+  của app trước đây không phản hồi tín hiệu đóng của Windows (Restart Manager, dùng khi cài đè
+  hoặc gỡ cài), nên bộ cài xin đóng app vào khoảng không rồi báo lỗi. Nay app đóng sạch đúng lúc
+  được yêu cầu — gỡ hook bàn phím, xoá icon khay, thoát hẳn tiến trình.
+- **Windows: bộ cài (Setup) và trình gỡ cài giờ NHẬN RA được app đang chạy** và chủ động xin đóng
+  trước khi ghi đè/gỡ file, thay vì lặng lẽ đè lên file đang khoá.
+- **Windows: mở lại app khi bản cũ đang treo không còn tự treo theo** — trước đây nếu bản đang
+  chạy vì lý do gì đó không phản hồi được, việc mở lại sẽ chờ vô thời hạn; nay có giới hạn 3 giây.
+- **Windows: chạy nhầm 2 bản cài đặt cùng lúc không còn giẫm chân nhau ghi file.**
+- **Windows: bộ cài kèm theo văn bản giấy phép (GPL v3)** cạnh chương trình, đúng nghĩa vụ pháp lý
+  kế thừa từ OpenKey — trước đây chỉ hiện lúc cài, không có bản lưu lại trên máy.
+
+### Known limitation
+
+- Máy **đang** kẹt bản 0.3.0 cũ (đã dính đúng sự cố này) sẽ **không** tự thoát khi cài bản 0.4.2
+  đè lên — bản cũ không biết cơ chế đóng mới. Cần đóng tiến trình cũ một lần bằng tay (Task
+  Manager) trước khi cài, sau đó mọi lần nâng cấp về sau đều tự động.
+
 ## [0.4.1] - 2026-07-18
 
 ### Added

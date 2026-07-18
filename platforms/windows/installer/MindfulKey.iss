@@ -44,6 +44,25 @@ WizardStyle=modern
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 
+; [MINDFUL] 2026-07-18 — vá sự cố người dùng thật báo (cài xong không mở, xoá setup không được),
+; audit theo dõi lộ thêm: KHÔNG có cơ chế nào khiến Cài-LẠI hay Gỡ-cài nhận ra + đóng được app đang
+; chạy trước đó. AppMutex tên PHẢI khớp CHÍNH XÁC mutex app tạo lúc khởi động (AppDelegate.cpp
+; run(), "MindfulKeyboardAppMutex") — Setup VÀ Uninstall đều tự kiểm mutex này (tài liệu Inno 6:
+; jrsoftware.org/ishelp/topic_setup_appmutex.htm), thấy app đang sống thì CHẶN CỨNG bằng hộp thoại
+; "hãy đóng ứng dụng trước", không lặng lẽ ghi đè file đang bị khoá nữa.
+; CloseApplications=yes là giá trị MẶC ĐỊNH của Inno 6 (jrsoftware.org/is6help/
+; topic_setup_closeapplications.htm) — viết tường minh ở đây để không phụ thuộc ngầm vào việc
+; JRSoftware không đổi mặc định trong bản Inno tương lai. Cơ chế này giờ MỚI thật sự hoạt động:
+; app đã biết trả lời WM_QUERYENDSESSION/WM_ENDSESSION (SystemTrayHelper.cpp) — trước đây Restart
+; Manager của Inno gửi tín hiệu đóng vào khoảng không, Inno báo "không tự đóng được ứng dụng".
+AppMutex=MindfulKeyboardAppMutex
+CloseApplications=yes
+; SetupMutex (KHÁC AppMutex — đây là mutex của chính chương trình CÀI ĐẶT, không phải app) chặn
+; HAI BẢN SETUP chạy chồng nhau. Đúng phản xạ người dùng thật đã có: "cài xong không thấy gì mở
+; lên" (vì app treo vô hình, bug đã vá ở trên) → bấm chạy lại CHÍNH file cài đặt vừa tải. Không có
+; dòng này, hai Setup ghi đè `{app}\MindfulKey.exe` cùng lúc → tranh chấp, dữ liệu cài nửa vời.
+SetupMutex=MindfulKeyboardSetupMutex
+
 [Languages]
 ; Inno Setup 6 KHÔNG kèm sẵn tiếng Việt (bản Vietnamese.isl là của cộng đồng, không nằm trong
 ; bộ cài chuẩn) -> khung wizard tạm dùng tiếng Anh. Chuỗi RIÊNG của app thì Việt hoá ở [Messages]
@@ -58,6 +77,10 @@ Name: "desktopicon"; Description: "Tạo lối tắt ngoài màn hình"; GroupDe
 
 [Files]
 Source: "{#SourceExe}"; DestDir: "{app}"; Flags: ignoreversion
+; [MINDFUL] 2026-07-18 — trang wizard CHỈ HIỆN LICENSE lúc cài (LicenseFile ở trên), không kèm
+; bản trên máy. Comment đầu file này tự gọi việc kèm LICENSE là "nghĩa vụ pháp lý kế thừa, không
+; phải phép lịch sự" (GPL v3) — nay mới thật sự đúng lời đó.
+Source: "..\..\..\LICENSE"; DestDir: "{app}"; DestName: "LICENSE.txt"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyExeName}"
