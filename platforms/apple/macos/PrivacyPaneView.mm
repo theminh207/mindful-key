@@ -4,6 +4,7 @@
 //
 
 #import "PrivacyPaneView.h"
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #import "BrandControls.h"
 #import "BrandColors.h"
 #import "MoodStoreMac.h"
@@ -212,7 +213,7 @@ static const CGFloat kBtnH       = 32.0;
     
     NSSavePanel *panel = [NSSavePanel savePanel];
     panel.title = @"Xuất nhật ký cảm xúc";
-    panel.allowedFileTypes = @[@"csv"];
+    panel.allowedContentTypes = @[UTTypeCommaSeparatedText];   // thay allowedFileTypes (deprecated từ macOS 12) khi nâng sàn 13.0
     panel.nameFieldStringValue = @"mindful_keyboard_export.csv";
     
     [panel beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse result) {

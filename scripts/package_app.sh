@@ -26,6 +26,17 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"
 source "$ROOT/version.env"
 
+# Số build (CFBundleVersion) = số commit trong lịch sử git — tăng đơn điệu, không cần nhớ bump
+# tay (báo cáo 0.2.1 mục 6.6: đứng yên ở 1 thì không phân biệt được các bản build, và Sparkle
+# sau này so bản mới/cũ bằng đúng con số này). CI phải checkout ĐỦ lịch sử (fetch-depth: 0 —
+# release.yml đã set); checkout nông sẽ đếm ra 1 nên chặn luôn cho khỏi phát hành số sai.
+BUILD_NUMBER=$(git -C "$ROOT" rev-list --count HEAD 2>/dev/null || echo 0)
+if [[ "${CI:-}" == "true" && "$BUILD_NUMBER" -le 1 ]]; then
+  echo "LỖI: BUILD_NUMBER=$BUILD_NUMBER trên CI — checkout nông hoặc không phải git repo." >&2
+  echo "     Thêm fetch-depth: 0 vào bước checkout của job release." >&2
+  exit 1
+fi
+
 ARCH_LIST=( ${ARCHES:-} )
 if [[ ${#ARCH_LIST[@]} -eq 0 ]]; then
   HOST_ARCH=$(uname -m)
@@ -57,6 +68,7 @@ for ARCH in "${ARCH_LIST[@]}"; do
     ONLY_ACTIVE_ARCH=NO \
     CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
     MARKETING_VERSION="$VERSION" \
+    CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
     | grep -E "error:|warning:|BUILD" || true
 done
 
@@ -76,10 +88,10 @@ if [[ ${#ARCH_LIST[@]} -gt 1 ]]; then
   echo "  lipo info: $(lipo -info "$BINARY")"
 fi
 
-# Đóng dấu số phiên bản vào Info.plist — phòng khi build setting không resolve đúng vào bản
-# archive. version.env là nguồn duy nhất; chưa tách riêng BUILD_NUMBER (chưa cần — số build
-# riêng chỉ có ích khi gắn Sparkle tự-cập-nhật, việc đó đang hoãn, xem scripts/README.md).
+# Đóng dấu số phiên bản + số build vào Info.plist — phòng khi build setting không resolve đúng
+# vào bản archive. version.env là nguồn duy nhất cho VERSION; BUILD_NUMBER đếm từ git (ở trên).
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$APP_DIR/Contents/Info.plist"
+/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" "$APP_DIR/Contents/Info.plist"
 
 # Ký lại ad-hoc SAU khi đã sửa Info.plist (và dán lipo nếu universal) — bắt buộc, vì sửa
 # Info.plist/binary sau khi archive đã ký (ad-hoc tự động của linker arm64) làm hỏng seal chữ

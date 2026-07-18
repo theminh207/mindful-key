@@ -5,6 +5,35 @@ Phiên bản lấy từ `version.env`.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-07-18
+
+Đợt "trả nợ báo cáo lỗi 0.2.1" — xử nốt các mục P2/P3 còn treo sau khi 0.3.x đã vá P0/P1.
+
+### Added
+
+- **macOS: bắt thêm EVKey và GoTiengViet** vào lưới bộ gõ xung đột (trước chỉ hardcode OpenKey) —
+  cùng luật tự-tắt-rồi-chạy-tiếp; bundle id xác minh từ Homebrew cask, không đoán. UniKey không có
+  bản macOS chính thức nên không có gì để bắt.
+- **macOS: menu "Báo lỗi / Góp ý…"** trong menu khay — mở thẳng trang GitHub Issues, người dùng gặp
+  lỗi có chỗ báo ngay trong app (bài học từ báo cáo 0.2.1).
+
+### Changed
+
+- **`CFBundleVersion` nay tăng theo từng bản build** (đếm số commit git) thay vì đứng yên ở 1 —
+  phân biệt được các bản build và dọn đường cho auto-update (Sparkle) sau này.
+- **Sàn macOS nâng 10.15 → 13.0 cho đúng sự thật**: chưa từng test máy dưới 14.8.3, và dưới macOS 13
+  tính năng "Bật cùng hệ thống" vốn đã chết im lặng (SMAppService cần 13+). Khai 10.15 là hứa suông
+  (báo cáo 0.2.1 mục E).
+
+### Fixed
+
+- **macOS: không thể mở 2 bản MindfulKey song song nữa** (`LSMultipleInstancesProhibited`) — guard
+  chống-chạy-trùng kế thừa từ OpenKey đã hỏng từ lúc fork đổi bundle id; mở lần 2 giờ kích hoạt bản
+  đang chạy và hiện cửa sổ Cài đặt.
+- **macOS: tắt "Bật cùng hệ thống" không còn bị app lật lại BẬT** — cửa sổ Cài đặt tắt login item
+  nhưng không ghi vào sổ cũ (`RunOnStartup`), lúc mở app lần sau sổ cũ vẫn ghi "bật" nên app tự bật
+  lại ngược ý người dùng (lỗi có sẵn từ trước, lộ ra khi review đợt này). Nay hai sổ luôn khớp.
+
 ## [0.3.0] - 2026-07-17
 
 **Bản THỬ NGHIỆM cho Windows — chưa ai chạy thật lần nào.** Xem cảnh báo ở release notes.

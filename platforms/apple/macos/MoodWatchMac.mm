@@ -8,6 +8,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <UserNotifications/UserNotifications.h>
 #include "Engine.h"
 #include "MoodBuffer.h"
 #include "SendRiskAnalyzer.h"
@@ -24,7 +25,6 @@ static MoodBuffer g_buffer(15);
 static dispatch_queue_t g_moodQueue;
 static NSTimeInterval g_lastWarn = 0;
 static BOOL g_popupShowing = NO;
-static NSMutableArray *g_activeAlerts = nil;
 static double g_lastSendRisk = -1.0;
 
 // [MINDFUL] Thu hẹp bài toán: không còn phân loại "đang cảm xúc gì", chỉ còn 1 câu hỏi —
@@ -77,33 +77,30 @@ static void showMindfulPrompt(NSString *message) {
         g_popupShowing = YES;
         NudgeCoordinatorMac_MarkNudged();
 
-        if ([NSUserNotificationCenter class]) {
-            NSUserNotification *note = [[NSUserNotification alloc] init];
-            note.title = @"Nhắc tâm - Mindful Keyboard";
-            note.informativeText = message;
-            note.soundName = NSUserNotificationDefaultSoundName;
-            [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
+        // [MINDFUL] 2026-07-18 — NSUserNotification (deprecated từ macOS 11) đổi sang
+        // UNUserNotificationCenter khi nâng sàn lên 13.0. Nhánh dự phòng NSAlert cũ đã gỡ:
+        // nó chỉ chạy khi NSUserNotificationCenter không tồn tại (macOS < 10.8) — chết sẵn
+        // từ thời sàn 10.15, giữ lại sau return vô điều kiện là code chết cứng.
+        // Best-effort như notifyDidQuitConflictApp: quyền thông báo đã được AppDelegate xin
+        // lúc khởi động; người dùng từ chối thì lời nhắc rơi im — chấp nhận, nhắc thụ động
+        // không đáng dựng modal chặn tay người ta đang gõ.
+        // Tiến trình KHÔNG có app bundle (test harness mood_pipeline_test chạy binary trần) mà
+        // gọi UNUserNotificationCenter là ném NSInternalInconsistencyException không bắt được
+        // (đã kiểm chứng thật) — API cũ chỉ lặng lẽ no-op. Rào lại để đường prompt test được.
+        if ([NSBundle mainBundle].bundleIdentifier == nil) {
             g_popupShowing = NO;
             return;
         }
-
-        if (g_activeAlerts == nil)
-            g_activeAlerts = [[NSMutableArray alloc] init];
-
-        NSAlert *alert = [[NSAlert alloc] init];
-        alert.messageText = @"Nhắc tâm - Mindful Keyboard";
-        alert.informativeText = message;
-        [alert addButtonWithTitle:@"OK"];
-        [g_activeAlerts addObject:alert];
-        [alert.window setLevel:NSStatusWindowLevel];
-        [[NSNotificationCenter defaultCenter] addObserverForName:NSWindowWillCloseNotification
-                                                          object:alert.window
-                                                           queue:[NSOperationQueue mainQueue]
-                                                      usingBlock:^(NSNotification *note) {
-            [g_activeAlerts removeObject:alert];
-            g_popupShowing = NO;
-        }];
-        [alert.window makeKeyAndOrderFront:nil];
+        UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+        content.title = @"Nhắc tâm - Mindful Keyboard";
+        content.body = message;
+        content.sound = [UNNotificationSound defaultSound];
+        UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"mindfulkey-mood-nudge"
+                                                                          content:content
+                                                                          trigger:nil];
+        [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req
+                                                               withCompletionHandler:nil];
+        g_popupShowing = NO;
     });
 }
 

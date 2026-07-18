@@ -6,6 +6,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <UserNotifications/UserNotifications.h>
 #include "BellMac.h"
 #include "NudgeCoordinatorMac.h"
 #import "BrandColors.h"
@@ -180,21 +181,22 @@ static void playBellSound(void) {
 
 static void showBellPrompt(NSString *message) {
     playBellSound();   // thay NSBeep + soundName mặc định: dùng âm + âm lượng đã chọn
-    if ([NSUserNotificationCenter class]) {
-        NSUserNotification *note = [[NSUserNotification alloc] init];
-        note.title = @"Chuông tỉnh thức - Mindful";
-        note.informativeText = message;
-        note.soundName = nil;   // đã tự phát âm (có âm lượng) ở trên → tránh phát trùng âm mặc định
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:note];
+    // [MINDFUL] 2026-07-18 — NSUserNotification (deprecated từ macOS 11) đổi sang
+    // UNUserNotificationCenter khi nâng sàn lên 13.0. Nhánh dự phòng NSAlert runModal cũ đã gỡ:
+    // chỉ chạy khi NSUserNotificationCenter không tồn tại (macOS < 10.8) — chết sẵn từ thời sàn
+    // 10.15, và một cái modal chặn tay giữa lúc gõ là trái tinh thần chuông (nhắc, không chặn).
+    // Tiến trình không bundle (test harness) — UN center ném exception, xem chú thích MoodWatchMac.
+    if ([NSBundle mainBundle].bundleIdentifier == nil)
         return;
-    }
-
-    NSAlert *alert = [[NSAlert alloc] init];
-    alert.messageText = @"Chuông tỉnh thức - Mindful";
-    alert.informativeText = message;
-    [alert addButtonWithTitle:@"OK"];
-    [alert.window setLevel:NSStatusWindowLevel];
-    [alert runModal];
+    UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+    content.title = @"Chuông tỉnh thức - Mindful";
+    content.body = message;
+    content.sound = nil;   // đã tự phát âm (có âm lượng) ở trên → tránh phát trùng âm mặc định
+    UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"mindfulkey-bell"
+                                                                      content:content
+                                                                      trigger:nil];
+    [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req
+                                                           withCompletionHandler:nil];
 }
 
 static BOOL isSnoozed(void) {

@@ -192,6 +192,27 @@ extern bool convertToolDontAlertWhenCompleted;
     });
 }
 
+// [MINDFUL] Allow-list bộ gõ tranh phím — báo cáo người dùng 2026-07-17 mục 5.1: không chỉ
+// OpenKey, các bộ gõ Việt khác cũng bắt phím toàn cục qua event tap, chạy chung là giành nhau
+// từng phím gõ. Bundle id ĐÃ XÁC MINH từ Homebrew cask chính thức (zap path), KHÔNG đoán:
+//   OpenKey      com.tuyenmai.openkey       (gốc fork — helper com.tuyenmai.OpenKeyHelper
+//                                            KHÔNG đưa vào: helper không bắt phím)
+//   EVKey        com.lamquangminh.evkey     (helper com.lamquangminh.evkeyhelper: như trên)
+//   GoTiengViet  com.trankynam.GoTiengViet
+// UniKey không có bản macOS chính thức nên không có bundle id để bắt.
+// So sánh sau khi hạ chữ thường (danh sách dưới lưu sẵn chữ thường): CFBundleIdentifier viết
+// hoa/thường tùy từng bản đóng gói — lệch 1 ký tự là lọt lưới im lặng, không ai lần ra được.
+static BOOL IsConflictingInputMethodBundleID(NSString *bundleID) {
+    static NSSet<NSString *> *ids;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        ids = [NSSet setWithArray:@[ OPENKEY_BUNDLE,
+                                     @"com.lamquangminh.evkey",
+                                     @"com.trankynam.gotiengviet" ]];
+    });
+    return bundleID != nil && [ids containsObject:bundleID.lowercaseString];
+}
+
 // Tắt danh sách bộ gõ xung đột theo bậc thang: terminate (lịch sự) → 1.5s sau forceTerminate đứa
 // nào còn sống → 1.5s nữa vẫn sống thì nói thật rồi tự thoát. KHÔNG chặn luồng khởi động: mọi
 // bước kiểm lại đều qua dispatch_after trên main queue. Block giữ mạnh (retain) từng
@@ -199,7 +220,14 @@ extern bool convertToolDontAlertWhenCompleted;
 - (void)quitConflictingInputMethods:(NSArray<NSRunningApplication *> *)apps {
     if (apps.count == 0)
         return;
-    NSString *displayName = apps.firstObject.localizedName ?: @"OpenKey";
+    // Có thể dính nhiều bộ gõ khác nhau cùng lúc (vd OpenKey + EVKey) — notification nêu đủ tên.
+    NSMutableArray<NSString *> *names = [NSMutableArray array];
+    for (NSRunningApplication *app in apps) {
+        NSString *name = app.localizedName;
+        if (name && ![names containsObject:name])
+            [names addObject:name];
+    }
+    NSString *displayName = names.count > 0 ? [names componentsJoinedByString:@", "] : @"bộ gõ kia";
     for (NSRunningApplication *app in apps) {
         [app terminate];
     }
@@ -238,17 +266,22 @@ extern bool convertToolDontAlertWhenCompleted;
     [[NSUserDefaults standardUserDefaults] setObject: [NSNumber numberWithInt: 50]
                                               forKey: @"NSInitialToolTipDelay"];
     
-    //check whether this app has been launched before that or not
+    // [MINDFUL] Quét bộ gõ xung đột đang chạy. Khối này vốn là check single-instance của OpenKey
+    // gốc ("check whether this app has been launched before") — sau khi fork đổi bundle id sang
+    // vn.gnh.mindfulkey, phép so sánh hết khớp chính bản thân và hoá thành máy dò OpenKey xịn
+    // (nguồn cơn lỗi P0 "tự thoát câm" của 0.2.1). Nay giữ đúng vai máy dò, mở rộng qua
+    // allow-list IsConflictingInputMethodBundleID; còn chống-chạy-trùng cho CHÍNH MindfulKey
+    // giao lại cho LSMultipleInstancesProhibited trong Info.plist (Launch Services tự chặn).
     //Only check instances owned by current user (for multi-user/Fast User Switching support)
     uid_t currentUID = getuid();
     NSArray<NSRunningApplication *>* runningApps = [[NSWorkspace sharedWorkspace] runningApplications];
     pid_t myPID = [[NSProcessInfo processInfo] processIdentifier];
-    // [MINDFUL] Gom TẤT CẢ instance OpenKey đang chạy (không dừng ở cái đầu tiên) — tắt sót một
-    // con là hai bộ gõ vẫn đụng phím.
+    // [MINDFUL] Gom TẤT CẢ instance bộ gõ xung đột đang chạy (không dừng ở cái đầu tiên) — tắt
+    // sót một con là hai bộ gõ vẫn đụng phím.
     NSMutableArray<NSRunningApplication *> *conflictApps = [NSMutableArray array];
 
     for (NSRunningApplication *app in runningApps) {
-        if ([app.bundleIdentifier isEqualToString:OPENKEY_BUNDLE] &&
+        if (IsConflictingInputMethodBundleID(app.bundleIdentifier) &&
             app.processIdentifier != myPID) {
             pid_t pid = app.processIdentifier;
             struct proc_bsdinfo proc;
@@ -265,7 +298,7 @@ extern bool convertToolDontAlertWhenCompleted;
     // terminate giữa-launch từng gây SIGSEGV (lỗi P0) không còn tồn tại trên đường này.
     [self quitConflictingInputMethods:conflictApps];
 
-    // [MINDFUL] OpenKey mở SAU khi MindfulKey đã chạy (điển hình: OpenKey nằm trong Login Items,
+    // [MINDFUL] Bộ gõ xung đột mở SAU khi MindfulKey đã chạy (điển hình: OpenKey nằm trong Login Items,
     // khởi động máy xong nó tự bật lại — đúng cảnh báo ⚠️ trong báo cáo người dùng 2026-07-17) →
     // cùng một luật với lúc khởi động: tự tắt + notification. Observer sống suốt đời app, cố ý
     // không removeObserver. Notification của NSWorkspace chỉ báo app trong CHÍNH phiên đăng nhập
@@ -277,7 +310,7 @@ extern bool convertToolDontAlertWhenCompleted;
                      queue:[NSOperationQueue mainQueue]
                 usingBlock:^(NSNotification *note) {
         NSRunningApplication *launched = note.userInfo[NSWorkspaceApplicationKey];
-        if ([launched.bundleIdentifier isEqualToString:OPENKEY_BUNDLE]) {
+        if (launched && IsConflictingInputMethodBundleID(launched.bundleIdentifier)) {
             [appDelegate quitConflictingInputMethods:@[launched]];
         }
     }];
@@ -370,6 +403,13 @@ extern bool convertToolDontAlertWhenCompleted;
     MoodWatchMac_Flush();
 }
 
+// [MINDFUL] Báo cáo 0.2.1 mục 6.6 — người dùng gặp lỗi phải có đường báo ngay trong app,
+// không phải tự mò ra GitHub. Chỉ mở trình duyệt; bản thân app không tự gọi mạng.
+- (void)onReportIssueSelected {
+    [[NSWorkspace sharedWorkspace] openURL:
+        [NSURL URLWithString:@"https://github.com/theminh207/mindful-key/issues"]];
+}
+
 -(void) createStatusBarMenu {
     NSStatusBar *statusBar = [NSStatusBar systemStatusBar];
     statusItem = [statusBar statusItemWithLength:NSVariableStatusItemLength];
@@ -429,8 +469,9 @@ extern bool convertToolDontAlertWhenCompleted;
     // (SettingsWindowController, nav trái 6 mục). onMacroSelected/onAboutSelected/onControlPanelSelected
     // KHÔNG bị xoá — vẫn được gọi từ nút "Bảng gõ tắt..." trong tabviewMacro + 3 đường fallback khởi động.
     [theMenu addItemWithTitle:@"Cài đặt…" action:@selector(onSettingsSelected) keyEquivalent:@""];
+    [theMenu addItemWithTitle:@"Báo lỗi / Góp ý…" action:@selector(onReportIssueSelected) keyEquivalent:@""];
     [theMenu addItem:[NSMenuItem separatorItem]];
-    
+
     [theMenu addItemWithTitle:@"Thoát" action:@selector(terminate:) keyEquivalent:@"q"];
     
     
@@ -567,31 +608,29 @@ extern bool convertToolDontAlertWhenCompleted;
 -(void)setRunOnStartup:(BOOL)val {
     // [MINDFUL] Batch "Hệ thống + Chuông" — SMAppService.mainAppService (tên ObjC thật; header khai
     // `NS_SWIFT_NAME(mainApp)` — đó là tên BÊN SWIFT, không phải selector ObjC, xác nhận bằng cách
-    // đọc thẳng SMAppService.h trong SDK) — macOS 13+, cùng framework ServiceManagement đã import ở
-    // đầu file — KHÔNG cần Helper bundle riêng: chính app tự đăng ký làm login item. Đây là đường
-    // THẬT cho máy dev hiện tại (deployment target 10.15 nhưng dùng @available để chạy đúng API
-    // theo từng máy — xem platforms/apple/project.yml).
-    if (@available(macOS 13.0, *)) {
-        if (val) {
-            [[SMAppService mainAppService] registerAndReturnError:nil];
-        } else {
-            [[SMAppService mainAppService] unregisterAndReturnError:nil];
-        }
-        return;
+    // đọc thẳng SMAppService.h trong SDK) — cùng framework ServiceManagement đã import ở đầu file —
+    // KHÔNG cần Helper bundle riêng: chính app tự đăng ký làm login item.
+    // [MINDFUL] 2026-07-18 — sàn nâng lên 13.0 (project.yml) nên bỏ @available + gỡ nhánh dự phòng
+    // SMLoginItemSetEnabled cũ: nhánh đó dựa Helper "com.tuyenmai.OpenKeyHelper" không tồn tại trong
+    // project (chưa bao giờ thật sự bật được login item máy cũ), thành code chết cứng ở sàn 13.0 và
+    // SMLoginItemSetEnabled deprecated đúng từ 13.0 (warning mới). Hạ sàn lại thì phải dựng Helper
+    // thật, không khôi phục nhánh cũ.
+    if (val) {
+        [[SMAppService mainAppService] registerAndReturnError:nil];
+    } else {
+        [[SMAppService mainAppService] unregisterAndReturnError:nil];
     }
-    // Dự phòng < macOS 13 — mã GỐC OpenKey, dựa vào Helper bundle "com.tuyenmai.OpenKeyHelper".
-    // Helper đó KHÔNG còn trong project này (đã kiểm platforms/apple/project.yml + .pbxproj, không
-    // có target/embed nào tên OpenKeyHelper) nên nhánh này hiện KHÔNG thật sự bật được login item
-    // trên macOS cũ — giữ nguyên như tài liệu, không tự ý xây Helper mới (ngoài phạm vi batch UI).
-    CFStringRef appId = (__bridge CFStringRef)@"com.tuyenmai.OpenKeyHelper";
-    SMLoginItemSetEnabled(appId, val);
+    // [MINDFUL] 2026-07-18 (review) — đồng bộ key "RunOnStartup": cửa sổ Cài đặt mới chỉ gọi hàm
+    // này mà KHÔNG ghi key, trong khi khối "correct run on startup" lúc khởi động + fillData vẫn
+    // đọc key (bị loadDefaultConfig seed = 1 từ lần chạy đầu) rồi gọi lại hàm này → người dùng
+    // TẮT login item xong bị app lật lại BẬT ngược ý (lỗi có sẵn trước đợt này, lộ ra khi review).
+    // Ghi key tại đây = một nguồn sự thật duy nhất đi qua hàm này. Câu hỏi "seed = 1 lần chạy đầu
+    // (tự bật không hỏi)" vẫn treo — FRICTION-LOG 2026-07-18.
+    [[NSUserDefaults standardUserDefaults] setInteger:(val ? 1 : 0) forKey:@"RunOnStartup"];
 }
 
 -(BOOL)isRunOnStartup {
-    if (@available(macOS 13.0, *)) {
-        return [SMAppService mainAppService].status == SMAppServiceStatusEnabled;
-    }
-    return [[NSUserDefaults standardUserDefaults] integerForKey:@"RunOnStartup"] != 0;
+    return [SMAppService mainAppService].status == SMAppServiceStatusEnabled;
 }
 
 -(void)setGrayIcon:(BOOL)val {

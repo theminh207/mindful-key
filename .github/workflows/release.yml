@@ -140,6 +140,10 @@ jobs:
     needs: build-windows   # bộ cài Windows phải sẵn sàng trước, để đăng CÙNG 1 Release
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Đủ lịch sử cho package_app.sh đếm số build (CFBundleVersion = git rev-list --count).
+          # Checkout nông (mặc định) đếm ra 1 — script tự chặn trên CI để khỏi phát hành số sai.
+          fetch-depth: 0
 
       - name: Đối chiếu tag với version.env (chặn lệch phiên bản)
         run: |

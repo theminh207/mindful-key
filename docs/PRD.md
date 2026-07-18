@@ -51,4 +51,4 @@ MVP nhắm nhóm nhỏ (cộng đồng chánh niệm), nên không đặt mục 
 
 ## 6. Phạm vi kỹ thuật MVP
 
-macOS only (Mojave+/Xcode, deployment target 10.15+), dùng nguyên bộ não OpenKey đã fork + callback đã cắm sẵn (`vOnWordCommitted`); vỏ = `OpenKey.xcodeproj`/`ModernKey` (menu-bar app có sẵn, CGEventTap + Accessibility có sẵn); mood layer dùng lexicon quy về 1 điểm send-risk (chưa cần PhoBERT ONNX); UI = `NSPanel` nổi tại thời điểm "pause" + màn soi lại trong app trên thanh menu; đóng gói `.dmg` ký Developer ID + notarize, launch-at-login, zero telemetry.
+macOS only (deployment target **13.0+** — nâng từ 10.15 ngày 2026-07-18 vì chưa từng test máy cũ hơn 14.8.3 và SMAppService login-item cần 13+, xem `docs/FRICTION-LOG.md`), dùng nguyên bộ não OpenKey đã fork + callback đã cắm sẵn (`vOnWordCommitted`); vỏ = `OpenKey.xcodeproj`/`ModernKey` (menu-bar app có sẵn, CGEventTap + Accessibility có sẵn); mood layer dùng lexicon quy về 1 điểm send-risk (chưa cần PhoBERT ONNX); UI = `NSPanel` nổi tại thời điểm "pause" + màn soi lại trong app trên thanh menu; đóng gói `.dmg` ký Developer ID + notarize, launch-at-login, zero telemetry.
