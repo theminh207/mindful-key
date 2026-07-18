@@ -114,11 +114,31 @@ static INT_PTR CALLBACK PauseDialogProc(HWND hDlg, UINT message, WPARAM wParam, 
         // [MINDFUL] Câu nhắc dùng font brand (Segoe UI cỡ body) thay Segoe 9 mặc định.
         SendDlgItemMessageW(hDlg, IDC_STATIC_PAUSE_MSG, WM_SETFONT,
                             (WPARAM)BrandControls_Font(BrandFontBody), TRUE);
+        // [MINDFUL] Bo góc thẻ: cửa sổ nay KHÔNG viền (WS_POPUP, bỏ WS_CAPTION/DS_MODALFRAME ở .rc),
+        // cắt vùng thành hình chữ nhật bo tròn radius ~16px. Góc hiện GDI thuần nên hơi gợn (chưa
+        // khử răng cưa) + CHƯA có bóng đổ mềm — hai thứ đó cần cửa sổ layered (UpdateLayeredWindow),
+        // là bước tinh chỉnh SAU khi ảnh Windows thật xác nhận bố cục. Xem docs/WINDOWS-UI-REDESIGN.md.
+        {
+            RECT wr;
+            GetWindowRect(hDlg, &wr);
+            HRGN rgn = CreateRoundRectRgn(0, 0, (wr.right - wr.left) + 1, (wr.bottom - wr.top) + 1, 32, 32);
+            SetWindowRgn(hDlg, rgn, TRUE);   // cửa sổ sở hữu rgn sau lệnh này — KHÔNG tự xoá
+        }
         // lParam = số mili-giây tự đóng (GỢI Ý từ BreathingPause, KHÔNG phải thời gian khoá:
         // người dùng bấm được nút bất cứ lúc nào).
         if (lParam > 0)
             SetTimer(hDlg, 1, (UINT)lParam, NULL);
         return TRUE;
+    case WM_PAINT: {
+        // Nền orangeLight đã do WM_ERASEBKGND tô; ở đây chỉ vẽ header (sóng ~ + tiêu đề + kẻ ngăn).
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hDlg, &ps);
+        RECT rc;
+        GetClientRect(hDlg, &rc);
+        BrandControls_DrawCardHeader(hdc, rc.right, L"Mindful Keyboard");
+        EndPaint(hDlg, &ps);
+        return TRUE;
+    }
     // [MINDFUL] Khoảnh khắc nhịp thở = bề mặt "khoảnh khắc người": nền orangeLight thay xám hệ
     // thống (đối ứng NSPanel orangeLight ở SendGatekeeperMac.mm). Cam ở đây KHÔNG mã hoá cảm xúc —
     // là ngoại lệ có chủ của hiến chương §2.2 cho khoảnh khắc con người. Xem docs/WINDOWS-UI-REDESIGN.md.

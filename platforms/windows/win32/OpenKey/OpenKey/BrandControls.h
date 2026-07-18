@@ -38,3 +38,9 @@ enum BrandButtonStyle {
     BrandButtonNeutral,   // nền trắng, viền divider, chữ charcoal — hành động phụ/an toàn
 };
 void BrandControls_DrawButton(const DRAWITEMSTRUCT* dis, BrandButtonStyle style);
+
+// ── Header của thẻ brand ──
+// Vẽ hàng đầu của một "thẻ" nhận diện: icon sóng ~ teal + tiêu đề + đường kẻ ngăn mảnh bên dưới.
+// Đối ứng buildHeader ở PanelViewController.mm bên macOS. Gọi trong WM_PAINT của cửa sổ không viền.
+// `clientWidth` = bề rộng vùng client (pixel) để căn đường kẻ ngăn cho hết chiều ngang.
+void BrandControls_DrawCardHeader(HDC hdc, int clientWidth, const wchar_t* title);

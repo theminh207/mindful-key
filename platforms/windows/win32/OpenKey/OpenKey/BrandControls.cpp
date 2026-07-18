@@ -26,7 +26,7 @@ HFONT BrandControls_Font(BrandFontRole role) {
 
     int pt, weight;
     switch (role) {
-    case BrandFontTitle:   pt = 15; weight = FW_SEMIBOLD; break;
+    case BrandFontTitle:   pt = 13; weight = FW_SEMIBOLD; break;   // tiêu đề thẻ/nhóm (header)
     case BrandFontBody:    pt = 11; weight = FW_NORMAL;   break;
     case BrandFontEyebrow: pt = 8;  weight = FW_SEMIBOLD; break;
     case BrandFontButton:  pt = 10; weight = FW_SEMIBOLD; break;
@@ -110,4 +110,37 @@ void BrandControls_DrawButton(const DRAWITEMSTRUCT* dis, BrandButtonStyle style)
     RECT textRc = rc;
     DrawTextW(dis->hDC, label, -1, &textRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
     SelectObject(dis->hDC, oldFont);
+}
+
+// ── Header của thẻ brand ──
+void BrandControls_DrawCardHeader(HDC hdc, int clientWidth, const wchar_t* title) {
+    const int pad = 18;        // lề trái = radius.card-ish, khớp lề thẻ macOS (18px)
+    const int iconSize = 16;
+    const int iconY = 14;
+    const int dividerY = 40;   // đường kẻ ngăn dưới header
+
+    // Icon sóng ~ teal (dùng đúng icon khay chế độ Việt — nguồn brand duy nhất, không vẽ lại).
+    HICON icon = (HICON)LoadImageW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(IDI_ICON_STATUS_VIET),
+                                   IMAGE_ICON, iconSize, iconSize, LR_DEFAULTCOLOR);
+    if (icon) {
+        DrawIconEx(hdc, pad, iconY, icon, iconSize, iconSize, 0, NULL, DI_NORMAL);
+        DestroyIcon(icon);
+    }
+
+    // Tiêu đề — charcoal semibold, đối ứng tiêu đề header charcoal bên macOS (PanelViewController).
+    SetBkMode(hdc, TRANSPARENT);
+    SetTextColor(hdc, MK_COLORREF(kBrandPaletteCharcoal));
+    HFONT font = BrandControls_Font(BrandFontTitle);
+    HFONT oldFont = (HFONT)SelectObject(hdc, font);
+    RECT titleRc = { pad + iconSize + 8, iconY - 3, clientWidth - pad, iconY + iconSize + 3 };
+    DrawTextW(hdc, title, -1, &titleRc, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+    SelectObject(hdc, oldFont);
+
+    // Đường kẻ ngăn mảnh (divider token) hết chiều ngang trừ lề.
+    HPEN pen = CreatePen(PS_SOLID, 1, MK_COLORREF(kBrandPaletteDivider));
+    HPEN oldPen = (HPEN)SelectObject(hdc, pen);
+    MoveToEx(hdc, pad, dividerY, NULL);
+    LineTo(hdc, clientWidth - pad, dividerY);
+    SelectObject(hdc, oldPen);
+    DeleteObject(pen);
 }
