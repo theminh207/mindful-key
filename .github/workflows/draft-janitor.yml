@@ -1,0 +1,39 @@
+# Người quét mìn draft — chạy MỖI KHI file này thay đổi (đẩy 1 commit đụng file này = quét 1 lần).
+# Xoá mọi release NHÁP (draft) v* — sản phẩm phụ của pipeline (bản hỏng / lần chạy dở). Giữ draft
+# lại là mìn: lỡ tay Publish nhầm là người dùng lãnh bộ cài hỏng (suýt xảy ra thật với v0.3.0).
+# Chủ dự án chốt 2026-07-18: "đồng ý xoá luôn". KHÔNG BAO GIỜ đụng release đã publish.
+#
+# Vì sao tách riêng khỏi release.yml: (a) chạy bằng github.token — KHÔNG phụ thuộc RELEASE_PAT
+# (secret này 403 từ 2026-07-18, xem FRICTION-LOG); (b) quét được NGAY không cần chờ lần phát hành
+# kế; (c) kết quả LUÔN in ::notice:: kể cả khi 0 — annotation đọc được công khai, máy dev không
+# đăng nhập vẫn kiểm chứng được. Im lặng không bao giờ được phép mơ hồ.
+name: draft-janitor
+
+on:
+  push:
+    paths:
+      - ".github/workflows/draft-janitor.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Quét và xoá release nháp v*
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          FOUND=0; DELETED=0; NAMES=""
+          for row in $(gh api "repos/$GITHUB_REPOSITORY/releases" --paginate \
+                         --jq '.[] | select(.draft == true) | select(.tag_name | startswith("v")) | "\(.id):\(.tag_name)"'); do
+            FOUND=$((FOUND+1))
+            id="${row%%:*}"; tag="${row#*:}"
+            if gh api -X DELETE "repos/$GITHUB_REPOSITORY/releases/$id" >/dev/null 2>&1; then
+              DELETED=$((DELETED+1)); NAMES="$NAMES $tag"
+            else
+              echo "::warning::draft-janitor: xoá draft '$tag' (id $id) KHÔNG được — kiểm quyền token."
+            fi
+          done
+          echo "::notice::draft-janitor: thấy $FOUND draft v*, đã xoá $DELETED.$NAMES"

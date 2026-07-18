@@ -286,16 +286,18 @@ jobs:
             # của pipeline (bản hỏng / lần chạy dở), giữ lại là mìn: lỡ tay Publish nhầm draft cũ là
             # người dùng lãnh bộ cài hỏng (suýt xảy ra thật với v0.3.0). Chủ dự án chốt 2026-07-18:
             # "đồng ý xoá luôn". CHỈ đụng draft (chưa ai thấy) — KHÔNG BAO GIỜ đụng release đã publish.
-            DELETED=0
+            # LUÔN báo số (kể cả 0): lần đầu chạy, khối này im lặng khi không xoá gì và máy dev
+            # (không đọc được log, chỉ đọc được annotation) không thể phân biệt "không có draft"
+            # với "quét lỗi". Cùng bộ đếm với .github/workflows/draft-janitor.yml.
+            FOUND=0; DELETED=0
             for id in $(gh api "repos/$GITHUB_REPOSITORY/releases" --paginate \
                           --jq '.[] | select(.draft == true) | select(.tag_name | startswith("v")) | .id' 2>/dev/null); do
+              FOUND=$((FOUND+1))
               if gh api -X DELETE "repos/$GITHUB_REPOSITORY/releases/$id" >/dev/null 2>&1; then
                 DELETED=$((DELETED+1))
               fi
             done
-            if [[ "$DELETED" -gt 0 ]]; then
-              echo "::notice::Đã dọn $DELETED release nháp v* cũ."
-            fi
+            echo "::notice::Quét draft trước khi đăng: thấy $FOUND, đã xoá $DELETED."
 
             # KHÔNG --draft — publish thẳng. Chủ dự án chốt 2026-07-18 ("để tự động luôn") sau hai
             # lần draft nằm chờ tay bấm. Bản chưa ký vẫn mang --prerelease + cảnh báo trong notes,
