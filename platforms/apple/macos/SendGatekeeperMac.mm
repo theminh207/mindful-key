@@ -20,6 +20,9 @@ extern "C" {
     extern CGEventSourceRef myEventSource;
 }
 
+// [MINDFUL] 2026-07-19 — công tắc gác cổng gửi tin (xem SendGatekeeperMac.h). Mặc định BẬT.
+int vSendGatekeeper = 1;
+
 // Allow-list app chat — CHỈ liệt kê app đã cài & xác minh bundle id THẬT trên máy dev
 // (qua `defaults read <app>/Contents/Info.plist CFBundleIdentifier`). Đừng thêm bundle id
 // đoán theo trí nhớ — rủi ro #3 trong roadmap đã lường trước việc phát hiện "sắp gửi" dễ vỡ
@@ -42,6 +45,9 @@ static BOOL IsFrontmostAppAllowed(void) {
 }
 
 BOOL SendGatekeeperMac_ShouldIntercept(CGEventRef event, CGEventType type) {
+    if (!vSendGatekeeper)   // gác cổng tắt — để Enter đi thẳng, không chặn-mềm
+        return NO;
+
     if (type != kCGEventKeyDown)
         return NO;
 

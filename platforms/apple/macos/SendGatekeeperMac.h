@@ -16,6 +16,12 @@
 extern "C" {
 #endif
 
+// [MINDFUL] 2026-07-19 — công tắc bật/tắt gác cổng gửi tin (Feature #1). MẶC ĐỊNH BẬT (=1).
+// Tắt = ShouldIntercept luôn trả NO (không chặn Enter, không hiện màn Nhịp thở), nhưng lớp cảm
+// xúc/nhật ký/sông VẪN chạy độc lập (do vMoodWatch quản). Nạp từ NSUserDefaults "vSendGatekeeper"
+// trong AppDelegate fillData, đổi qua menu khay "Gác cổng gửi tin".
+extern int vSendGatekeeper;
+
 // Gọi từ OpenKeyCallback, NGAY SAU check "đừng xử lý sự kiện tự mình tạo ra" (dòng đầu hàm).
 // Trả YES nếu đây là khoảnh khắc cần chặn-mềm: Enter/Return không Shift, app đang focus nằm
 // trong allow-list, VÀ send-risk hiện tại (MoodWatchMac_LastSendRisk()) đã vượt ngưỡng.

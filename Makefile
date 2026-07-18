@@ -55,7 +55,10 @@ test-ios:        ## Test riêng vỏ iOS: bridge Telex (host) + mood bridge (hos
 	bash tests/ios/build_smoke.sh
 
 build: generate  ## Build app macOS (ký ad-hoc) → platforms/apple/build/ (make clean dọn được)
-	xcodebuild -project "$(XCODEPROJ)" -scheme "$(SCHEME)" -configuration "$(CONFIG)" -derivedDataPath "$(DERIVED)" build
+	# [MINDFUL] 2026-07-19 — bơm MARKETING_VERSION từ version.env (nguồn phiên bản duy nhất). project.yml
+	# kẹt "0.1.0" nên bản dev từng đề nhầm "Mindful Keyboard 0.1.0" ở tiêu đề/About; package_app.sh vốn
+	# đã bơm số đúng, nay make build cũng vậy để bản tại máy khỏi nói dối.
+	xcodebuild -project "$(XCODEPROJ)" -scheme "$(SCHEME)" -configuration "$(CONFIG)" -derivedDataPath "$(DERIVED)" MARKETING_VERSION="$(VERSION)" build
 
 install: build   ## Thay bản ở /Applications bằng bản vừa build — giữ máy chỉ có ĐÚNG 1 bản
 	@pkill -x MindfulKey 2>/dev/null || true

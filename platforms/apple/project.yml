@@ -66,7 +66,7 @@ targets:
       base:
         PRODUCT_NAME: MindfulKey
         PRODUCT_BUNDLE_IDENTIFIER: vn.gnh.mindfulkey   # đề xuất — đổi ở đây nếu chủ dự án muốn ID khác
-        MARKETING_VERSION: "0.1.0"                     # theo version.env — day 1 của nhận diện mới
+        MARKETING_VERSION: "0.1.0"                     # CHỈ là fallback cho xcodebuild trần (vd CI verify build). Bản THẬT: make build + package_app.sh bơm version.env đè lên (2026-07-19). Đừng tin số này = số phát hành.
         CURRENT_PROJECT_VERSION: "1"    # chỉ là mặc định cho build dev — bản đóng gói được package_app.sh đè bằng số commit (git rev-list --count)
         # Nâng 10.15 → 13.0 (2026-07-18, báo cáo 0.2.1 mục E): khai 10.15 trong khi (a) chưa từng
         # test máy nào dưới 14.8.3, (b) "Bật cùng hệ thống" dưới macOS 13 đã chết sẵn — SMAppService

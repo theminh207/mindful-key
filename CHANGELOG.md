@@ -5,6 +5,30 @@ Phiên bản lấy từ `version.env`.
 
 ## [Unreleased]
 
+### Added
+
+- **macOS: gác cổng gửi tin (màn Nhịp thở) nay bật/tắt riêng được** — công tắc "Gác cổng gửi tin
+  (nhịp thở)" trong menu khay, mặc định BẬT. Tắt thì vẫn giữ nhật ký + con sóng (đó là phần "Nhắc
+  tâm" riêng), chỉ ngừng chặn Enter lúc gửi. Thẻ "Ngay bây giờ" đổi chữ thành "Gác cổng đang tạm
+  nghỉ" khi tắt — nói thật, không giấu.
+
+### Changed
+
+- **macOS: biểu đồ cảm xúc "Ngay bây giờ" sống động và thành thật hơn:**
+  - Đầu sóng "bây giờ" nay làm mượt vài câu gần nhất và **tự lặng dần về phẳng lặng** sau vài phút
+    ngừng gõ — hết cảnh cắm điểm cảm xúc cũ (có thể từ 2 tiếng trước) vào chỗ hiện tại.
+  - Con sóng **hiện chấm trong vài phút đầu gõ** thay vì chờ cả nhịp chuông mới có 1 chấm (vệt điểm
+    dày giữ trong bộ nhớ, KHÔNG lưu thêm xuống đĩa — nhật ký mã hoá vẫn nhịp thưa như cũ).
+  - Trục thời gian: **3 tiếng quá khứ + 1 tiếng "tương lai để trống"**, "bây giờ" dời vào 3/4 bề
+    ngang để đầu sóng có chỗ thở (trước đây dính sát mép phải, nửa chấm bị khung cắt). Khoảng tương
+    lai chỉ có trục nét đứt, không vẽ nước giả.
+  - Biểu đồ **tự vẽ lại mỗi phút khi cửa sổ đang mở** (tận dụng nhịp sẵn có, không thêm đồng hồ mới).
+
+### Fixed
+
+- **macOS: bản build tại máy thôi đề nhầm "0.1.0"** ở tiêu đề cửa sổ/About — nay `make build` đọc số
+  thật từ `version.env` (project.yml kẹt "0.1.0" chỉ còn là fallback cho xcodebuild trần).
+
 ## [0.4.2] - 2026-07-18
 
 Vá đường **cài lại** trên Windows — kịch bản đúng người dùng thật đã dính ở 0.3.0. Sinh từ một

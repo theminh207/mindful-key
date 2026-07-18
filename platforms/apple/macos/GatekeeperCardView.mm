@@ -130,15 +130,20 @@ static const CGFloat kSubRowH     = 34.0;  // hàng phụ đề/link — chừa 
 - (void)refresh {
     BOOL enabled = MoodWatchMac_IsEnabled() != 0;
     if (enabled) {
-        double risk = MoodWatchMac_LastSendRisk();   // 0..1 — giá trị NGAY LÚC NÀY (chữ vừa gõ)
+        // [MINDFUL] 2026-07-19 — đầu sóng "bây giờ" nay là giá trị ĐÃ MƯỢT + PHAI (A2), không còn
+        // là điểm thô câu cuối (từng cắm điểm cũ 2 tiếng trước vào chỗ hiện tại). -1 = im/chưa gõ
+        // -> setRecentSamples tự không vẽ đầu sóng.
+        double liveHead = MoodWatchMac_LiveAmplitude();
         // Ngưỡng "quãng không gõ" = 1.5 nhịp chuông, GIỐNG HỆT thẻ "Hôm nay" (PanelViewController)
         // — 2 thẻ đọc cùng một ngày, lệch ngưỡng là chỗ này nối nước còn chỗ kia ngắt.
         extern int vBellInterval;
         double gapSecs = (vBellInterval > 0 ? vBellInterval : 60) * 60.0 * 1.5;
-        [_river setRecentSamples:MoodStoreMac_FetchSamplesSince(kWindowSeconds)
+        // Sông đọc vệt DÀY trong RAM (A3) — hiện chấm trong vài phút đầu gõ thay vì chờ cả nhịp
+        // chuông; nhật ký mã hoá trên đĩa vẫn nhịp thưa như cũ.
+        [_river setRecentSamples:MoodWatchMac_FetchLiveTrace(kWindowSeconds)
                    windowSeconds:kWindowSeconds
                       gapSeconds:gapSecs
-                        liveHead:risk];
+                        liveHead:liveHead];
 
         // [MINDFUL] 2026-07-16 (chủ dự án chốt) — tít giờ ĐỌC HÌNH DẠNG CẢ NGÀY ("Sáng và chiều có
         // gợn, phần lớn êm") thay vì chỉ gọi tên trạng thái tức thời ("Mặt hồ đang phẳng lặng").
@@ -150,8 +155,13 @@ static const CGFloat kSubRowH     = 34.0;  // hàng phụ đề/link — chừa 
         // Số nhịp chuông = APP lấy được bao nhiêu mẫu hôm nay → cho biết câu tít dựa trên bao nhiêu
         // dữ liệu. KHÔNG phải điểm số / chuỗi-ngày-liên-tục: không mục tiêu, không so hôm qua,
         // không khen nhiều / trách ít. Minh bạch về ĐỘ DÀY DỮ LIỆU, không phải bảng thành tích.
-        _caption.stringValue = [NSString stringWithFormat:@"Gác cổng đang canh khi bạn gõ · %ld nhịp chuông hôm nay",
-                                 (long)today.count];
+        // [MINDFUL] 2026-07-19 — gác cổng gửi tin (nhịp thở) nay bật/tắt riêng được (vSendGatekeeper).
+        // Lớp cảm xúc vẫn BẬT (sông vẫn vẽ) nhưng phần chặn Enter có thể đang tạm nghỉ — nói thật.
+        extern int vSendGatekeeper;
+        NSString *watchText = vSendGatekeeper ? @"Gác cổng đang canh khi bạn gõ"
+                                              : @"Gác cổng đang tạm nghỉ";
+        _caption.stringValue = [NSString stringWithFormat:@"%@ · %ld nhịp chuông hôm nay",
+                                 watchText, (long)today.count];
     } else {
         // State "tắt": sông TRỐNG thật thà (không vẽ nước giả), copy trung tính. KHÔNG đỏ/xám-chết.
         [_river setRecentSamples:nil windowSeconds:kWindowSeconds gapSeconds:0 liveHead:-1.0];

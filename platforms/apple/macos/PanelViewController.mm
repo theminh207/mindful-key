@@ -234,8 +234,20 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
     dispatch_source_set_timer(g_bellLineTimer, dispatch_time(DISPATCH_TIME_NOW, 60 * NSEC_PER_SEC), 60 * NSEC_PER_SEC, 1 * NSEC_PER_SEC);
     dispatch_source_set_event_handler(g_bellLineTimer, ^{
         [self updateBellLine];
+        // [MINDFUL] 2026-07-19 (A1) — tận dụng NHỊP 60s SẴN CÓ (không thêm timer mới) để giữ thẻ
+        // sống "Ngay bây giờ" tươi: đầu sóng phai dần + sông trôi theo thời gian. CHỈ khi popover
+        // đang hiện — đóng rồi thì khỏi tốn pin (đầu sóng chỉ cần đúng lúc có người nhìn).
+        [self mk_refreshLiveCardIfVisible];
     });
     dispatch_resume(g_bellLineTimer);
+}
+
+// [MINDFUL] 2026-07-19 (A1) — refresh thẻ "Ngay bây giờ" CHỈ khi view đang nằm trong cửa sổ hiện.
+// window.isVisible gửi vào nil = NO, nên popover đóng (view rời window) là tự bỏ qua, không tốn.
+- (void)mk_refreshLiveCardIfVisible {
+    if (self.isViewLoaded && self.view.window.isVisible) {
+        [_gatekeeper refresh];
+    }
 }
 
 - (void)loadView {

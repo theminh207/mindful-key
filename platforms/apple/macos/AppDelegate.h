@@ -32,6 +32,7 @@
 -(void)setQuickConvertString;
 
 -(void)onMoodWatchSelected;
+-(void)onGatekeeperToggleSelected;
 -(void)onBellSettingsSelected;
 -(void)onDeleteMoodLogSelected;
 -(void)onSnoozeBellSelected;

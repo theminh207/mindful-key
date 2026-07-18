@@ -111,6 +111,7 @@ extern bool convertToolDontAlertWhenCompleted;
     
     NSMenuItem* mnuQuickConvert;
     NSMenuItem* mnuMoodWatch;
+    NSMenuItem* mnuGatekeeper;
     NSMenuItem* mnuBellSettings;
     NSMenuItem* mnuBellToggle;
 }
@@ -443,6 +444,9 @@ static BOOL IsConflictingInputMethodBundleID(NSString *bundleID) {
     [theMenu addItem:[NSMenuItem separatorItem]];
 
     mnuMoodWatch = [theMenu addItemWithTitle:@"Bật Nhắc tâm (cảm xúc)" action:@selector(onMoodWatchSelected) keyEquivalent:@""];
+    // [MINDFUL] 2026-07-19 — công tắc gác cổng gửi tin (Feature #1). Dấu tích = đang canh Enter
+    // trong app chat. Tắt vẫn giữ nhật ký/sông (do "Nhắc tâm" quản), chỉ ngừng chặn-mềm lúc gửi.
+    mnuGatekeeper = [theMenu addItemWithTitle:@"Gác cổng gửi tin (nhịp thở)" action:@selector(onGatekeeperToggleSelected) keyEquivalent:@""];
     mnuBellToggle = [theMenu addItemWithTitle:@"Bật chuông tỉnh thức" action:@selector(onBellToggleSelected) keyEquivalent:@""];
     mnuBellSettings = [theMenu addItemWithTitle:@"Cài đặt Chuông tỉnh thức..." action:@selector(onBellSettingsSelected) keyEquivalent:@""];
     [theMenu addItemWithTitle:@"Tạm hoãn chuông 1 giờ" action:@selector(onSnoozeBellSelected) keyEquivalent:@""];
@@ -743,6 +747,12 @@ static BOOL IsConflictingInputMethodBundleID(NSString *bundleID) {
     vMoodWatch = moodValue == nil ? 1 : (int)[moodValue integerValue];
     [mnuMoodWatch setState:vMoodWatch ? NSControlStateValueOn : NSControlStateValueOff];
 
+    // [MINDFUL] 2026-07-19 — nạp công tắc gác cổng gửi tin. Mặc định BẬT (nil = chưa từng đặt).
+    extern int vSendGatekeeper;
+    NSNumber *gkValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"vSendGatekeeper"];
+    vSendGatekeeper = gkValue == nil ? 1 : (int)[gkValue integerValue];
+    [mnuGatekeeper setState:vSendGatekeeper ? NSControlStateValueOn : NSControlStateValueOff];
+
     extern int vBell;
     vBell = (int)[[NSUserDefaults standardUserDefaults] integerForKey:@"vBell"];
     [mnuBellToggle setState:vBell ? NSControlStateValueOn : NSControlStateValueOff];
@@ -820,6 +830,19 @@ static BOOL IsConflictingInputMethodBundleID(NSString *bundleID) {
 -(void)onMoodWatchSelected {
     MoodWatchMac_SetEnabled(MoodWatchMac_IsEnabled() ? 0 : 1);
     [self fillData];
+}
+
+// [MINDFUL] 2026-07-19 — bật/tắt gác cổng gửi tin (Feature #1). Cùng mạch với onBellToggleSelected:
+// lật cờ + lưu defaults + fillData (đồng bộ dấu tích menu) + refresh popover (caption thẻ đổi
+// "đang canh"/"tạm nghỉ"). KHÔNG đụng vMoodWatch — nhật ký/sông độc lập với việc chặn Enter.
+-(void)onGatekeeperToggleSelected {
+    extern int vSendGatekeeper;
+    vSendGatekeeper = vSendGatekeeper ? 0 : 1;
+    [[NSUserDefaults standardUserDefaults] setInteger:vSendGatekeeper forKey:@"vSendGatekeeper"];
+    [self fillData];
+    if (_panelPopover.isShown) {
+        [_panelVC refreshAll];
+    }
 }
 
 -(void)onBellToggleSelected {

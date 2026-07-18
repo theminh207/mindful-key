@@ -9,6 +9,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import <UserNotifications/UserNotifications.h>
+#import <os/lock.h>
 #include "Engine.h"
 #include "MoodBuffer.h"
 #include "SendRiskAnalyzer.h"
@@ -47,6 +48,27 @@ static double g_sampleSum = 0.0;
 static int g_sampleCount = 0;
 // [MINDFUL] 2026-07-16 — `g_sampleLastTime`/`g_sampleTimer` đã XOÁ: nhật ký không còn tự đếm giờ,
 // nó lắng nghe nhịp chung của BellMac (kMKMoodBeatNotification). Xem MoodWatchMac_Init().
+
+// [MINDFUL] 2026-07-19 — Lớp "sông sống" cho thẻ "Ngay bây giờ" (batch biểu đồ cảm xúc):
+//  A2 (đầu sóng thành thật): "bây giờ" = EMA làm mượt vài câu gần nhất, PHAI dần về 0 theo thời
+//     gian im lặng (mặt hồ tự lặng khi thôi khuấy). Im đủ lâu = không vẽ đầu sóng.
+//  A3 (sông dày chấm): vệt điểm trong RAM (tối đa 1 điểm/30s khi CÓ gõ), giữ 4h gần nhất, KHÔNG
+//     lưu đĩa. Idle = không thêm điểm (nhịp không gõ != ghi 0, dec.4).
+// Trạng thái này bị ĐỌC từ main (GatekeeperCardView.refresh) và GHI từ g_moodQueue → khoá bằng
+// os_unfair_lock (rẻ, không blocking như dispatch_sync vào hàng đợi phân tích đang bận).
+static os_unfair_lock g_liveLock = OS_UNFAIR_LOCK_INIT;
+static NSMutableArray<NSDictionary *> *g_liveTrace = nil;  // [{ts,value}] cũ->mới, KHÔNG persist
+static double g_liveEma = 0.0;            // EMA rủi ro các câu gần đây (làm mượt đầu sóng)
+static long long g_lastWordTs = 0;        // epoch giây của từ cuối — dùng để phai
+static long long g_liveTraceLastTs = 0;   // chặn dày: tối đa 1 điểm/kLiveSampleSeconds
+
+static const double kLiveEmaAlpha      = 0.4;        // trọng số câu mới trong EMA
+static const double kLiveFadeSeconds   = 5 * 60.0;   // phai hết về phẳng lặng sau 5 phút im
+static const double kLiveSampleSeconds = 30.0;       // tối đa 1 điểm/30s (đủ dày, không quá tải vẽ)
+static const double kLiveTraceMaxAge   = 4 * 3600.0; // giữ 4h (đủ cho cửa sổ 3h + biên tương lai)
+
+static double MKClamp01(double v) { return v < 0 ? 0 : (v > 1 ? 1 : v); }
+static double MKSmoothstep(double t) { return t * t * (3.0 - 2.0 * t); }
 
 static NSString* NSStringFromWString(const wstring& text) {
     return [[NSString alloc] initWithBytes:text.data()
@@ -122,6 +144,31 @@ static void analyzeRecentTextAsync(const wstring& word) {
         double risk = scored.risk;
         g_lastSendRisk = risk;
 
+        // [MINDFUL] 2026-07-19 — cập nhật lớp "sông sống" (A2+A3). Đang trên g_moodQueue; khoá vì
+        // main đọc ở LiveAmplitude/FetchLiveTrace. EMA làm mượt; vệt điểm dày tối đa 1/30s.
+        long long nowTs = (long long)[NSDate date].timeIntervalSince1970;
+        os_unfair_lock_lock(&g_liveLock);
+        // [MINDFUL] Kiểm lại vMoodWatch NGAY TRONG khoá: nếu người dùng vừa tắt Nhắc tâm (SetEnabled
+        // xoá sạch state dưới cùng khoá này) ngay sau khi block này đã qua check !vMoodWatch ở đầu,
+        // thì đừng ghi "dư âm" câu cũ vào state vừa xoá — giữ đúng lời hứa "bật lại là phẳng lặng".
+        if (vMoodWatch) {
+            g_liveEma = kLiveEmaAlpha * risk + (1.0 - kLiveEmaAlpha) * g_liveEma;
+            g_lastWordTs = nowTs;
+            if (g_liveTrace == nil) g_liveTrace = [NSMutableArray array];
+            if (g_liveTraceLastTs == 0 || (nowTs - g_liveTraceLastTs) >= (long long)kLiveSampleSeconds) {
+                [g_liveTrace addObject:@{@"ts": @(nowTs), @"value": @(g_liveEma)}];
+                g_liveTraceLastTs = nowTs;
+                // Trim điểm cũ hơn 4h (mảng theo thứ tự thời gian nên cắt từ đầu).
+                long long cutoff = nowTs - (long long)kLiveTraceMaxAge;
+                NSUInteger drop = 0;
+                for (NSDictionary *e in g_liveTrace) {
+                    if ([e[@"ts"] longLongValue] < cutoff) drop++; else break;
+                }
+                if (drop > 0) [g_liveTrace removeObjectsInRange:NSMakeRange(0, drop)];
+            }
+        }
+        os_unfair_lock_unlock(&g_liveLock);
+
         NSString *nsWord = [[NSString alloc] initWithBytes:wordCopy.data()
                                                     length:wordCopy.size() * sizeof(wchar_t)
                                                   encoding:NSUTF32LittleEndianStringEncoding];
@@ -159,6 +206,52 @@ static void analyzeRecentTextAsync(const wstring& word) {
 
 double MoodWatchMac_LastSendRisk(void) {
     return g_lastSendRisk;
+}
+
+// [MINDFUL] 2026-07-19 — A2: đầu sóng "bây giờ" đã mượt + phai. Xem hợp đồng ở MoodWatchMac.h.
+double MoodWatchMac_LiveAmplitude(void) {
+    long long nowTs = (long long)[NSDate date].timeIntervalSince1970;
+    os_unfair_lock_lock(&g_liveLock);
+    double ema = g_liveEma;
+    long long lastTs = g_lastWordTs;
+    os_unfair_lock_unlock(&g_liveLock);
+
+    if (lastTs == 0) return -1.0;                  // chưa gõ gì -> không có đầu sóng
+    double idle = (double)(nowTs - lastTs);
+    if (idle >= kLiveFadeSeconds) return -1.0;     // im đủ lâu -> phai hết, mặt hồ lặng (không vẽ)
+    double fade = MKSmoothstep(1.0 - idle / kLiveFadeSeconds);   // 1 (vừa gõ) -> 0 (sắp im hẳn)
+    return MKClamp01(ema * fade);
+}
+
+// [MINDFUL] 2026-07-19 — A3: vệt điểm dày cho sông "Ngay bây giờ". Trộn nền quá khứ persisted
+// (phần TRƯỚC khi vệt RAM phiên này bắt đầu) với vệt RAM dày — tránh 2 lớp chấm chồng cùng 1 quãng.
+NSArray<NSDictionary *> *MoodWatchMac_FetchLiveTrace(double windowSeconds) {
+    long long nowTs = (long long)[NSDate date].timeIntervalSince1970;
+    long long origin = nowTs - (long long)windowSeconds;
+
+    NSArray<NSDictionary *> *live;
+    long long firstLiveTs = 0;
+    os_unfair_lock_lock(&g_liveLock);
+    live = g_liveTrace ? [g_liveTrace copy] : @[];
+    if (live.count > 0) firstLiveTs = [live.firstObject[@"ts"] longLongValue];
+    os_unfair_lock_unlock(&g_liveLock);
+
+    NSArray<NSDictionary *> *persisted = MoodStoreMac_FetchSamplesSince(windowSeconds);
+    NSMutableArray<NSDictionary *> *out = [NSMutableArray array];
+    for (NSDictionary *p in persisted) {
+        long long ts = [p[@"ts"] longLongValue];
+        if (ts < origin) continue;
+        if (live.count > 0 && ts >= firstLiveTs) continue;   // vệt RAM đã phủ quãng này
+        [out addObject:p];
+    }
+    for (NSDictionary *l in live) {
+        if ([l[@"ts"] longLongValue] >= origin) [out addObject:l];
+    }
+    [out sortUsingComparator:^NSComparisonResult(NSDictionary *a, NSDictionary *b) {
+        long long ta = [a[@"ts"] longLongValue], tb = [b[@"ts"] longLongValue];
+        return ta < tb ? NSOrderedAscending : (ta > tb ? NSOrderedDescending : NSOrderedSame);
+    }];
+    return out;
 }
 
 void MoodWatchMac_OnWord(const wstring& word) {
@@ -218,6 +311,16 @@ void MoodWatchMac_Flush(void) {
 void MoodWatchMac_SetEnabled(int enabled) {
     vMoodWatch = enabled ? 1 : 0;
     [[NSUserDefaults standardUserDefaults] setInteger:vMoodWatch forKey:@"vMoodWatch"];
+    // [MINDFUL] 2026-07-19 — tắt = xoá vệt "sông sống" trong RAM (đầu sóng + điểm dày), để bật lại
+    // là mặt hồ phẳng lặng từ đầu, không còn dư âm câu cũ. Vệt này vốn ephemeral (không persist).
+    if (!enabled) {
+        os_unfair_lock_lock(&g_liveLock);
+        g_liveEma = 0.0;
+        g_lastWordTs = 0;
+        g_liveTraceLastTs = 0;
+        [g_liveTrace removeAllObjects];
+        os_unfair_lock_unlock(&g_liveLock);
+    }
     // [MINDFUL] Vá lỗi B — cùng bất biến với MoodWatchMac_Flush(): hàm này chạm g_moodQueue nên
     // cũng phải sống sót nếu lỡ được gọi trước MoodWatchMac_Init() (chưa xác nhận có đường gọi
     // thật nào trước Init, nhưng rẻ để thủ chắc thay vì vá mù một chỗ).

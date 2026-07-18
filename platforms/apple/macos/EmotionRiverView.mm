@@ -324,14 +324,21 @@ static const CGFloat kAxisHourEvening    = 21.0;   // giữa buổi tối   (18-
     double now = [[NSDate date] timeIntervalSince1970];
     double originSec = now - windowSeconds;
 
-    // Mốc tương đối, chia đều theo ĐÚNG tỉ lệ thời gian thật (không phải 4 cột đều nhau): mép trái
-    // = trọn cửa sổ, mép phải = bây giờ. Chốt với chủ dự án 2026-07-16 — cố ý KHÔNG dùng giờ đồng
-    // hồ ("05:00 · 07:00…") vì đọc thành biểu đồ, mất chất quan sát.
+    // [MINDFUL] 2026-07-19 (chủ dự án chốt) — QUÁ KHỨ · HIỆN TẠI · TƯƠNG LAI: "bây giờ" KHÔNG còn
+    // dính mép phải (nửa chấm bị khung cắt, đầu sóng hết chỗ thở). Cửa sổ dữ liệu (windowSeconds =
+    // 3h quá khứ) chỉ chiếm 0..kNowFrac; phần kNowFrac..1 là "tương lai để trống" — chỉ có trục nét
+    // đứt (đã vẽ suốt bề ngang ở MKRiverCanvas), TUYỆT ĐỐI không vẽ nước giả (dec.4). 3h + 1h tương
+    // lai = "bây giờ" ở 3/4.
+    static const CGFloat kNowFrac = 0.75;
+
+    // Mốc tương đối, chia đều theo ĐÚNG tỉ lệ thời gian thật (không phải 4 cột đều nhau). Chốt với
+    // chủ dự án 2026-07-16 — cố ý KHÔNG dùng giờ đồng hồ ("05:00 · 07:00…") vì đọc thành biểu đồ,
+    // mất chất quan sát. 4 nhãn GIỮ NGUYÊN CHỮ, chỉ dời vị trí về [0, kNowFrac].
     double hrs = windowSeconds / 3600.0;
     _axisFractions[0] = 0.0;
-    _axisFractions[1] = 1.0 / 3.0;
-    _axisFractions[2] = 2.0 / 3.0;
-    _axisFractions[3] = 1.0;
+    _axisFractions[1] = kNowFrac / 3.0;
+    _axisFractions[2] = 2.0 * kNowFrac / 3.0;
+    _axisFractions[3] = kNowFrac;
     [self setAxisLabels:@[
         [NSString stringWithFormat:@"%g giờ trước", hrs],
         [NSString stringWithFormat:@"%g giờ", hrs * 2.0 / 3.0],
@@ -352,19 +359,21 @@ static const CGFloat kAxisHourEvening    = 21.0;   // giữa buổi tối   (18-
         prevTs = ts;
         hasPrev = YES;
         validCount++;
-        CGFloat xf = (CGFloat)(((double)ts - originSec) / windowSeconds);
-        [entries addObject:[NSValue valueWithPoint:NSMakePoint(MAX(0.0, MIN(1.0, xf)),
+        // Nén quá khứ vào [0, kNowFrac] (thay vì [0,1]) để chừa chỗ cho tương lai bên phải.
+        CGFloat xf = (CGFloat)(((double)ts - originSec) / windowSeconds) * kNowFrac;
+        [entries addObject:[NSValue valueWithPoint:NSMakePoint(MAX(0.0, MIN(kNowFrac, xf)),
                                                                 [s[@"value"] doubleValue])]];
     }
 
-    // Đầu sóng ở mép phải = ngay lúc này. Nếu mẫu lưu gần nhất đã quá xa (nghỉ gõ lâu) thì vẫn phải
-    // NGẮT trước khi cắm — bịa nước nối từ 3 tiếng trước tới bây giờ là đúng thứ dec.4 cấm.
+    // Đầu sóng "bây giờ" = mốc kNowFrac (KHÔNG phải mép phải). liveHead < 0 (đã im/chưa gõ) thì
+    // KHÔNG cắm gì — mặt hồ phẳng lặng ở hiện tại là sự thật, hơn là giữ điểm cũ. Nếu mẫu lưu gần
+    // nhất đã quá xa (nghỉ gõ lâu) thì NGẮT trước khi cắm — bịa nước nối tới bây giờ là dec.4 cấm.
     if (liveHead >= 0.0) {
         if (hasPrev && gapSeconds > 0 && (now - (double)prevTs) > gapSeconds) {
             [entries addObject:[NSNull null]];
         }
         validCount++;
-        [entries addObject:[NSValue valueWithPoint:NSMakePoint(1.0, liveHead)]];
+        [entries addObject:[NSValue valueWithPoint:NSMakePoint(kNowFrac, liveHead)]];
     }
 
     [self applyEntries:entries validCount:validCount];
