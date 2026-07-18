@@ -855,6 +855,68 @@ void MoodStoreMac_SeedFakeSamplesForTesting(NSInteger numDays) {
     NSLog(@"[MoodStoreMac][SEED] Đã giả lập %ld ngày theo phiên gõ (đánh dấu, KHÔNG lẫn dữ liệu thật) — DEBUG-ONLY.", (long)numDays);
 }
 
+// [MINDFUL] 2026-07-19 (DEBUG-only) — giả lập MỘT ngày 12-18 tiếng, chấm DÀY (~8 phút/mẫu khi có
+// gõ), để test cửa sổ "Ngay bây giờ" 3 tiếng + sông dày (batch biểu đồ live). Khác seeder 30-ngày:
+// cái kia rải theo nhịp chuông (60 phút/mẫu = quá thưa cho sông live). Cùng marker kSeedFakeMarker
+// nên "Xóa dữ liệu giả lập" dọn được, KHÔNG lẫn dữ liệu thật. Phiên CUỐI neo kết thúc ở now để cửa
+// sổ live luôn có nước tới hiện tại; các phiên trước lùi về, xen kẽ nghỉ (giải lao/nghỉ trưa thật).
+void MoodStoreMac_SeedDenseDayForTesting(void) {
+    if (!MoodStoreMac_HasConsent())
+        return;
+
+    NSString *tempPath = nil;
+    sqlite3 *db = OpenWorkingDB(&tempPath);
+    if (!db)
+        return;
+
+    const char *sql =
+        "INSERT INTO mood_events (ts, event_type, send_risk, app_bundle_id) "
+        "VALUES (?, 'sample', ?, ?);";
+    NSTimeInterval nowTs = [[NSDate date] timeIntervalSince1970];
+    NSTimeInterval stepSecs = 8 * 60.0;                              // 1 mẫu/8 phút khi đang gõ (dày)
+    NSTimeInterval spanSecs = (12 + arc4random_uniform(7)) * 3600.0; // 12..18 tiếng
+    NSTimeInterval dayStart = nowTs - spanSecs;
+
+    // 1 phiên gõ dày [start, end]: mẫu cách đều stepSecs, biên độ đi bộ dần (random walk) mở phiên
+    // êm — KHÔNG nhảy cóc, để sông có hình dâng/lắng đọc được. Bỏ mẫu rơi vào tương lai (t > now).
+    void (^writeDenseSession)(NSTimeInterval, NSTimeInterval) = ^(NSTimeInterval start, NSTimeInterval end) {
+        double risk = (arc4random_uniform(35) + 10) / 100.0;   // 0.10..0.44
+        for (NSTimeInterval t = start; t <= end && t <= nowTs; t += stepSecs) {
+            sqlite3_stmt *stmt = NULL;
+            if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
+                sqlite3_bind_int64(stmt, 1, (sqlite3_int64)t);
+                sqlite3_bind_double(stmt, 2, risk);
+                sqlite3_bind_text(stmt, 3, kSeedFakeMarker.UTF8String, -1, SQLITE_TRANSIENT);
+                if (sqlite3_step(stmt) != SQLITE_DONE)
+                    NSLog(@"[MoodStoreMac][SEED-DAY] ghi lỗi: %s", sqlite3_errmsg(db));
+                sqlite3_finalize(stmt);
+            }
+            risk += ((double)arc4random_uniform(21) - 10.0) / 100.0;   // trôi ±0.10
+            if (risk < 0.05) risk = 0.05;
+            if (risk > 0.85) risk = 0.85;
+        }
+    };
+
+    // Phiên cuối NEO ở now (1..2.5 tiếng) — bảo đảm cửa sổ live 3h có nước sát hiện tại.
+    NSTimeInterval finalLen = 3600.0 + arc4random_uniform(5400);
+    writeDenseSession(nowTs - finalLen, nowTs);
+
+    // Các phiên trước: lùi từ trước phiên cuối về dayStart, mỗi phiên 1-3 tiếng, nghỉ 0.5-2 tiếng.
+    NSTimeInterval cursor = nowTs - finalLen;
+    while (cursor > dayStart) {
+        NSTimeInterval brk = 1800.0 + arc4random_uniform(5400);   // nghỉ 30-120 phút
+        cursor -= brk;
+        if (cursor <= dayStart) break;
+        NSTimeInterval len = 3600.0 + arc4random_uniform(7200);   // phiên 1-3 tiếng
+        NSTimeInterval start = MAX(dayStart, cursor - len);
+        writeDenseSession(start, cursor);
+        cursor = start;
+    }
+
+    FlushAndCloseDB(db, tempPath);
+    NSLog(@"[MoodStoreMac][SEED-DAY] Đã giả lập 1 ngày dày (~%.0f tiếng, 8 phút/mẫu, đánh dấu) — DEBUG-ONLY.", spanSecs / 3600.0);
+}
+
 void MoodStoreMac_DeleteSimulatedData(void) {
     NSString *tempPath = nil;
     sqlite3 *db = OpenWorkingDB(&tempPath);

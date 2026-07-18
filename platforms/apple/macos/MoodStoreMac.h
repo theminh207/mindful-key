@@ -68,6 +68,9 @@ NSArray<NSDictionary *> *MoodStoreMac_FetchMonthSamples(void);  // 30 ngày gầ
 // (vốn không dùng cho event 'sample'), để tách biệt khỏi dữ liệu thật.
 // MoodStoreMac_DeleteSimulatedData() CHỈ xóa đúng phần đánh dấu này — dữ liệu thật không đụng tới.
 void MoodStoreMac_SeedFakeSamplesForTesting(NSInteger numDays);
+// [MINDFUL] 2026-07-19 — 1 ngày 12-18h chấm DÀY (~8 phút/mẫu) để test sông live "Ngay bây giờ".
+// Cùng marker với SeedFake ở trên nên DeleteSimulatedData dọn chung. DEBUG-only.
+void MoodStoreMac_SeedDenseDayForTesting(void);
 void MoodStoreMac_DeleteSimulatedData(void);
 BOOL MoodStoreMac_HasSimulatedData(void);
 #endif

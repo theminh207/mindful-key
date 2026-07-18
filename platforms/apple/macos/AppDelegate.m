@@ -460,6 +460,7 @@ static BOOL IsConflictingInputMethodBundleID(NSString *bundleID) {
     // thật (nếu có) không bị đụng tới.
     [theMenu addItem:[NSMenuItem separatorItem]];
     [theMenu addItemWithTitle:@"[DEV] Giả lập 30 ngày dữ liệu sông" action:@selector(onSeedFakeMoodDataSelected) keyEquivalent:@""];
+    [theMenu addItemWithTitle:@"[DEV] Giả lập 1 ngày dày (12-18h) — test sông live" action:@selector(onSeedDenseDaySelected) keyEquivalent:@""];
     [theMenu addItemWithTitle:@"[DEV] Xóa dữ liệu giả lập" action:@selector(onDeleteSimulatedMoodDataSelected) keyEquivalent:@""];
     // [MINDFUL] 2026-07-16 — khung chấm nhịp chỉ tự hiện mỗi vBellInterval phút (sàn 15). Không có
     // lối gọi tay thì mỗi lần sửa nó phải chờ 15 phút mới thấy — nên không ai verify, và đó đúng là
@@ -896,6 +897,29 @@ static BOOL IsConflictingInputMethodBundleID(NSString *bundleID) {
     NSAlert *alert = [[NSAlert alloc] init];
     alert.messageText = @"Đã giả lập 30 ngày dữ liệu";
     alert.informativeText = @"Mở Cài đặt ▸ Hôm nay ▸ Tuần/Tháng để xem. Dữ liệu này có đánh dấu riêng — dùng \"Xóa dữ liệu giả lập\" khi xong, không ảnh hưởng dữ liệu thật.";
+    [alert addButtonWithTitle:@"Đã hiểu"];
+    alert.window.level = NSStatusWindowLevel;
+    [alert runModal];
+}
+
+-(void)onSeedDenseDaySelected {
+    // Seeder cần đã đồng ý ghi nhật ký (kho mã hoá mới mở được). Nói thẳng nếu chưa, thay vì im lặng.
+    if (!MoodStoreMac_HasConsent()) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        alert.messageText = @"Chưa bật nhật ký cảm xúc";
+        alert.informativeText = @"Bật \"Nhắc tâm (cảm xúc)\" và đồng ý ghi nhật ký trước, rồi giả lập lại. Kho được mã hoá nên cần đồng ý mới ghi được.";
+        [alert addButtonWithTitle:@"Đã hiểu"];
+        alert.window.level = NSStatusWindowLevel;
+        [alert runModal];
+        return;
+    }
+    MoodStoreMac_SeedDenseDayForTesting();
+    if (_panelPopover.isShown) {
+        [_panelVC refreshAll];
+    }
+    NSAlert *alert = [[NSAlert alloc] init];
+    alert.messageText = @"Đã giả lập 1 ngày dày (12-18 tiếng)";
+    alert.informativeText = @"Bấm icon khay mở bảng \"Ngay bây giờ\" để xem sông 3 tiếng gần nhất (chấm dày ~8 phút/mẫu). Gõ thử vài chữ để thấy đầu sóng \"bây giờ\" hiện lên rồi phai dần khi ngừng. Xong thì dùng \"Xóa dữ liệu giả lập\" — dữ liệu thật không bị đụng.";
     [alert addButtonWithTitle:@"Đã hiểu"];
     alert.window.level = NSStatusWindowLevel;
     [alert runModal];
