@@ -449,20 +449,29 @@
 // ký — trung thực), đường /releases/latest/download/ bị GitHub loại pre-release nên 404; href
 // tĩnh giữ nguyên làm fallback (tự sống khi có bản chính thức đầu tiên), còn ở đây rewrite sang
 // link asset THẬT của bản mới nhất. API lỗi/rate-limit -> giữ nguyên tĩnh + ẩn dòng phiên bản, êm.
+//
+// [MINDFUL] 2026-07-18 — ƯU TIÊN asset CÓ SỐ PHIÊN BẢN trong tên (MindfulKey-0.4.2.dmg,
+// MindfulKey_0.4.2_x64-setup.exe), KHÔNG dùng bản tên ổn định (MindfulKey.dmg/-setup.exe) làm
+// đích chính nữa. Lý do: chủ dự án báo thật "tải về thấy bản cũ" — trình duyệt lưu file tải về
+// bằng tên trên URL, mà tên ổn định GIỐNG HỆT NHAU qua mọi lần phát hành, nên file mới ghi đè/
+// đứng cạnh file cũ trong Downloads mà không cách nào phân biệt bằng mắt. Tên có số tự giải quyết
+// tận gốc: mỗi bản một tên file duy nhất. Bản tên ổn định vẫn dùng làm dự phòng NẾU vì lý do gì đó
+// release thiếu asset có số (không nên xảy ra — release.sh luôn sinh cả hai).
 (function () {
   fetch('https://api.github.com/repos/theminh207/mindful-key/releases?per_page=1')
     .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
     .then(function (list) {
       var rel = list && list[0];
       if (!rel || !rel.tag_name) return;
+      var version = rel.tag_name.replace(/^v/, '');
       var assets = rel.assets || [];
       function urlOf(name) {
         for (var i = 0; i < assets.length; i++)
           if (assets[i].name === name) return assets[i].browser_download_url;
         return null;
       }
-      var mac = urlOf('MindfulKey.dmg');
-      var win = urlOf('MindfulKey-setup.exe');
+      var mac = urlOf('MindfulKey-' + version + '.dmg') || urlOf('MindfulKey.dmg');
+      var win = urlOf('MindfulKey_' + version + '_x64-setup.exe') || urlOf('MindfulKey-setup.exe');
       if (mac) document.querySelectorAll('a[data-dl="mac"]').forEach(function (a) { a.href = mac; });
       if (win) document.querySelectorAll('a[data-dl="win"]').forEach(function (a) { a.href = win; });
       document.querySelectorAll('[data-latest-version]').forEach(function (el) {
