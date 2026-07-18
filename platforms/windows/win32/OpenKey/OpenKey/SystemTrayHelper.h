@@ -27,6 +27,8 @@ public:
 	// [MINDFUL] GĐ6 — "tâm đang động": icon khay đổi sang sóng biên độ cao rồi tự lắng về sau vài
 	// giây (BRAND-ASSETS.md §6). An toàn gọi từ luồng nền.
 	static void showWaveAlert();
+	// [MINDFUL] Cảnh báo (deferred) nếu OpenKey gốc đang chạy cùng lúc — gọi SAU createSystemTrayIcon.
+	static void checkRivalInputMethod();
 	static void removeSystemTray();
 };
 

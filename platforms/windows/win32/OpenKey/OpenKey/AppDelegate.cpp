@@ -101,6 +101,12 @@ int AppDelegate::run(HINSTANCE hInstance) {
 	SystemTrayHelper::createSystemTrayIcon(hInstance);
 	SystemTrayHelper::updateData();
 
+	// [MINDFUL] Khay đã có -> nhờ luồng cửa sổ cảnh báo nếu OpenKey gốc đang chạy (hai bộ gõ giẫm
+	// phím nhau, chữ sai dấu). Deferred qua PostMessage, KHÔNG chặn khởi động — xem
+	// docs/LIFECYCLE-SAFETY-CONTRACT.md. Nhờ APP_CLASS nay đã riêng (stdafx.h), FindWindow ở trên
+	// không còn nhầm OpenKey gốc là "bản thứ 2 của mình" và tự thoát nữa.
+	SystemTrayHelper::checkRivalInputMethod();
+
 	//create main control
 	if (vShowOnStartUp)
 		createMainDialog();

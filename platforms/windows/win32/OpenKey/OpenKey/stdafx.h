@@ -55,7 +55,14 @@ extern wchar_t _logBuffer[1024];
 #define APP_SET_DATA(KEY, VAL) KEY = VAL; OpenKeyHelper::setRegInt(_T(#KEY), KEY)
 #define APP_GET_DATA(KEY, DEFAULT_VAL) KEY = OpenKeyHelper::getRegInt(_T(#KEY), DEFAULT_VAL)
 
-#define APP_CLASS _T("OpenKeyVietnameseInputMethod")
+// [MINDFUL] Tên lớp cửa sổ PHẢI khác OpenKey gốc. Bản gốc (Mai Vũ Tuyên) đăng ký cửa sổ ẩn với
+// đúng chuỗi "OpenKeyVietnameseInputMethod"; fork này thừa hưởng y hệt, nên FindWindow(APP_CLASS)
+// lúc khởi động (AppDelegate.cpp) BẮT trúng cửa sổ của OpenKey gốc, tưởng "mình đã chạy rồi" rồi
+// tự thoát — trên MỌI máy đang chạy OpenKey, MindfulKey lặng lẽ không mở được (audit 2026-07-18,
+// win-ime-conflict-1). Đổi sang chuỗi riêng của fork. Chuỗi cũ giữ lại làm dấu NHẬN DIỆN OpenKey
+// gốc đang chạy (SystemTrayHelper cảnh báo giẫm phím) — xem RIVAL_OPENKEY_CLASS.
+#define APP_CLASS          _T("MindfulKeyVietnameseInputMethod")
+#define RIVAL_OPENKEY_CLASS _T("OpenKeyVietnameseInputMethod")
 
 extern void saveSmartSwitchKeyData();
 

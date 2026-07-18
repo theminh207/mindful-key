@@ -69,7 +69,21 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
     self.numberLayer = NO;
     self.lastShiftTapAt = 0;
     [self buildKeyboardUI];
-    [self mk_startEmotionWavePolling];   // story 2.5: bắt đầu SAU khi suggestionBar đã dựng xong
+    // story 2.5: poll con sóng nay bắt đầu ở viewWillAppear (và dừng ở viewWillDisappear) thay vì
+    // ở đây — xem mk_startEmotionWavePolling + ghi chú vòng-giữ-nhau ở đó (audit 2026-07-18).
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self mk_startEmotionWavePolling];   // idempotent; tự kiểm hasFullAccess bên trong
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    // Bàn phím ẩn -> gỡ timer khỏi run loop (đỡ CPU/pin) VÀ cắt tham chiếu còn lại, để extension
+    // được giải phóng đúng lúc thay vì bị timer giữ sống (xem mk_startEmotionWavePolling).
+    [self.emotionWaveTimer invalidate];
+    self.emotionWaveTimer = nil;
 }
 
 - (void)dealloc {
@@ -360,12 +374,22 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
 // Settings rồi MỞ LẠI bàn phím (extension bị huỷ + khởi tạo lại) — không đổi sống giữa 1 phiên
 // đang chạy, nên kiểm 1 lần ở đây là đủ, không cần tự poll lại cờ này mỗi tick.
 - (void)mk_startEmotionWavePolling {
+    // Idempotent: bàn phím ẩn/hiện lại nhiều lần không được chồng 2 timer.
+    [self.emotionWaveTimer invalidate];
+    self.emotionWaveTimer = nil;
     if (!self.hasFullAccess) return;   // AC#7: chưa Full Access -> giữ nguyên trạng thái rỗng Round 1, KHÔNG gọi setWaveAmplitude:
+    // Block + weak self, KHÔNG target:self. NSTimer target:self GIỮ CHẶT self, còn self.emotionWaveTimer
+    // (strong) giữ timer -> hai bên giữ nhau, dealloc KHÔNG BAO GIỜ nổ nên chẳng ai gỡ timer: view
+    // controller của bàn phím rò rỉ mỗi lần khởi tạo lại, ăn dần vào trần RAM ~48-60MB của extension
+    // (audit 2026-07-18 ios-timer-retain-cycle). Timer nay không giữ self; ta gỡ nó ở viewWillDisappear.
+    __weak typeof(self) weakSelf = self;
     NSTimer *timer = [NSTimer timerWithTimeInterval:kEmotionWavePollInterval
-                                               target:self
-                                             selector:@selector(mk_updateEmotionWave)
-                                             userInfo:nil
-                                              repeats:YES];
+                                            repeats:YES
+                                              block:^(NSTimer *t) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) { [t invalidate]; return; }
+        [strongSelf mk_updateEmotionWave];
+    }];
     // NSRunLoopCommonModes: tick vẫn chạy trong lúc UIKit đang ở tracking mode (vd đang giữ 1
     // phím) — con sóng là ambient thuần túy, không được phép "đứng hình" chỉ vì người dùng đang
     // tương tác. Không liên quan/không chặn mạch xử lý phím (AC#4): timer chỉ ĐỌC risk + vẽ, đi

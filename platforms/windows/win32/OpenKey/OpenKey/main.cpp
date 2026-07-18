@@ -28,7 +28,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	APP_GET_DATA(vRunAsAdmin, 0);
 	if (vRunAsAdmin && !IsUserAnAdmin()) {
 		//create admin process
-		ShellExecute(0, L"runas", OpenKeyHelper::getFullPath().c_str(), 0, 0, SW_SHOWNORMAL);
+		// [MINDFUL] Nếu người dùng bấm "No" ở hộp UAC (hoặc nâng quyền lỗi), tiến trình đã-nâng-quyền
+		// KHÔNG khởi động — mà dòng return 1 dưới đây thoát ngay, nên app "biến mất" không một lời
+		// (audit 2026-07-18 win-silent-admin-1, đúng §6.3 "không chết câm"). ShellExecute trả HINSTANCE
+		// <= 32 nghĩa là không mở được tiến trình. MessageBox ở đây an toàn: chỉ nổ khi vừa có tương
+		// tác UAC (app đang foreground), và app thoát ngay sau — không phải modal chặn lúc dựng UI.
+		HINSTANCE elevated = ShellExecute(0, L"runas", OpenKeyHelper::getFullPath().c_str(), 0, 0, SW_SHOWNORMAL);
+		if ((INT_PTR)elevated <= 32) {
+			MessageBoxW(NULL,
+				L"MindfulKey được đặt chạy với quyền quản trị, nhưng lần này chưa được cấp quyền đó "
+				L"nên chưa mở lên.\n\nHãy mở lại và chọn \"Yes\" khi Windows hỏi quyền quản trị.",
+				L"MindfulKey", MB_OK | MB_ICONINFORMATION | MB_SETFOREGROUND);
+		}
 		return 1;
 	}
 #endif

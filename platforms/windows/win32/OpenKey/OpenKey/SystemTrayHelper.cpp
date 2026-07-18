@@ -24,6 +24,10 @@ redistribute your new version, it MUST be open source.
 // gọi thẳng: hẹn giờ "lắng về" dùng SetTimer, mà SetTimer cần VÒNG LẶP THÔNG ĐIỆP — worker không
 // có, nên gọi thẳng thì icon đổi rồi KẸT LUÔN ở trạng thái động, không bao giờ lắng lại.
 #define WM_WAVE_ALERT  (WM_USER + 2)
+// [MINDFUL] Cảnh báo bộ gõ đối thủ (OpenKey gốc) đang chạy cùng lúc. CỐ Ý PostMessage chứ không
+// Send: hộp thoại chỉ được hiện SAU khi vòng lặp thông điệp đã chạy và cửa sổ đã có chủ — không
+// bao giờ chặn lúc dựng app. Đây là hiện thân của docs/LIFECYCLE-SAFETY-CONTRACT.md bất biến #1.
+#define WM_MK_RIVAL_WARN (WM_USER + 3)
 #define TIMER_WAVE_SETTLE 0xA1
 
 // "rồi lắng về Status sau VÀI GIÂY" (BRAND-ASSETS.md §6). "Vài giây" không phải con số — 3s lấy
@@ -124,6 +128,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	case WM_USER+2019:
 		AppDelegate::getInstance()->onControlPanel();
 		break;
+	case WM_MK_RIVAL_WARN: {
+		// Chạy trên luồng cửa sổ, đã trong vòng lặp thông điệp -> an toàn để hiện modal có chủ.
+		// Giọng quan sát, không phán xét (HIẾN CHƯƠNG §2.2): mô tả hiện tượng "giẫm phím", không
+		// đổ lỗi cho bên nào. KHÔNG tự tắt OpenKey — để người dùng chọn, khác macOS (Windows tắt
+		// tiến trình bên khác là hành vi nặng); chỉ nói cho biết. §6.3: không để xung đột diễn ra câm.
+		HWND rival = FindWindow(RIVAL_OPENKEY_CLASS, NULL);
+		if (rival) {
+			SetForegroundWindow(hWnd);
+			MessageBoxW(hWnd,
+				L"OpenKey đang chạy cùng lúc với MindfulKey. Hai bộ gõ cùng bắt phím sẽ giẫm lên "
+				L"nhau, chữ gõ ra có thể sai dấu.\n\nHãy tắt một trong hai để gõ ổn định.",
+				L"MindfulKey", MB_OK | MB_ICONWARNING);
+		}
+		return 0;
+	}
 	case WM_TRAYMESSAGE: {
 		if (lParam == WM_LBUTTONDBLCLK) {
 			AppDelegate::getInstance()->onControlPanel();
@@ -401,6 +420,13 @@ void SystemTrayHelper::_createSystemTrayIcon(const HINSTANCE& hIns) {
 	
 	if (hWnd == NULL) { //Use timer to create
 		if (recreateCount >= 5) {
+			// [MINDFUL] Thử 5 lần không tạo được cửa sổ khay -> app không còn mặt nào để hiện. Trước
+			// đây thoát CÂM (audit 2026-07-18 win-silent-trayfail-1) — người dùng thấy app "mở rồi
+			// biến mất" y hệt lỗi P0 bên macOS. Nói trước khi thoát (§6.3). Giữ nguyên việc thoát.
+			MessageBoxW(NULL,
+				L"MindfulKey không tạo được biểu tượng ở khay hệ thống nên sẽ thoát. Hãy thử mở lại; "
+				L"nếu vẫn vậy, khởi động lại máy thường khắc phục được.",
+				L"MindfulKey", MB_OK | MB_ICONWARNING | MB_SETFOREGROUND);
 			PostQuitMessage(0);
 			return;
 		}
@@ -449,4 +475,11 @@ void SystemTrayHelper::removeSystemTray() {
 void SystemTrayHelper::showWaveAlert() {
 	if (nid.hWnd)
 		PostMessage(nid.hWnd, WM_WAVE_ALERT, 0, 0);
+}
+
+// [MINDFUL] Nhờ luồng cửa sổ kiểm "OpenKey gốc đang chạy?" rồi cảnh báo nếu có — CHỈ đặt tin nhắn,
+// không tự kiểm/hiện tại đây, để hộp thoại nổ SAU khi vòng lặp thông điệp chạy (xem WM_MK_RIVAL_WARN).
+void SystemTrayHelper::checkRivalInputMethod() {
+	if (nid.hWnd)
+		PostMessage(nid.hWnd, WM_MK_RIVAL_WARN, 0, 0);
 }
