@@ -282,10 +282,27 @@ jobs:
           ls -lh release-out/ || true
 
           publish() {
+            # Dọn TRƯỚC khi đăng: xoá mọi release NHÁP (draft) v* còn sót — draft là sản phẩm phụ
+            # của pipeline (bản hỏng / lần chạy dở), giữ lại là mìn: lỡ tay Publish nhầm draft cũ là
+            # người dùng lãnh bộ cài hỏng (suýt xảy ra thật với v0.3.0). Chủ dự án chốt 2026-07-18:
+            # "đồng ý xoá luôn". CHỈ đụng draft (chưa ai thấy) — KHÔNG BAO GIỜ đụng release đã publish.
+            DELETED=0
+            for id in $(gh api "repos/$GITHUB_REPOSITORY/releases" --paginate \
+                          --jq '.[] | select(.draft == true) | select(.tag_name | startswith("v")) | .id' 2>/dev/null); do
+              if gh api -X DELETE "repos/$GITHUB_REPOSITORY/releases/$id" >/dev/null 2>&1; then
+                DELETED=$((DELETED+1))
+              fi
+            done
+            if [[ "$DELETED" -gt 0 ]]; then
+              echo "::notice::Đã dọn $DELETED release nháp v* cũ."
+            fi
+
+            # KHÔNG --draft — publish thẳng. Chủ dự án chốt 2026-07-18 ("để tự động luôn") sau hai
+            # lần draft nằm chờ tay bấm. Bản chưa ký vẫn mang --prerelease + cảnh báo trong notes,
+            # nên "tự động" không có nghĩa là im lặng về rủi ro.
             gh release create "$GITHUB_REF_NAME" \
               --title "MindfulKey $GITHUB_REF_NAME" \
               --notes-file release-out/release-notes.md \
-              --draft \
               $PRERELEASE_FLAG \
               release-out/MindfulKey-*.dmg \
               release-out/MindfulKey.dmg \
@@ -304,7 +321,7 @@ jobs:
             export GITHUB_TOKEN="$RELEASE_PAT"
             if ERR=$(publish 2>&1); then
               echo "Đã đăng bằng RELEASE_PAT — Release đứng tên chủ tài khoản."
-              echo "::notice::Release đang ở dạng NHÁP (draft) — chưa ai thấy. Vào tab Releases, kiểm asset rồi bấm 'Publish release'. Nút tải trên web (releases/latest/download/...) chỉ sống sau khi bấm."
+              echo "::notice::Release ĐÃ PUBLISH công khai (tự động, không còn bước bấm tay). Link tải ổn định releases/latest/download/... đã sống."
               exit 0
             fi
             echo "::warning::RELEASE_PAT có mặt nhưng đăng không được (hết hạn hoặc thiếu quyền Contents: Read and write) — lùi về token mặc định. Lỗi gh: ${ERR//$'\n'/ | }"
@@ -316,7 +333,7 @@ jobs:
           export GITHUB_TOKEN="$DEFAULT_TOKEN"
           if ERR=$(publish 2>&1); then
             echo "Đã đăng bằng token mặc định — Release đứng tên bot github-actions."
-            echo "::notice::Release đang ở dạng NHÁP (draft) — chưa ai thấy. Vào tab Releases, kiểm asset rồi bấm 'Publish release'. Nút tải trên web (releases/latest/download/...) chỉ sống sau khi bấm."
+            echo "::notice::Release ĐÃ PUBLISH công khai (tự động, không còn bước bấm tay). Link tải ổn định releases/latest/download/... đã sống."
             exit 0
           fi
           echo "::error::Đăng thất bại với CẢ HAI token. Lỗi gh: ${ERR//$'\n'/ | }"
