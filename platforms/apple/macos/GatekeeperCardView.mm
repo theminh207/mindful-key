@@ -31,6 +31,14 @@
 // hình dâng/lắng, đủ hẹp để gọi là "ngay bây giờ".
 static const CGFloat kWindowSeconds = 3 * 3600.0;
 
+// [MINDFUL] 2026-07-19 — ngưỡng "quãng không gõ" RIÊNG cho sông live (20 phút), TÁCH khỏi nhịp
+// chuông. Trước đây ăn theo nhịp chuông (60 × 1.5 = 90 phút) — hợp cho sông THƯA cũ (1 chấm/giờ,
+// gap phải lớn không thì mọi chấm bị cô lập), nhưng với sông DÀY mới (A3, ~vài phút/chấm) thì 90
+// phút gần như không bao giờ đứt → nghỉ trưa 45 phút vẫn vẽ liền một mạch, sai sự thật. 20 phút:
+// nghỉ tay thật (họp/ăn) thì hở quãng, còn dừng nghĩ vài phút giữa lúc gõ thì không. Thẻ "Hôm nay"
+// (cả ngày, dữ liệu thưa) CỐ Ý vẫn giữ ngưỡng theo nhịp chuông — 2 tầm nhìn khác mật độ, khác ngưỡng.
+static const CGFloat kLiveGapSeconds = 20 * 60.0;
+
 static const CGFloat kPad         = 14.0;  // padding trong thẻ (mockup .card: 13px 14px)
 static const CGFloat kWaveGap     = 6.0;   // sông → tít
 // [MINDFUL] 2026-07-16 — 20pt (1 dòng) đủ cho tít CŨ ("Mặt hồ đang phẳng lặng", 22 ký tự). Tít mới
@@ -134,15 +142,12 @@ static const CGFloat kSubRowH     = 34.0;  // hàng phụ đề/link — chừa 
         // là điểm thô câu cuối (từng cắm điểm cũ 2 tiếng trước vào chỗ hiện tại). -1 = im/chưa gõ
         // -> setRecentSamples tự không vẽ đầu sóng.
         double liveHead = MoodWatchMac_LiveAmplitude();
-        // Ngưỡng "quãng không gõ" = 1.5 nhịp chuông, GIỐNG HỆT thẻ "Hôm nay" (PanelViewController)
-        // — 2 thẻ đọc cùng một ngày, lệch ngưỡng là chỗ này nối nước còn chỗ kia ngắt.
-        extern int vBellInterval;
-        double gapSecs = (vBellInterval > 0 ? vBellInterval : 60) * 60.0 * 1.5;
         // Sông đọc vệt DÀY trong RAM (A3) — hiện chấm trong vài phút đầu gõ thay vì chờ cả nhịp
-        // chuông; nhật ký mã hoá trên đĩa vẫn nhịp thưa như cũ.
+        // chuông; nhật ký mã hoá trên đĩa vẫn nhịp thưa như cũ. Ngưỡng đứt riêng cho sông dày (20
+        // phút, xem kLiveGapSeconds) — nghỉ tay là thấy hở quãng.
         [_river setRecentSamples:MoodWatchMac_FetchLiveTrace(kWindowSeconds)
                    windowSeconds:kWindowSeconds
-                      gapSeconds:gapSecs
+                      gapSeconds:kLiveGapSeconds
                         liveHead:liveHead];
 
         // [MINDFUL] 2026-07-16 (chủ dự án chốt) — tít giờ ĐỌC HÌNH DẠNG CẢ NGÀY ("Sáng và chiều có

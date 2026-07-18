@@ -877,10 +877,12 @@ void MoodStoreMac_SeedDenseDayForTesting(void) {
     NSTimeInterval spanSecs = (12 + arc4random_uniform(7)) * 3600.0; // 12..18 tiếng
     NSTimeInterval dayStart = nowTs - spanSecs;
 
-    // 1 phiên gõ dày [start, end]: mẫu cách đều stepSecs, biên độ đi bộ dần (random walk) mở phiên
-    // êm — KHÔNG nhảy cóc, để sông có hình dâng/lắng đọc được. Bỏ mẫu rơi vào tương lai (t > now).
-    void (^writeDenseSession)(NSTimeInterval, NSTimeInterval) = ^(NSTimeInterval start, NSTimeInterval end) {
-        double risk = (arc4random_uniform(35) + 10) / 100.0;   // 0.10..0.44
+    // 1 phiên gõ dày [start, end] quanh 1 "tông" (base): risk đi bộ ±0.08 trong dải quanh base, KHÔNG
+    // nhảy cóc — để hình dâng/lắng trong phiên đọc được. Base khác nhau giữa các phiên (dưới) tạo ra
+    // chỗ sông cao chỗ thấp = thấy "bước sóng". Bỏ mẫu rơi vào tương lai (t > now).
+    void (^writeDenseSession)(NSTimeInterval, NSTimeInterval, double) = ^(NSTimeInterval start, NSTimeInterval end, double base) {
+        double lo = MAX(0.05, base - 0.18), hi = MIN(0.85, base + 0.18);
+        double risk = base;
         for (NSTimeInterval t = start; t <= end && t <= nowTs; t += stepSecs) {
             sqlite3_stmt *stmt = NULL;
             if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK) {
@@ -891,25 +893,30 @@ void MoodStoreMac_SeedDenseDayForTesting(void) {
                     NSLog(@"[MoodStoreMac][SEED-DAY] ghi lỗi: %s", sqlite3_errmsg(db));
                 sqlite3_finalize(stmt);
             }
-            risk += ((double)arc4random_uniform(21) - 10.0) / 100.0;   // trôi ±0.10
-            if (risk < 0.05) risk = 0.05;
-            if (risk > 0.85) risk = 0.85;
+            risk += ((double)arc4random_uniform(17) - 8.0) / 100.0;   // trôi ±0.08 quanh tông phiên
+            if (risk < lo) risk = lo;
+            if (risk > hi) risk = hi;
         }
     };
 
-    // Phiên cuối NEO ở now (1..2.5 tiếng) — bảo đảm cửa sổ live 3h có nước sát hiện tại.
-    NSTimeInterval finalLen = 3600.0 + arc4random_uniform(5400);
-    writeDenseSession(nowTs - finalLen, nowTs);
+    // Tông ngẫu nhiên mỗi phiên: 0.08..0.77 — có phiên êm (thấp sát trục), có phiên nổi sóng (cao).
+    double (^randomBase)(void) = ^{ return (double)(arc4random_uniform(70) + 8) / 100.0; };
 
-    // Các phiên trước: lùi từ trước phiên cuối về dayStart, mỗi phiên 1-3 tiếng, nghỉ 0.5-2 tiếng.
+    // Phiên CUỐI neo kết thúc ở now (30-80 phút) — bảo đảm cửa sổ live 3h có nước sát hiện tại.
+    NSTimeInterval finalLen = 1800.0 + arc4random_uniform(3000);
+    writeDenseSession(nowTs - finalLen, nowTs, randomBase());
+
+    // Các phiên trước: lùi về dayStart. Phiên NGẮN (30-80 phút) + NGHỈ rõ (25-70 phút) — mọi quãng
+    // nghỉ đều vượt ngưỡng đứt 20 phút (kLiveGapSeconds) nên chắc chắn hiện thành khúc đứt, thay vì
+    // liền một mạch như bản seeder cũ (nghỉ 30-90 phút mà ngưỡng cũ 90 phút nên gần như không đứt).
     NSTimeInterval cursor = nowTs - finalLen;
     while (cursor > dayStart) {
-        NSTimeInterval brk = 1800.0 + arc4random_uniform(5400);   // nghỉ 30-120 phút
+        NSTimeInterval brk = 1500.0 + arc4random_uniform(2700);   // nghỉ 25-70 phút
         cursor -= brk;
         if (cursor <= dayStart) break;
-        NSTimeInterval len = 3600.0 + arc4random_uniform(7200);   // phiên 1-3 tiếng
+        NSTimeInterval len = 1800.0 + arc4random_uniform(3000);   // phiên 30-80 phút
         NSTimeInterval start = MAX(dayStart, cursor - len);
-        writeDenseSession(start, cursor);
+        writeDenseSession(start, cursor, randomBase());
         cursor = start;
     }
 
