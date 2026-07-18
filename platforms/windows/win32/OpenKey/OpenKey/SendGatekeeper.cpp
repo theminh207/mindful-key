@@ -7,6 +7,8 @@
 #include "MoodWatch.h"
 #include "MoodStore.h"
 #include "SecureField.h"   // [MINDFUL] P1 — cổng ô mật khẩu, xem SecureField.h
+#include "BrandControls.h" // [MINDFUL] vẽ lại UI theo nhận diện — xem docs/WINDOWS-UI-REDESIGN.md
+#include "BrandPalette.h"
 #include "../../../../../core/mood/BreathingPause.h"
 #include <vector>
 #include <mutex>
@@ -109,11 +111,37 @@ static INT_PTR CALLBACK PauseDialogProc(HWND hDlg, UINT message, WPARAM wParam, 
     switch (message) {
     case WM_INITDIALOG:
         SetDlgItemTextW(hDlg, IDC_STATIC_PAUSE_MSG, g_pauseMessage.c_str());
+        // [MINDFUL] Câu nhắc dùng font brand (Segoe UI cỡ body) thay Segoe 9 mặc định.
+        SendDlgItemMessageW(hDlg, IDC_STATIC_PAUSE_MSG, WM_SETFONT,
+                            (WPARAM)BrandControls_Font(BrandFontBody), TRUE);
         // lParam = số mili-giây tự đóng (GỢI Ý từ BreathingPause, KHÔNG phải thời gian khoá:
         // người dùng bấm được nút bất cứ lúc nào).
         if (lParam > 0)
             SetTimer(hDlg, 1, (UINT)lParam, NULL);
         return TRUE;
+    // [MINDFUL] Khoảnh khắc nhịp thở = bề mặt "khoảnh khắc người": nền orangeLight thay xám hệ
+    // thống (đối ứng NSPanel orangeLight ở SendGatekeeperMac.mm). Cam ở đây KHÔNG mã hoá cảm xúc —
+    // là ngoại lệ có chủ của hiến chương §2.2 cho khoảnh khắc con người. Xem docs/WINDOWS-UI-REDESIGN.md.
+    case WM_ERASEBKGND: {
+        RECT rc;
+        GetClientRect(hDlg, &rc);
+        BrandControls_FillRect((HDC)wParam, rc, kBrandPaletteOrangeLight);
+        return TRUE;
+    }
+    case WM_CTLCOLORSTATIC: {
+        HDC dc = (HDC)wParam;
+        SetBkMode(dc, TRANSPARENT);                       // để nền orangeLight lộ qua chữ
+        SetTextColor(dc, MK_COLORREF(kBrandPaletteCharcoal));
+        return (INT_PTR)GetStockObject(NULL_BRUSH);
+    }
+    case WM_DRAWITEM: {
+        const DRAWITEMSTRUCT* dis = (const DRAWITEMSTRUCT*)lParam;
+        if (dis->CtlID == IDC_BUTTON_PAUSE_WAIT)
+            BrandControls_DrawButton(dis, BrandButtonAccent);   // "Đợi chút" = cam, hành động dịu
+        else if (dis->CtlID == IDC_BUTTON_PAUSE_SEND)
+            BrandControls_DrawButton(dis, BrandButtonNeutral);  // "Vẫn gửi" = trung tính, không nổi bật
+        return TRUE;
+    }
     case WM_TIMER:
         KillTimer(hDlg, 1);
         // Hết giờ mà không chọn = Dismissed. KHÔNG suy thành Send hay Wait (BreathingPause.h).
@@ -124,7 +152,10 @@ static INT_PTR CALLBACK PauseDialogProc(HWND hDlg, UINT message, WPARAM wParam, 
             EndDialog(hDlg, (INT_PTR)BreathingPauseChoice::SendAnyway);
             return TRUE;
         }
-        if (LOWORD(wParam) == IDC_BUTTON_PAUSE_WAIT || LOWORD(wParam) == IDCANCEL) {
+        // IDOK = Enter khi không còn nút mặc định (nút nay owner-draw, bỏ DEFPUSHBUTTON). Hướng về
+        // Wait: lựa chọn DỊU là mặc định an toàn — Enter vô tình không đẩy tin đi.
+        if (LOWORD(wParam) == IDC_BUTTON_PAUSE_WAIT || LOWORD(wParam) == IDCANCEL
+            || LOWORD(wParam) == IDOK) {
             EndDialog(hDlg, (INT_PTR)BreathingPauseChoice::Wait);
             return TRUE;
         }
