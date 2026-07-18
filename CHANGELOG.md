@@ -33,6 +33,22 @@ Phiên bản lấy từ `version.env`.
 - **macOS: tắt "Bật cùng hệ thống" không còn bị app lật lại BẬT** — cửa sổ Cài đặt tắt login item
   nhưng không ghi vào sổ cũ (`RunOnStartup`), lúc mở app lần sau sổ cũ vẫn ghi "bật" nên app tự bật
   lại ngược ý người dùng (lỗi có sẵn từ trước, lộ ra khi review đợt này). Nay hai sổ luôn khớp.
+- **macOS: hết crash khi mở lúc bộ gõ khác đang chạy** (báo cáo 0.2.1, lỗi P0) — trước đây app tự
+  nhường chỗ bằng cú tắt gọi quá sớm giữa lúc khởi động, chết không một lời. Nay thấy bộ gõ xung đột
+  là tự tắt bên kia rồi chạy tiếp, không crash, không modal.
+- **Windows: cài xong mở được thật** — bản 0.3.0 hỏi "cho ghi nhật ký cảm xúc?" NGAY GIỮA lúc khởi
+  động, trước khi icon khay tồn tại: hộp thoại nằm sau các cửa sổ khác, app treo vô hình và giữ luôn
+  file cài (không xoá được). Câu hỏi nay chỉ hiện khi bạn CHỦ ĐỘNG bật lớp cảm xúc.
+- **Windows: mở được trên máy đang chạy OpenKey** — fork thừa hưởng nguyên tên lớp cửa sổ của
+  OpenKey gốc nên MindfulKey nhìn thấy OpenKey lại tưởng "mình đang chạy rồi" và lặng lẽ thoát. Nay
+  mang tên riêng; nếu OpenKey chạy cùng lúc sẽ có lời nhắc "hai bộ gõ đang giẫm phím nhau" (không tự
+  tắt giùm).
+- **Windows: lớp cảm xúc không đọc ô mật khẩu** — cờ che fail-closed qua UI Automation
+  (`UIA_IsPasswordPropertyId` + `ES_PASSWORD`), hạ ngay khi đổi focus. Lớp cảm xúc vẫn TẮT mặc định.
+- **Windows: không còn "chết câm"** — từ chối quyền quản trị (UAC) hoặc không tạo được icon khay giờ
+  đều để lại một lời giải thích trước khi thoát, thay vì app biến mất không dấu vết.
+- **iOS: bàn phím không còn rò rỉ bộ nhớ mỗi lần mở lại** — đồng hồ poll con sóng và bàn phím giữ
+  chặt lẫn nhau nên không bao giờ được dọn; nay nắm hờ (weak) và tự dừng khi bàn phím ẩn.
 
 ## [0.3.0] - 2026-07-17
 
