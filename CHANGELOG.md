@@ -5,6 +5,15 @@ Phiên bản lấy từ `version.env`.
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-07-18
+
+### Added
+
+- **Windows: nhận ra cả UniKey, EVKey, GoTiengViet đang chạy cùng lúc** (0.4.0 mới chỉ nhận ra
+  OpenKey gốc) — hai bộ gõ cùng bắt phím sẽ giẫm lên nhau, chữ sai dấu mà không ai hiểu vì sao.
+  Giờ có lời nhắc gọi đúng tên bộ gõ kia, để bạn tự chọn tắt bên nào; MindfulKey không tự tắt
+  phần mềm của người khác. Tên tiến trình xác minh từ nguồn công khai, không đoán.
+
 ## [0.4.0] - 2026-07-18
 
 Đợt "trả nợ báo cáo lỗi 0.2.1" — xử nốt các mục P2/P3 còn treo sau khi 0.3.x đã vá P0/P1.

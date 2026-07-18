@@ -18,6 +18,8 @@ redistribute your new version, it MUST be open source.
 #include "MoodStore.h"
 #include "ReflectionScreen.h"
 #include "Bell.h"
+#include <tlhelp32.h>   // liệt kê tiến trình — nhận diện bộ gõ Việt khác đang chạy (WM_MK_RIVAL_WARN)
+#include <string>
 
 #define WM_TRAYMESSAGE (WM_USER + 1)
 // [MINDFUL] GĐ6 — MoodWatch (LUỒNG WORKER) báo "tâm đang động". Phải đi qua PostMessage chứ không
@@ -131,15 +133,46 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	case WM_MK_RIVAL_WARN: {
 		// Chạy trên luồng cửa sổ, đã trong vòng lặp thông điệp -> an toàn để hiện modal có chủ.
 		// Giọng quan sát, không phán xét (HIẾN CHƯƠNG §2.2): mô tả hiện tượng "giẫm phím", không
-		// đổ lỗi cho bên nào. KHÔNG tự tắt OpenKey — để người dùng chọn, khác macOS (Windows tắt
+		// đổ lỗi cho bên nào. KHÔNG tự tắt bên kia — để người dùng chọn, khác macOS (Windows tắt
 		// tiến trình bên khác là hành vi nặng); chỉ nói cho biết. §6.3: không để xung đột diễn ra câm.
-		HWND rival = FindWindow(RIVAL_OPENKEY_CLASS, NULL);
-		if (rival) {
+		//
+		// Hai lớp nhận diện: (a) OpenKey gốc qua lớp cửa sổ thừa kế (RIVAL_OPENKEY_CLASS — chắc
+		// nhất, không phụ thuộc tên file); (b) các bộ gõ Việt khác qua TÊN TIẾN TRÌNH. Danh sách
+		// tên ĐÃ XÁC MINH từ nguồn công khai 2026-07-18, KHÔNG đoán: UniKeyNT.exe/UniKey.exe
+		// (file.net + processlibrary), EVKey.exe/EVKey32.exe/EVKey64.exe (github.com/lamquangminh/
+		// EVKey — cùng tác giả bản macOS đã xác minh), GoTiengViet.exe (trankynam.com).
+		std::wstring rivalName;
+		if (FindWindow(RIVAL_OPENKEY_CLASS, NULL)) {
+			rivalName = L"OpenKey";
+		} else {
+			static const wchar_t* kRivalImeExes[] = {
+				L"UniKeyNT.exe", L"UniKey.exe",
+				L"EVKey.exe", L"EVKey32.exe", L"EVKey64.exe",
+				L"GoTiengViet.exe",
+			};
+			HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+			if (snap != INVALID_HANDLE_VALUE) {
+				PROCESSENTRY32W pe;
+				pe.dwSize = sizeof(pe);
+				if (Process32FirstW(snap, &pe)) {
+					do {
+						for (size_t i = 0; i < ARRAYSIZE(kRivalImeExes); i++) {
+							if (_wcsicmp(pe.szExeFile, kRivalImeExes[i]) == 0) {
+								rivalName = pe.szExeFile;
+								break;
+							}
+						}
+					} while (rivalName.empty() && Process32NextW(snap, &pe));
+				}
+				CloseHandle(snap);
+			}
+		}
+		if (!rivalName.empty()) {
+			std::wstring msg = rivalName +
+				L" đang chạy cùng lúc với MindfulKey. Hai bộ gõ cùng bắt phím sẽ giẫm lên nhau, "
+				L"chữ gõ ra có thể sai dấu.\n\nHãy tắt một trong hai để gõ ổn định.";
 			SetForegroundWindow(hWnd);
-			MessageBoxW(hWnd,
-				L"OpenKey đang chạy cùng lúc với MindfulKey. Hai bộ gõ cùng bắt phím sẽ giẫm lên "
-				L"nhau, chữ gõ ra có thể sai dấu.\n\nHãy tắt một trong hai để gõ ổn định.",
-				L"MindfulKey", MB_OK | MB_ICONWARNING);
+			MessageBoxW(hWnd, msg.c_str(), L"MindfulKey", MB_OK | MB_ICONWARNING);
 		}
 		return 0;
 	}
