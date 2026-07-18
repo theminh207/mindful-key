@@ -49,7 +49,38 @@ Xếp theo: (a) chạm cảm xúc nhiều nhất + (b) gọn/bounded để chứ
 | 6 | **Giới thiệu** (`IDD_ABOUTBOX`) | Hộp xám | Nền brand + credit GPL giữ nguyên | ⏳ |
 | 7 | Các `MessageBox` phụ (xác nhận xoá, cảnh báo…) | Trần | Cân nhắc giữ native (quy ước Windows) hay vẽ lại — chốt sau | ⏳ |
 
+## Reference macOS đã chốt (từ 2 artifact chủ dự án 2026-07-19)
+
+> Nguồn: artifact "Mindful Key — Hướng dẫn sử dụng" (vẽ đủ mọi màn) + "Áo mới cho Mindful-key —
+> Ý tưởng + Plan" (6 bước). Đây là SỐ ĐO ĐÍCH — vẽ theo đây, không đoán. Bảng màu Windows
+> (`BrandPalette.h`) đã đối chiếu: **khớp từng hex** (teal 1D7C91 · tealLight E8F2F4 · orange FF7A1A
+> · orangeLight FFF2E8 · card FFFFFF · charcoal 2A2A2A · divider E5E7E8 · stone 8A9BA0). `teal-ink
+> #125766`/`teal-deep #0F5566` CHỈ có trong mockup — code macOS thật thay bằng teal, nên Windows
+> dùng teal, KHÔNG bịa teal-deep.
+
+**Linh kiện chung (khoá số):**
+- **Thẻ (card):** radius **11px**, viền 1px `divider`, padding ~12×14, cách nhau ~12–16px.
+- **Eyebrow (nhãn nhóm):** ~10px, IN HOA, giãn chữ ~1.2px, màu `stone`.
+- **Tiêu đề pane (mkh):** ~18px semibold, `charcoal`.
+- **PillSwitch:** 36×21, bo tròn hết, tắt=`divider`, bật=`teal`, núm 17px trắng có bóng nhẹ.
+- **Segmented:** track `#EFEFEC` radius ~8, ô đang chọn = `teal` nền + chữ trắng.
+- **Header thẻ:** `~` teal + tên charcoal semibold + (popover: pill "VN" teal + `⋯`). ĐÃ xác nhận
+  tiêu đề màu **charcoal #2A2A2A** (không phải nâu) — khớp cái tôi đã làm ở màn Nhịp thở.
+- **Dòng sông:** trục nét đứt màu `stone`-mờ dash 2/4, sóng teal nét 2.2–2.6 bo tròn đầu, chấm teal r~3. KHÔNG mẫu = KHÔNG vẽ.
+- **Chân trang trust:** "Xử lý trên máy · không gửi nội dung gõ đi đâu" ~11.5px `stone`, canh giữa.
+
+**Bề mặt CHÍNH — và lỗ hổng lớn nhất:** macOS lấy **popover trên thanh menu** làm MẶT TIỀN (rộng
+**338px**, radius 16, 3 tab pill *Hôm nay · Chuông · Bộ gõ* — tab đang chọn = pill TRẮNG nổi có bóng,
+chữ charcoal semibold). **Windows KHÔNG có popover này** — chỉ có menu chuột phải + hộp Cài đặt.
+Muốn khớp mặt tiền phải dựng một flyout kiểu popover từ khay. Đây là bề mặt MỚI lớn nhất, và là một
+QUYẾT ĐỊNH (dựng popover, hay dồn nội dung popover vào cửa sổ chính) — chờ chủ dự án chốt.
+
+**Cửa sổ Cài đặt 6 mục** (đối ứng cửa sổ six-nav macOS): nav trái ~150px nền softWhite, mỗi mục =
+chấm 6px + nhãn 12.5px, đang chọn = nền `tealLight` + chấm/chữ teal; pane phải = tiêu đề mkh + các
+nhóm eyebrow+thẻ. Sáu mục: Hôm nay · Chuông · Bộ gõ · Riêng tư · Hệ thống · Giới thiệu.
+
 ## Lịch sử
 | Ngày | Việc |
 |------|------|
 | 2026-07-18 | Lập spec + Phase 1 (nền móng `BrandControls` + màn Nhịp thở làm mẫu chứng minh). Chờ ảnh Windows thật. |
+| 2026-07-19 | Nạp 2 artifact reference macOS của chủ dự án → khoá số đo đích (màu khớp 100%, linh kiện, popover 338px 3-tab, cửa sổ 6 mục). Lộ lỗ hổng lớn: Windows thiếu hẳn popover mặt-tiền. |
