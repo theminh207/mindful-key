@@ -234,9 +234,10 @@
     <p class="sub">Một bộ gõ Tiếng Việt cho macOS &amp; Windows — và một khoảng lặng chèn vào đúng lúc, trước khi bạn gửi đi điều sẽ hối tiếc. Di chuột lên mặt hồ.</p>
   </div>
   <div class="cta-row">
-    <a class="btn btn-primary" href="https://github.com/theminh207/mindful-key/releases/latest/download/MindfulKey.dmg">Tải cho macOS</a>
-    <a class="btn btn-ghost" href="https://github.com/theminh207/mindful-key/releases">Tải cho Windows <span class="soon">sắp có</span></a>
+    <a class="btn btn-primary" data-dl="mac" href="https://github.com/theminh207/mindful-key/releases/latest/download/MindfulKey.dmg">Tải cho macOS</a>
+    <a class="btn btn-ghost" data-dl="win" href="https://github.com/theminh207/mindful-key/releases/latest/download/MindfulKey-setup.exe">Tải cho Windows <span class="soon">beta</span></a>
   </div>
+  <p class="micro">Lần đầu mở cần vài bước → <a href="https://github.com/theminh207/mindful-key/blob/main/docs/INSTALL.md" style="color:var(--teal);text-decoration:none">hướng dẫn</a><span data-latest-version style="display:none"></span></p>
   <p class="micro">Miễn phí · mã nguồn mở · nội dung gõ không rời máy bạn · <a href="#gaccong" style="color:var(--teal);text-decoration:none">xem cách gác cổng ↓</a></p>
   <div class="scroll-hint">cuộn xuống</div>
 </header>
@@ -359,9 +360,10 @@
   <div class="eyebrow center" style="margin-bottom:6px">Sẵn sàng khi bạn cần</div>
   <h2>Gõ tiếng Việt, và <span class="serif">giữ lại</span> khoảng dừng.</h2>
   <div class="cta-row" style="justify-content:center;margin-top:30px">
-    <a class="btn btn-primary" href="https://github.com/theminh207/mindful-key/releases/latest/download/MindfulKey.dmg">Tải cho macOS</a>
-    <a class="btn btn-ghost" href="https://github.com/theminh207/mindful-key/releases">Tải cho Windows <span class="soon">sắp có</span></a>
+    <a class="btn btn-primary" data-dl="mac" href="https://github.com/theminh207/mindful-key/releases/latest/download/MindfulKey.dmg">Tải cho macOS</a>
+    <a class="btn btn-ghost" data-dl="win" href="https://github.com/theminh207/mindful-key/releases/latest/download/MindfulKey-setup.exe">Tải cho Windows <span class="soon">beta</span></a>
   </div>
+  <p style="margin-top:14px;font-size:13.5px;color:var(--faint)">Lần đầu mở cần vài bước → <a href="https://github.com/theminh207/mindful-key/blob/main/docs/INSTALL.md" style="color:var(--teal);text-decoration:none">hướng dẫn</a><span data-latest-version style="display:none"></span></p>
   <!-- [MINDFUL] Kênh cài qua Terminal: bản beta chưa notarize, tải bằng trình duyệt sẽ bị macOS
        dán cờ kiểm dịch rồi báo "damaged". curl không dán cờ nên đường này mở là chạy.
        Chi tiết + vì sao: docs/INSTALL-MACOS-BETA.md -->
@@ -441,5 +443,35 @@
 </script>
 
 <script src="/widget.js"></script>
+<script>
+// [MINDFUL] Nút tải + số phiên bản lấy ĐỘNG từ GitHub API lúc trang tải — pipeline tự publish
+// liên tục nên số cứng lạc hậu ngay sau bản kế. Vì mọi release hiện gắn cờ pre-release (bản chưa
+// ký — trung thực), đường /releases/latest/download/ bị GitHub loại pre-release nên 404; href
+// tĩnh giữ nguyên làm fallback (tự sống khi có bản chính thức đầu tiên), còn ở đây rewrite sang
+// link asset THẬT của bản mới nhất. API lỗi/rate-limit -> giữ nguyên tĩnh + ẩn dòng phiên bản, êm.
+(function () {
+  fetch('https://api.github.com/repos/theminh207/mindful-key/releases?per_page=1')
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+    .then(function (list) {
+      var rel = list && list[0];
+      if (!rel || !rel.tag_name) return;
+      var assets = rel.assets || [];
+      function urlOf(name) {
+        for (var i = 0; i < assets.length; i++)
+          if (assets[i].name === name) return assets[i].browser_download_url;
+        return null;
+      }
+      var mac = urlOf('MindfulKey.dmg');
+      var win = urlOf('MindfulKey-setup.exe');
+      if (mac) document.querySelectorAll('a[data-dl="mac"]').forEach(function (a) { a.href = mac; });
+      if (win) document.querySelectorAll('a[data-dl="win"]').forEach(function (a) { a.href = win; });
+      document.querySelectorAll('[data-latest-version]').forEach(function (el) {
+        el.textContent = ' · phiên bản mới nhất ' + rel.tag_name;
+        el.style.display = '';
+      });
+    })
+    .catch(function () { /* im lặng — không hiện lỗi cho người xem trang */ });
+})();
+</script>
 </body>
 </html>
