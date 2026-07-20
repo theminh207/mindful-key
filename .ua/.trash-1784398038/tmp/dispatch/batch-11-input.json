@@ -1,0 +1,72 @@
+{
+  "batchIndex": 11,
+  "totalBatches": 19,
+  "files": [
+    {
+      "path": "tests/ios/MANUAL-TEST-SCRIPT.md",
+      "language": "markdown",
+      "sizeLines": 120,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "tests/ios/README.md",
+      "language": "markdown",
+      "sizeLines": 33,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "tests/ios/build.sh",
+      "language": "shell",
+      "sizeLines": 22,
+      "fileCategory": "script"
+    },
+    {
+      "path": "tests/ios/build_smoke.sh",
+      "language": "shell",
+      "sizeLines": 18,
+      "fileCategory": "script"
+    },
+    {
+      "path": "tests/ios/emotion_wave_build.sh",
+      "language": "shell",
+      "sizeLines": 17,
+      "fileCategory": "script"
+    },
+    {
+      "path": "tests/ios/mood_bridge_build.sh",
+      "language": "shell",
+      "sizeLines": 33,
+      "fileCategory": "script"
+    },
+    {
+      "path": "tests/ios/mood_journal_store_build.sh",
+      "language": "shell",
+      "sizeLines": 18,
+      "fileCategory": "script"
+    },
+    {
+      "path": "tests/ios/nudge_coordinator_ios_build.sh",
+      "language": "shell",
+      "sizeLines": 17,
+      "fileCategory": "script"
+    },
+    {
+      "path": "tests/ios/settings_bridge_build.sh",
+      "language": "shell",
+      "sizeLines": 15,
+      "fileCategory": "script"
+    }
+  ],
+  "batchImportData": {
+    "tests/ios/MANUAL-TEST-SCRIPT.md": [],
+    "tests/ios/README.md": [],
+    "tests/ios/build.sh": [],
+    "tests/ios/build_smoke.sh": [],
+    "tests/ios/emotion_wave_build.sh": [],
+    "tests/ios/mood_bridge_build.sh": [],
+    "tests/ios/mood_journal_store_build.sh": [],
+    "tests/ios/nudge_coordinator_ios_build.sh": [],
+    "tests/ios/settings_bridge_build.sh": []
+  },
+  "neighborMap": {}
+}

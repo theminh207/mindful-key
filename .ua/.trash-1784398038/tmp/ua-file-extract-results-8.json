@@ -1,0 +1,493 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 6,
+  "filesSkipped": [
+    "appcast.xml"
+  ],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 6,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 0,
+      "failed": 0,
+      "skipped": 6
+    }
+  },
+  "results": [
+    {
+      "path": "CHANGELOG.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 172,
+      "nonEmptyLines": 132,
+      "sections": [
+        {
+          "heading": "Changelog",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "[Unreleased]",
+          "level": 2,
+          "line": 6
+        },
+        {
+          "heading": "[0.4.2] - 2026-07-18",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "Fixed",
+          "level": 3,
+          "line": 13
+        },
+        {
+          "heading": "Known limitation",
+          "level": 3,
+          "line": 27
+        },
+        {
+          "heading": "[0.4.1] - 2026-07-18",
+          "level": 2,
+          "line": 33
+        },
+        {
+          "heading": "Added",
+          "level": 3,
+          "line": 35
+        },
+        {
+          "heading": "[0.4.0] - 2026-07-18",
+          "level": 2,
+          "line": 42
+        },
+        {
+          "heading": "Added",
+          "level": 3,
+          "line": 46
+        },
+        {
+          "heading": "Changed",
+          "level": 3,
+          "line": 54
+        },
+        {
+          "heading": "Fixed",
+          "level": 3,
+          "line": 62
+        },
+        {
+          "heading": "[0.3.0] - 2026-07-17",
+          "level": 2,
+          "line": 87
+        },
+        {
+          "heading": "Added",
+          "level": 3,
+          "line": 91
+        },
+        {
+          "heading": "Changed",
+          "level": 3,
+          "line": 105
+        },
+        {
+          "heading": "Fixed",
+          "level": 3,
+          "line": 114
+        },
+        {
+          "heading": "Security",
+          "level": 3,
+          "line": 121
+        },
+        {
+          "heading": "[0.2.1] - 2026-07-16",
+          "level": 2,
+          "line": 127
+        },
+        {
+          "heading": "Fixed",
+          "level": 3,
+          "line": 131
+        },
+        {
+          "heading": "Changed",
+          "level": 3,
+          "line": 140
+        },
+        {
+          "heading": "Added",
+          "level": 3,
+          "line": 143
+        },
+        {
+          "heading": "[0.2.0] - 2026-07-15",
+          "level": 2,
+          "line": 147
+        },
+        {
+          "heading": "Added",
+          "level": 3,
+          "line": 149
+        },
+        {
+          "heading": "Changed",
+          "level": 3,
+          "line": 159
+        },
+        {
+          "heading": "Fixed",
+          "level": 3,
+          "line": 164
+        },
+        {
+          "heading": "Kept (không đổi)",
+          "level": 3,
+          "line": 167
+        },
+        {
+          "heading": "Known gaps",
+          "level": 3,
+          "line": 170
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 26
+      }
+    },
+    {
+      "path": "CLAUDE.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 130,
+      "nonEmptyLines": 99,
+      "sections": [
+        {
+          "heading": "CLAUDE.md — mindful-key",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "⛔ RULE #0 — ĐỌC TRƯỚC KHI TRẢ LỜI BẤT CỨ THỨ GÌ ⛔",
+          "level": 2,
+          "line": 9
+        },
+        {
+          "heading": "User Profile",
+          "level": 2,
+          "line": 29
+        },
+        {
+          "heading": "Global Rules",
+          "level": 2,
+          "line": 34
+        },
+        {
+          "heading": "Git",
+          "level": 3,
+          "line": 36
+        },
+        {
+          "heading": "Language & Communication",
+          "level": 3,
+          "line": 46
+        },
+        {
+          "heading": "Work Discipline — \"4 Kỹ\" Loop",
+          "level": 3,
+          "line": 54
+        },
+        {
+          "heading": "Think Before Coding — CẤM đoán",
+          "level": 3,
+          "line": 63
+        },
+        {
+          "heading": "Surgical Changes — Sửa như phẫu thuật",
+          "level": 3,
+          "line": 68
+        },
+        {
+          "heading": "Zero Technical Debt — Non-Negotiable",
+          "level": 3,
+          "line": 75
+        },
+        {
+          "heading": "Session Hygiene — chống drift, tiết kiệm token",
+          "level": 3,
+          "line": 93
+        },
+        {
+          "heading": "Domain Rules — nạp khi cần, đừng gánh cả tủ sách",
+          "level": 3,
+          "line": 99
+        },
+        {
+          "heading": "Harness (điều phối agent)",
+          "level": 2,
+          "line": 112
+        },
+        {
+          "heading": "Lịch sử thay đổi",
+          "level": 3,
+          "line": 125
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 14
+      }
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 27,
+      "nonEmptyLines": 23,
+      "sections": [
+        {
+          "heading": "Đóng góp cho mindful-key",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Quy ước",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "Build & test (macOS)",
+          "level": 2,
+          "line": 17
+        },
+        {
+          "heading": "Harness",
+          "level": 2,
+          "line": 26
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 4
+      }
+    },
+    {
+      "path": "Makefile",
+      "language": "makefile",
+      "fileCategory": "infra",
+      "totalLines": 139,
+      "nonEmptyLines": 117,
+      "steps": [
+        {
+          "name": "help",
+          "startLine": 20,
+          "endLine": 25
+        },
+        {
+          "name": "generate",
+          "startLine": 26,
+          "endLine": 28
+        },
+        {
+          "name": "test",
+          "startLine": 29,
+          "endLine": 30
+        },
+        {
+          "name": "test-core",
+          "startLine": 31,
+          "endLine": 38
+        },
+        {
+          "name": "test-macos",
+          "startLine": 39,
+          "endLine": 41
+        },
+        {
+          "name": "test-ios",
+          "startLine": 42,
+          "endLine": 56
+        },
+        {
+          "name": "build",
+          "startLine": 57,
+          "endLine": 59
+        },
+        {
+          "name": "install",
+          "startLine": 60,
+          "endLine": 70
+        },
+        {
+          "name": "run",
+          "startLine": 71,
+          "endLine": 73
+        },
+        {
+          "name": "doctor",
+          "startLine": 74,
+          "endLine": 84
+        },
+        {
+          "name": "run-ios",
+          "startLine": 85,
+          "endLine": 109
+        },
+        {
+          "name": "universal",
+          "startLine": 110,
+          "endLine": 112
+        },
+        {
+          "name": "brand",
+          "startLine": 113,
+          "endLine": 115
+        },
+        {
+          "name": "brand-platform",
+          "startLine": 116,
+          "endLine": 118
+        },
+        {
+          "name": "brand-palette",
+          "startLine": 119,
+          "endLine": 121
+        },
+        {
+          "name": "brand-palette-check",
+          "startLine": 122,
+          "endLine": 124
+        },
+        {
+          "name": "public-brand",
+          "startLine": 125,
+          "endLine": 127
+        },
+        {
+          "name": "brand-lint",
+          "startLine": 128,
+          "endLine": 130
+        },
+        {
+          "name": "hooks",
+          "startLine": 131,
+          "endLine": 134
+        },
+        {
+          "name": "version",
+          "startLine": 135,
+          "endLine": 137
+        },
+        {
+          "name": "clean",
+          "startLine": 138,
+          "endLine": 140
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "stepCount": 21
+      }
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 150,
+      "nonEmptyLines": 113,
+      "sections": [
+        {
+          "heading": "Nó làm gì",
+          "level": 2,
+          "line": 40
+        },
+        {
+          "heading": "Cách nó cảm và ghi nhận",
+          "level": 2,
+          "line": 50
+        },
+        {
+          "heading": "Các màn hình",
+          "level": 2,
+          "line": 65
+        },
+        {
+          "heading": "Riêng tư mặc định",
+          "level": 2,
+          "line": 74
+        },
+        {
+          "heading": "Cài đặt",
+          "level": 2,
+          "line": 79
+        },
+        {
+          "heading": "Phát triển",
+          "level": 2,
+          "line": 88
+        },
+        {
+          "heading": "Ghi nhận nguồn & giấy phép",
+          "level": 2,
+          "line": 127
+        },
+        {
+          "heading": "Hiến chương",
+          "level": 2,
+          "line": 138
+        },
+        {
+          "heading": "Ủng hộ",
+          "level": 2,
+          "line": 144
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 9
+      }
+    },
+    {
+      "path": "version.env",
+      "language": "config",
+      "fileCategory": "config",
+      "totalLines": 3,
+      "nonEmptyLines": 3,
+      "definitions": [
+        {
+          "name": "VERSION",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 3,
+          "endLine": 3
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 1
+      }
+    }
+  ]
+}

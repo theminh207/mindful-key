@@ -1,0 +1,326 @@
+{
+  "nodes": [
+    {
+      "id": "file:tests/ios/mood_journal_store_test.mm",
+      "type": "file",
+      "name": "mood_journal_store_test.mm",
+      "filePath": "tests/ios/mood_journal_store_test.mm",
+      "summary": "Test tự động cho MoodJournalStore (kho nhật ký cảm xúc mã hóa on-device + consent, story 3.1) — chạy trên host macOS, phủ round-trip, peakHour, cổng consent, mã hóa at-rest và xóa dữ liệu.",
+      "tags": ["test", "ios", "encryption", "consent", "mood-journal"],
+      "complexity": "moderate",
+      "languageNotes": "Dùng App Group suite và Keychain THẬT (không giả lập) nhưng gọi ResetForTesting() trước mỗi ca để không rò state."
+    },
+    {
+      "id": "file:tests/ios/nudge_coordinator_ios_test.mm",
+      "type": "file",
+      "name": "nudge_coordinator_ios_test.mm",
+      "filePath": "tests/ios/nudge_coordinator_ios_test.mm",
+      "summary": "Test tự động cho NudgeCoordinatorIOS (chuông nhắc nghỉ, story 2.6) — tách phần đếm/gate thuần (mock clock) khỏi hiệu ứng haptic/âm; kiểm ngưỡng, cooldown 45s, tắt/hoãn và round-trip cấu hình.",
+      "tags": ["test", "ios", "nudge", "cooldown", "threshold"],
+      "complexity": "moderate",
+      "languageNotes": "Đọc hằng số ngưỡng/số câu thẳng từ header production (không hardcode lại) để test tự khớp nếu hằng số đổi."
+    },
+    {
+      "id": "file:tests/ios/settings_bridge_test.mm",
+      "type": "file",
+      "name": "settings_bridge_test.mm",
+      "filePath": "tests/ios/settings_bridge_test.mm",
+      "summary": "Test tự động cho KeyboardSettingsBridge (kiểu gõ + chiều cao bàn phím, story 2.3) — kiểm hàm thuần quy đổi mức chiều cao sang bậc 1-5 và round-trip ghi/đọc qua NSUserDefaults suite giả lập.",
+      "tags": ["test", "ios", "settings", "app-group", "round-trip"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:tests/macos/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "tests/macos/README.md",
+      "summary": "Tài liệu thư mục tests/macos — nêu quyền sở hữu của đội macOS, cách chạy (make test-macos) và mô tả test E2E chuỗi nhịp lấy mẫu cùng phần chưa phủ.",
+      "tags": ["documentation", "test", "macos"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/macos/mood_pipeline_build.sh",
+      "type": "file",
+      "name": "mood_pipeline_build.sh",
+      "filePath": "tests/macos/mood_pipeline_build.sh",
+      "summary": "Script biên dịch + chạy test E2E tầng dữ liệu cho chuỗi nhịp lấy mẫu macOS — link file thật của vỏ macOS và core/mood, cô lập Keychain (đổi tên hàm bằng -D macro) và kho (thư mục tạm mk-e2e-store).",
+      "tags": ["build-system", "test", "macos", "shell"],
+      "complexity": "simple",
+      "languageNotes": "Dùng -D macro đổi tên SecItem* lúc biên dịch để cô lập Keychain, và env MK_TEST_STORE_DIR trỏ thư mục tạm (env HOME không dùng được trên macOS)."
+    },
+    {
+      "id": "file:tests/macos/mood_pipeline_test.mm",
+      "type": "file",
+      "name": "mood_pipeline_test.mm",
+      "filePath": "tests/macos/mood_pipeline_test.mm",
+      "summary": "Test E2E tầng dữ liệu cho chuỗi nhịp lấy mẫu macOS (gõ từ → nhịp chung → ghi mẫu mã hóa → đọc lại) — link file thật, không stub logic, cô lập kho/Keychain; nhiều ca gồm consent gate, biên độ câu êm/căng, mã hóa at-rest, auto-purge và lịch chuông.",
+      "tags": ["test", "macos", "e2e", "mood-pipeline", "encryption"],
+      "complexity": "complex",
+      "languageNotes": "Có cổng an toàn 2 lớp (abort nếu env không trỏ thư mục tạm) vì kho ghi vào đường dẫn cố định của người dùng thật."
+    },
+
+    {
+      "id": "function:tests/ios/mood_journal_store_test.mm:TodayAtHourTS",
+      "type": "function",
+      "name": "TodayAtHourTS",
+      "filePath": "tests/ios/mood_journal_store_test.mm",
+      "lineRange": [40, 49],
+      "summary": "Dựng timestamp cho một giờ trong ngày hôm nay (giữ năm/tháng/ngày, chỉ đổi giờ) để FetchTodaySummary luôn coi event là 'hôm nay' bất kể test chạy lúc mấy giờ.",
+      "tags": ["test-helper", "date", "fixture"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/ios/mood_journal_store_test.mm:testRoundTrip",
+      "type": "function",
+      "name": "testRoundTrip",
+      "filePath": "tests/ios/mood_journal_store_test.mm",
+      "lineRange": [52, 68],
+      "summary": "Ca 1: bật consent, log 3 khoảnh khắc căng rồi kiểm FetchTodaySummary trả đúng tenseCount và peakHour hợp lệ.",
+      "tags": ["test-case", "round-trip", "consent"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/ios/mood_journal_store_test.mm:testPeakHour",
+      "type": "function",
+      "name": "testPeakHour",
+      "filePath": "tests/ios/mood_journal_store_test.mm",
+      "lineRange": [71, 89],
+      "summary": "Ca 2: kiểm peakHour là giờ có nhiều lần gợn nhất, và trả -1 khi chưa có dữ liệu.",
+      "tags": ["test-case", "peak-hour", "aggregation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/ios/mood_journal_store_test.mm:testConsentGate",
+      "type": "function",
+      "name": "testConsentGate",
+      "filePath": "tests/ios/mood_journal_store_test.mm",
+      "lineRange": [92, 112],
+      "summary": "Ca 3: chưa consent thì không tạo file, không ghi gì — kể cả qua seam LogTenseMomentAtForTesting (không có đường tắt bỏ qua cổng).",
+      "tags": ["test-case", "consent", "privacy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/ios/mood_journal_store_test.mm:testEncryption",
+      "type": "function",
+      "name": "testEncryption",
+      "filePath": "tests/ios/mood_journal_store_test.mm",
+      "lineRange": [115, 151],
+      "summary": "Ca 4: chứng minh file .enc trên đĩa không chứa plaintext 16-byte dựng tay, và vẫn giải mã lại đúng qua FetchTodaySummary.",
+      "tags": ["test-case", "encryption", "at-rest"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/ios/mood_journal_store_test.mm:testDeleteAll",
+      "type": "function",
+      "name": "testDeleteAll",
+      "filePath": "tests/ios/mood_journal_store_test.mm",
+      "lineRange": [154, 171],
+      "summary": "Ca 5: DeleteAll xóa file và đưa FetchTodaySummary về rỗng (tenseCount=0, peakHour=-1).",
+      "tags": ["test-case", "delete", "cleanup"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/ios/mood_journal_store_test.mm:testSetConsentNoWipesEverything",
+      "type": "function",
+      "name": "testSetConsentNoWipesEverything",
+      "filePath": "tests/ios/mood_journal_store_test.mm",
+      "lineRange": [174, 192],
+      "summary": "Ca 6: thu hồi consent (SetConsent NO) xóa sạch file và dữ liệu, phản chiếu hành vi MoodStoreMac_SetConsent.",
+      "tags": ["test-case", "consent", "wipe"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/ios/mood_journal_store_test.mm:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "tests/ios/mood_journal_store_test.mm",
+      "lineRange": [194, 215],
+      "summary": "Điểm vào chạy tuần tự 6 ca test MoodJournalStore rồi dọn sạch App Group/Keychain thật, trả mã thoát theo số ca sai.",
+      "tags": ["entry-point", "test-runner"],
+      "complexity": "simple"
+    },
+
+    {
+      "id": "function:tests/ios/nudge_coordinator_ios_test.mm:test3ConsecutiveTriggersOnce",
+      "type": "function",
+      "name": "test3ConsecutiveTriggersOnce",
+      "filePath": "tests/ios/nudge_coordinator_ios_test.mm",
+      "lineRange": [42, 58],
+      "summary": "Phần 1a: 3 câu căng liên tiếp thì rung đúng 1 lần (đạt ngưỡng 3 liên tiếp).",
+      "tags": ["test-case", "nudge", "threshold"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/ios/nudge_coordinator_ios_test.mm:testLowRiskInterleavedResets",
+      "type": "function",
+      "name": "testLowRiskInterleavedResets",
+      "filePath": "tests/ios/nudge_coordinator_ios_test.mm",
+      "lineRange": [60, 80],
+      "summary": "Phần 1b: một câu dịu xen giữa reset bộ đếm về 0, không rung sớm; đếm lại từ đầu vẫn đủ 3 thì rung.",
+      "tags": ["test-case", "nudge", "reset"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/ios/nudge_coordinator_ios_test.mm:test2TriggersWithinCooldown",
+      "type": "function",
+      "name": "test2TriggersWithinCooldown",
+      "filePath": "tests/ios/nudge_coordinator_ios_test.mm",
+      "lineRange": [82, 105],
+      "summary": "Phần 1c: hai lần đủ điều kiện trong cùng cửa sổ cooldown 45s chỉ lần đầu rung; hết cooldown thì rung lại được.",
+      "tags": ["test-case", "cooldown", "nudge"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/ios/nudge_coordinator_ios_test.mm:testToggleOffNeverTriggers",
+      "type": "function",
+      "name": "testToggleOffNeverTriggers",
+      "filePath": "tests/ios/nudge_coordinator_ios_test.mm",
+      "lineRange": [107, 119],
+      "summary": "Phần 1d: tắt toggle thì không bao giờ rung dù risk=1.0 lặp 10 lần.",
+      "tags": ["test-case", "toggle", "nudge"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/ios/nudge_coordinator_ios_test.mm:testSnoozedBlocksEvenWhenAllElseSatisfied",
+      "type": "function",
+      "name": "testSnoozedBlocksEvenWhenAllElseSatisfied",
+      "filePath": "tests/ios/nudge_coordinator_ios_test.mm",
+      "lineRange": [121, 130],
+      "summary": "Phần 1e: đang tạm hoãn thì không rung dù đủ 3 câu căng liên tiếp và mọi điều kiện khác.",
+      "tags": ["test-case", "snooze", "nudge"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/ios/nudge_coordinator_ios_test.mm:testThresholdBoundaryPrecision",
+      "type": "function",
+      "name": "testThresholdBoundaryPrecision",
+      "filePath": "tests/ios/nudge_coordinator_ios_test.mm",
+      "lineRange": [134, 154],
+      "summary": "Phần 1f: ca biên ngưỡng 0.349 vs 0.351 — dưới ngưỡng không tính là câu căng, trên ngưỡng sát biên thì rung.",
+      "tags": ["test-case", "boundary", "threshold"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/ios/nudge_coordinator_ios_test.mm:testConfigRoundTripViaFakeSuite",
+      "type": "function",
+      "name": "testConfigRoundTripViaFakeSuite",
+      "filePath": "tests/ios/nudge_coordinator_ios_test.mm",
+      "lineRange": [161, 191],
+      "summary": "Phần 2: round-trip bật/tắt và tạm hoãn qua BellReminderSettingsBridge trên suite App Group giả lập — kiểm mặc định YES và hết hạn hoãn theo thời gian.",
+      "tags": ["test-case", "round-trip", "app-group"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/ios/nudge_coordinator_ios_test.mm:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "tests/ios/nudge_coordinator_ios_test.mm",
+      "lineRange": [193, 217],
+      "summary": "Điểm vào in hằng số production, kiểm khớp macOS (3 câu liên tiếp) rồi chạy tuần tự các ca NudgeCoordinatorIOS.",
+      "tags": ["entry-point", "test-runner"],
+      "complexity": "simple"
+    },
+
+    {
+      "id": "function:tests/ios/settings_bridge_test.mm:testHeightLevelToStepPure",
+      "type": "function",
+      "name": "testHeightLevelToStepPure",
+      "filePath": "tests/ios/settings_bridge_test.mm",
+      "lineRange": [34, 44],
+      "summary": "Phần 1: kiểm hàm thuần quy đổi mức chiều cao (0.0-1.0) sang bậc 1-5 cho VoiceOver, kể cả kẹp giá trị ngoài biên về bậc 1/5.",
+      "tags": ["test-case", "pure-function", "clamp"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/ios/settings_bridge_test.mm:testRoundTripViaFakeSuite",
+      "type": "function",
+      "name": "testRoundTripViaFakeSuite",
+      "filePath": "tests/ios/settings_bridge_test.mm",
+      "lineRange": [47, 91],
+      "summary": "Phần 2: round-trip ghi/đọc kiểu gõ và chiều cao qua NSUserDefaults suite giả lập — kiểm mặc định Telex/mức giữa, khớp giá trị vừa ghi và kẹp giá trị ngoài biên.",
+      "tags": ["test-case", "round-trip", "app-group"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/ios/settings_bridge_test.mm:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "tests/ios/settings_bridge_test.mm",
+      "lineRange": [93, 106],
+      "summary": "Điểm vào chạy 2 phần test KeyboardSettingsBridge và báo mã thoát theo số ca sai.",
+      "tags": ["entry-point", "test-runner"],
+      "complexity": "simple"
+    },
+
+    {
+      "id": "function:tests/macos/mood_pipeline_test.mm:MKTestSecItemCopyMatching",
+      "type": "function",
+      "name": "MKTestSecItemCopyMatching",
+      "filePath": "tests/macos/mood_pipeline_test.mm",
+      "lineRange": [45, 51],
+      "summary": "Stub Keychain trả khóa AES test cố định (thay SecItemCopyMatching qua -D macro lúc biên dịch) để test không đọc/ghi item thật.",
+      "tags": ["test-stub", "keychain", "isolation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/macos/mood_pipeline_test.mm:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "tests/macos/mood_pipeline_test.mm",
+      "lineRange": [96, 318],
+      "summary": "Thân test E2E: cổng an toàn kiểm kho tạm rồi chạy tuần tự các ca consent gate, biên độ câu êm/căng, Flush khi thoát, mã hóa at-rest, auto-purge và ô ghi, lịch chuông gốc — đi qua đúng chuỗi hàm thật mà popover tiêu thụ.",
+      "tags": ["entry-point", "test-runner", "e2e"],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    { "source": "file:tests/ios/mood_journal_store_test.mm", "target": "function:tests/ios/mood_journal_store_test.mm:TodayAtHourTS", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:tests/ios/mood_journal_store_test.mm", "target": "function:tests/ios/mood_journal_store_test.mm:testRoundTrip", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:tests/ios/mood_journal_store_test.mm", "target": "function:tests/ios/mood_journal_store_test.mm:testPeakHour", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:tests/ios/mood_journal_store_test.mm", "target": "function:tests/ios/mood_journal_store_test.mm:testConsentGate", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:tests/ios/mood_journal_store_test.mm", "target": "function:tests/ios/mood_journal_store_test.mm:testEncryption", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:tests/ios/mood_journal_store_test.mm", "target": "function:tests/ios/mood_journal_store_test.mm:testDeleteAll", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:tests/ios/mood_journal_store_test.mm", "target": "function:tests/ios/mood_journal_store_test.mm:testSetConsentNoWipesEverything", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:tests/ios/mood_journal_store_test.mm", "target": "function:tests/ios/mood_journal_store_test.mm:main", "type": "contains", "direction": "forward", "weight": 1.0 },
+
+    { "source": "file:tests/ios/nudge_coordinator_ios_test.mm", "target": "function:tests/ios/nudge_coordinator_ios_test.mm:test3ConsecutiveTriggersOnce", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:tests/ios/nudge_coordinator_ios_test.mm", "target": "function:tests/ios/nudge_coordinator_ios_test.mm:testLowRiskInterleavedResets", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:tests/ios/nudge_coordinator_ios_test.mm", "target": "function:tests/ios/nudge_coordinator_ios_test.mm:test2TriggersWithinCooldown", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:tests/ios/nudge_coordinator_ios_test.mm", "target": "function:tests/ios/nudge_coordinator_ios_test.mm:testToggleOffNeverTriggers", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:tests/ios/nudge_coordinator_ios_test.mm", "target": "function:tests/ios/nudge_coordinator_ios_test.mm:testSnoozedBlocksEvenWhenAllElseSatisfied", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:tests/ios/nudge_coordinator_ios_test.mm", "target": "function:tests/ios/nudge_coordinator_ios_test.mm:testThresholdBoundaryPrecision", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:tests/ios/nudge_coordinator_ios_test.mm", "target": "function:tests/ios/nudge_coordinator_ios_test.mm:testConfigRoundTripViaFakeSuite", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:tests/ios/nudge_coordinator_ios_test.mm", "target": "function:tests/ios/nudge_coordinator_ios_test.mm:main", "type": "contains", "direction": "forward", "weight": 1.0 },
+
+    { "source": "file:tests/ios/settings_bridge_test.mm", "target": "function:tests/ios/settings_bridge_test.mm:testHeightLevelToStepPure", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:tests/ios/settings_bridge_test.mm", "target": "function:tests/ios/settings_bridge_test.mm:testRoundTripViaFakeSuite", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:tests/ios/settings_bridge_test.mm", "target": "function:tests/ios/settings_bridge_test.mm:main", "type": "contains", "direction": "forward", "weight": 1.0 },
+
+    { "source": "file:tests/macos/mood_pipeline_test.mm", "target": "function:tests/macos/mood_pipeline_test.mm:MKTestSecItemCopyMatching", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:tests/macos/mood_pipeline_test.mm", "target": "function:tests/macos/mood_pipeline_test.mm:main", "type": "contains", "direction": "forward", "weight": 1.0 },
+
+    { "source": "file:tests/macos/mood_pipeline_test.mm", "target": "function:tests/macos/mood_pipeline_test.mm:MKTestSecItemCopyMatching", "type": "exports", "direction": "forward", "weight": 0.8 },
+
+    { "source": "file:platforms/apple/shared/MoodJournalStore.mm", "target": "file:tests/ios/mood_journal_store_test.mm", "type": "tested_by", "direction": "forward", "weight": 0.5 },
+    { "source": "file:platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm", "target": "file:tests/ios/nudge_coordinator_ios_test.mm", "type": "tested_by", "direction": "forward", "weight": 0.5 },
+    { "source": "file:platforms/apple/shared/BellReminderSettingsBridge.mm", "target": "file:tests/ios/nudge_coordinator_ios_test.mm", "type": "tested_by", "direction": "forward", "weight": 0.5 },
+    { "source": "file:platforms/apple/shared/KeyboardSettingsBridge.mm", "target": "file:tests/ios/settings_bridge_test.mm", "type": "tested_by", "direction": "forward", "weight": 0.5 },
+    { "source": "file:platforms/apple/macos/MoodWatchMac.mm", "target": "file:tests/macos/mood_pipeline_test.mm", "type": "tested_by", "direction": "forward", "weight": 0.5 },
+    { "source": "file:platforms/apple/macos/MoodStoreMac.mm", "target": "file:tests/macos/mood_pipeline_test.mm", "type": "tested_by", "direction": "forward", "weight": 0.5 },
+    { "source": "file:platforms/apple/macos/BellMac.mm", "target": "file:tests/macos/mood_pipeline_test.mm", "type": "tested_by", "direction": "forward", "weight": 0.5 },
+    { "source": "file:platforms/apple/macos/NudgeCoordinatorMac.mm", "target": "file:tests/macos/mood_pipeline_test.mm", "type": "tested_by", "direction": "forward", "weight": 0.5 },
+    { "source": "file:core/mood/MoodBuffer.cpp", "target": "file:tests/macos/mood_pipeline_test.mm", "type": "tested_by", "direction": "forward", "weight": 0.5 },
+    { "source": "file:core/mood/SendRiskAnalyzer.cpp", "target": "file:tests/macos/mood_pipeline_test.mm", "type": "tested_by", "direction": "forward", "weight": 0.5 },
+
+    { "source": "file:tests/macos/mood_pipeline_build.sh", "target": "file:tests/macos/mood_pipeline_test.mm", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:tests/macos/mood_pipeline_build.sh", "target": "file:platforms/apple/macos/MoodWatchMac.mm", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:tests/macos/mood_pipeline_build.sh", "target": "file:platforms/apple/macos/MoodStoreMac.mm", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:tests/macos/mood_pipeline_build.sh", "target": "file:platforms/apple/macos/BellMac.mm", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:tests/macos/mood_pipeline_build.sh", "target": "file:platforms/apple/macos/NudgeCoordinatorMac.mm", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:tests/macos/mood_pipeline_build.sh", "target": "file:core/mood/MoodBuffer.cpp", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:tests/macos/mood_pipeline_build.sh", "target": "file:core/mood/SendRiskAnalyzer.cpp", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+
+    { "source": "document:tests/macos/README.md", "target": "file:tests/macos/mood_pipeline_test.mm", "type": "documents", "direction": "forward", "weight": 0.5 },
+    { "source": "document:tests/macos/README.md", "target": "file:tests/macos/mood_pipeline_build.sh", "type": "documents", "direction": "forward", "weight": 0.5 }
+  ]
+}

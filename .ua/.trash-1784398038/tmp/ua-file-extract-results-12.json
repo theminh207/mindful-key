@@ -1,0 +1,632 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 20,
+  "filesSkipped": [
+    "docs/diagrams/workflow-macos-team.drawio",
+    "docs/diagrams/workflow-mindful-key.drawio",
+    "platforms/apple/Resources/Base.lproj/Main.storyboard",
+    "platforms/apple/Resources/Icon.icns",
+    "platforms/apple/Resources/Info.plist"
+  ],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 20,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 6,
+      "failed": 0,
+      "skipped": 14
+    }
+  },
+  "results": [
+    {
+      "path": "core/engine/DataType.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 156,
+      "nonEmptyLines": 128,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "core/engine/SmartSwitchKey.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 73,
+      "nonEmptyLines": 66,
+      "functions": [
+        {
+          "name": "initSmartSwitchKey",
+          "startLine": 19,
+          "endLine": 37,
+          "params": [
+            "pData",
+            "size"
+          ]
+        },
+        {
+          "name": "getSmartSwitchKeySaveData",
+          "startLine": 39,
+          "endLine": 52,
+          "params": [
+            "outData"
+          ]
+        },
+        {
+          "name": "getAppInputMethodStatus",
+          "startLine": 54,
+          "endLine": 67,
+          "params": [
+            "bundleId",
+            "currentInputMethod"
+          ]
+        },
+        {
+          "name": "setAppInputMethodStatus",
+          "startLine": 69,
+          "endLine": 73,
+          "params": [
+            "bundleId",
+            "language"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "initSmartSwitchKey",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "getSmartSwitchKeySaveData",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "getAppInputMethodStatus",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "setAppInputMethodStatus",
+          "line": 69,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "initSmartSwitchKey",
+          "callee": "clear",
+          "lineNumber": 20
+        },
+        {
+          "caller": "initSmartSwitchKey",
+          "callee": "memcpy",
+          "lineNumber": 25
+        },
+        {
+          "caller": "getSmartSwitchKeySaveData",
+          "callee": "clear",
+          "lineNumber": 40
+        },
+        {
+          "caller": "getSmartSwitchKeySaveData",
+          "callee": "size",
+          "lineNumber": 41
+        },
+        {
+          "caller": "getSmartSwitchKeySaveData",
+          "callee": "push_back",
+          "lineNumber": 42
+        },
+        {
+          "caller": "getSmartSwitchKeySaveData",
+          "callee": "push_back",
+          "lineNumber": 43
+        },
+        {
+          "caller": "getSmartSwitchKeySaveData",
+          "callee": "(Byte)",
+          "lineNumber": 43
+        },
+        {
+          "caller": "getSmartSwitchKeySaveData",
+          "callee": "begin",
+          "lineNumber": 45
+        },
+        {
+          "caller": "getSmartSwitchKeySaveData",
+          "callee": "end",
+          "lineNumber": 45
+        },
+        {
+          "caller": "getSmartSwitchKeySaveData",
+          "callee": "push_back",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getSmartSwitchKeySaveData",
+          "callee": "length",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getSmartSwitchKeySaveData",
+          "callee": "length",
+          "lineNumber": 47
+        },
+        {
+          "caller": "getSmartSwitchKeySaveData",
+          "callee": "push_back",
+          "lineNumber": 48
+        },
+        {
+          "caller": "getSmartSwitchKeySaveData",
+          "callee": "push_back",
+          "lineNumber": 50
+        },
+        {
+          "caller": "getAppInputMethodStatus",
+          "callee": "compare",
+          "lineNumber": 55
+        },
+        {
+          "caller": "getAppInputMethodStatus",
+          "callee": "find",
+          "lineNumber": 58
+        },
+        {
+          "caller": "getAppInputMethodStatus",
+          "callee": "end",
+          "lineNumber": 58
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 4,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "core/engine/SmartSwitchKey.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 38,
+      "nonEmptyLines": 30,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "core/engine/platforms/linux.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 78,
+      "nonEmptyLines": 69,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "core/engine/platforms/mac.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 78,
+      "nonEmptyLines": 69,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "core/engine/platforms/win32.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 79,
+      "nonEmptyLines": 70,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "docs/WINDOWS-CODE-SIGNING.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 71,
+      "nonEmptyLines": 55,
+      "sections": [
+        {
+          "heading": "Ký số bản Windows — đường SignPath Foundation",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Vì sao bị chặn, và vì sao ký giải quyết được",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "Điều kiện SignPath — đối chiếu dự án",
+          "level": 2,
+          "line": 17
+        },
+        {
+          "heading": "Thứ tự đúng (không đảo được)",
+          "level": 2,
+          "line": 28
+        },
+        {
+          "heading": "Kỳ vọng thật (không tô hồng)",
+          "level": 2,
+          "line": 56
+        },
+        {
+          "heading": "Nhắc",
+          "level": 2,
+          "line": 67
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 6
+      }
+    },
+    {
+      "path": "docs/WINDOWS-UI-REDESIGN.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 55,
+      "nonEmptyLines": 45,
+      "sections": [
+        {
+          "heading": "Vẽ lại giao diện vỏ Windows theo nhận diện",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Ràng buộc thật (đọc trước khi tô một pixel)",
+          "level": 2,
+          "line": 7
+        },
+        {
+          "heading": "Nền móng (Phase 1 — làm TRƯỚC mọi màn)",
+          "level": 2,
+          "line": 24
+        },
+        {
+          "heading": "Kiểm kê bề mặt + thứ tự vẽ",
+          "level": 2,
+          "line": 38
+        },
+        {
+          "heading": "Lịch sử",
+          "level": 2,
+          "line": 52
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 5
+      }
+    },
+    {
+      "path": "platforms/README.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 23,
+      "nonEmptyLines": 20,
+      "sections": [
+        {
+          "heading": "Lộ trình nền tảng",
+          "level": 1,
+          "line": 1
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 1
+      }
+    },
+    {
+      "path": "platforms/android/README.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 12,
+      "nonEmptyLines": 9,
+      "sections": [
+        {
+          "heading": "platforms/android",
+          "level": 1,
+          "line": 1
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 1
+      }
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/Charcoal.colorset/Contents.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 20,
+      "nonEmptyLines": 20,
+      "sections": [
+        {
+          "heading": "colors",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "info",
+          "level": 1,
+          "line": 16
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/Contents.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 6,
+      "nonEmptyLines": 6,
+      "sections": [
+        {
+          "heading": "info",
+          "level": 1,
+          "line": 2
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 1
+      }
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/Divider.colorset/Contents.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 20,
+      "nonEmptyLines": 20,
+      "sections": [
+        {
+          "heading": "colors",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "info",
+          "level": 1,
+          "line": 16
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/Muted.colorset/Contents.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 20,
+      "nonEmptyLines": 20,
+      "sections": [
+        {
+          "heading": "colors",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "info",
+          "level": 1,
+          "line": 16
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/NOWOrange.colorset/Contents.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 20,
+      "nonEmptyLines": 20,
+      "sections": [
+        {
+          "heading": "colors",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "info",
+          "level": 1,
+          "line": 16
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/NOWTeal.colorset/Contents.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 20,
+      "nonEmptyLines": 20,
+      "sections": [
+        {
+          "heading": "colors",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "info",
+          "level": 1,
+          "line": 16
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/OrangeLight.colorset/Contents.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 20,
+      "nonEmptyLines": 20,
+      "sections": [
+        {
+          "heading": "colors",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "info",
+          "level": 1,
+          "line": 16
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/SoftWhite.colorset/Contents.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 20,
+      "nonEmptyLines": 20,
+      "sections": [
+        {
+          "heading": "colors",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "info",
+          "level": 1,
+          "line": 16
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/Stone.colorset/Contents.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 20,
+      "nonEmptyLines": 20,
+      "sections": [
+        {
+          "heading": "colors",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "info",
+          "level": 1,
+          "line": 16
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/TealLight.colorset/Contents.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 20,
+      "nonEmptyLines": 20,
+      "sections": [
+        {
+          "heading": "colors",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "info",
+          "level": 1,
+          "line": 16
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    }
+  ]
+}

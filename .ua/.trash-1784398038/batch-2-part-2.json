@@ -1,0 +1,306 @@
+{
+  "nodes": [
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp",
+      "type": "file",
+      "name": "NudgeCoordinator.cpp",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp",
+      "summary": "Bộ điều phối lời nhắc bản Windows: gộp chuông theo nhịp và nhắc thụ động vào một mạch với 45 giây nghỉ chung, và đọc ngưỡng độ nhạy (số câu căng, ngưỡng gợn) từ registry.",
+      "tags": ["platform-windows", "nudge", "mood-layer", "coordination"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp:NudgeCoordinator_ShouldNudge",
+      "type": "function",
+      "name": "NudgeCoordinator_ShouldNudge",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp",
+      "lineRange": [11, 17],
+      "summary": "Trả về có được phép nhắc không (đã qua 45 giây kể từ lần nhắc gần nhất, bất kể nguồn) — chốt chống dồn dập lời nhắc.",
+      "tags": ["platform-windows", "nudge", "cooldown", "coordination"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp:NudgeCoordinator_MarkNudged",
+      "type": "function",
+      "name": "NudgeCoordinator_MarkNudged",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp",
+      "lineRange": [19, 22],
+      "summary": "Đánh dấu mốc thời gian vừa hiện một lời nhắc để tính cooldown cho lần sau.",
+      "tags": ["platform-windows", "nudge", "cooldown", "coordination"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp:NudgeCoordinator_TenseStreakTrigger",
+      "type": "function",
+      "name": "NudgeCoordinator_TenseStreakTrigger",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp",
+      "lineRange": [24, 31],
+      "summary": "Đọc độ nhạy người dùng từ registry để quyết định cần bao nhiêu câu căng liên tiếp mới rung chuông.",
+      "tags": ["platform-windows", "nudge", "sensitivity", "settings"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp:NudgeCoordinator_RippleThreshold",
+      "type": "function",
+      "name": "NudgeCoordinator_RippleThreshold",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp",
+      "lineRange": [33, 40],
+      "summary": "Đọc độ nhạy từ registry và trả ngưỡng risk để một câu được tính là 'câu căng'.",
+      "tags": ["platform-windows", "nudge", "sensitivity", "settings"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h",
+      "type": "file",
+      "name": "NudgeCoordinator.h",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h",
+      "summary": "Header bộ điều phối nhắc Windows: khai báo ShouldNudge/MarkNudged (cooldown 45s) và TenseStreakTrigger/RippleThreshold (đọc độ nhạy); ghi rõ CỐ Ý không áp cooldown cho gác cổng gửi tin.",
+      "tags": ["platform-windows", "nudge", "header", "contract"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp",
+      "type": "file",
+      "name": "ReflectionScreen.cpp",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp",
+      "summary": "Màn 'Soi lại hôm nay' bản Windows: vẽ dòng sông cảm xúc bằng GDI+ (biên độ theo thời điểm), hiện câu quan sát hình dạng ngày và câu hỏi phản chiếu làm trọng tâm — cố ý không biểu đồ thống kê.",
+      "tags": ["platform-windows", "reflection", "ui", "gdiplus", "mood-layer"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:AmpAt",
+      "type": "function",
+      "name": "AmpAt",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp",
+      "lineRange": [76, 90],
+      "summary": "Nội suy biên độ dòng sông tại một vị trí x đã chuẩn hoá từ chuỗi điểm mẫu (xử lý cả khoảng trống dữ liệu).",
+      "tags": ["platform-windows", "reflection", "geometry", "helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:DrawRiver",
+      "type": "function",
+      "name": "DrawRiver",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp",
+      "lineRange": [92, 170],
+      "summary": "Vẽ toàn bộ dòng sông cảm xúc trong ngày bằng GDI+: đường nền, sóng biên độ theo giờ, chấm điểm mẫu và nhãn buổi — tuân 3 luật vẽ bất khả xâm phạm.",
+      "tags": ["platform-windows", "reflection", "gdiplus", "rendering"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:TodayTitle",
+      "type": "function",
+      "name": "TodayTitle",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp",
+      "lineRange": [174, 183],
+      "summary": "Tạo tiêu đề ngày hôm nay dạng chuỗi cho màn Soi lại.",
+      "tags": ["platform-windows", "reflection", "ui", "helper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:ReflectDlgProc",
+      "type": "function",
+      "name": "ReflectDlgProc",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp",
+      "lineRange": [185, 238],
+      "summary": "Thủ tục dialog Soi lại: đổ tiêu đề, câu quan sát hình dạng ngày, câu hỏi phản chiếu và vẽ dòng sông mỗi khi cần vẽ lại.",
+      "tags": ["platform-windows", "reflection", "dialog", "ui", "event-handler"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:ReflectionScreen_Show",
+      "type": "function",
+      "name": "ReflectionScreen_Show",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp",
+      "lineRange": [240, 264],
+      "summary": "Mở màn Soi lại: kiểm tra đồng ý (báo nhẹ nếu nhật ký tắt), lấy mẫu + tổng kết trong ngày, khởi tạo GDI+ rồi hiện dialog.",
+      "tags": ["platform-windows", "reflection", "ui", "mood-layer"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.h",
+      "type": "file",
+      "name": "ReflectionScreen.h",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.h",
+      "summary": "Header màn Soi lại Windows: khai báo ReflectionScreen_Show; nhấn mạnh câu hỏi phản chiếu là trọng tâm, số liệu là phụ, cố ý không biểu đồ.",
+      "tags": ["platform-windows", "reflection", "header", "contract"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp",
+      "type": "file",
+      "name": "SystemTrayHelper.cpp",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp",
+      "summary": "Vỏ khay hệ thống (system tray) Windows: tạo cửa sổ ẩn + icon tray, dựng menu chuột phải điều khiển bộ gõ và các tính năng chánh niệm (mood, chuông, gác cổng, soi lại), và cảnh báo bộ gõ đối thủ.",
+      "tags": ["platform-windows", "system-tray", "ui", "win32", "entry-point"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:WndProc",
+      "type": "function",
+      "name": "WndProc",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp",
+      "lineRange": [108, 318],
+      "summary": "Thủ tục cửa sổ ẩn xử lý mọi lệnh menu tray và thông điệp tuỳ biến: bật/tắt bộ gõ, mở các cài đặt, chuyển đổi mood/gác cổng, mở màn Soi lại, xoá nhật ký và phát hiện bộ gõ đối thủ.",
+      "tags": ["platform-windows", "system-tray", "event-handler", "win32"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:createFakeWindow",
+      "type": "function",
+      "name": "createFakeWindow",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp",
+      "lineRange": [320, 344],
+      "summary": "Đăng ký lớp cửa sổ và tạo một cửa sổ ẩn làm nơi nhận thông điệp cho icon tray.",
+      "tags": ["platform-windows", "system-tray", "win32", "window"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:createPopupMenu",
+      "type": "function",
+      "name": "createPopupMenu",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp",
+      "lineRange": [346, 389],
+      "summary": "Dựng menu chuột phải của tray với đầy đủ mục điều khiển bộ gõ và các tính năng chánh niệm.",
+      "tags": ["platform-windows", "system-tray", "menu", "ui"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:loadTrayIcon",
+      "type": "function",
+      "name": "loadTrayIcon",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp",
+      "lineRange": [391, 409],
+      "summary": "Nạp icon và chuỗi tiêu đề cho tray từ tài nguyên .exe.",
+      "tags": ["platform-windows", "system-tray", "resource", "win32"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:updateData",
+      "type": "function",
+      "name": "updateData",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp",
+      "lineRange": [411, 474],
+      "summary": "Cập nhật icon + tooltip tray và trạng thái các mục menu theo cấu hình hiện hành (gồm nhãn gác cổng theo app đang xem).",
+      "tags": ["platform-windows", "system-tray", "menu", "ui"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:_createSystemTrayIcon",
+      "type": "function",
+      "name": "_createSystemTrayIcon",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp",
+      "lineRange": [479, 519],
+      "summary": "Khởi tạo đầy đủ tray: tạo cửa sổ ẩn, menu, nạp icon và đăng ký Shell_NotifyIcon (thử lại nếu shell chưa sẵn sàng).",
+      "tags": ["platform-windows", "system-tray", "init", "win32"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:createSystemTrayIcon",
+      "type": "function",
+      "name": "createSystemTrayIcon",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp",
+      "lineRange": [527, 529],
+      "summary": "Điểm vào công khai để bắt đầu quá trình tạo tray icon.",
+      "tags": ["platform-windows", "system-tray", "entry-point", "api"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:removeSystemTray",
+      "type": "function",
+      "name": "removeSystemTray",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp",
+      "lineRange": [531, 533],
+      "summary": "Gỡ icon tray khỏi khay hệ thống khi thoát app.",
+      "tags": ["platform-windows", "system-tray", "cleanup"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:showWaveAlert",
+      "type": "function",
+      "name": "showWaveAlert",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp",
+      "lineRange": [536, 539],
+      "summary": "Gửi thông điệp yêu cầu hiện cảnh báo 'con sóng' lên cửa sổ tray (nhận diện gợn cảm xúc).",
+      "tags": ["platform-windows", "system-tray", "mood-layer", "alert"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:checkRivalInputMethod",
+      "type": "function",
+      "name": "checkRivalInputMethod",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp",
+      "lineRange": [543, 546],
+      "summary": "Gửi thông điệp yêu cầu kiểm tra có bộ gõ tiếng Việt đối thủ đang chạy song song hay không.",
+      "tags": ["platform-windows", "system-tray", "input-method", "detection"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/stdafx.h", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp", "target": "file:core/mood/MoodPhrasing.h", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/Bell.h", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/BrandPalette.h", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/MoodStore.h", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.h", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/stdafx.h", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/AppDelegate.h", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/Bell.h", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/MoodStore.h", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.h", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.h", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.h", "type": "imports", "direction": "forward", "weight": 0.7 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h", "type": "imports", "direction": "forward", "weight": 0.7 },
+
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp:NudgeCoordinator_ShouldNudge", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp:NudgeCoordinator_MarkNudged", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp:NudgeCoordinator_TenseStreakTrigger", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp:NudgeCoordinator_RippleThreshold", "type": "contains", "direction": "forward", "weight": 1.0 },
+
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:AmpAt", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:DrawRiver", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:TodayTitle", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:ReflectDlgProc", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:ReflectionScreen_Show", "type": "contains", "direction": "forward", "weight": 1.0 },
+
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:WndProc", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:createFakeWindow", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:createPopupMenu", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:loadTrayIcon", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:updateData", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:_createSystemTrayIcon", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:createSystemTrayIcon", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:removeSystemTray", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:showWaveAlert", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:checkRivalInputMethod", "type": "contains", "direction": "forward", "weight": 1.0 },
+
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp:NudgeCoordinator_ShouldNudge", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp:NudgeCoordinator_MarkNudged", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp:NudgeCoordinator_TenseStreakTrigger", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp:NudgeCoordinator_RippleThreshold", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:ReflectionScreen_Show", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:createSystemTrayIcon", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:updateData", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:showWaveAlert", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:checkRivalInputMethod", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:removeSystemTray", "type": "exports", "direction": "forward", "weight": 0.8 },
+
+    { "source": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:DrawRiver", "target": "function:core/mood/MoodPhrasing.cpp:MoodPhrasingCore_TimeOfDayLabel", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:ReflectDlgProc", "target": "function:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp:NudgeCoordinator_RippleThreshold", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:ReflectDlgProc", "target": "function:core/mood/MoodPhrasing.cpp:MoodPhrasingCore_DayShapeSentence", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:ReflectDlgProc", "target": "function:core/mood/MoodPhrasing.cpp:MoodPhrasingCore_DayShapeOf", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:ReflectDlgProc", "target": "function:core/mood/MoodPhrasing.cpp:MoodPhrasingCore_ReflectionQuestion", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:ReflectionScreen_Show", "target": "function:platforms/windows/win32/OpenKey/OpenKey/MoodStore.cpp:MoodStore_HasConsent", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:ReflectionScreen_Show", "target": "function:platforms/windows/win32/OpenKey/OpenKey/MoodStore.cpp:MoodStore_FetchTodaySamples", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:ReflectionScreen_Show", "target": "function:platforms/windows/win32/OpenKey/OpenKey/MoodStore.cpp:MoodStore_FetchTodaySummary", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:updateData", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.cpp:SendGatekeeper_IsAppWatched", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:updateData", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.cpp:SendGatekeeper_LastAppName", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:WndProc", "target": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:MoodWatch_Toggle", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:WndProc", "target": "function:platforms/windows/win32/OpenKey/OpenKey/Bell.cpp:Bell_ShowSettings", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:WndProc", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.cpp:SendGatekeeper_ToggleLastApp", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:WndProc", "target": "function:platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp:ReflectionScreen_Show", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp:WndProc", "target": "function:platforms/windows/win32/OpenKey/OpenKey/MoodStore.cpp:MoodStore_DeleteAll", "type": "calls", "direction": "forward", "weight": 0.8 }
+  ]
+}

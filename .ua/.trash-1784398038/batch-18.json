@@ -1,0 +1,535 @@
+{
+  "nodes": [
+    {
+      "id": "file:platforms/apple/shared/ThemeBridge.mm",
+      "type": "file",
+      "name": "ThemeBridge.mm",
+      "filePath": "platforms/apple/shared/ThemeBridge.mm",
+      "summary": "Cầu App Group chia sẻ chỉ số ảnh nền (theme) đã chọn giữa app iOS chính và keyboard extension, đọc/ghi qua một khoá NSUserDefaults suite riêng, tách biệt với các khoá heartbeat/macro/settings khác.",
+      "tags": ["ios", "app-group", "theme", "bridge", "persistence"],
+      "complexity": "simple",
+      "languageNotes": "Objective-C++ dùng NSUserDefaults initWithSuiteName cho App Group; lõi thật tham số hoá theo suite để bản public và bản ForTesting dùng chung, có fallback an toàn khi suite hỏng."
+    },
+    {
+      "id": "function:platforms/apple/shared/ThemeBridge.mm:mk_readSelectedBackgroundIndex",
+      "type": "function",
+      "name": "mk_readSelectedBackgroundIndex",
+      "filePath": "platforms/apple/shared/ThemeBridge.mm",
+      "lineRange": [23, 37],
+      "summary": "Đọc chỉ số ảnh nền đã chọn từ App Group suite, trả về mặc định an toàn (cảnh đầu tiên) khi suite không mở được, chưa từng ghi, hoặc dữ liệu hỏng (giá trị âm).",
+      "tags": ["reader", "validation", "fallback", "persistence"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/shared/ThemeBridge.mm:mk_writeSelectedBackgroundIndex",
+      "type": "function",
+      "name": "mk_writeSelectedBackgroundIndex",
+      "filePath": "platforms/apple/shared/ThemeBridge.mm",
+      "lineRange": [39, 47],
+      "summary": "Ghi chỉ số ảnh nền vào App Group suite, kẹp giá trị âm về 0, trả về NO khi không mở được suite.",
+      "tags": ["writer", "validation", "persistence"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/shared/ThemeBridge.mm:ThemeBridge_SelectedBackgroundIndex",
+      "type": "function",
+      "name": "ThemeBridge_SelectedBackgroundIndex",
+      "filePath": "platforms/apple/shared/ThemeBridge.mm",
+      "lineRange": [51, 53],
+      "summary": "API public đọc chỉ số ảnh nền đã chọn từ suite App Group thật của Mindful Key.",
+      "tags": ["public-api", "theme", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/shared/ThemeBridge.mm:ThemeBridge_SetSelectedBackgroundIndex",
+      "type": "function",
+      "name": "ThemeBridge_SetSelectedBackgroundIndex",
+      "filePath": "platforms/apple/shared/ThemeBridge.mm",
+      "lineRange": [55, 57],
+      "summary": "API public ghi chỉ số ảnh nền vào suite App Group thật của Mindful Key.",
+      "tags": ["public-api", "theme", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:platforms/linux/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "platforms/linux/README.md",
+      "summary": "Ghi chú giữ chỗ cho vỏ Linux của bộ gõ — nền tảng chưa được xây dựng.",
+      "tags": ["documentation", "placeholder", "linux"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:platforms/linux/linux-upstream/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "platforms/linux/linux-upstream/README.md",
+      "summary": "README gốc thượng nguồn của OpenKey cho Linux — bộ gõ tiếng Việt nguồn mở, giữ lại để tham chiếu nguồn fork.",
+      "tags": ["documentation", "upstream", "linux", "openkey"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:platforms/windows/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "platforms/windows/README.md",
+      "summary": "Ghi chú tổng quan cho vỏ Windows của bộ gõ, trỏ tới cây mã win32 và bộ cài.",
+      "tags": ["documentation", "overview", "windows"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/installer/MindfulKey.iss",
+      "type": "file",
+      "name": "MindfulKey.iss",
+      "filePath": "platforms/windows/installer/MindfulKey.iss",
+      "summary": "Kịch bản Inno Setup 6 sinh bộ cài MindfulKey_<ver>_x64-setup.exe (tương đương build-dmg.sh bên macOS): kèm LICENSE + credit Mai Vũ Tuyên (nghĩa vụ GPL v3), dùng AppMutex/SetupMutex để chặn cài đè khi app đang chạy hoặc hai bản setup chồng nhau.",
+      "tags": ["installer", "deployment", "windows", "infrastructure", "gpl"],
+      "complexity": "moderate",
+      "languageNotes": "Inno Setup: AppMutex khớp mutex app tạo lúc khởi động (MindfulKeyboardAppMutex) để Setup/Uninstall đóng được app đang chạy; CloseApplications=yes viết tường minh; UninstallDelete cố ý KHÔNG xoá nhật ký cảm xúc/cấu hình (riêng tư mặc định)."
+    },
+    {
+      "id": "config:platforms/windows/win32/OpenKey/OpenKey.sln",
+      "type": "config",
+      "name": "OpenKey.sln",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey.sln",
+      "summary": "Solution Visual Studio gom hai project — OpenKey (app bộ gõ chính) và OpenKeyUpdate (bộ cập nhật) — với cấu hình Debug/Release cho cả x86 lẫn x64.",
+      "tags": ["configuration", "build-system", "visual-studio", "windows"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/DeclareDPIAware.manifest",
+      "type": "file",
+      "name": "DeclareDPIAware.manifest",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/DeclareDPIAware.manifest",
+      "summary": "Manifest khai báo app OpenKey nhận biết DPI (dpiAware=true) để UI hiển thị sắc nét trên màn hình mật độ điểm ảnh cao.",
+      "tags": ["manifest", "dpi", "windows", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.rc",
+      "type": "file",
+      "name": "OpenKey.rc",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKey.rc",
+      "summary": "Kịch bản tài nguyên Win32 của app bộ gõ chính: icon, hộp thoại, menu, bảng chuỗi, thông tin phiên bản. Đã rebrand — icon khay + trạng thái trỏ THẲNG sang bộ SVG brand (con sóng ~) thay vì icon OpenKey 2019 (chữ V).",
+      "tags": ["resource-script", "windows", "ui", "brand", "icons"],
+      "complexity": "complex",
+      "languageNotes": "Resource script MSVC (code_page 65001/UTF-8); icon trỏ tới brand/platform/windows/*.ico sinh từ SVG nguồn qua make brand-platform, KHÔNG chép bản sao vào thư mục Windows (tránh nhân đôi tài sản brand)."
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj",
+      "type": "file",
+      "name": "OpenKey.vcxproj",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj",
+      "summary": "Project MSBuild của app bộ gõ Windows chính: biên dịch bộ não C++ dùng chung (core/engine + core/mood) cùng vỏ Win32 riêng, xuất file MindfulKey.exe cho cả 4 cấu hình, toolset v143, Unicode, DPI-aware.",
+      "tags": ["build-system", "msbuild", "visual-studio", "windows", "entry-point"],
+      "complexity": "moderate",
+      "languageNotes": "TargetName=MindfulKey cho cả 4 cấu hình (đổi tên file xuất, giữ tên project/class OpenKey); ClCompile kéo THẲNG core/engine/*.cpp + core/mood/*.cpp dùng chung — hiện thân của kiến trúc '1 bộ não + nhiều vỏ'."
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj.filters",
+      "type": "file",
+      "name": "OpenKey.vcxproj.filters",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj.filters",
+      "summary": "File filter của Visual Studio sắp xếp mã nguồn app bộ gõ chính vào các thư mục ảo (Source/Header/Resource) trong Solution Explorer — chỉ ảnh hưởng hiển thị IDE, không ảnh hưởng build.",
+      "tags": ["build-system", "visual-studio", "windows", "ide-config"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj.user",
+      "type": "file",
+      "name": "OpenKey.vcxproj.user",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj.user",
+      "summary": "File tuỳ chỉnh cục bộ của người dùng cho project OpenKey (rỗng — không ghi đè thiết lập gỡ lỗi/chạy nào).",
+      "tags": ["build-system", "visual-studio", "windows", "user-config"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/Style.manifest",
+      "type": "file",
+      "name": "Style.manifest",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/Style.manifest",
+      "summary": "Manifest phụ thuộc Common-Controls v6 để app bộ gõ dùng theme trực quan hiện đại của Windows; giữ nhận diện assembly gốc com.tuyenmai.openkey.",
+      "tags": ["manifest", "windows", "ui-theme", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/DeclareDPIAware.manifest",
+      "type": "file",
+      "name": "DeclareDPIAware.manifest",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKeyUpdate/DeclareDPIAware.manifest",
+      "summary": "Manifest khai báo bộ cập nhật OpenKeyUpdate nhận biết DPI để UI cập nhật hiển thị sắc nét trên màn hình mật độ điểm ảnh cao.",
+      "tags": ["manifest", "dpi", "windows", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.rc",
+      "type": "file",
+      "name": "OpenKeyUpdate.rc",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.rc",
+      "summary": "Kịch bản tài nguyên Win32 của tiện ích cập nhật OpenKeyUpdate: icon, menu, hộp thoại, bảng chuỗi và thông tin phiên bản cho ứng dụng cập nhật phụ.",
+      "tags": ["resource-script", "windows", "ui", "updater"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj",
+      "type": "file",
+      "name": "OpenKeyUpdate.vcxproj",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj",
+      "summary": "Project MSBuild của tiện ích cập nhật OpenKeyUpdate — app Win32 nhỏ, độc lập (chỉ một OpenKeyUpdate.cpp + tài nguyên riêng), tách khỏi bộ não dùng chung của app chính.",
+      "tags": ["build-system", "msbuild", "visual-studio", "windows", "updater"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj.filters",
+      "type": "file",
+      "name": "OpenKeyUpdate.vcxproj.filters",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj.filters",
+      "summary": "File filter Visual Studio sắp xếp mã nguồn tiện ích cập nhật vào các thư mục ảo trong Solution Explorer — chỉ ảnh hưởng hiển thị IDE.",
+      "tags": ["build-system", "visual-studio", "windows", "ide-config"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj.user",
+      "type": "file",
+      "name": "OpenKeyUpdate.vcxproj.user",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj.user",
+      "summary": "File tuỳ chỉnh cục bộ của người dùng cho project OpenKeyUpdate (rỗng — không ghi đè thiết lập nào).",
+      "tags": ["build-system", "visual-studio", "windows", "user-config"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/Style.manifest",
+      "type": "file",
+      "name": "Style.manifest",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKeyUpdate/Style.manifest",
+      "summary": "Manifest phụ thuộc Common-Controls v6 để tiện ích cập nhật dùng theme trực quan hiện đại của Windows.",
+      "tags": ["manifest", "windows", "ui-theme", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:platforms/windows/win32/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "platforms/windows/win32/README.md",
+      "summary": "README kế thừa từ OpenKey for Windows: tính năng, hướng dẫn cài đặt, thông tin dự án, mã nguồn và giấy phép GPL — tài liệu gốc của vỏ Windows.",
+      "tags": ["documentation", "windows", "openkey", "overview"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/core/test_engine.cpp",
+      "type": "file",
+      "name": "test_engine.cpp",
+      "filePath": "tests/core/test_engine.cpp",
+      "summary": "Harness regression tự viết (không framework) cho bộ não engine: nạp từng phím Telex qua vKeyHandleEvent, giải mã HookState thành xoá-lùi + chèn ký tự, so kết quả Unicode với chuỗi mong đợi trong các ca hard-code ở main().",
+      "tags": ["test", "engine", "telex", "regression", "cpp"],
+      "complexity": "moderate",
+      "languageNotes": "Harness tự chế: charData duyệt NGƯỢC (pop_back) khi giải mã, mô phỏng đúng cách vỏ OS áp kết quả; gọi startNewSession() giữa các ca để reset engine."
+    },
+    {
+      "id": "function:tests/core/test_engine.cpp:typeChar",
+      "type": "function",
+      "name": "typeChar",
+      "filePath": "tests/core/test_engine.cpp",
+      "lineRange": [78, 106],
+      "summary": "Mô phỏng gõ một ký tự: gọi vKeyHandleEvent, đọc HookState rồi áp số lần xoá-lùi và chuỗi ký tự chèn mới vào buffer màn hình ảo — trái tim của harness.",
+      "tags": ["test-helper", "engine", "key-simulation", "hookstate"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/core/test_engine.cpp:runCase",
+      "type": "function",
+      "name": "runCase",
+      "filePath": "tests/core/test_engine.cpp",
+      "lineRange": [108, 121],
+      "summary": "Chạy một ca kiểm thử Telex: reset engine, gõ lần lượt các phím trong chuỗi telex, rồi so buffer kết quả với chuỗi Unicode mong đợi và in PASS/SAI.",
+      "tags": ["test-helper", "telex", "assertion"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/core/test_engine.cpp:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "tests/core/test_engine.cpp",
+      "lineRange": [123, 161],
+      "summary": "Điểm vào harness engine: khởi tạo vKeyInit rồi chạy loạt ca Telex→Unicode (câu, dấu, ghép vần), trả exit code khác 0 nếu có ca sai để make/CI gate được.",
+      "tags": ["entry-point", "test", "regression"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/core/test_phrasing.cpp",
+      "type": "file",
+      "name": "test_phrasing.cpp",
+      "filePath": "tests/core/test_phrasing.cpp",
+      "summary": "Harness regression cho lớp diễn đạt chánh niệm (MoodPhrasingCore): kiểm câu mô tả hình dạng ngày, nhãn thời điểm trong ngày và câu hỏi phản chiếu — bảo đảm ngôn từ 'quan sát không phán xét' theo hiến chương.",
+      "tags": ["test", "mood", "phrasing", "regression", "cpp"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/core/test_phrasing.cpp:atHour",
+      "type": "function",
+      "name": "atHour",
+      "filePath": "tests/core/test_phrasing.cpp",
+      "lineRange": [37, 47],
+      "summary": "Tạo timestamp cho một giờ cụ thể trong ngày để kiểm thử nhãn thời điểm, dùng localtime_s trên Windows và localtime_r trên nền khác.",
+      "tags": ["test-helper", "time", "portability"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/core/test_phrasing.cpp:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "tests/core/test_phrasing.cpp",
+      "lineRange": [74, 157],
+      "summary": "Điểm vào harness phrasing: chạy các ca hình dạng ngày, nhãn thời điểm và câu hỏi phản chiếu (kể cả bất biến không rỗng/không lặp), trả exit code để CI gate.",
+      "tags": ["entry-point", "test", "mood", "regression"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:tests/core/test_send_risk.cpp",
+      "type": "file",
+      "name": "test_send_risk.cpp",
+      "filePath": "tests/core/test_send_risk.cpp",
+      "summary": "Harness regression cho SendRiskAnalyzer: kiểm điểm rủi ro gửi tin (công thức 1 - e^(-raw/5)) và phân loại cảm xúc trên câu tiếng Việt đã biết trước, phủ các mức căng thẳng và chửi thề.",
+      "tags": ["test", "mood", "send-risk", "sentiment", "cpp"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/core/test_send_risk.cpp:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "tests/core/test_send_risk.cpp",
+      "lineRange": [52, 105],
+      "summary": "Điểm vào harness send-risk: chạy loạt ca gọi SendRiskAnalyzer_Analyze so điểm rủi ro và phân loại cảm xúc với giá trị kỳ vọng, trả exit code để CI gate.",
+      "tags": ["entry-point", "test", "send-risk", "regression"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/ios/bridge_test.mm",
+      "type": "file",
+      "name": "bridge_test.mm",
+      "filePath": "tests/ios/bridge_test.mm",
+      "summary": "Test tự động cho cầu nối iOS (KeyboardBridge): cho cùng bộ ca Telex của test_engine chạy XUYÊN QUA bridge với ô nhập ảo (NSMutableString thay UITextDocumentProxy), kiểm cả đổi Telex/VNI và bung macro. Chạy trên host macOS, không cần Simulator.",
+      "tags": ["test", "ios", "bridge", "telex", "integration"],
+      "complexity": "moderate",
+      "languageNotes": "Objective-C++ chạy host: chứng minh WIRING bridge (map ký tự→KEY_x qua EngineKeyMap, gọi vKeyHandleEvent, giải mã HookState) đúng; bẫy macroData duyệt XUÔI khác charData duyệt NGƯỢC."
+    },
+    {
+      "id": "function:tests/ios/bridge_test.mm:typeOneChar",
+      "type": "function",
+      "name": "typeOneChar",
+      "filePath": "tests/ios/bridge_test.mm",
+      "lineRange": [34, 45],
+      "summary": "Gõ một ký tự ASCII đúng như vỏ UI làm: space gọi HandleSpace, chữ thì tra EngineKeyMap ra keyCode rồi gọi HandleKeyTap, cuối cùng áp kết quả bridge vào ô nhập ảo.",
+      "tags": ["test-helper", "ios", "bridge", "key-simulation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/ios/bridge_test.mm:runCase",
+      "type": "function",
+      "name": "runCase",
+      "filePath": "tests/ios/bridge_test.mm",
+      "lineRange": [47, 61],
+      "summary": "Chạy một ca Telex qua bridge iOS: reset session, gõ từng ký tự chuỗi telex, rồi so ô nhập ảo với chuỗi Unicode mong đợi.",
+      "tags": ["test-helper", "ios", "telex", "assertion"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/ios/bridge_test.mm:runInputTypeCase",
+      "type": "function",
+      "name": "runInputTypeCase",
+      "filePath": "tests/ios/bridge_test.mm",
+      "lineRange": [66, 92],
+      "summary": "Kiểm cùng một chuỗi phím vật lý cho ra kết quả khác nhau trước/sau khi đổi kiểu gõ qua KeyboardBridge_ToggleInputType (Telex mặc định vs VNI), chứng minh đổi vInputType có hiệu lực ngay và mọi kết quả vẫn đi qua đúng đường bridge.",
+      "tags": ["test-helper", "ios", "telex", "vni", "input-type"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/ios/bridge_test.mm:runMacroCase",
+      "type": "function",
+      "name": "runMacroCase",
+      "filePath": "tests/ios/bridge_test.mm",
+      "lineRange": [99, 124],
+      "summary": "Kiểm bung macro qua bridge: nạp macro bằng addMacro, xả buffer macroKey còn sót bằng một space, rồi gõ trigger + space và so nội dung bung ra đúng thứ tự (bẫy macroData duyệt xuôi).",
+      "tags": ["test-helper", "ios", "macro", "bridge"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/ios/bridge_test.mm:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "tests/ios/bridge_test.mm",
+      "lineRange": [126, 156],
+      "summary": "Điểm vào test bridge iOS: khởi tạo KeyboardBridge_Init rồi chạy loạt ca Telex, đổi Telex/VNI và macro qua bridge, trả exit code để make test-ios gate.",
+      "tags": ["entry-point", "test", "ios", "bridge"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/ios/emotion_wave_test.mm",
+      "type": "file",
+      "name": "emotion_wave_test.mm",
+      "filePath": "tests/ios/emotion_wave_test.mm",
+      "summary": "Test tự động cho đường cong biên độ sóng ambient (EmotionWaveAmplitude, phần tính thuần C): kiểm vùng chết dưới ngưỡng 0.3, tăng đơn điệu liên tục không bậc thang, chuẩn hoá về 1.0, và clamp giá trị ngoài [0,1] không NaN.",
+      "tags": ["test", "ios", "mood", "emotion-wave", "amplitude"],
+      "complexity": "moderate",
+      "languageNotes": "Chỉ test phần TÍNH (thuần C, không UIKit) chạy host macOS; phần VẼ CAShapeLayer trong SuggestionBarView kiểm thủ công trên Simulator. Kiểm smoothstep không có bước nhảy > 0.05 giữa hai mốc risk cách 0.01."
+    },
+    {
+      "id": "function:tests/ios/emotion_wave_test.mm:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "tests/ios/emotion_wave_test.mm",
+      "lineRange": [28, 82],
+      "summary": "Điểm vào test biên độ sóng: kiểm vùng chết, đơn điệu, liên tục (quét mẫu dày), chuẩn hoá và clamp của EmotionWaveAmplitude; trả exit code để make test-ios gate.",
+      "tags": ["entry-point", "test", "mood", "amplitude"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:tests/ios/mood_bridge_test.mm",
+      "type": "file",
+      "name": "mood_bridge_test.mm",
+      "filePath": "tests/ios/mood_bridge_test.mm",
+      "summary": "Test tự động cho lớp cảm xúc iOS (MoodBridge + SendRiskAnalyzer), 4 phần: analyzer thuần theo công thức lexicon, wiring gõ Telex qua bridge, cổng ô bảo mật (phủ định — privacy-critical), và các edge case (rỗng, ký tự lặp, chuyển secure giữa phiên gõ).",
+      "tags": ["test", "ios", "mood", "send-risk", "privacy"],
+      "complexity": "moderate",
+      "languageNotes": "Đồng bộ hàng đợi serial bằng MoodBridge_FlushForTesting (dispatch_sync no-op, không sleep/polling); phần cổng bảo mật kiểm PHỦ ĐỊNH — gõ câu risk cao khi secure field bật thì risk KHÔNG được đổi."
+    },
+    {
+      "id": "function:tests/ios/mood_bridge_test.mm:testAnalyzerPure",
+      "type": "function",
+      "name": "testAnalyzerPure",
+      "filePath": "tests/ios/mood_bridge_test.mm",
+      "lineRange": [42, 78],
+      "summary": "Kiểm SendRiskAnalyzer_Analyze thuần trên câu tiếng Việt biết trước: khớp công thức 1 - e^(-raw/5) với trọng số category, xử lý câu tích cực (raw chốt 0), trung tính (raw=0), và chửi thề LEX_SUB (hardHit raw=max(raw,9)).",
+      "tags": ["test-helper", "mood", "send-risk", "lexicon"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/ios/mood_bridge_test.mm:typeTelexThroughBridge",
+      "type": "function",
+      "name": "typeTelexThroughBridge",
+      "filePath": "tests/ios/mood_bridge_test.mm",
+      "lineRange": [82, 103],
+      "summary": "Gõ một chuỗi Telex qua KeyboardBridge rồi buộc flush từ cuối cùng bằng startNewSession và chờ mọi dispatch_async cảm xúc xong qua MoodBridge_FlushForTesting — helper đồng bộ cho các phần wiring.",
+      "tags": ["test-helper", "ios", "bridge", "async-sync"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/ios/mood_bridge_test.mm:testWiring",
+      "type": "function",
+      "name": "testWiring",
+      "filePath": "tests/ios/mood_bridge_test.mm",
+      "lineRange": [105, 115],
+      "summary": "Kiểm wiring MoodBridge_Init/vOnWordCommitted: gõ câu căng qua bridge rồi xác nhận MoodBridge_LastSendRisk tăng so với baseline.",
+      "tags": ["test-helper", "ios", "mood", "wiring"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:tests/ios/mood_bridge_test.mm:testSecureFieldGateNegative",
+      "type": "function",
+      "name": "testSecureFieldGateNegative",
+      "filePath": "tests/ios/mood_bridge_test.mm",
+      "lineRange": [117, 133],
+      "summary": "Kiểm phủ định cổng ô bảo mật: bật secure field rồi gõ câu chắc chắn kích risk cao — risk KHÔNG được đổi so với baseline (chỗ dễ sai nhất, ảnh hưởng riêng tư).",
+      "tags": ["test-helper", "ios", "privacy", "secure-field", "negative-test"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/ios/mood_bridge_test.mm:testEdgeCases",
+      "type": "function",
+      "name": "testEdgeCases",
+      "filePath": "tests/ios/mood_bridge_test.mm",
+      "lineRange": [135, 166],
+      "summary": "Kiểm các edge case: chuỗi rỗng/khoảng trắng cho risk 0, ký tự lặp qua collapseRuns cho kết quả như bản thường, và chuyển secure↔không-secure ngay giữa phiên gõ (chỉ từ commit sau khi cờ về NO mới được tính).",
+      "tags": ["test-helper", "ios", "edge-case", "secure-field"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/ios/mood_bridge_test.mm:main",
+      "type": "function",
+      "name": "main",
+      "filePath": "tests/ios/mood_bridge_test.mm",
+      "lineRange": [168, 187],
+      "summary": "Điểm vào test lớp cảm xúc iOS: khởi tạo KeyboardBridge + MoodBridge rồi chạy 4 phần (analyzer thuần, wiring, cổng bảo mật, edge case), trả exit code để make test-ios gate.",
+      "tags": ["entry-point", "test", "ios", "mood"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {"source": "file:platforms/apple/shared/ThemeBridge.mm", "target": "function:platforms/apple/shared/ThemeBridge.mm:mk_readSelectedBackgroundIndex", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/shared/ThemeBridge.mm", "target": "function:platforms/apple/shared/ThemeBridge.mm:mk_writeSelectedBackgroundIndex", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/shared/ThemeBridge.mm", "target": "function:platforms/apple/shared/ThemeBridge.mm:ThemeBridge_SelectedBackgroundIndex", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/shared/ThemeBridge.mm", "target": "function:platforms/apple/shared/ThemeBridge.mm:ThemeBridge_SetSelectedBackgroundIndex", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/shared/ThemeBridge.mm", "target": "function:platforms/apple/shared/ThemeBridge.mm:ThemeBridge_SelectedBackgroundIndex", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:platforms/apple/shared/ThemeBridge.mm", "target": "function:platforms/apple/shared/ThemeBridge.mm:ThemeBridge_SetSelectedBackgroundIndex", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:tests/core/test_engine.cpp", "target": "function:tests/core/test_engine.cpp:typeChar", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/core/test_engine.cpp", "target": "function:tests/core/test_engine.cpp:runCase", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/core/test_engine.cpp", "target": "function:tests/core/test_engine.cpp:main", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/core/test_engine.cpp", "target": "function:tests/core/test_engine.cpp:main", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:tests/core/test_phrasing.cpp", "target": "function:tests/core/test_phrasing.cpp:atHour", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/core/test_phrasing.cpp", "target": "function:tests/core/test_phrasing.cpp:main", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/core/test_phrasing.cpp", "target": "function:tests/core/test_phrasing.cpp:main", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:tests/core/test_send_risk.cpp", "target": "function:tests/core/test_send_risk.cpp:main", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/core/test_send_risk.cpp", "target": "function:tests/core/test_send_risk.cpp:main", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:tests/ios/bridge_test.mm", "target": "function:tests/ios/bridge_test.mm:typeOneChar", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/ios/bridge_test.mm", "target": "function:tests/ios/bridge_test.mm:runCase", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/ios/bridge_test.mm", "target": "function:tests/ios/bridge_test.mm:runInputTypeCase", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/ios/bridge_test.mm", "target": "function:tests/ios/bridge_test.mm:runMacroCase", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/ios/bridge_test.mm", "target": "function:tests/ios/bridge_test.mm:main", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/ios/bridge_test.mm", "target": "function:tests/ios/bridge_test.mm:main", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:tests/ios/emotion_wave_test.mm", "target": "function:tests/ios/emotion_wave_test.mm:main", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/ios/emotion_wave_test.mm", "target": "function:tests/ios/emotion_wave_test.mm:main", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:tests/ios/mood_bridge_test.mm", "target": "function:tests/ios/mood_bridge_test.mm:testAnalyzerPure", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/ios/mood_bridge_test.mm", "target": "function:tests/ios/mood_bridge_test.mm:typeTelexThroughBridge", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/ios/mood_bridge_test.mm", "target": "function:tests/ios/mood_bridge_test.mm:testWiring", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/ios/mood_bridge_test.mm", "target": "function:tests/ios/mood_bridge_test.mm:testSecureFieldGateNegative", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/ios/mood_bridge_test.mm", "target": "function:tests/ios/mood_bridge_test.mm:testEdgeCases", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/ios/mood_bridge_test.mm", "target": "function:tests/ios/mood_bridge_test.mm:main", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:tests/ios/mood_bridge_test.mm", "target": "function:tests/ios/mood_bridge_test.mm:main", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "config:platforms/windows/win32/OpenKey/OpenKey.sln", "target": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "config:platforms/windows/win32/OpenKey/OpenKey.sln", "target": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj", "type": "depends_on", "direction": "forward", "weight": 0.6},
+
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj", "target": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.rc", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj", "target": "file:platforms/windows/win32/OpenKey/OpenKey/DeclareDPIAware.manifest", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj", "target": "file:platforms/windows/win32/OpenKey/OpenKey/Style.manifest", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj", "target": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.rc", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj", "target": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/DeclareDPIAware.manifest", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj", "target": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/Style.manifest", "type": "depends_on", "direction": "forward", "weight": 0.6},
+
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj.filters", "target": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj.user", "target": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj.filters", "target": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj.user", "target": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj", "type": "related", "direction": "forward", "weight": 0.5},
+
+    {"source": "file:platforms/windows/installer/MindfulKey.iss", "target": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj", "type": "deploys", "direction": "forward", "weight": 0.7},
+
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj", "target": "file:core/engine/Engine.cpp", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj", "target": "file:core/engine/Vietnamese.cpp", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj", "target": "file:core/engine/ConvertTool.cpp", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj", "target": "file:core/engine/Macro.cpp", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj", "target": "file:core/engine/SmartSwitchKey.cpp", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj", "target": "file:core/mood/BreathingPause.cpp", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj", "target": "file:core/mood/EmotionWaveAmplitude.cpp", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj", "target": "file:core/mood/MoodBuffer.cpp", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj", "target": "file:core/mood/MoodPhrasing.cpp", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj", "target": "file:core/mood/SendRiskAnalyzer.cpp", "type": "depends_on", "direction": "forward", "weight": 0.6},
+
+    {"source": "file:core/engine/Engine.cpp", "target": "file:tests/core/test_engine.cpp", "type": "tested_by", "direction": "forward", "weight": 0.5},
+    {"source": "file:core/mood/MoodPhrasing.cpp", "target": "file:tests/core/test_phrasing.cpp", "type": "tested_by", "direction": "forward", "weight": 0.5},
+    {"source": "file:core/mood/SendRiskAnalyzer.cpp", "target": "file:tests/core/test_send_risk.cpp", "type": "tested_by", "direction": "forward", "weight": 0.5},
+    {"source": "file:core/engine/Engine.cpp", "target": "file:tests/ios/bridge_test.mm", "type": "tested_by", "direction": "forward", "weight": 0.5},
+    {"source": "file:core/engine/Macro.cpp", "target": "file:tests/ios/bridge_test.mm", "type": "tested_by", "direction": "forward", "weight": 0.5},
+    {"source": "file:core/mood/EmotionWaveAmplitude.cpp", "target": "file:tests/ios/emotion_wave_test.mm", "type": "tested_by", "direction": "forward", "weight": 0.5},
+    {"source": "file:core/mood/SendRiskAnalyzer.cpp", "target": "file:tests/ios/mood_bridge_test.mm", "type": "tested_by", "direction": "forward", "weight": 0.5},
+
+    {"source": "document:platforms/linux/README.md", "target": "document:platforms/linux/linux-upstream/README.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:platforms/windows/README.md", "target": "document:platforms/windows/win32/README.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:platforms/windows/win32/README.md", "target": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj", "type": "documents", "direction": "forward", "weight": 0.5}
+  ]
+}

@@ -1,0 +1,435 @@
+{
+  "nodes": [
+    {
+      "id": "file:core/engine/DataType.h",
+      "type": "file",
+      "name": "DataType.h",
+      "filePath": "core/engine/DataType.h",
+      "summary": "Định nghĩa kiểu dữ liệu và hằng số bit-mask lõi cho bộ não gõ tiếng Việt: struct vKeyHookState (kênh trả kết quả về cho vỏ OS), các enum kiểu gõ Telex/VNI và mặt nạ bit cho dấu thanh/mũ. Tự chọn header keycode theo OS (linux/win32/mac) qua macro biên dịch.",
+      "tags": ["type-definition", "data-model", "engine", "cross-platform", "bitmask"],
+      "complexity": "moderate",
+      "languageNotes": "Dùng #ifdef LINUX/_WIN32 để include đúng header keycode từng OS, và nhiều macro bit-mask (MARK*_MASK, TONE_MASK) làm giao thức chung giữa engine và vỏ."
+    },
+    {
+      "id": "file:core/engine/SmartSwitchKey.cpp",
+      "type": "file",
+      "name": "SmartSwitchKey.cpp",
+      "filePath": "core/engine/SmartSwitchKey.cpp",
+      "summary": "Ghi nhớ mỗi app dùng tiếng Việt hay tiếng Anh (theo bundle id) để tự chuyển chế độ gõ khi đổi app, kèm nạp/lưu bản đồ trạng thái ra đĩa dưới dạng mảng byte.",
+      "tags": ["engine", "smart-switch", "serialization", "state", "per-app"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:core/engine/SmartSwitchKey.h",
+      "type": "file",
+      "name": "SmartSwitchKey.h",
+      "filePath": "core/engine/SmartSwitchKey.h",
+      "summary": "Khai báo API của SmartSwitchKey: nạp dữ liệu, kết xuất để lưu đĩa, tra và đặt ngôn ngữ gõ theo bundle id (-1 chưa có, 0 tiếng Anh, 1 tiếng Việt).",
+      "tags": ["type-definition", "engine", "smart-switch", "api", "header"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:core/engine/platforms/linux.h",
+      "type": "file",
+      "name": "linux.h",
+      "filePath": "core/engine/platforms/linux.h",
+      "summary": "Shim mã phím (keycode) cho Linux — ánh xạ các hằng số KEY_* mà bộ não C++ dùng chung sang mã phím thật của Linux, để engine không phải biết chi tiết OS.",
+      "tags": ["platform-shim", "keycode", "linux", "engine", "header"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:core/engine/platforms/mac.h",
+      "type": "file",
+      "name": "mac.h",
+      "filePath": "core/engine/platforms/mac.h",
+      "summary": "Shim mã phím (keycode) cho macOS — ánh xạ các hằng số KEY_* của engine sang mã phím bàn phím macOS (vd KEY_A=0, KEY_DELETE=51).",
+      "tags": ["platform-shim", "keycode", "macos", "engine", "header"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:core/engine/platforms/win32.h",
+      "type": "file",
+      "name": "win32.h",
+      "filePath": "core/engine/platforms/win32.h",
+      "summary": "Shim mã phím (keycode) cho Windows — ánh xạ các hằng số KEY_* của engine sang mã phím ảo (virtual key) của Win32.",
+      "tags": ["platform-shim", "keycode", "windows", "engine", "header"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/WINDOWS-CODE-SIGNING.md",
+      "type": "document",
+      "name": "WINDOWS-CODE-SIGNING.md",
+      "filePath": "docs/WINDOWS-CODE-SIGNING.md",
+      "summary": "Hướng dẫn ký số bản Windows qua chương trình SignPath Foundation (miễn phí cho mã nguồn mở): vì sao Windows chặn app chưa ký, điều kiện đủ để đối chiếu dự án, thứ tự bắt buộc và kỳ vọng thực tế.",
+      "tags": ["documentation", "windows", "code-signing", "security", "deployment"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/WINDOWS-UI-REDESIGN.md",
+      "type": "document",
+      "name": "WINDOWS-UI-REDESIGN.md",
+      "filePath": "docs/WINDOWS-UI-REDESIGN.md",
+      "summary": "Kế hoạch vẽ lại giao diện vỏ Windows theo nhận diện chánh niệm: ràng buộc kỹ thuật cần đọc trước, nền móng Phase 1, cùng bảng kiểm kê bề mặt và thứ tự vẽ từng màn.",
+      "tags": ["documentation", "windows", "ui-redesign", "branding", "planning"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:docs/diagrams/workflow-macos-team.drawio",
+      "type": "file",
+      "name": "workflow-macos-team.drawio",
+      "filePath": "docs/diagrams/workflow-macos-team.drawio",
+      "summary": "Sơ đồ draw.io mô tả quy trình làm việc của đội macOS: mở phiên đọc 4 sổ cái (sprint-status, TEST_MATRIX, decision-log, FRICTION-LOG) → chọn việc → làm tới đâu → ghi lại chỗ nào.",
+      "tags": ["diagram", "workflow", "documentation", "process", "drawio"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:docs/diagrams/workflow-mindful-key.drawio",
+      "type": "file",
+      "name": "workflow-mindful-key.drawio",
+      "filePath": "docs/diagrams/workflow-mindful-key.drawio",
+      "summary": "Sơ đồ draw.io mô tả luồng từ BMAD planning sang dev cho mindful-key, đánh dấu các lỗ hổng tài liệu (vd không tự đánh dấu SUPERSEDED khi đổi hướng UI).",
+      "tags": ["diagram", "workflow", "documentation", "bmad", "drawio"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:platforms/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "platforms/README.md",
+      "summary": "Ghi chú lộ trình các nền tảng (platform) của dự án — thư mục chứa vỏ native từng hệ điều hành.",
+      "tags": ["documentation", "roadmap", "platforms", "overview"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:platforms/android/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "platforms/android/README.md",
+      "summary": "README giữ chỗ cho vỏ Android — chưa được xây dựng, đánh dấu vị trí sẽ đặt IME Android sau này.",
+      "tags": ["documentation", "android", "stub", "placeholder"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:platforms/apple/Resources/Assets.xcassets/Charcoal.colorset/Contents.json",
+      "type": "config",
+      "name": "Charcoal.colorset/Contents.json",
+      "filePath": "platforms/apple/Resources/Assets.xcassets/Charcoal.colorset/Contents.json",
+      "summary": "Token màu 'Charcoal' (than chì) trong bảng nhận diện trung tính — sắc đậm dùng cho chữ chính/nền tối, không bão hòa.",
+      "tags": ["config", "color-token", "branding", "asset-catalog", "macos"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:platforms/apple/Resources/Assets.xcassets/Contents.json",
+      "type": "config",
+      "name": "Assets.xcassets/Contents.json",
+      "filePath": "platforms/apple/Resources/Assets.xcassets/Contents.json",
+      "summary": "Manifest gốc của asset catalog macOS (thông tin phiên bản và tác giả), là điểm neo chung cho toàn bộ colorset và icon.",
+      "tags": ["config", "asset-catalog", "macos", "manifest"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:platforms/apple/Resources/Assets.xcassets/Divider.colorset/Contents.json",
+      "type": "config",
+      "name": "Divider.colorset/Contents.json",
+      "filePath": "platforms/apple/Resources/Assets.xcassets/Divider.colorset/Contents.json",
+      "summary": "Token màu 'Divider' — sắc nhạt dùng cho đường kẻ phân cách trong giao diện.",
+      "tags": ["config", "color-token", "branding", "asset-catalog", "macos"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:platforms/apple/Resources/Assets.xcassets/Muted.colorset/Contents.json",
+      "type": "config",
+      "name": "Muted.colorset/Contents.json",
+      "filePath": "platforms/apple/Resources/Assets.xcassets/Muted.colorset/Contents.json",
+      "summary": "Token màu 'Muted' — sắc mờ dùng cho chữ phụ/nhãn thứ cấp, giữ tông trung tính.",
+      "tags": ["config", "color-token", "branding", "asset-catalog", "macos"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:platforms/apple/Resources/Assets.xcassets/NOWOrange.colorset/Contents.json",
+      "type": "config",
+      "name": "NOWOrange.colorset/Contents.json",
+      "filePath": "platforms/apple/Resources/Assets.xcassets/NOWOrange.colorset/Contents.json",
+      "summary": "Token màu 'NOWOrange' — cam thương hiệu NOW, dùng làm điểm nhấn (vd dấu ngã trên con sóng ~); giữ sắc độ trung tính không chói theo hiến chương nhận diện.",
+      "tags": ["config", "color-token", "branding", "asset-catalog", "macos"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:platforms/apple/Resources/Assets.xcassets/NOWTeal.colorset/Contents.json",
+      "type": "config",
+      "name": "NOWTeal.colorset/Contents.json",
+      "filePath": "platforms/apple/Resources/Assets.xcassets/NOWTeal.colorset/Contents.json",
+      "summary": "Token màu 'NOWTeal' — xanh mòng két (teal) thương hiệu NOW (sRGB #1D7C91), màu chủ đạo của con sóng ~ trong nhận diện.",
+      "tags": ["config", "color-token", "branding", "asset-catalog", "macos"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:platforms/apple/Resources/Assets.xcassets/OrangeLight.colorset/Contents.json",
+      "type": "config",
+      "name": "OrangeLight.colorset/Contents.json",
+      "filePath": "platforms/apple/Resources/Assets.xcassets/OrangeLight.colorset/Contents.json",
+      "summary": "Token màu 'OrangeLight' — biến thể cam nhạt của điểm nhấn NOWOrange, dùng cho nền/trạng thái nhẹ.",
+      "tags": ["config", "color-token", "branding", "asset-catalog", "macos"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:platforms/apple/Resources/Assets.xcassets/SoftWhite.colorset/Contents.json",
+      "type": "config",
+      "name": "SoftWhite.colorset/Contents.json",
+      "filePath": "platforms/apple/Resources/Assets.xcassets/SoftWhite.colorset/Contents.json",
+      "summary": "Token màu 'SoftWhite' — trắng ngà làm nền sáng dịu mắt, tránh trắng gắt.",
+      "tags": ["config", "color-token", "branding", "asset-catalog", "macos"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:platforms/apple/Resources/Assets.xcassets/Stone.colorset/Contents.json",
+      "type": "config",
+      "name": "Stone.colorset/Contents.json",
+      "filePath": "platforms/apple/Resources/Assets.xcassets/Stone.colorset/Contents.json",
+      "summary": "Token màu 'Stone' — xám đá trung tính dùng cho bề mặt phụ/nền phân tầng.",
+      "tags": ["config", "color-token", "branding", "asset-catalog", "macos"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:platforms/apple/Resources/Assets.xcassets/TealLight.colorset/Contents.json",
+      "type": "config",
+      "name": "TealLight.colorset/Contents.json",
+      "filePath": "platforms/apple/Resources/Assets.xcassets/TealLight.colorset/Contents.json",
+      "summary": "Token màu 'TealLight' — biến thể teal nhạt của NOWTeal, dùng cho nền/trạng thái nhẹ của con sóng ~.",
+      "tags": ["config", "color-token", "branding", "asset-catalog", "macos"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/Resources/Base.lproj/Main.storyboard",
+      "type": "file",
+      "name": "Main.storyboard",
+      "filePath": "platforms/apple/Resources/Base.lproj/Main.storyboard",
+      "summary": "Bố cục giao diện AppKit cho app macOS dưới dạng XML storyboard — định nghĩa cửa sổ cài đặt/popover và các thành phần UI, tham chiếu tới các token màu trong asset catalog.",
+      "tags": ["ui", "macos", "storyboard", "appkit", "layout"],
+      "complexity": "complex",
+      "languageNotes": "Storyboard XML rất lớn (~2489 dòng), do Interface Builder sinh ra; các màu áp trong UI trỏ tới named color trong Assets.xcassets."
+    },
+    {
+      "id": "file:platforms/apple/Resources/Icon.icns",
+      "type": "file",
+      "name": "Icon.icns",
+      "filePath": "platforms/apple/Resources/Icon.icns",
+      "summary": "Bộ icon ứng dụng macOS (nhiều độ phân giải) theo nhận diện — con sóng ~ teal cùng dấu ngã cam; là tệp nhị phân được Info.plist tham chiếu qua CFBundleIconFile.",
+      "tags": ["asset", "icon", "macos", "branding", "binary"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:platforms/apple/Resources/Info.plist",
+      "type": "config",
+      "name": "Info.plist",
+      "filePath": "platforms/apple/Resources/Info.plist",
+      "summary": "Info.plist khai báo bundle app macOS 'Mindful Keyboard': chạy nền không icon Dock (LSUIElement), chỉ 1 phiên bản chạy, storyboard chính 'Main', icon 'Icon', quyền gửi Apple Event để mở mục Trợ năng, và bản quyền GPL v3 ghi credit OpenKey (Mai Vũ Tuyên).",
+      "tags": ["config", "macos", "info-plist", "app-bundle", "metadata"],
+      "complexity": "simple",
+      "languageNotes": "Dùng biến build ($(PRODUCT_NAME), $(MARKETING_VERSION)...) và LSUIElement=true để chạy như tiện ích nền không hiện Dock."
+    },
+    {
+      "id": "function:core/engine/SmartSwitchKey.cpp:initSmartSwitchKey",
+      "type": "function",
+      "name": "initSmartSwitchKey",
+      "filePath": "core/engine/SmartSwitchKey.cpp",
+      "lineRange": [19, 37],
+      "summary": "Nạp dữ liệu smart-switch đã lưu (bản đồ bundle id ↔ ngôn ngữ gõ) từ mảng byte trên đĩa vào bộ nhớ khi khởi động.",
+      "tags": ["deserialization", "state", "engine", "smart-switch"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:core/engine/SmartSwitchKey.cpp:getSmartSwitchKeySaveData",
+      "type": "function",
+      "name": "getSmartSwitchKeySaveData",
+      "filePath": "core/engine/SmartSwitchKey.cpp",
+      "lineRange": [39, 52],
+      "summary": "Kết xuất bản đồ bundle id ↔ ngôn ngữ gõ ra mảng byte để lưu xuống đĩa.",
+      "tags": ["serialization", "engine", "smart-switch", "persistence"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:core/engine/SmartSwitchKey.cpp:getAppInputMethodStatus",
+      "type": "function",
+      "name": "getAppInputMethodStatus",
+      "filePath": "core/engine/SmartSwitchKey.cpp",
+      "lineRange": [54, 67],
+      "summary": "Tra chế độ gõ (Anh/Việt) đã ghi nhớ cho một bundle id; trả -1 nếu chưa có, ngược lại trả ngôn ngữ đã lưu.",
+      "tags": ["lookup", "state", "engine", "smart-switch"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:core/engine/SmartSwitchKey.cpp:setAppInputMethodStatus",
+      "type": "function",
+      "name": "setAppInputMethodStatus",
+      "filePath": "core/engine/SmartSwitchKey.cpp",
+      "lineRange": [69, 73],
+      "summary": "Ghi nhớ ngôn ngữ gõ mặc định cho một bundle id vào bản đồ trạng thái trong bộ nhớ.",
+      "tags": ["state", "engine", "smart-switch", "setter"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:core/engine/SmartSwitchKey.cpp",
+      "target": "file:core/engine/SmartSwitchKey.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:core/engine/SmartSwitchKey.cpp",
+      "target": "function:core/engine/SmartSwitchKey.cpp:initSmartSwitchKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:core/engine/SmartSwitchKey.cpp",
+      "target": "function:core/engine/SmartSwitchKey.cpp:getSmartSwitchKeySaveData",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:core/engine/SmartSwitchKey.cpp",
+      "target": "function:core/engine/SmartSwitchKey.cpp:getAppInputMethodStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:core/engine/SmartSwitchKey.cpp",
+      "target": "function:core/engine/SmartSwitchKey.cpp:setAppInputMethodStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:core/engine/SmartSwitchKey.cpp",
+      "target": "function:core/engine/SmartSwitchKey.cpp:initSmartSwitchKey",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:core/engine/SmartSwitchKey.cpp",
+      "target": "function:core/engine/SmartSwitchKey.cpp:getSmartSwitchKeySaveData",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:core/engine/SmartSwitchKey.cpp",
+      "target": "function:core/engine/SmartSwitchKey.cpp:getAppInputMethodStatus",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:core/engine/SmartSwitchKey.cpp",
+      "target": "function:core/engine/SmartSwitchKey.cpp:setAppInputMethodStatus",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "config:platforms/apple/Resources/Info.plist",
+      "target": "file:platforms/apple/Resources/Base.lproj/Main.storyboard",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:platforms/apple/Resources/Info.plist",
+      "target": "file:platforms/apple/Resources/Icon.icns",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:platforms/apple/Resources/Assets.xcassets/Contents.json",
+      "target": "file:platforms/apple/Resources/Base.lproj/Main.storyboard",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:platforms/apple/Resources/Assets.xcassets/Charcoal.colorset/Contents.json",
+      "target": "file:platforms/apple/Resources/Base.lproj/Main.storyboard",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:platforms/apple/Resources/Assets.xcassets/Divider.colorset/Contents.json",
+      "target": "file:platforms/apple/Resources/Base.lproj/Main.storyboard",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:platforms/apple/Resources/Assets.xcassets/Muted.colorset/Contents.json",
+      "target": "file:platforms/apple/Resources/Base.lproj/Main.storyboard",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:platforms/apple/Resources/Assets.xcassets/NOWOrange.colorset/Contents.json",
+      "target": "file:platforms/apple/Resources/Base.lproj/Main.storyboard",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:platforms/apple/Resources/Assets.xcassets/NOWTeal.colorset/Contents.json",
+      "target": "file:platforms/apple/Resources/Base.lproj/Main.storyboard",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:platforms/apple/Resources/Assets.xcassets/OrangeLight.colorset/Contents.json",
+      "target": "file:platforms/apple/Resources/Base.lproj/Main.storyboard",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:platforms/apple/Resources/Assets.xcassets/SoftWhite.colorset/Contents.json",
+      "target": "file:platforms/apple/Resources/Base.lproj/Main.storyboard",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:platforms/apple/Resources/Assets.xcassets/Stone.colorset/Contents.json",
+      "target": "file:platforms/apple/Resources/Base.lproj/Main.storyboard",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:platforms/apple/Resources/Assets.xcassets/TealLight.colorset/Contents.json",
+      "target": "file:platforms/apple/Resources/Base.lproj/Main.storyboard",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:platforms/README.md",
+      "target": "document:platforms/android/README.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:docs/diagrams/workflow-macos-team.drawio",
+      "target": "file:docs/diagrams/workflow-mindful-key.drawio",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

@@ -1,0 +1,1157 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 8,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 8,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 8,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 339,
+      "nonEmptyLines": 293,
+      "functions": [
+        {
+          "name": "openKey",
+          "startLine": 41,
+          "endLine": 49,
+          "params": []
+        },
+        {
+          "name": "setRegInt",
+          "startLine": 51,
+          "endLine": 55,
+          "params": [
+            "key",
+            "val"
+          ]
+        },
+        {
+          "name": "getRegInt",
+          "startLine": 57,
+          "endLine": 66,
+          "params": [
+            "key",
+            "defaultValue"
+          ]
+        },
+        {
+          "name": "setRegString",
+          "startLine": 68,
+          "endLine": 72,
+          "params": [
+            "key",
+            "val"
+          ]
+        },
+        {
+          "name": "getRegString",
+          "startLine": 74,
+          "endLine": 92,
+          "params": [
+            "key",
+            "defaultValue"
+          ]
+        },
+        {
+          "name": "setRegBinary",
+          "startLine": 94,
+          "endLine": 98,
+          "params": [
+            "key",
+            "pData",
+            "size"
+          ]
+        },
+        {
+          "name": "registerRunOnStartup",
+          "startLine": 118,
+          "endLine": 141,
+          "params": [
+            "val"
+          ]
+        },
+        {
+          "name": "getExecutePath",
+          "startLine": 143,
+          "endLine": 150,
+          "params": []
+        },
+        {
+          "name": "getFullPath",
+          "startLine": 191,
+          "endLine": 197,
+          "params": []
+        },
+        {
+          "name": "getClipboardText",
+          "startLine": 199,
+          "endLine": 227,
+          "params": [
+            "type"
+          ]
+        },
+        {
+          "name": "setClipboardText",
+          "startLine": 229,
+          "endLine": 237,
+          "params": [
+            "data",
+            "len",
+            "type"
+          ]
+        },
+        {
+          "name": "quickConvert",
+          "startLine": 239,
+          "endLine": 290,
+          "params": []
+        },
+        {
+          "name": "getVersionNumber",
+          "startLine": 292,
+          "endLine": 326,
+          "params": []
+        },
+        {
+          "name": "getVersionString",
+          "startLine": 328,
+          "endLine": 339,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "openKey",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "setRegInt",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "getRegInt",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "setRegString",
+          "line": 68,
+          "isDefault": false
+        },
+        {
+          "name": "getRegString",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "setRegBinary",
+          "line": 94,
+          "isDefault": false
+        },
+        {
+          "name": "registerRunOnStartup",
+          "line": 118,
+          "isDefault": false
+        },
+        {
+          "name": "getExecutePath",
+          "line": 143,
+          "isDefault": false
+        },
+        {
+          "name": "getFullPath",
+          "line": 191,
+          "isDefault": false
+        },
+        {
+          "name": "getClipboardText",
+          "line": 199,
+          "isDefault": false
+        },
+        {
+          "name": "setClipboardText",
+          "line": 229,
+          "isDefault": false
+        },
+        {
+          "name": "quickConvert",
+          "line": 239,
+          "isDefault": false
+        },
+        {
+          "name": "getVersionNumber",
+          "line": 292,
+          "isDefault": false
+        },
+        {
+          "name": "getVersionString",
+          "line": 328,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "openKey",
+          "callee": "RegOpenKeyEx",
+          "lineNumber": 42
+        },
+        {
+          "caller": "openKey",
+          "callee": "RegCreateKeyEx",
+          "lineNumber": 44
+        },
+        {
+          "caller": "openKey",
+          "callee": "LOG",
+          "lineNumber": 47
+        },
+        {
+          "caller": "setRegInt",
+          "callee": "openKey",
+          "lineNumber": 52
+        },
+        {
+          "caller": "setRegInt",
+          "callee": "RegSetValueEx",
+          "lineNumber": 53
+        },
+        {
+          "caller": "setRegInt",
+          "callee": "RegCloseKey",
+          "lineNumber": 54
+        },
+        {
+          "caller": "getRegInt",
+          "callee": "openKey",
+          "lineNumber": 58
+        },
+        {
+          "caller": "getRegInt",
+          "callee": "RegQueryValueEx",
+          "lineNumber": 61
+        },
+        {
+          "caller": "getRegInt",
+          "callee": "RegCloseKey",
+          "lineNumber": 64
+        },
+        {
+          "caller": "setRegString",
+          "callee": "openKey",
+          "lineNumber": 69
+        },
+        {
+          "caller": "setRegString",
+          "callee": "RegSetValueEx",
+          "lineNumber": 70
+        },
+        {
+          "caller": "setRegString",
+          "callee": "(DWORD)",
+          "lineNumber": 70
+        },
+        {
+          "caller": "setRegString",
+          "callee": "lstrlen",
+          "lineNumber": 70
+        },
+        {
+          "caller": "setRegString",
+          "callee": "RegCloseKey",
+          "lineNumber": 71
+        },
+        {
+          "caller": "getRegString",
+          "callee": "openKey",
+          "lineNumber": 75
+        },
+        {
+          "caller": "getRegString",
+          "callee": "RegQueryValueEx",
+          "lineNumber": 80
+        },
+        {
+          "caller": "getRegString",
+          "callee": "resize",
+          "lineNumber": 81
+        },
+        {
+          "caller": "getRegString",
+          "callee": "RegQueryValueEx",
+          "lineNumber": 82
+        },
+        {
+          "caller": "getRegString",
+          "callee": "empty",
+          "lineNumber": 84
+        },
+        {
+          "caller": "getRegString",
+          "callee": "back",
+          "lineNumber": 84
+        },
+        {
+          "caller": "getRegString",
+          "callee": "pop_back",
+          "lineNumber": 85
+        },
+        {
+          "caller": "getRegString",
+          "callee": "clear",
+          "lineNumber": 87
+        },
+        {
+          "caller": "getRegString",
+          "callee": "RegCloseKey",
+          "lineNumber": 90
+        },
+        {
+          "caller": "getRegString",
+          "callee": "empty",
+          "lineNumber": 91
+        },
+        {
+          "caller": "getRegString",
+          "callee": "wstring",
+          "lineNumber": 91
+        },
+        {
+          "caller": "setRegBinary",
+          "callee": "openKey",
+          "lineNumber": 95
+        },
+        {
+          "caller": "setRegBinary",
+          "callee": "RegSetValueEx",
+          "lineNumber": 96
+        },
+        {
+          "caller": "setRegBinary",
+          "callee": "RegCloseKey",
+          "lineNumber": 97
+        },
+        {
+          "caller": "registerRunOnStartup",
+          "callee": "wideStringToUtf8",
+          "lineNumber": 121
+        },
+        {
+          "caller": "registerRunOnStartup",
+          "callee": "getFullPath",
+          "lineNumber": 121
+        },
+        {
+          "caller": "registerRunOnStartup",
+          "callee": "sprintf_s",
+          "lineNumber": 123
+        },
+        {
+          "caller": "registerRunOnStartup",
+          "callee": "c_str",
+          "lineNumber": 123
+        },
+        {
+          "caller": "registerRunOnStartup",
+          "callee": "WinExec",
+          "lineNumber": 124
+        },
+        {
+          "caller": "registerRunOnStartup",
+          "callee": "RegOpenKeyEx",
+          "lineNumber": 126
+        },
+        {
+          "caller": "registerRunOnStartup",
+          "callee": "getFullPath",
+          "lineNumber": 127
+        },
+        {
+          "caller": "registerRunOnStartup",
+          "callee": "RegSetValueEx",
+          "lineNumber": 132
+        },
+        {
+          "caller": "registerRunOnStartup",
+          "callee": "_T",
+          "lineNumber": 132
+        },
+        {
+          "caller": "registerRunOnStartup",
+          "callee": "c_str",
+          "lineNumber": 132
+        },
+        {
+          "caller": "registerRunOnStartup",
+          "callee": "size",
+          "lineNumber": 132
+        },
+        {
+          "caller": "registerRunOnStartup",
+          "callee": "RegCloseKey",
+          "lineNumber": 133
+        },
+        {
+          "caller": "registerRunOnStartup",
+          "callee": "RegOpenKeyEx",
+          "lineNumber": 136
+        },
+        {
+          "caller": "registerRunOnStartup",
+          "callee": "RegDeleteValue",
+          "lineNumber": 137
+        },
+        {
+          "caller": "registerRunOnStartup",
+          "callee": "_T",
+          "lineNumber": 137
+        },
+        {
+          "caller": "registerRunOnStartup",
+          "callee": "RegCloseKey",
+          "lineNumber": 138
+        },
+        {
+          "caller": "registerRunOnStartup",
+          "callee": "WinExec",
+          "lineNumber": 139
+        },
+        {
+          "caller": "getExecutePath",
+          "callee": "GetModuleHandleW",
+          "lineNumber": 145
+        },
+        {
+          "caller": "getExecutePath",
+          "callee": "GetModuleFileNameW",
+          "lineNumber": 146
+        },
+        {
+          "caller": "getFullPath",
+          "callee": "GetModuleHandle",
+          "lineNumber": 192
+        },
+        {
+          "caller": "getFullPath",
+          "callee": "GetModuleFileName",
+          "lineNumber": 194
+        },
+        {
+          "caller": "getClipboardText",
+          "callee": "OpenClipboard",
+          "lineNumber": 201
+        },
+        {
+          "caller": "getClipboardText",
+          "callee": "_T",
+          "lineNumber": 202
+        },
+        {
+          "caller": "getClipboardText",
+          "callee": "GetClipboardData",
+          "lineNumber": 206
+        },
+        {
+          "caller": "getClipboardText",
+          "callee": "_T",
+          "lineNumber": 208
+        },
+        {
+          "caller": "getClipboardText",
+          "callee": "static_cast<wchar_t*>",
+          "lineNumber": 212
+        },
+        {
+          "caller": "getClipboardText",
+          "callee": "GlobalLock",
+          "lineNumber": 212
+        },
+        {
+          "caller": "getClipboardText",
+          "callee": "_T",
+          "lineNumber": 214
+        },
+        {
+          "caller": "getClipboardText",
+          "callee": "GlobalUnlock",
+          "lineNumber": 221
+        },
+        {
+          "caller": "getClipboardText",
+          "callee": "CloseClipboard",
+          "lineNumber": 224
+        },
+        {
+          "caller": "setClipboardText",
+          "callee": "GlobalAlloc",
+          "lineNumber": 230
+        },
+        {
+          "caller": "setClipboardText",
+          "callee": "memcpy",
+          "lineNumber": 231
+        },
+        {
+          "caller": "setClipboardText",
+          "callee": "GlobalLock",
+          "lineNumber": 231
+        },
+        {
+          "caller": "setClipboardText",
+          "callee": "GlobalUnlock",
+          "lineNumber": 232
+        },
+        {
+          "caller": "setClipboardText",
+          "callee": "OpenClipboard",
+          "lineNumber": 233
+        },
+        {
+          "caller": "setClipboardText",
+          "callee": "EmptyClipboard",
+          "lineNumber": 234
+        },
+        {
+          "caller": "setClipboardText",
+          "callee": "SetClipboardData",
+          "lineNumber": 235
+        },
+        {
+          "caller": "setClipboardText",
+          "callee": "CloseClipboard",
+          "lineNumber": 236
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "OpenClipboard",
+          "lineNumber": 243
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "GetClipboardData",
+          "lineNumber": 254
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "static_cast<char*>",
+          "lineNumber": 256
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "GlobalLock",
+          "lineNumber": 256
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "GlobalUnlock",
+          "lineNumber": 257
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "convertUtil",
+          "lineNumber": 261
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "GetClipboardData",
+          "lineNumber": 265
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "static_cast<wchar_t*>",
+          "lineNumber": 267
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "GlobalLock",
+          "lineNumber": 267
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "GlobalUnlock",
+          "lineNumber": 268
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "utf8ToWideString",
+          "lineNumber": 272
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "convertUtil",
+          "lineNumber": 272
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "wideStringToUtf8",
+          "lineNumber": 272
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "OpenClipboard",
+          "lineNumber": 275
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "EmptyClipboard",
+          "lineNumber": 276
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "GlobalAlloc",
+          "lineNumber": 278
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "size",
+          "lineNumber": 278
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "memcpy",
+          "lineNumber": 279
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "GlobalLock",
+          "lineNumber": 279
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "c_str",
+          "lineNumber": 279
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "size",
+          "lineNumber": 279
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "GlobalUnlock",
+          "lineNumber": 280
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "SetClipboardData",
+          "lineNumber": 281
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "GlobalAlloc",
+          "lineNumber": 283
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "size",
+          "lineNumber": 283
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "memcpy",
+          "lineNumber": 284
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "GlobalLock",
+          "lineNumber": 284
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "c_str",
+          "lineNumber": 284
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "size",
+          "lineNumber": 284
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "GlobalUnlock",
+          "lineNumber": 285
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "SetClipboardData",
+          "lineNumber": 286
+        },
+        {
+          "caller": "quickConvert",
+          "callee": "CloseClipboard",
+          "lineNumber": 288
+        },
+        {
+          "caller": "getVersionNumber",
+          "callee": "GetModuleFileName",
+          "lineNumber": 295
+        },
+        {
+          "caller": "getVersionNumber",
+          "callee": "GetFileVersionInfoSize",
+          "lineNumber": 301
+        },
+        {
+          "caller": "getVersionNumber",
+          "callee": "GetFileVersionInfo",
+          "lineNumber": 308
+        },
+        {
+          "caller": "getVersionNumber",
+          "callee": "VerQueryValue",
+          "lineNumber": 314
+        },
+        {
+          "caller": "getVersionNumber",
+          "callee": "_T",
+          "lineNumber": 314
+        },
+        {
+          "caller": "getVersionString",
+          "callee": "getVersionNumber",
+          "lineNumber": 330
+        },
+        {
+          "caller": "getVersionString",
+          "callee": "wsprintfW",
+          "lineNumber": 331
+        },
+        {
+          "caller": "getVersionString",
+          "callee": "_T",
+          "lineNumber": 331
+        },
+        {
+          "caller": "getVersionString",
+          "callee": "wstring",
+          "lineNumber": 332
+        },
+        {
+          "caller": "getVersionString",
+          "callee": "GetModuleFileName",
+          "lineNumber": 336
+        },
+        {
+          "caller": "getVersionString",
+          "callee": "_T",
+          "lineNumber": 337
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 14,
+        "functionCount": 14,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 53,
+      "nonEmptyLines": 38,
+      "classes": [
+        {
+          "name": "OpenKeyHelper",
+          "startLine": 21,
+          "endLine": 52,
+          "methods": [
+            "openKey",
+            "setRegInt",
+            "getRegInt",
+            "setRegString",
+            "getRegString",
+            "setRegBinary",
+            "registerRunOnStartup",
+            "getExecutePath",
+            "getFullPath",
+            "getClipboardText",
+            "setClipboardText",
+            "quickConvert",
+            "getVersionNumber",
+            "getVersionString"
+          ],
+          "properties": [
+            "getRegBinary"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "setRegInt",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "getRegInt",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "setRegString",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "getRegString",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "setRegBinary",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "registerRunOnStartup",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "getExecutePath",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "getFullPath",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "getClipboardText",
+          "line": 44,
+          "isDefault": false
+        },
+        {
+          "name": "setClipboardText",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "quickConvert",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "getVersionNumber",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "getVersionString",
+          "line": 50,
+          "isDefault": false
+        },
+        {
+          "name": "OpenKeyHelper",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 14,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 97,
+      "nonEmptyLines": 81,
+      "functions": [
+        {
+          "name": "initEngine",
+          "startLine": 46,
+          "endLine": 48,
+          "params": []
+        },
+        {
+          "name": "freeEngine",
+          "startLine": 50,
+          "endLine": 52,
+          "params": []
+        },
+        {
+          "name": "openReleasesPage",
+          "startLine": 67,
+          "endLine": 69,
+          "params": []
+        },
+        {
+          "name": "createDesktopShortcut",
+          "startLine": 72,
+          "endLine": 97,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "initEngine",
+          "line": 46,
+          "isDefault": false
+        },
+        {
+          "name": "freeEngine",
+          "line": 50,
+          "isDefault": false
+        },
+        {
+          "name": "openReleasesPage",
+          "line": 67,
+          "isDefault": false
+        },
+        {
+          "name": "createDesktopShortcut",
+          "line": 72,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "initEngine",
+          "callee": "OpenKeyInit",
+          "lineNumber": 47
+        },
+        {
+          "caller": "freeEngine",
+          "callee": "OpenKeyFree",
+          "lineNumber": 51
+        },
+        {
+          "caller": "openReleasesPage",
+          "callee": "ShellExecute",
+          "lineNumber": 68
+        },
+        {
+          "caller": "openReleasesPage",
+          "callee": "_T",
+          "lineNumber": 68
+        },
+        {
+          "caller": "openReleasesPage",
+          "callee": "_T",
+          "lineNumber": 68
+        },
+        {
+          "caller": "createDesktopShortcut",
+          "callee": "CoInitialize",
+          "lineNumber": 73
+        },
+        {
+          "caller": "createDesktopShortcut",
+          "callee": "CoCreateInstance",
+          "lineNumber": 76
+        },
+        {
+          "caller": "createDesktopShortcut",
+          "callee": "SUCCEEDED",
+          "lineNumber": 78
+        },
+        {
+          "caller": "createDesktopShortcut",
+          "callee": "OpenKeyHelper::getFullPath",
+          "lineNumber": 79
+        },
+        {
+          "caller": "createDesktopShortcut",
+          "callee": "SetPath",
+          "lineNumber": 80
+        },
+        {
+          "caller": "createDesktopShortcut",
+          "callee": "c_str",
+          "lineNumber": 80
+        },
+        {
+          "caller": "createDesktopShortcut",
+          "callee": "SetDescription",
+          "lineNumber": 81
+        },
+        {
+          "caller": "createDesktopShortcut",
+          "callee": "_T",
+          "lineNumber": 81
+        },
+        {
+          "caller": "createDesktopShortcut",
+          "callee": "SetIconLocation",
+          "lineNumber": 82
+        },
+        {
+          "caller": "createDesktopShortcut",
+          "callee": "c_str",
+          "lineNumber": 82
+        },
+        {
+          "caller": "createDesktopShortcut",
+          "callee": "QueryInterface",
+          "lineNumber": 85
+        },
+        {
+          "caller": "createDesktopShortcut",
+          "callee": "SUCCEEDED",
+          "lineNumber": 87
+        },
+        {
+          "caller": "createDesktopShortcut",
+          "callee": "SHGetFolderPath",
+          "lineNumber": 90
+        },
+        {
+          "caller": "createDesktopShortcut",
+          "callee": "wsprintf",
+          "lineNumber": 91
+        },
+        {
+          "caller": "createDesktopShortcut",
+          "callee": "_T",
+          "lineNumber": 91
+        },
+        {
+          "caller": "createDesktopShortcut",
+          "callee": "Save",
+          "lineNumber": 92
+        },
+        {
+          "caller": "createDesktopShortcut",
+          "callee": "Release",
+          "lineNumber": 93
+        },
+        {
+          "caller": "createDesktopShortcut",
+          "callee": "Release",
+          "lineNumber": 94
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 4,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 30,
+      "nonEmptyLines": 24,
+      "classes": [
+        {
+          "name": "OpenKeyManager",
+          "startLine": 17,
+          "endLine": 30,
+          "methods": [
+            "initEngine",
+            "freeEngine",
+            "openReleasesPage",
+            "createDesktopShortcut"
+          ],
+          "properties": [
+            "_lastKeyCode"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "initEngine",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "freeEngine",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "openReleasesPage",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "createDesktopShortcut",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "OpenKeyManager",
+          "line": 17,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 5,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/resource.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 224,
+      "nonEmptyLines": 223,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 16,
+      "nonEmptyLines": 13,
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 95,
+      "nonEmptyLines": 77,
+      "metrics": {
+        "importCount": 6,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/targetver.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 22,
+      "nonEmptyLines": 16,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

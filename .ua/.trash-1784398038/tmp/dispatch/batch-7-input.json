@@ -1,0 +1,51 @@
+{
+  "batchIndex": 7,
+  "totalBatches": 19,
+  "files": [
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp",
+      "language": "cpp",
+      "sizeLines": 140,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.h",
+      "language": "c",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKeyUpdate/framework.h",
+      "language": "c",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKeyUpdate/resource.h",
+      "language": "c",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKeyUpdate/targetver.h",
+      "language": "c",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.h",
+      "platforms/windows/win32/OpenKey/OpenKeyUpdate/framework.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.h": [
+      "platforms/windows/win32/OpenKey/OpenKeyUpdate/resource.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKeyUpdate/framework.h": [
+      "platforms/windows/win32/OpenKey/OpenKeyUpdate/targetver.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKeyUpdate/resource.h": [],
+    "platforms/windows/win32/OpenKey/OpenKeyUpdate/targetver.h": []
+  },
+  "neighborMap": {}
+}

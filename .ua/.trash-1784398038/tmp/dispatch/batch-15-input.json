@@ -1,0 +1,184 @@
+{
+  "batchIndex": 15,
+  "totalBatches": 19,
+  "files": [
+    {
+      "path": "platforms/apple/macos/BellMac.h",
+      "language": "c",
+      "sizeLines": 116,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/BellMac.mm",
+      "language": "mm",
+      "sizeLines": 345,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/BellSettingsView.h",
+      "language": "c",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/BellSettingsView.mm",
+      "language": "mm",
+      "sizeLines": 1203,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/BrandColors.h",
+      "language": "c",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/BrandColors.m",
+      "language": "m",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/BrandControls.h",
+      "language": "c",
+      "sizeLines": 68,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/BrandControls.m",
+      "language": "m",
+      "sizeLines": 396,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/Chuông chùa.wav",
+      "language": "wav",
+      "sizeLines": 33389,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/Chuông gió.wav",
+      "language": "wav",
+      "sizeLines": 4177,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/Chuông reo.wav",
+      "language": "wav",
+      "sizeLines": 859,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/ConvertToolViewController.h",
+      "language": "c",
+      "sizeLines": 46,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/ConvertToolViewController.mm",
+      "language": "mm",
+      "sizeLines": 225,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/EmotionRiverView.h",
+      "language": "c",
+      "sizeLines": 81,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/EmotionRiverView.mm",
+      "language": "mm",
+      "sizeLines": 426,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/EmotionWaveView.h",
+      "language": "c",
+      "sizeLines": 40,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/EmotionWaveView.mm",
+      "language": "mm",
+      "sizeLines": 167,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/GatekeeperCardView.h",
+      "language": "c",
+      "sizeLines": 31,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/GatekeeperCardView.mm",
+      "language": "mm",
+      "sizeLines": 168,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/InputMethodCardView.h",
+      "language": "c",
+      "sizeLines": 34,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/InputMethodCardView.mm",
+      "language": "mm",
+      "sizeLines": 508,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/MJAccessibilityUtils.h",
+      "language": "c",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/MJAccessibilityUtils.m",
+      "language": "m",
+      "sizeLines": 69,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/MacroViewController.h",
+      "language": "c",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/MacroViewController.mm",
+      "language": "mm",
+      "sizeLines": 180,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "platforms/apple/macos/BellMac.h": [],
+    "platforms/apple/macos/BellMac.mm": [],
+    "platforms/apple/macos/BellSettingsView.h": [],
+    "platforms/apple/macos/BellSettingsView.mm": [],
+    "platforms/apple/macos/BrandColors.h": [],
+    "platforms/apple/macos/BrandColors.m": [],
+    "platforms/apple/macos/BrandControls.h": [],
+    "platforms/apple/macos/BrandControls.m": [],
+    "platforms/apple/macos/Chuông chùa.wav": [],
+    "platforms/apple/macos/Chuông gió.wav": [],
+    "platforms/apple/macos/Chuông reo.wav": [],
+    "platforms/apple/macos/ConvertToolViewController.h": [],
+    "platforms/apple/macos/ConvertToolViewController.mm": [],
+    "platforms/apple/macos/EmotionRiverView.h": [],
+    "platforms/apple/macos/EmotionRiverView.mm": [],
+    "platforms/apple/macos/EmotionWaveView.h": [],
+    "platforms/apple/macos/EmotionWaveView.mm": [],
+    "platforms/apple/macos/GatekeeperCardView.h": [],
+    "platforms/apple/macos/GatekeeperCardView.mm": [],
+    "platforms/apple/macos/InputMethodCardView.h": [],
+    "platforms/apple/macos/InputMethodCardView.mm": [],
+    "platforms/apple/macos/MJAccessibilityUtils.h": [],
+    "platforms/apple/macos/MJAccessibilityUtils.m": [],
+    "platforms/apple/macos/MacroViewController.h": [],
+    "platforms/apple/macos/MacroViewController.mm": []
+  },
+  "neighborMap": {}
+}

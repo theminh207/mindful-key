@@ -1,0 +1,15 @@
+{
+  "projectRoot": "/Users/now/Projects/mindful-keyboard/mindful-key",
+  "batchFiles": [
+    {"path": "tests/core/README.md", "language": "markdown", "sizeLines": 7, "fileCategory": "docs"},
+    {"path": "tests/core/build.sh", "language": "shell", "sizeLines": 15, "fileCategory": "script"},
+    {"path": "tests/core/phrasing_build.sh", "language": "shell", "sizeLines": 9, "fileCategory": "script"},
+    {"path": "tests/core/send_risk_build.sh", "language": "shell", "sizeLines": 12, "fileCategory": "script"}
+  ],
+  "batchImportData": {
+    "tests/core/README.md": [],
+    "tests/core/build.sh": [],
+    "tests/core/phrasing_build.sh": [],
+    "tests/core/send_risk_build.sh": []
+  }
+}

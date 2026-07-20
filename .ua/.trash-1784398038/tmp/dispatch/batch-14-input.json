@@ -1,0 +1,184 @@
+{
+  "batchIndex": 14,
+  "totalBatches": 19,
+  "files": [
+    {
+      "path": "platforms/apple/ios/App/MindfulKeyiOS.entitlements",
+      "language": "entitlements",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/App/MoodLakeViewController.h",
+      "language": "c",
+      "sizeLines": 23,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/App/MoodLakeViewController.m",
+      "language": "m",
+      "sizeLines": 637,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/App/OnboardingUI.h",
+      "language": "c",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/App/OnboardingUI.m",
+      "language": "m",
+      "sizeLines": 89,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/App/SettingsViewController.h",
+      "language": "c",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/App/SettingsViewController.m",
+      "language": "m",
+      "sizeLines": 310,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/App/main.m",
+      "language": "m",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/KeyboardExtension/Info.plist",
+      "language": "xml",
+      "sizeLines": 47,
+      "fileCategory": "config"
+    },
+    {
+      "path": "platforms/apple/ios/KeyboardExtension/KeyboardBridge.h",
+      "language": "c",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm",
+      "language": "mm",
+      "sizeLines": 173,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/KeyboardExtension/KeyboardExtension.entitlements",
+      "language": "entitlements",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/KeyboardExtension/KeyboardViewController.h",
+      "language": "c",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/KeyboardExtension/KeyboardViewController.mm",
+      "language": "mm",
+      "sizeLines": 478,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/KeyboardExtension/MoodBridge.h",
+      "language": "c",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/KeyboardExtension/MoodBridge.mm",
+      "language": "mm",
+      "sizeLines": 90,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.h",
+      "language": "c",
+      "sizeLines": 92,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm",
+      "language": "mm",
+      "sizeLines": 106,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/KeyboardExtension/SuggestionBarView.h",
+      "language": "c",
+      "sizeLines": 39,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/KeyboardExtension/SuggestionBarView.mm",
+      "language": "mm",
+      "sizeLines": 162,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/ios/README.md",
+      "language": "markdown",
+      "sizeLines": 35,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "platforms/apple/macos/AboutViewController.h",
+      "language": "c",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/AboutViewController.m",
+      "language": "m",
+      "sizeLines": 63,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/AppDelegate.h",
+      "language": "c",
+      "sizeLines": 47,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/AppDelegate.m",
+      "language": "m",
+      "sizeLines": 984,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "platforms/apple/ios/App/MindfulKeyiOS.entitlements": [],
+    "platforms/apple/ios/App/MoodLakeViewController.h": [],
+    "platforms/apple/ios/App/MoodLakeViewController.m": [],
+    "platforms/apple/ios/App/OnboardingUI.h": [],
+    "platforms/apple/ios/App/OnboardingUI.m": [],
+    "platforms/apple/ios/App/SettingsViewController.h": [],
+    "platforms/apple/ios/App/SettingsViewController.m": [],
+    "platforms/apple/ios/App/main.m": [],
+    "platforms/apple/ios/KeyboardExtension/Info.plist": [],
+    "platforms/apple/ios/KeyboardExtension/KeyboardBridge.h": [],
+    "platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm": [],
+    "platforms/apple/ios/KeyboardExtension/KeyboardExtension.entitlements": [],
+    "platforms/apple/ios/KeyboardExtension/KeyboardViewController.h": [],
+    "platforms/apple/ios/KeyboardExtension/KeyboardViewController.mm": [],
+    "platforms/apple/ios/KeyboardExtension/MoodBridge.h": [],
+    "platforms/apple/ios/KeyboardExtension/MoodBridge.mm": [],
+    "platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.h": [],
+    "platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm": [],
+    "platforms/apple/ios/KeyboardExtension/SuggestionBarView.h": [],
+    "platforms/apple/ios/KeyboardExtension/SuggestionBarView.mm": [],
+    "platforms/apple/ios/README.md": [],
+    "platforms/apple/macos/AboutViewController.h": [],
+    "platforms/apple/macos/AboutViewController.m": [],
+    "platforms/apple/macos/AppDelegate.h": [],
+    "platforms/apple/macos/AppDelegate.m": []
+  },
+  "neighborMap": {}
+}

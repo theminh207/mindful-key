@@ -1,0 +1,42 @@
+{
+  "projectRoot": "/Users/now/Projects/mindful-keyboard/mindful-key",
+  "batchFiles": [
+    {"path": "core/mood/BreathingPause.cpp", "language": "cpp", "sizeLines": 35, "fileCategory": "code"},
+    {"path": "core/mood/BreathingPause.h", "language": "c", "sizeLines": 59, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/BrandControls.cpp", "language": "cpp", "sizeLines": 113, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/BrandControls.h", "language": "c", "sizeLines": 40, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/BrandPalette.h", "language": "c", "sizeLines": 41, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/OpenKey.cpp", "language": "cpp", "sizeLines": 738, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.cpp", "language": "cpp", "sizeLines": 272, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.h", "language": "c", "sizeLines": 40, "fileCategory": "code"}
+  ],
+  "batchImportData": {
+    "core/mood/BreathingPause.cpp": [
+      "core/mood/BreathingPause.h"
+    ],
+    "core/mood/BreathingPause.h": [],
+    "platforms/windows/win32/OpenKey/OpenKey/BrandControls.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/BrandControls.h",
+      "platforms/windows/win32/OpenKey/OpenKey/BrandPalette.h",
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/BrandControls.h": [],
+    "platforms/windows/win32/OpenKey/OpenKey/BrandPalette.h": [],
+    "platforms/windows/win32/OpenKey/OpenKey/OpenKey.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/AppDelegate.h",
+      "platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.h",
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.cpp": [
+      "core/mood/BreathingPause.h",
+      "platforms/windows/win32/OpenKey/OpenKey/BrandControls.h",
+      "platforms/windows/win32/OpenKey/OpenKey/BrandPalette.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MoodStore.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.h",
+      "platforms/windows/win32/OpenKey/OpenKey/SecureField.h",
+      "platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.h",
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.h": []
+  }
+}

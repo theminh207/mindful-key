@@ -1,0 +1,17 @@
+{
+  "fixedSectionOk": true,
+  "nodesRecovered": 0,
+  "edgesRestored": 0,
+  "crossBatchEdgesAdded": 0,
+  "typesRemapped": 0,
+  "complexityRemapped": 0,
+  "notes": [
+    "Fixed section verified: 14 tested_by edges dropped is the only correction, a single uniform pattern (orphan/mismatched test<->prod pairs) — matches Input 1006 edges -> Output 992 edges exactly. Not concerning.",
+    "Recomputed input totals directly from the 21 batch files (681 nodes, 1006 edges) — matches merge script's reported input exactly, confirming no node/edge loss beyond the reported 14 edge drops.",
+    "Could-not-fix section confirmed empty by direct scan: 0 nodes missing 'id', all 6 node types are known-valid (file, class, function, document, pipeline, config), all complexity values are known-valid (simple/moderate/complex), 0 dangling edges (all source/target ids resolve).",
+    "Cross-batch import edges: scanned all 44 non-empty importMap entries (106 individual import pairs) against the assembled graph. All 106 already have a corresponding 'imports' edge (file:<src> -> file:<tgt>) present in the graph — 0 gaps. This matches the merge script's 'Recovered 0 imports edges' — batches had already produced these edges themselves, so 0 was the correct outcome, not a miss.",
+    "tested_by edges (3) inspected individually: Engine.cpp<->test_engine.cpp, MoodPhrasing.cpp<->test_phrasing.cpp, SendRiskAnalyzer.cpp<->test_send_risk.cpp — all correspond to real prod/test file pairs in tests/core/, and the 3 source nodes carry a 'tested' tag consistent with the linker's '3 production nodes tagged tested' report.",
+    "Note (not a defect): tests/ios/* and tests/macos/* test files (bridge_test.mm, emotion_wave_test.mm, mood_pipeline_test.mm, etc.) have no tested_by edges to production counterparts, since path-convention matching doesn't resolve 1:1 for those bridge-style test names. Out of scope for this review (not listed under Fixed or Could-not-fix by the merge script) but flagged for awareness.",
+    "No duplicate (source,target,type) edge keys and no edges missing weight/direction fields — dedup and edge normalization both look sound."
+  ]
+}

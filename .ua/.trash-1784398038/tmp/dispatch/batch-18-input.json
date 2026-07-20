@@ -1,0 +1,184 @@
+{
+  "batchIndex": 18,
+  "totalBatches": 19,
+  "files": [
+    {
+      "path": "platforms/apple/shared/ThemeBridge.mm",
+      "language": "mm",
+      "sizeLines": 67,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/linux/README.md",
+      "language": "markdown",
+      "sizeLines": 7,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "platforms/linux/linux-upstream/README.md",
+      "language": "markdown",
+      "sizeLines": 3,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "platforms/windows/README.md",
+      "language": "markdown",
+      "sizeLines": 17,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "platforms/windows/installer/MindfulKey.iss",
+      "language": "iss",
+      "sizeLines": 98,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey.sln",
+      "language": "sln",
+      "sizeLines": 41,
+      "fileCategory": "config"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/DeclareDPIAware.manifest",
+      "language": "manifest",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/OpenKey.rc",
+      "language": "rc",
+      "sizeLines": 631,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj",
+      "language": "vcxproj",
+      "sizeLines": 254,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj.filters",
+      "language": "filters",
+      "sizeLines": 262,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj.user",
+      "language": "user",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/Style.manifest",
+      "language": "manifest",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKeyUpdate/DeclareDPIAware.manifest",
+      "language": "manifest",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.rc",
+      "language": "rc",
+      "sizeLines": 218,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj",
+      "language": "vcxproj",
+      "sizeLines": 177,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj.filters",
+      "language": "filters",
+      "sizeLines": 52,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj.user",
+      "language": "user",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKeyUpdate/Style.manifest",
+      "language": "manifest",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/README.md",
+      "language": "markdown",
+      "sizeLines": 76,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "tests/core/test_engine.cpp",
+      "language": "cpp",
+      "sizeLines": 161,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/core/test_phrasing.cpp",
+      "language": "cpp",
+      "sizeLines": 157,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/core/test_send_risk.cpp",
+      "language": "cpp",
+      "sizeLines": 105,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/ios/bridge_test.mm",
+      "language": "mm",
+      "sizeLines": 156,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/ios/emotion_wave_test.mm",
+      "language": "mm",
+      "sizeLines": 83,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/ios/mood_bridge_test.mm",
+      "language": "mm",
+      "sizeLines": 187,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "platforms/apple/shared/ThemeBridge.mm": [],
+    "platforms/linux/README.md": [],
+    "platforms/linux/linux-upstream/README.md": [],
+    "platforms/windows/README.md": [],
+    "platforms/windows/installer/MindfulKey.iss": [],
+    "platforms/windows/win32/OpenKey/OpenKey.sln": [],
+    "platforms/windows/win32/OpenKey/OpenKey/DeclareDPIAware.manifest": [],
+    "platforms/windows/win32/OpenKey/OpenKey/OpenKey.rc": [],
+    "platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj": [],
+    "platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj.filters": [],
+    "platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj.user": [],
+    "platforms/windows/win32/OpenKey/OpenKey/Style.manifest": [],
+    "platforms/windows/win32/OpenKey/OpenKeyUpdate/DeclareDPIAware.manifest": [],
+    "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.rc": [],
+    "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj": [],
+    "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj.filters": [],
+    "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj.user": [],
+    "platforms/windows/win32/OpenKey/OpenKeyUpdate/Style.manifest": [],
+    "platforms/windows/win32/README.md": [],
+    "tests/core/test_engine.cpp": [],
+    "tests/core/test_phrasing.cpp": [],
+    "tests/core/test_send_risk.cpp": [],
+    "tests/ios/bridge_test.mm": [],
+    "tests/ios/emotion_wave_test.mm": [],
+    "tests/ios/mood_bridge_test.mm": []
+  },
+  "neighborMap": {}
+}

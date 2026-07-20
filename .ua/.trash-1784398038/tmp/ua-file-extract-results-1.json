@@ -1,0 +1,5111 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 14,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 14,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 14,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/AboutDialog.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 91,
+      "nonEmptyLines": 79,
+      "functions": [
+        {
+          "name": "AboutDialog",
+          "startLine": 18,
+          "endLine": 20,
+          "params": [
+            "hInstance",
+            "resourceId"
+          ]
+        },
+        {
+          "name": "~AboutDialog",
+          "startLine": 22,
+          "endLine": 23,
+          "params": []
+        },
+        {
+          "name": "fillData",
+          "startLine": 25,
+          "endLine": 26,
+          "params": []
+        },
+        {
+          "name": "eventProc",
+          "startLine": 28,
+          "endLine": 63,
+          "params": [
+            "hDlg",
+            "uMsg",
+            "wParam",
+            "lParam"
+          ]
+        },
+        {
+          "name": "initDialog",
+          "startLine": 65,
+          "endLine": 84,
+          "params": []
+        },
+        {
+          "name": "onUpdateButton",
+          "startLine": 86,
+          "endLine": 91,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "AboutDialog",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "~AboutDialog",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "fillData",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "eventProc",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "initDialog",
+          "line": 65,
+          "isDefault": false
+        },
+        {
+          "name": "onUpdateButton",
+          "line": 86,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "eventProc",
+          "callee": "initDialog",
+          "lineNumber": 32
+        },
+        {
+          "caller": "eventProc",
+          "callee": "LOWORD",
+          "lineNumber": 35
+        },
+        {
+          "caller": "eventProc",
+          "callee": "closeDialog",
+          "lineNumber": 39
+        },
+        {
+          "caller": "eventProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 39
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onUpdateButton",
+          "lineNumber": 42
+        },
+        {
+          "caller": "eventProc",
+          "callee": "ShellExecute",
+          "lineNumber": 53
+        },
+        {
+          "caller": "eventProc",
+          "callee": "_T",
+          "lineNumber": 53
+        },
+        {
+          "caller": "eventProc",
+          "callee": "_T",
+          "lineNumber": 53
+        },
+        {
+          "caller": "eventProc",
+          "callee": "ShellExecute",
+          "lineNumber": 55
+        },
+        {
+          "caller": "eventProc",
+          "callee": "_T",
+          "lineNumber": 55
+        },
+        {
+          "caller": "eventProc",
+          "callee": "_T",
+          "lineNumber": 55
+        },
+        {
+          "caller": "eventProc",
+          "callee": "ShellExecute",
+          "lineNumber": 57
+        },
+        {
+          "caller": "eventProc",
+          "callee": "_T",
+          "lineNumber": 57
+        },
+        {
+          "caller": "eventProc",
+          "callee": "_T",
+          "lineNumber": 57
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SET_DIALOG_ICON",
+          "lineNumber": 67
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 69
+        },
+        {
+          "caller": "initDialog",
+          "callee": "CreateFont",
+          "lineNumber": 71
+        },
+        {
+          "caller": "initDialog",
+          "callee": "_T",
+          "lineNumber": 73
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SendDlgItemMessage",
+          "lineNumber": 74
+        },
+        {
+          "caller": "initDialog",
+          "callee": "WPARAM",
+          "lineNumber": 74
+        },
+        {
+          "caller": "initDialog",
+          "callee": "wsprintfW",
+          "lineNumber": 77
+        },
+        {
+          "caller": "initDialog",
+          "callee": "_T",
+          "lineNumber": 77
+        },
+        {
+          "caller": "initDialog",
+          "callee": "c_str",
+          "lineNumber": 77
+        },
+        {
+          "caller": "initDialog",
+          "callee": "OpenKeyHelper::getVersionString",
+          "lineNumber": 77
+        },
+        {
+          "caller": "initDialog",
+          "callee": "_T",
+          "lineNumber": 77
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SendDlgItemMessage",
+          "lineNumber": 78
+        },
+        {
+          "caller": "initDialog",
+          "callee": "LPARAM",
+          "lineNumber": 78
+        },
+        {
+          "caller": "initDialog",
+          "callee": "CreateFont",
+          "lineNumber": 80
+        },
+        {
+          "caller": "initDialog",
+          "callee": "_T",
+          "lineNumber": 82
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SendDlgItemMessage",
+          "lineNumber": 83
+        },
+        {
+          "caller": "initDialog",
+          "callee": "WPARAM",
+          "lineNumber": 83
+        },
+        {
+          "caller": "onUpdateButton",
+          "callee": "OpenKeyManager::openReleasesPage",
+          "lineNumber": 90
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 6,
+        "functionCount": 6,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/AboutDialog.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 25,
+      "classes": [
+        {
+          "name": "AboutDialog",
+          "startLine": 17,
+          "endLine": 28,
+          "methods": [
+            "eventProc",
+            "initDialog",
+            "fillData",
+            "onUpdateButton"
+          ],
+          "properties": [
+            "hUpdateButton"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "fillData",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "AboutDialog",
+          "line": 17,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/AppDelegate.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 319,
+      "nonEmptyLines": 280,
+      "functions": [
+        {
+          "name": "isDialogMsg",
+          "startLine": 55,
+          "endLine": 60,
+          "params": [
+            "msg"
+          ]
+        },
+        {
+          "name": "checkUpdate",
+          "startLine": 62,
+          "endLine": 75,
+          "params": []
+        },
+        {
+          "name": "AppDelegate",
+          "startLine": 77,
+          "endLine": 79,
+          "params": []
+        },
+        {
+          "name": "run",
+          "startLine": 85,
+          "endLine": 149,
+          "params": [
+            "hInstance"
+          ]
+        },
+        {
+          "name": "createMainDialog",
+          "startLine": 151,
+          "endLine": 158,
+          "params": []
+        },
+        {
+          "name": "closeDialog",
+          "startLine": 160,
+          "endLine": 175,
+          "params": [
+            "dialog"
+          ]
+        },
+        {
+          "name": "onInputMethodChangedFromHotKey",
+          "startLine": 177,
+          "endLine": 183,
+          "params": []
+        },
+        {
+          "name": "onDefaultConfig",
+          "startLine": 185,
+          "endLine": 218,
+          "params": []
+        },
+        {
+          "name": "onToggleVietnamese",
+          "startLine": 220,
+          "endLine": 231,
+          "params": []
+        },
+        {
+          "name": "onToggleCheckSpelling",
+          "startLine": 233,
+          "endLine": 239,
+          "params": []
+        },
+        {
+          "name": "onToggleUseSmartSwitchKey",
+          "startLine": 241,
+          "endLine": 246,
+          "params": []
+        },
+        {
+          "name": "onToggleUseMacro",
+          "startLine": 248,
+          "endLine": 253,
+          "params": []
+        },
+        {
+          "name": "onMacroTable",
+          "startLine": 255,
+          "endLine": 262,
+          "params": []
+        },
+        {
+          "name": "onConvertTool",
+          "startLine": 264,
+          "endLine": 271,
+          "params": []
+        },
+        {
+          "name": "onQuickConvert",
+          "startLine": 273,
+          "endLine": 282,
+          "params": []
+        },
+        {
+          "name": "onInputType",
+          "startLine": 284,
+          "endLine": 289,
+          "params": [
+            "type"
+          ]
+        },
+        {
+          "name": "onTableCode",
+          "startLine": 291,
+          "endLine": 300,
+          "params": [
+            "code"
+          ]
+        },
+        {
+          "name": "onControlPanel",
+          "startLine": 302,
+          "endLine": 304,
+          "params": []
+        },
+        {
+          "name": "onOpenKeyAbout",
+          "startLine": 306,
+          "endLine": 313,
+          "params": []
+        },
+        {
+          "name": "onOpenKeyExit",
+          "startLine": 315,
+          "endLine": 319,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "isDialogMsg",
+          "line": 55,
+          "isDefault": false
+        },
+        {
+          "name": "checkUpdate",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "AppDelegate",
+          "line": 77,
+          "isDefault": false
+        },
+        {
+          "name": "run",
+          "line": 85,
+          "isDefault": false
+        },
+        {
+          "name": "createMainDialog",
+          "line": 151,
+          "isDefault": false
+        },
+        {
+          "name": "closeDialog",
+          "line": 160,
+          "isDefault": false
+        },
+        {
+          "name": "onInputMethodChangedFromHotKey",
+          "line": 177,
+          "isDefault": false
+        },
+        {
+          "name": "onDefaultConfig",
+          "line": 185,
+          "isDefault": false
+        },
+        {
+          "name": "onToggleVietnamese",
+          "line": 220,
+          "isDefault": false
+        },
+        {
+          "name": "onToggleCheckSpelling",
+          "line": 233,
+          "isDefault": false
+        },
+        {
+          "name": "onToggleUseSmartSwitchKey",
+          "line": 241,
+          "isDefault": false
+        },
+        {
+          "name": "onToggleUseMacro",
+          "line": 248,
+          "isDefault": false
+        },
+        {
+          "name": "onMacroTable",
+          "line": 255,
+          "isDefault": false
+        },
+        {
+          "name": "onConvertTool",
+          "line": 264,
+          "isDefault": false
+        },
+        {
+          "name": "onQuickConvert",
+          "line": 273,
+          "isDefault": false
+        },
+        {
+          "name": "onInputType",
+          "line": 284,
+          "isDefault": false
+        },
+        {
+          "name": "onTableCode",
+          "line": 291,
+          "isDefault": false
+        },
+        {
+          "name": "onControlPanel",
+          "line": 302,
+          "isDefault": false
+        },
+        {
+          "name": "onOpenKeyAbout",
+          "line": 306,
+          "isDefault": false
+        },
+        {
+          "name": "onOpenKeyExit",
+          "line": 315,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "isDialogMsg",
+          "callee": "IsDialogMessage",
+          "lineNumber": 56
+        },
+        {
+          "caller": "isDialogMsg",
+          "callee": "getHwnd",
+          "lineNumber": 56
+        },
+        {
+          "caller": "isDialogMsg",
+          "callee": "IsDialogMessage",
+          "lineNumber": 57
+        },
+        {
+          "caller": "isDialogMsg",
+          "callee": "getHwnd",
+          "lineNumber": 57
+        },
+        {
+          "caller": "isDialogMsg",
+          "callee": "IsDialogMessage",
+          "lineNumber": 58
+        },
+        {
+          "caller": "isDialogMsg",
+          "callee": "getHwnd",
+          "lineNumber": 58
+        },
+        {
+          "caller": "isDialogMsg",
+          "callee": "IsDialogMessage",
+          "lineNumber": 59
+        },
+        {
+          "caller": "isDialogMsg",
+          "callee": "getHwnd",
+          "lineNumber": 59
+        },
+        {
+          "caller": "run",
+          "callee": "CreateMutexW",
+          "lineNumber": 96
+        },
+        {
+          "caller": "run",
+          "callee": "FindWindow",
+          "lineNumber": 99
+        },
+        {
+          "caller": "run",
+          "callee": "MessageBeep",
+          "lineNumber": 101
+        },
+        {
+          "caller": "run",
+          "callee": "SendMessageTimeoutW",
+          "lineNumber": 109
+        },
+        {
+          "caller": "run",
+          "callee": "PostQuitMessage",
+          "lineNumber": 111
+        },
+        {
+          "caller": "run",
+          "callee": "OpenKeyManager::initEngine",
+          "lineNumber": 116
+        },
+        {
+          "caller": "run",
+          "callee": "SystemTrayHelper::createSystemTrayIcon",
+          "lineNumber": 119
+        },
+        {
+          "caller": "run",
+          "callee": "SystemTrayHelper::updateData",
+          "lineNumber": 120
+        },
+        {
+          "caller": "run",
+          "callee": "SystemTrayHelper::checkRivalInputMethod",
+          "lineNumber": 126
+        },
+        {
+          "caller": "run",
+          "callee": "createMainDialog",
+          "lineNumber": 130
+        },
+        {
+          "caller": "run",
+          "callee": "MessageBeep",
+          "lineNumber": 131
+        },
+        {
+          "caller": "run",
+          "callee": "checkUpdate",
+          "lineNumber": 135
+        },
+        {
+          "caller": "run",
+          "callee": "GetMessage",
+          "lineNumber": 139
+        },
+        {
+          "caller": "run",
+          "callee": "isDialogMsg",
+          "lineNumber": 143
+        },
+        {
+          "caller": "run",
+          "callee": "TranslateMessage",
+          "lineNumber": 144
+        },
+        {
+          "caller": "run",
+          "callee": "DispatchMessage",
+          "lineNumber": 145
+        },
+        {
+          "caller": "createMainDialog",
+          "callee": "show",
+          "lineNumber": 154
+        },
+        {
+          "caller": "createMainDialog",
+          "callee": "bringOnTop",
+          "lineNumber": 156
+        },
+        {
+          "caller": "closeDialog",
+          "callee": "closeDialog",
+          "lineNumber": 161
+        },
+        {
+          "caller": "onInputMethodChangedFromHotKey",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 178
+        },
+        {
+          "caller": "onInputMethodChangedFromHotKey",
+          "callee": "fillData",
+          "lineNumber": 180
+        },
+        {
+          "caller": "onInputMethodChangedFromHotKey",
+          "callee": "SystemTrayHelper::updateData",
+          "lineNumber": 182
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 186
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 187
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 189
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 190
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 191
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 192
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 193
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 194
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 195
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 196
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 197
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 198
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 199
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 200
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 201
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 202
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 204
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 205
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 206
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 208
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 209
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 210
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 211
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 212
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "fillData",
+          "lineNumber": 215
+        },
+        {
+          "caller": "onDefaultConfig",
+          "callee": "SystemTrayHelper::updateData",
+          "lineNumber": 217
+        },
+        {
+          "caller": "onToggleVietnamese",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 221
+        },
+        {
+          "caller": "onToggleVietnamese",
+          "callee": "fillData",
+          "lineNumber": 223
+        },
+        {
+          "caller": "onToggleVietnamese",
+          "callee": "OpenKeyHelper::getLastAppExecuteName",
+          "lineNumber": 227
+        },
+        {
+          "caller": "onToggleVietnamese",
+          "callee": "setAppInputMethodStatus",
+          "lineNumber": 228
+        },
+        {
+          "caller": "onToggleVietnamese",
+          "callee": "saveSmartSwitchKeyData",
+          "lineNumber": 229
+        },
+        {
+          "caller": "onToggleCheckSpelling",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 234
+        },
+        {
+          "caller": "onToggleCheckSpelling",
+          "callee": "fillData",
+          "lineNumber": 236
+        },
+        {
+          "caller": "onToggleCheckSpelling",
+          "callee": "vSetCheckSpelling",
+          "lineNumber": 238
+        },
+        {
+          "caller": "onToggleUseSmartSwitchKey",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 242
+        },
+        {
+          "caller": "onToggleUseSmartSwitchKey",
+          "callee": "fillData",
+          "lineNumber": 244
+        },
+        {
+          "caller": "onToggleUseMacro",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 249
+        },
+        {
+          "caller": "onToggleUseMacro",
+          "callee": "fillData",
+          "lineNumber": 251
+        },
+        {
+          "caller": "onMacroTable",
+          "callee": "show",
+          "lineNumber": 258
+        },
+        {
+          "caller": "onMacroTable",
+          "callee": "bringOnTop",
+          "lineNumber": 260
+        },
+        {
+          "caller": "onConvertTool",
+          "callee": "show",
+          "lineNumber": 267
+        },
+        {
+          "caller": "onConvertTool",
+          "callee": "bringOnTop",
+          "lineNumber": 269
+        },
+        {
+          "caller": "onQuickConvert",
+          "callee": "OpenKeyHelper::quickConvert",
+          "lineNumber": 274
+        },
+        {
+          "caller": "onQuickConvert",
+          "callee": "LoadString",
+          "lineNumber": 278
+        },
+        {
+          "caller": "onQuickConvert",
+          "callee": "MessageBox",
+          "lineNumber": 279
+        },
+        {
+          "caller": "onQuickConvert",
+          "callee": "_T",
+          "lineNumber": 279
+        },
+        {
+          "caller": "onInputType",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 285
+        },
+        {
+          "caller": "onInputType",
+          "callee": "fillData",
+          "lineNumber": 287
+        },
+        {
+          "caller": "onTableCode",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 292
+        },
+        {
+          "caller": "onTableCode",
+          "callee": "fillData",
+          "lineNumber": 294
+        },
+        {
+          "caller": "onTableCode",
+          "callee": "setAppInputMethodStatus",
+          "lineNumber": 297
+        },
+        {
+          "caller": "onTableCode",
+          "callee": "OpenKeyHelper::getFrontMostAppExecuteName",
+          "lineNumber": 297
+        },
+        {
+          "caller": "onTableCode",
+          "callee": "saveSmartSwitchKeyData",
+          "lineNumber": 298
+        },
+        {
+          "caller": "onControlPanel",
+          "callee": "createMainDialog",
+          "lineNumber": 303
+        },
+        {
+          "caller": "onOpenKeyAbout",
+          "callee": "show",
+          "lineNumber": 309
+        },
+        {
+          "caller": "onOpenKeyAbout",
+          "callee": "bringOnTop",
+          "lineNumber": 311
+        },
+        {
+          "caller": "onOpenKeyExit",
+          "callee": "OpenKeyManager::freeEngine",
+          "lineNumber": 316
+        },
+        {
+          "caller": "onOpenKeyExit",
+          "callee": "SystemTrayHelper::removeSystemTray",
+          "lineNumber": 317
+        },
+        {
+          "caller": "onOpenKeyExit",
+          "callee": "PostQuitMessage",
+          "lineNumber": 318
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 20,
+        "functionCount": 20,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/AppDelegate.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 54,
+      "nonEmptyLines": 47,
+      "classes": [
+        {
+          "name": "BaseDialog",
+          "startLine": 21,
+          "endLine": 21,
+          "methods": [],
+          "properties": []
+        },
+        {
+          "name": "AppDelegate",
+          "startLine": 22,
+          "endLine": 54,
+          "methods": [
+            "isDialogMsg",
+            "checkUpdate",
+            "run",
+            "createMainDialog",
+            "closeDialog",
+            "onInputMethodChangedFromHotKey",
+            "onDefaultConfig",
+            "onToggleVietnamese",
+            "onToggleCheckSpelling",
+            "onToggleUseSmartSwitchKey",
+            "onToggleUseMacro",
+            "onMacroTable",
+            "onConvertTool",
+            "onQuickConvert",
+            "onInputType",
+            "onTableCode",
+            "onControlPanel",
+            "onOpenKeyAbout",
+            "onOpenKeyExit"
+          ],
+          "properties": [
+            "hInstance",
+            "mainDialog",
+            "getInstance"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "BaseDialog",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "run",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "createMainDialog",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "closeDialog",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "onInputMethodChangedFromHotKey",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "onDefaultConfig",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "onToggleVietnamese",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "onToggleCheckSpelling",
+          "line": 40,
+          "isDefault": false
+        },
+        {
+          "name": "onToggleUseSmartSwitchKey",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "onToggleUseMacro",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "onMacroTable",
+          "line": 44,
+          "isDefault": false
+        },
+        {
+          "name": "onConvertTool",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "onQuickConvert",
+          "line": 46,
+          "isDefault": false
+        },
+        {
+          "name": "onInputType",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "onTableCode",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "onControlPanel",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "onOpenKeyAbout",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "onOpenKeyExit",
+          "line": 53,
+          "isDefault": false
+        },
+        {
+          "name": "AppDelegate",
+          "line": 22,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 19,
+        "functionCount": 0,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/BaseDialog.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 93,
+      "nonEmptyLines": 79,
+      "functions": [
+        {
+          "name": "DialogProc",
+          "startLine": 17,
+          "endLine": 36,
+          "params": [
+            "hDlg",
+            "uMsg",
+            "wParam",
+            "lParam"
+          ]
+        },
+        {
+          "name": "createToolTip",
+          "startLine": 38,
+          "endLine": 60,
+          "params": [
+            "control",
+            "toolTipString"
+          ]
+        },
+        {
+          "name": "createToolTip",
+          "startLine": 62,
+          "endLine": 65,
+          "params": [
+            "control",
+            "stringResId"
+          ]
+        },
+        {
+          "name": "BaseDialog",
+          "startLine": 67,
+          "endLine": 70,
+          "params": [
+            "hInstance",
+            "resourceId"
+          ]
+        },
+        {
+          "name": "show",
+          "startLine": 72,
+          "endLine": 75,
+          "params": []
+        },
+        {
+          "name": "bringOnTop",
+          "startLine": 77,
+          "endLine": 80,
+          "params": []
+        },
+        {
+          "name": "getHwnd",
+          "startLine": 82,
+          "endLine": 84,
+          "params": []
+        },
+        {
+          "name": "closeDialog",
+          "startLine": 86,
+          "endLine": 93,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "createToolTip",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "createToolTip",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "BaseDialog",
+          "line": 67,
+          "isDefault": false
+        },
+        {
+          "name": "show",
+          "line": 72,
+          "isDefault": false
+        },
+        {
+          "name": "bringOnTop",
+          "line": 77,
+          "isDefault": false
+        },
+        {
+          "name": "getHwnd",
+          "line": 82,
+          "isDefault": false
+        },
+        {
+          "name": "closeDialog",
+          "line": 86,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "DialogProc",
+          "callee": "SetWindowLongPtr",
+          "lineNumber": 20
+        },
+        {
+          "caller": "DialogProc",
+          "callee": "SetWindowLong",
+          "lineNumber": 22
+        },
+        {
+          "caller": "DialogProc",
+          "callee": "eventProc",
+          "lineNumber": 25
+        },
+        {
+          "caller": "DialogProc",
+          "callee": "GetWindowLongPtr",
+          "lineNumber": 28
+        },
+        {
+          "caller": "DialogProc",
+          "callee": "GetWindowLong",
+          "lineNumber": 30
+        },
+        {
+          "caller": "DialogProc",
+          "callee": "eventProc",
+          "lineNumber": 33
+        },
+        {
+          "caller": "createToolTip",
+          "callee": "CreateWindowEx",
+          "lineNumber": 42
+        },
+        {
+          "caller": "createToolTip",
+          "callee": "SendMessage",
+          "lineNumber": 56
+        },
+        {
+          "caller": "createToolTip",
+          "callee": "SendMessage",
+          "lineNumber": 59
+        },
+        {
+          "caller": "createToolTip",
+          "callee": "LoadString",
+          "lineNumber": 63
+        },
+        {
+          "caller": "createToolTip",
+          "callee": "createToolTip",
+          "lineNumber": 64
+        },
+        {
+          "caller": "show",
+          "callee": "CreateDialogParam",
+          "lineNumber": 73
+        },
+        {
+          "caller": "show",
+          "callee": "MAKEINTRESOURCE",
+          "lineNumber": 73
+        },
+        {
+          "caller": "show",
+          "callee": "ShowWindow",
+          "lineNumber": 74
+        },
+        {
+          "caller": "bringOnTop",
+          "callee": "SetForegroundWindow",
+          "lineNumber": 78
+        },
+        {
+          "caller": "bringOnTop",
+          "callee": "SetActiveWindow",
+          "lineNumber": 79
+        },
+        {
+          "caller": "closeDialog",
+          "callee": "SetWindowLongPtr",
+          "lineNumber": 88
+        },
+        {
+          "caller": "closeDialog",
+          "callee": "SetWindowLong",
+          "lineNumber": 90
+        },
+        {
+          "caller": "closeDialog",
+          "callee": "DestroyWindow",
+          "lineNumber": 92
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 7,
+        "functionCount": 8,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/BaseDialog.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 38,
+      "nonEmptyLines": 35,
+      "classes": [
+        {
+          "name": "BaseDialog",
+          "startLine": 20,
+          "endLine": 38,
+          "methods": [
+            "createToolTip",
+            "createToolTip",
+            "eventProc",
+            "show",
+            "bringOnTop",
+            "fillData",
+            "getHwnd",
+            "closeDialog"
+          ],
+          "properties": [
+            "resId",
+            "hInstance",
+            "hDlg"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "show",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "bringOnTop",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "fillData",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "getHwnd",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "closeDialog",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "BaseDialog",
+          "line": 20,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 6,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/ConvertToolDialog.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 247,
+      "nonEmptyLines": 221,
+      "functions": [
+        {
+          "name": "ConvertToolDialog",
+          "startLine": 20,
+          "endLine": 22,
+          "params": [
+            "hInstance",
+            "resourceId"
+          ]
+        },
+        {
+          "name": "~ConvertToolDialog",
+          "startLine": 24,
+          "endLine": 25,
+          "params": []
+        },
+        {
+          "name": "eventProc",
+          "startLine": 27,
+          "endLine": 67,
+          "params": [
+            "hDlg",
+            "uMsg",
+            "wParam",
+            "lParam"
+          ]
+        },
+        {
+          "name": "initDialog",
+          "startLine": 69,
+          "endLine": 102,
+          "params": []
+        },
+        {
+          "name": "fillData",
+          "startLine": 104,
+          "endLine": 122,
+          "params": []
+        },
+        {
+          "name": "setSwitchKeyText",
+          "startLine": 124,
+          "endLine": 133,
+          "params": [
+            "hWnd",
+            "keyCode"
+          ]
+        },
+        {
+          "name": "setLogic",
+          "startLine": 135,
+          "endLine": 152,
+          "params": [
+            "exceptWnd"
+          ]
+        },
+        {
+          "name": "onComboBoxSelected",
+          "startLine": 154,
+          "endLine": 160,
+          "params": [
+            "hCombobox",
+            "comboboxId"
+          ]
+        },
+        {
+          "name": "onCheckboxClicked",
+          "startLine": 162,
+          "endLine": 209,
+          "params": [
+            "hWnd"
+          ]
+        },
+        {
+          "name": "onCharacter",
+          "startLine": 211,
+          "endLine": 229,
+          "params": [
+            "hWnd",
+            "keyCode"
+          ]
+        },
+        {
+          "name": "onSwitchButton",
+          "startLine": 231,
+          "endLine": 236,
+          "params": []
+        },
+        {
+          "name": "onConvertButton",
+          "startLine": 238,
+          "endLine": 247,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ConvertToolDialog",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "~ConvertToolDialog",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "eventProc",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "initDialog",
+          "line": 69,
+          "isDefault": false
+        },
+        {
+          "name": "fillData",
+          "line": 104,
+          "isDefault": false
+        },
+        {
+          "name": "setSwitchKeyText",
+          "line": 124,
+          "isDefault": false
+        },
+        {
+          "name": "setLogic",
+          "line": 135,
+          "isDefault": false
+        },
+        {
+          "name": "onComboBoxSelected",
+          "line": 154,
+          "isDefault": false
+        },
+        {
+          "name": "onCheckboxClicked",
+          "line": 162,
+          "isDefault": false
+        },
+        {
+          "name": "onCharacter",
+          "line": 211,
+          "isDefault": false
+        },
+        {
+          "name": "onSwitchButton",
+          "line": 231,
+          "isDefault": false
+        },
+        {
+          "name": "onConvertButton",
+          "line": 238,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "eventProc",
+          "callee": "initDialog",
+          "lineNumber": 31
+        },
+        {
+          "caller": "eventProc",
+          "callee": "LOWORD",
+          "lineNumber": 34
+        },
+        {
+          "caller": "eventProc",
+          "callee": "closeDialog",
+          "lineNumber": 39
+        },
+        {
+          "caller": "eventProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 39
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onSwitchButton",
+          "lineNumber": 42
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onConvertButton",
+          "lineNumber": 45
+        },
+        {
+          "caller": "eventProc",
+          "callee": "HIWORD",
+          "lineNumber": 48
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onComboBoxSelected",
+          "lineNumber": 49
+        },
+        {
+          "caller": "eventProc",
+          "callee": "LOWORD",
+          "lineNumber": 49
+        },
+        {
+          "caller": "eventProc",
+          "callee": "HIWORD",
+          "lineNumber": 51
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onCheckboxClicked",
+          "lineNumber": 52
+        },
+        {
+          "caller": "eventProc",
+          "callee": "HIWORD",
+          "lineNumber": 54
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onCharacter",
+          "lineNumber": 58
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SET_DIALOG_ICON",
+          "lineNumber": 71
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 74
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 75
+        },
+        {
+          "caller": "initDialog",
+          "callee": "OpenKeyManager::getTableCode",
+          "lineNumber": 77
+        },
+        {
+          "caller": "initDialog",
+          "callee": "size",
+          "lineNumber": 78
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SendMessage",
+          "lineNumber": 79
+        },
+        {
+          "caller": "initDialog",
+          "callee": "reinterpret_cast<LPARAM>",
+          "lineNumber": 79
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SendMessage",
+          "lineNumber": 80
+        },
+        {
+          "caller": "initDialog",
+          "callee": "reinterpret_cast<LPARAM>",
+          "lineNumber": 80
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 83
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 84
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 85
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 86
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 87
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 88
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 90
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 91
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 92
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 93
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 94
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 96
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SendDlgItemMessage",
+          "lineNumber": 98
+        },
+        {
+          "caller": "initDialog",
+          "callee": "LoadIcon",
+          "lineNumber": 98
+        },
+        {
+          "caller": "initDialog",
+          "callee": "MAKEINTRESOURCEW",
+          "lineNumber": 98
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SendDlgItemMessage",
+          "lineNumber": 99
+        },
+        {
+          "caller": "initDialog",
+          "callee": "LoadIcon",
+          "lineNumber": 99
+        },
+        {
+          "caller": "initDialog",
+          "callee": "MAKEINTRESOURCEW",
+          "lineNumber": 99
+        },
+        {
+          "caller": "initDialog",
+          "callee": "fillData",
+          "lineNumber": 101
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 105
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 106
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 108
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 109
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 110
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 111
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 112
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 113
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 115
+        },
+        {
+          "caller": "fillData",
+          "callee": "EnableWindow",
+          "lineNumber": 116
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 117
+        },
+        {
+          "caller": "fillData",
+          "callee": "HAS_CONTROL",
+          "lineNumber": 117
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 118
+        },
+        {
+          "caller": "fillData",
+          "callee": "HAS_OPTION",
+          "lineNumber": 118
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 119
+        },
+        {
+          "caller": "fillData",
+          "callee": "HAS_COMMAND",
+          "lineNumber": 119
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 120
+        },
+        {
+          "caller": "fillData",
+          "callee": "HAS_SHIFT",
+          "lineNumber": 120
+        },
+        {
+          "caller": "fillData",
+          "callee": "setSwitchKeyText",
+          "lineNumber": 121
+        },
+        {
+          "caller": "setSwitchKeyText",
+          "callee": "SetWindowText",
+          "lineNumber": 126
+        },
+        {
+          "caller": "setSwitchKeyText",
+          "callee": "_T",
+          "lineNumber": 126
+        },
+        {
+          "caller": "setSwitchKeyText",
+          "callee": "SetWindowText",
+          "lineNumber": 128
+        },
+        {
+          "caller": "setSwitchKeyText",
+          "callee": "_T",
+          "lineNumber": 128
+        },
+        {
+          "caller": "setSwitchKeyText",
+          "callee": "SetWindowText",
+          "lineNumber": 131
+        },
+        {
+          "caller": "setLogic",
+          "callee": "SendMessage",
+          "lineNumber": 137
+        },
+        {
+          "caller": "setLogic",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 138
+        },
+        {
+          "caller": "setLogic",
+          "callee": "SendMessage",
+          "lineNumber": 141
+        },
+        {
+          "caller": "setLogic",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 142
+        },
+        {
+          "caller": "setLogic",
+          "callee": "SendMessage",
+          "lineNumber": 145
+        },
+        {
+          "caller": "setLogic",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 146
+        },
+        {
+          "caller": "setLogic",
+          "callee": "SendMessage",
+          "lineNumber": 149
+        },
+        {
+          "caller": "setLogic",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 150
+        },
+        {
+          "caller": "onComboBoxSelected",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 156
+        },
+        {
+          "caller": "onComboBoxSelected",
+          "callee": "SendMessage",
+          "lineNumber": 156
+        },
+        {
+          "caller": "onComboBoxSelected",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 158
+        },
+        {
+          "caller": "onComboBoxSelected",
+          "callee": "SendMessage",
+          "lineNumber": 158
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 165
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 168
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 170
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 173
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 175
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 178
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 180
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 183
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 185
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 186
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "setLogic",
+          "lineNumber": 187
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 189
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 190
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "setLogic",
+          "lineNumber": 191
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 193
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 194
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 196
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 197
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "setLogic",
+          "lineNumber": 198
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 200
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 201
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "setLogic",
+          "lineNumber": 202
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 204
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 205
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SystemTrayHelper::updateData",
+          "lineNumber": 208
+        },
+        {
+          "caller": "onCharacter",
+          "callee": "GET_SWITCH_KEY",
+          "lineNumber": 214
+        },
+        {
+          "caller": "onCharacter",
+          "callee": "keyCodeToCharacter",
+          "lineNumber": 217
+        },
+        {
+          "caller": "onCharacter",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 225
+        },
+        {
+          "caller": "onCharacter",
+          "callee": "setSwitchKeyText",
+          "lineNumber": 226
+        },
+        {
+          "caller": "onCharacter",
+          "callee": "SystemTrayHelper::updateData",
+          "lineNumber": 227
+        },
+        {
+          "caller": "onSwitchButton",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 233
+        },
+        {
+          "caller": "onSwitchButton",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 234
+        },
+        {
+          "caller": "onSwitchButton",
+          "callee": "fillData",
+          "lineNumber": 235
+        },
+        {
+          "caller": "onConvertButton",
+          "callee": "OpenKeyHelper::quickConvert",
+          "lineNumber": 239
+        },
+        {
+          "caller": "onConvertButton",
+          "callee": "LoadString",
+          "lineNumber": 243
+        },
+        {
+          "caller": "onConvertButton",
+          "callee": "MessageBox",
+          "lineNumber": 244
+        },
+        {
+          "caller": "onConvertButton",
+          "callee": "_T",
+          "lineNumber": 244
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 12,
+        "functionCount": 12,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/ConvertToolDialog.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 39,
+      "nonEmptyLines": 35,
+      "classes": [
+        {
+          "name": "ConvertToolDialog",
+          "startLine": 17,
+          "endLine": 38,
+          "methods": [
+            "onComboBoxSelected",
+            "onCheckboxClicked",
+            "onCharacter",
+            "setSwitchKeyText",
+            "setLogic",
+            "eventProc",
+            "initDialog",
+            "fillData",
+            "onSwitchButton",
+            "onConvertButton"
+          ],
+          "properties": [
+            "checkAllCaps",
+            "comboboxSource"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "fillData",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "onSwitchButton",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "onConvertButton",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "ConvertToolDialog",
+          "line": 17,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 4,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/MacroDialog.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 253,
+      "nonEmptyLines": 223,
+      "functions": [
+        {
+          "name": "MacroDialog",
+          "startLine": 23,
+          "endLine": 25,
+          "params": [
+            "hInstance",
+            "resourceId"
+          ]
+        },
+        {
+          "name": "~MacroDialog",
+          "startLine": 27,
+          "endLine": 28,
+          "params": []
+        },
+        {
+          "name": "eventProc",
+          "startLine": 30,
+          "endLine": 87,
+          "params": [
+            "hDlg",
+            "uMsg",
+            "wParam",
+            "lParam"
+          ]
+        },
+        {
+          "name": "initDialog",
+          "startLine": 89,
+          "endLine": 113,
+          "params": []
+        },
+        {
+          "name": "fillData",
+          "startLine": 115,
+          "endLine": 123,
+          "params": []
+        },
+        {
+          "name": "saveAndReload",
+          "startLine": 125,
+          "endLine": 133,
+          "params": []
+        },
+        {
+          "name": "insertItem",
+          "startLine": 135,
+          "endLine": 151,
+          "params": [
+            "index",
+            "macroName",
+            "macroContent"
+          ]
+        },
+        {
+          "name": "onSelectItem",
+          "startLine": 153,
+          "endLine": 157,
+          "params": [
+            "index"
+          ]
+        },
+        {
+          "name": "onAddMacroButton",
+          "startLine": 159,
+          "endLine": 177,
+          "params": []
+        },
+        {
+          "name": "onDeleteMacroButton",
+          "startLine": 179,
+          "endLine": 196,
+          "params": []
+        },
+        {
+          "name": "onImportMacroButton",
+          "startLine": 198,
+          "endLine": 224,
+          "params": []
+        },
+        {
+          "name": "onExportMacrobutton",
+          "startLine": 226,
+          "endLine": 246,
+          "params": []
+        },
+        {
+          "name": "onCheckboxClicked",
+          "startLine": 248,
+          "endLine": 253,
+          "params": [
+            "hWnd"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "MacroDialog",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "~MacroDialog",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "eventProc",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "initDialog",
+          "line": 89,
+          "isDefault": false
+        },
+        {
+          "name": "fillData",
+          "line": 115,
+          "isDefault": false
+        },
+        {
+          "name": "saveAndReload",
+          "line": 125,
+          "isDefault": false
+        },
+        {
+          "name": "insertItem",
+          "line": 135,
+          "isDefault": false
+        },
+        {
+          "name": "onSelectItem",
+          "line": 153,
+          "isDefault": false
+        },
+        {
+          "name": "onAddMacroButton",
+          "line": 159,
+          "isDefault": false
+        },
+        {
+          "name": "onDeleteMacroButton",
+          "line": 179,
+          "isDefault": false
+        },
+        {
+          "name": "onImportMacroButton",
+          "line": 198,
+          "isDefault": false
+        },
+        {
+          "name": "onExportMacrobutton",
+          "line": 226,
+          "isDefault": false
+        },
+        {
+          "name": "onCheckboxClicked",
+          "line": 248,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "eventProc",
+          "callee": "initDialog",
+          "lineNumber": 34
+        },
+        {
+          "caller": "eventProc",
+          "callee": "LOWORD",
+          "lineNumber": 37
+        },
+        {
+          "caller": "eventProc",
+          "callee": "closeDialog",
+          "lineNumber": 41
+        },
+        {
+          "caller": "eventProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 41
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onAddMacroButton",
+          "lineNumber": 44
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onDeleteMacroButton",
+          "lineNumber": 47
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onImportMacroButton",
+          "lineNumber": 50
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onExportMacrobutton",
+          "lineNumber": 53
+        },
+        {
+          "caller": "eventProc",
+          "callee": "HIWORD",
+          "lineNumber": 56
+        },
+        {
+          "caller": "eventProc",
+          "callee": "GetWindowText",
+          "lineNumber": 59
+        },
+        {
+          "caller": "eventProc",
+          "callee": "hasMacro",
+          "lineNumber": 61
+        },
+        {
+          "caller": "eventProc",
+          "callee": "wideStringToUtf8",
+          "lineNumber": 61
+        },
+        {
+          "caller": "eventProc",
+          "callee": "SetWindowText",
+          "lineNumber": 62
+        },
+        {
+          "caller": "eventProc",
+          "callee": "SetWindowText",
+          "lineNumber": 64
+        },
+        {
+          "caller": "eventProc",
+          "callee": "HIWORD",
+          "lineNumber": 67
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onCheckboxClicked",
+          "lineNumber": 68
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onSelectItem",
+          "lineNumber": 79
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SET_DIALOG_ICON",
+          "lineNumber": 91
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 93
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 94
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 95
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 96
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 97
+        },
+        {
+          "caller": "initDialog",
+          "callee": "memset",
+          "lineNumber": 100
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SendMessage",
+          "lineNumber": 105
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SendMessage",
+          "lineNumber": 106
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SendMessage",
+          "lineNumber": 110
+        },
+        {
+          "caller": "initDialog",
+          "callee": "fillData",
+          "lineNumber": 112
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 116
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 117
+        },
+        {
+          "caller": "fillData",
+          "callee": "getAllMacro",
+          "lineNumber": 118
+        },
+        {
+          "caller": "fillData",
+          "callee": "size",
+          "lineNumber": 119
+        },
+        {
+          "caller": "fillData",
+          "callee": "insertItem",
+          "lineNumber": 120
+        },
+        {
+          "caller": "fillData",
+          "callee": "c_str",
+          "lineNumber": 120
+        },
+        {
+          "caller": "fillData",
+          "callee": "utf8ToWideString",
+          "lineNumber": 120
+        },
+        {
+          "caller": "fillData",
+          "callee": "size",
+          "lineNumber": 120
+        },
+        {
+          "caller": "fillData",
+          "callee": "c_str",
+          "lineNumber": 121
+        },
+        {
+          "caller": "fillData",
+          "callee": "utf8ToWideString",
+          "lineNumber": 121
+        },
+        {
+          "caller": "fillData",
+          "callee": "size",
+          "lineNumber": 121
+        },
+        {
+          "caller": "saveAndReload",
+          "callee": "getMacroSaveData",
+          "lineNumber": 128
+        },
+        {
+          "caller": "saveAndReload",
+          "callee": "OpenKeyHelper::setRegBinary",
+          "lineNumber": 129
+        },
+        {
+          "caller": "saveAndReload",
+          "callee": "_T",
+          "lineNumber": 129
+        },
+        {
+          "caller": "saveAndReload",
+          "callee": "data",
+          "lineNumber": 129
+        },
+        {
+          "caller": "saveAndReload",
+          "callee": "size",
+          "lineNumber": 129
+        },
+        {
+          "caller": "saveAndReload",
+          "callee": "fillData",
+          "lineNumber": 132
+        },
+        {
+          "caller": "insertItem",
+          "callee": "memset",
+          "lineNumber": 137
+        },
+        {
+          "caller": "insertItem",
+          "callee": "SendMessage",
+          "lineNumber": 145
+        },
+        {
+          "caller": "insertItem",
+          "callee": "SendMessage",
+          "lineNumber": 150
+        },
+        {
+          "caller": "onSelectItem",
+          "callee": "SetWindowText",
+          "lineNumber": 154
+        },
+        {
+          "caller": "onSelectItem",
+          "callee": "c_str",
+          "lineNumber": 154
+        },
+        {
+          "caller": "onSelectItem",
+          "callee": "utf8ToWideString",
+          "lineNumber": 154
+        },
+        {
+          "caller": "onSelectItem",
+          "callee": "size",
+          "lineNumber": 154
+        },
+        {
+          "caller": "onSelectItem",
+          "callee": "SetWindowText",
+          "lineNumber": 155
+        },
+        {
+          "caller": "onSelectItem",
+          "callee": "c_str",
+          "lineNumber": 155
+        },
+        {
+          "caller": "onSelectItem",
+          "callee": "utf8ToWideString",
+          "lineNumber": 155
+        },
+        {
+          "caller": "onSelectItem",
+          "callee": "size",
+          "lineNumber": 155
+        },
+        {
+          "caller": "onSelectItem",
+          "callee": "SetWindowText",
+          "lineNumber": 156
+        },
+        {
+          "caller": "onAddMacroButton",
+          "callee": "GetWindowText",
+          "lineNumber": 161
+        },
+        {
+          "caller": "onAddMacroButton",
+          "callee": "GetWindowText",
+          "lineNumber": 164
+        },
+        {
+          "caller": "onAddMacroButton",
+          "callee": "compare",
+          "lineNumber": 167
+        },
+        {
+          "caller": "onAddMacroButton",
+          "callee": "compare",
+          "lineNumber": 167
+        },
+        {
+          "caller": "onAddMacroButton",
+          "callee": "MessageBox",
+          "lineNumber": 168
+        },
+        {
+          "caller": "onAddMacroButton",
+          "callee": "_T",
+          "lineNumber": 168
+        },
+        {
+          "caller": "onAddMacroButton",
+          "callee": "_T",
+          "lineNumber": 168
+        },
+        {
+          "caller": "onAddMacroButton",
+          "callee": "addMacro",
+          "lineNumber": 172
+        },
+        {
+          "caller": "onAddMacroButton",
+          "callee": "wideStringToUtf8",
+          "lineNumber": 172
+        },
+        {
+          "caller": "onAddMacroButton",
+          "callee": "wideStringToUtf8",
+          "lineNumber": 172
+        },
+        {
+          "caller": "onAddMacroButton",
+          "callee": "SetWindowText",
+          "lineNumber": 173
+        },
+        {
+          "caller": "onAddMacroButton",
+          "callee": "_T",
+          "lineNumber": 173
+        },
+        {
+          "caller": "onAddMacroButton",
+          "callee": "SetWindowText",
+          "lineNumber": 174
+        },
+        {
+          "caller": "onAddMacroButton",
+          "callee": "_T",
+          "lineNumber": 174
+        },
+        {
+          "caller": "onAddMacroButton",
+          "callee": "saveAndReload",
+          "lineNumber": 175
+        },
+        {
+          "caller": "onAddMacroButton",
+          "callee": "SetFocus",
+          "lineNumber": 176
+        },
+        {
+          "caller": "onDeleteMacroButton",
+          "callee": "GetWindowText",
+          "lineNumber": 181
+        },
+        {
+          "caller": "onDeleteMacroButton",
+          "callee": "compare",
+          "lineNumber": 184
+        },
+        {
+          "caller": "onDeleteMacroButton",
+          "callee": "MessageBox",
+          "lineNumber": 185
+        },
+        {
+          "caller": "onDeleteMacroButton",
+          "callee": "_T",
+          "lineNumber": 185
+        },
+        {
+          "caller": "onDeleteMacroButton",
+          "callee": "_T",
+          "lineNumber": 185
+        },
+        {
+          "caller": "onDeleteMacroButton",
+          "callee": "deleteMacro",
+          "lineNumber": 189
+        },
+        {
+          "caller": "onDeleteMacroButton",
+          "callee": "wideStringToUtf8",
+          "lineNumber": 189
+        },
+        {
+          "caller": "onDeleteMacroButton",
+          "callee": "saveAndReload",
+          "lineNumber": 190
+        },
+        {
+          "caller": "onDeleteMacroButton",
+          "callee": "SetWindowText",
+          "lineNumber": 191
+        },
+        {
+          "caller": "onDeleteMacroButton",
+          "callee": "_T",
+          "lineNumber": 191
+        },
+        {
+          "caller": "onDeleteMacroButton",
+          "callee": "SetWindowText",
+          "lineNumber": 192
+        },
+        {
+          "caller": "onDeleteMacroButton",
+          "callee": "_T",
+          "lineNumber": 192
+        },
+        {
+          "caller": "onDeleteMacroButton",
+          "callee": "SetFocus",
+          "lineNumber": 193
+        },
+        {
+          "caller": "onDeleteMacroButton",
+          "callee": "SetWindowText",
+          "lineNumber": 195
+        },
+        {
+          "caller": "onImportMacroButton",
+          "callee": "ZeroMemory",
+          "lineNumber": 201
+        },
+        {
+          "caller": "onImportMacroButton",
+          "callee": "_T",
+          "lineNumber": 206
+        },
+        {
+          "caller": "onImportMacroButton",
+          "callee": "GetOpenFileName",
+          "lineNumber": 213
+        },
+        {
+          "caller": "onImportMacroButton",
+          "callee": "MessageBox",
+          "lineNumber": 214
+        },
+        {
+          "caller": "onImportMacroButton",
+          "callee": "_T",
+          "lineNumber": 216
+        },
+        {
+          "caller": "onImportMacroButton",
+          "callee": "_T",
+          "lineNumber": 217
+        },
+        {
+          "caller": "onImportMacroButton",
+          "callee": "readFromFile",
+          "lineNumber": 221
+        },
+        {
+          "caller": "onImportMacroButton",
+          "callee": "wideStringToUtf8",
+          "lineNumber": 221
+        },
+        {
+          "caller": "onImportMacroButton",
+          "callee": "saveAndReload",
+          "lineNumber": 222
+        },
+        {
+          "caller": "onExportMacrobutton",
+          "callee": "ZeroMemory",
+          "lineNumber": 229
+        },
+        {
+          "caller": "onExportMacrobutton",
+          "callee": "_T",
+          "lineNumber": 234
+        },
+        {
+          "caller": "onExportMacrobutton",
+          "callee": "_T",
+          "lineNumber": 235
+        },
+        {
+          "caller": "onExportMacrobutton",
+          "callee": "GetSaveFileName",
+          "lineNumber": 242
+        },
+        {
+          "caller": "onExportMacrobutton",
+          "callee": "saveToFile",
+          "lineNumber": 244
+        },
+        {
+          "caller": "onExportMacrobutton",
+          "callee": "wideStringToUtf8",
+          "lineNumber": 244
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 250
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 251
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 13,
+        "functionCount": 13,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/MacroDialog.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 45,
+      "nonEmptyLines": 38,
+      "classes": [
+        {
+          "name": "MacroDialog",
+          "startLine": 17,
+          "endLine": 44,
+          "methods": [
+            "fillData",
+            "eventProc",
+            "initDialog",
+            "saveAndReload",
+            "insertItem",
+            "onSelectItem",
+            "onAddMacroButton",
+            "onDeleteMacroButton",
+            "onImportMacroButton",
+            "onExportMacrobutton",
+            "onCheckboxClicked"
+          ],
+          "properties": [
+            "listMacro",
+            "hMacroName",
+            "hAddButton",
+            "keys",
+            "macroText",
+            "macroContent"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "fillData",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "MacroDialog",
+          "line": 17,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/MainControlDialog.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 671,
+      "nonEmptyLines": 593,
+      "functions": [
+        {
+          "name": "MainControlDialog",
+          "startLine": 29,
+          "endLine": 31,
+          "params": [
+            "hInstance",
+            "resourceId"
+          ]
+        },
+        {
+          "name": "~MainControlDialog",
+          "startLine": 33,
+          "endLine": 34,
+          "params": []
+        },
+        {
+          "name": "initDialog",
+          "startLine": 36,
+          "endLine": 241,
+          "params": []
+        },
+        {
+          "name": "eventProc",
+          "startLine": 243,
+          "endLine": 319,
+          "params": [
+            "hDlg",
+            "uMsg",
+            "wParam",
+            "lParam"
+          ]
+        },
+        {
+          "name": "tabPageEventProc",
+          "startLine": 321,
+          "endLine": 358,
+          "params": [
+            "hDlg",
+            "uMsg",
+            "wParam",
+            "lParam"
+          ]
+        },
+        {
+          "name": "fillData",
+          "startLine": 360,
+          "endLine": 413,
+          "params": []
+        },
+        {
+          "name": "setSwitchKey",
+          "startLine": 415,
+          "endLine": 421,
+          "params": [
+            "code"
+          ]
+        },
+        {
+          "name": "onComboBoxSelected",
+          "startLine": 423,
+          "endLine": 435,
+          "params": [
+            "hCombobox",
+            "comboboxId"
+          ]
+        },
+        {
+          "name": "onCheckboxClicked",
+          "startLine": 437,
+          "endLine": 610,
+          "params": [
+            "hWnd"
+          ]
+        },
+        {
+          "name": "onCharacter",
+          "startLine": 612,
+          "endLine": 625,
+          "params": [
+            "hWnd",
+            "keyCode"
+          ]
+        },
+        {
+          "name": "setSwitchKeyText",
+          "startLine": 627,
+          "endLine": 638,
+          "params": [
+            "hWnd",
+            "keyCode"
+          ]
+        },
+        {
+          "name": "onTabIndexChanged",
+          "startLine": 640,
+          "endLine": 646,
+          "params": []
+        },
+        {
+          "name": "onUpdateButton",
+          "startLine": 648,
+          "endLine": 651,
+          "params": []
+        },
+        {
+          "name": "requestRestartAsAdmin",
+          "startLine": 654,
+          "endLine": 671,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "MainControlDialog",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "~MainControlDialog",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "initDialog",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "eventProc",
+          "line": 243,
+          "isDefault": false
+        },
+        {
+          "name": "tabPageEventProc",
+          "line": 321,
+          "isDefault": false
+        },
+        {
+          "name": "fillData",
+          "line": 360,
+          "isDefault": false
+        },
+        {
+          "name": "setSwitchKey",
+          "line": 415,
+          "isDefault": false
+        },
+        {
+          "name": "onComboBoxSelected",
+          "line": 423,
+          "isDefault": false
+        },
+        {
+          "name": "onCheckboxClicked",
+          "line": 437,
+          "isDefault": false
+        },
+        {
+          "name": "onCharacter",
+          "line": 612,
+          "isDefault": false
+        },
+        {
+          "name": "setSwitchKeyText",
+          "line": 627,
+          "isDefault": false
+        },
+        {
+          "name": "onTabIndexChanged",
+          "line": 640,
+          "isDefault": false
+        },
+        {
+          "name": "onUpdateButton",
+          "line": 648,
+          "isDefault": false
+        },
+        {
+          "name": "requestRestartAsAdmin",
+          "line": 654,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "initDialog",
+          "callee": "GetModuleHandleW",
+          "lineNumber": 37
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SET_DIALOG_ICON",
+          "lineNumber": 39
+        },
+        {
+          "caller": "initDialog",
+          "callee": "LoadString",
+          "lineNumber": 44
+        },
+        {
+          "caller": "initDialog",
+          "callee": "wsprintfW",
+          "lineNumber": 45
+        },
+        {
+          "caller": "initDialog",
+          "callee": "c_str",
+          "lineNumber": 45
+        },
+        {
+          "caller": "initDialog",
+          "callee": "OpenKeyHelper::getVersionString",
+          "lineNumber": 45
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SetWindowText",
+          "lineNumber": 46
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 49
+        },
+        {
+          "caller": "initDialog",
+          "callee": "OpenKeyManager::getInputType",
+          "lineNumber": 50
+        },
+        {
+          "caller": "initDialog",
+          "callee": "size",
+          "lineNumber": 51
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SendMessage",
+          "lineNumber": 52
+        },
+        {
+          "caller": "initDialog",
+          "callee": "reinterpret_cast<LPARAM>",
+          "lineNumber": 52
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 54
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 57
+        },
+        {
+          "caller": "initDialog",
+          "callee": "OpenKeyManager::getTableCode",
+          "lineNumber": 58
+        },
+        {
+          "caller": "initDialog",
+          "callee": "size",
+          "lineNumber": 59
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SendMessage",
+          "lineNumber": 60
+        },
+        {
+          "caller": "initDialog",
+          "callee": "reinterpret_cast<LPARAM>",
+          "lineNumber": 60
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 62
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 65
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDpiForSystem",
+          "lineNumber": 74
+        },
+        {
+          "caller": "initDialog",
+          "callee": "MulDiv",
+          "lineNumber": 75
+        },
+        {
+          "caller": "initDialog",
+          "callee": "ImageList_Create",
+          "lineNumber": 77
+        },
+        {
+          "caller": "initDialog",
+          "callee": "LoadImage",
+          "lineNumber": 80
+        },
+        {
+          "caller": "initDialog",
+          "callee": "MAKEINTRESOURCE",
+          "lineNumber": 80
+        },
+        {
+          "caller": "initDialog",
+          "callee": "ImageList_AddIcon",
+          "lineNumber": 83
+        },
+        {
+          "caller": "initDialog",
+          "callee": "DestroyIcon",
+          "lineNumber": 84
+        },
+        {
+          "caller": "initDialog",
+          "callee": "TabCtrl_SetImageList",
+          "lineNumber": 87
+        },
+        {
+          "caller": "initDialog",
+          "callee": "_T",
+          "lineNumber": 91
+        },
+        {
+          "caller": "initDialog",
+          "callee": "TabCtrl_InsertItem",
+          "lineNumber": 93
+        },
+        {
+          "caller": "initDialog",
+          "callee": "_T",
+          "lineNumber": 94
+        },
+        {
+          "caller": "initDialog",
+          "callee": "TabCtrl_InsertItem",
+          "lineNumber": 96
+        },
+        {
+          "caller": "initDialog",
+          "callee": "_T",
+          "lineNumber": 97
+        },
+        {
+          "caller": "initDialog",
+          "callee": "TabCtrl_InsertItem",
+          "lineNumber": 99
+        },
+        {
+          "caller": "initDialog",
+          "callee": "_T",
+          "lineNumber": 100
+        },
+        {
+          "caller": "initDialog",
+          "callee": "TabCtrl_InsertItem",
+          "lineNumber": 102
+        },
+        {
+          "caller": "initDialog",
+          "callee": "TabCtrl_GetItemRect",
+          "lineNumber": 104
+        },
+        {
+          "caller": "initDialog",
+          "callee": "TabCtrl_SetItemSize",
+          "lineNumber": 105
+        },
+        {
+          "caller": "initDialog",
+          "callee": "CreateDialogParam",
+          "lineNumber": 108
+        },
+        {
+          "caller": "initDialog",
+          "callee": "MAKEINTRESOURCE",
+          "lineNumber": 108
+        },
+        {
+          "caller": "initDialog",
+          "callee": "CreateDialogParam",
+          "lineNumber": 109
+        },
+        {
+          "caller": "initDialog",
+          "callee": "MAKEINTRESOURCE",
+          "lineNumber": 109
+        },
+        {
+          "caller": "initDialog",
+          "callee": "CreateDialogParam",
+          "lineNumber": 110
+        },
+        {
+          "caller": "initDialog",
+          "callee": "MAKEINTRESOURCE",
+          "lineNumber": 110
+        },
+        {
+          "caller": "initDialog",
+          "callee": "CreateDialogParam",
+          "lineNumber": 111
+        },
+        {
+          "caller": "initDialog",
+          "callee": "MAKEINTRESOURCE",
+          "lineNumber": 111
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetWindowRect",
+          "lineNumber": 113
+        },
+        {
+          "caller": "initDialog",
+          "callee": "ScreenToClient",
+          "lineNumber": 115
+        },
+        {
+          "caller": "initDialog",
+          "callee": "OffsetRect",
+          "lineNumber": 116
+        },
+        {
+          "caller": "initDialog",
+          "callee": "(LONG)",
+          "lineNumber": 117
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SetWindowPos",
+          "lineNumber": 118
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SetWindowPos",
+          "lineNumber": 119
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SetWindowPos",
+          "lineNumber": 120
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SetWindowPos",
+          "lineNumber": 121
+        },
+        {
+          "caller": "initDialog",
+          "callee": "onTabIndexChanged",
+          "lineNumber": 122
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 124
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 125
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 127
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 128
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 130
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 131
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 133
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 134
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 136
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 137
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 139
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 140
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 142
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 143
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 145
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 146
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 150
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 151
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 153
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 154
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 156
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 157
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 159
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 160
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 162
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 163
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 165
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 166
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 168
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 169
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 171
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 172
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 174
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 175
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 177
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 178
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 179
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 181
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 182
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 186
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 187
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 189
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 190
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 192
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 193
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 195
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 196
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 198
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 199
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 201
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 202
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 204
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 208
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 209
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 211
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 212
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 214
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 215
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 217
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 218
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 220
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 221
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 223
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 224
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 226
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 227
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 229
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 230
+        },
+        {
+          "caller": "initDialog",
+          "callee": "GetDlgItem",
+          "lineNumber": 232
+        },
+        {
+          "caller": "initDialog",
+          "callee": "createToolTip",
+          "lineNumber": 233
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SendDlgItemMessage",
+          "lineNumber": 237
+        },
+        {
+          "caller": "initDialog",
+          "callee": "LoadIcon",
+          "lineNumber": 237
+        },
+        {
+          "caller": "initDialog",
+          "callee": "MAKEINTRESOURCEW",
+          "lineNumber": 237
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SendDlgItemMessage",
+          "lineNumber": 238
+        },
+        {
+          "caller": "initDialog",
+          "callee": "LoadIcon",
+          "lineNumber": 238
+        },
+        {
+          "caller": "initDialog",
+          "callee": "MAKEINTRESOURCEW",
+          "lineNumber": 238
+        },
+        {
+          "caller": "initDialog",
+          "callee": "SendDlgItemMessage",
+          "lineNumber": 239
+        },
+        {
+          "caller": "initDialog",
+          "callee": "LoadIcon",
+          "lineNumber": 239
+        },
+        {
+          "caller": "initDialog",
+          "callee": "MAKEINTRESOURCEW",
+          "lineNumber": 239
+        },
+        {
+          "caller": "initDialog",
+          "callee": "fillData",
+          "lineNumber": 240
+        },
+        {
+          "caller": "eventProc",
+          "callee": "initDialog",
+          "lineNumber": 247
+        },
+        {
+          "caller": "eventProc",
+          "callee": "LOWORD",
+          "lineNumber": 250
+        },
+        {
+          "caller": "eventProc",
+          "callee": "closeDialog",
+          "lineNumber": 253
+        },
+        {
+          "caller": "eventProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 253
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onOpenKeyExit",
+          "lineNumber": 256
+        },
+        {
+          "caller": "eventProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 256
+        },
+        {
+          "caller": "eventProc",
+          "callee": "MessageBox",
+          "lineNumber": 259
+        },
+        {
+          "caller": "eventProc",
+          "callee": "_T",
+          "lineNumber": 261
+        },
+        {
+          "caller": "eventProc",
+          "callee": "_T",
+          "lineNumber": 262
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onDefaultConfig",
+          "lineNumber": 266
+        },
+        {
+          "caller": "eventProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 266
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onMacroTable",
+          "lineNumber": 271
+        },
+        {
+          "caller": "eventProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 271
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onUpdateButton",
+          "lineNumber": 274
+        },
+        {
+          "caller": "eventProc",
+          "callee": "ShellExecute",
+          "lineNumber": 277
+        },
+        {
+          "caller": "eventProc",
+          "callee": "_T",
+          "lineNumber": 277
+        },
+        {
+          "caller": "eventProc",
+          "callee": "_T",
+          "lineNumber": 277
+        },
+        {
+          "caller": "eventProc",
+          "callee": "HIWORD",
+          "lineNumber": 280
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onComboBoxSelected",
+          "lineNumber": 281
+        },
+        {
+          "caller": "eventProc",
+          "callee": "LOWORD",
+          "lineNumber": 281
+        },
+        {
+          "caller": "eventProc",
+          "callee": "HIWORD",
+          "lineNumber": 283
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onCheckboxClicked",
+          "lineNumber": 284
+        },
+        {
+          "caller": "eventProc",
+          "callee": "HIWORD",
+          "lineNumber": 286
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onCharacter",
+          "lineNumber": 290
+        },
+        {
+          "caller": "eventProc",
+          "callee": "onTabIndexChanged",
+          "lineNumber": 300
+        },
+        {
+          "caller": "eventProc",
+          "callee": "ShellExecute",
+          "lineNumber": 306
+        },
+        {
+          "caller": "eventProc",
+          "callee": "_T",
+          "lineNumber": 306
+        },
+        {
+          "caller": "eventProc",
+          "callee": "_T",
+          "lineNumber": 306
+        },
+        {
+          "caller": "eventProc",
+          "callee": "ShellExecute",
+          "lineNumber": 308
+        },
+        {
+          "caller": "eventProc",
+          "callee": "_T",
+          "lineNumber": 308
+        },
+        {
+          "caller": "eventProc",
+          "callee": "_T",
+          "lineNumber": 308
+        },
+        {
+          "caller": "eventProc",
+          "callee": "ShellExecute",
+          "lineNumber": 310
+        },
+        {
+          "caller": "eventProc",
+          "callee": "_T",
+          "lineNumber": 310
+        },
+        {
+          "caller": "eventProc",
+          "callee": "_T",
+          "lineNumber": 310
+        },
+        {
+          "caller": "tabPageEventProc",
+          "callee": "SetWindowLongPtr",
+          "lineNumber": 324
+        },
+        {
+          "caller": "tabPageEventProc",
+          "callee": "SetWindowLong",
+          "lineNumber": 326
+        },
+        {
+          "caller": "tabPageEventProc",
+          "callee": "IsThemeActive",
+          "lineNumber": 333
+        },
+        {
+          "caller": "tabPageEventProc",
+          "callee": "SetBkMode",
+          "lineNumber": 334
+        },
+        {
+          "caller": "tabPageEventProc",
+          "callee": "GetStockObject",
+          "lineNumber": 335
+        },
+        {
+          "caller": "tabPageEventProc",
+          "callee": "IsThemeActive",
+          "lineNumber": 337
+        },
+        {
+          "caller": "tabPageEventProc",
+          "callee": "BeginPaint",
+          "lineNumber": 339
+        },
+        {
+          "caller": "tabPageEventProc",
+          "callee": "FillRect",
+          "lineNumber": 342
+        },
+        {
+          "caller": "tabPageEventProc",
+          "callee": "(HBRUSH)",
+          "lineNumber": 342
+        },
+        {
+          "caller": "tabPageEventProc",
+          "callee": "EndPaint",
+          "lineNumber": 344
+        },
+        {
+          "caller": "tabPageEventProc",
+          "callee": "GetWindowLongPtr",
+          "lineNumber": 350
+        },
+        {
+          "caller": "tabPageEventProc",
+          "callee": "GetWindowLong",
+          "lineNumber": 352
+        },
+        {
+          "caller": "tabPageEventProc",
+          "callee": "eventProc",
+          "lineNumber": 355
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 361
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 362
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 364
+        },
+        {
+          "caller": "fillData",
+          "callee": "HAS_CONTROL",
+          "lineNumber": 364
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 365
+        },
+        {
+          "caller": "fillData",
+          "callee": "HAS_OPTION",
+          "lineNumber": 365
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 366
+        },
+        {
+          "caller": "fillData",
+          "callee": "HAS_COMMAND",
+          "lineNumber": 366
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 367
+        },
+        {
+          "caller": "fillData",
+          "callee": "HAS_SHIFT",
+          "lineNumber": 367
+        },
+        {
+          "caller": "fillData",
+          "callee": "setSwitchKeyText",
+          "lineNumber": 368
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 369
+        },
+        {
+          "caller": "fillData",
+          "callee": "HAS_BEEP",
+          "lineNumber": 369
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 371
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 372
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 374
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 375
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 376
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 377
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 378
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 379
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 380
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 381
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 382
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 383
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 384
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 385
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 386
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 387
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 388
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 390
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 391
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 392
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 393
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 394
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 396
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 397
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 398
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 399
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 400
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 401
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendMessage",
+          "lineNumber": 402
+        },
+        {
+          "caller": "fillData",
+          "callee": "EnableWindow",
+          "lineNumber": 404
+        },
+        {
+          "caller": "fillData",
+          "callee": "EnableWindow",
+          "lineNumber": 405
+        },
+        {
+          "caller": "fillData",
+          "callee": "EnableWindow",
+          "lineNumber": 406
+        },
+        {
+          "caller": "fillData",
+          "callee": "EnableWindow",
+          "lineNumber": 407
+        },
+        {
+          "caller": "fillData",
+          "callee": "wsprintfW",
+          "lineNumber": 411
+        },
+        {
+          "caller": "fillData",
+          "callee": "_T",
+          "lineNumber": 411
+        },
+        {
+          "caller": "fillData",
+          "callee": "c_str",
+          "lineNumber": 411
+        },
+        {
+          "caller": "fillData",
+          "callee": "OpenKeyHelper::getVersionString",
+          "lineNumber": 411
+        },
+        {
+          "caller": "fillData",
+          "callee": "_T",
+          "lineNumber": 411
+        },
+        {
+          "caller": "fillData",
+          "callee": "SendDlgItemMessage",
+          "lineNumber": 412
+        },
+        {
+          "caller": "fillData",
+          "callee": "LPARAM",
+          "lineNumber": 412
+        },
+        {
+          "caller": "setSwitchKey",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 420
+        },
+        {
+          "caller": "onComboBoxSelected",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 425
+        },
+        {
+          "caller": "onComboBoxSelected",
+          "callee": "SendMessage",
+          "lineNumber": 425
+        },
+        {
+          "caller": "onComboBoxSelected",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 428
+        },
+        {
+          "caller": "onComboBoxSelected",
+          "callee": "SendMessage",
+          "lineNumber": 428
+        },
+        {
+          "caller": "onComboBoxSelected",
+          "callee": "setAppInputMethodStatus",
+          "lineNumber": 430
+        },
+        {
+          "caller": "onComboBoxSelected",
+          "callee": "OpenKeyHelper::getFrontMostAppExecuteName",
+          "lineNumber": 430
+        },
+        {
+          "caller": "onComboBoxSelected",
+          "callee": "saveSmartSwitchKeyData",
+          "lineNumber": 431
+        },
+        {
+          "caller": "onComboBoxSelected",
+          "callee": "SystemTrayHelper::updateData",
+          "lineNumber": 434
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 440
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 443
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 446
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 449
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 452
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 455
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 458
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 461
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 464
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 467
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 470
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 471
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "setAppInputMethodStatus",
+          "lineNumber": 473
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "OpenKeyHelper::getFrontMostAppExecuteName",
+          "lineNumber": 473
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "saveSmartSwitchKeyData",
+          "lineNumber": 474
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 478
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 479
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "setAppInputMethodStatus",
+          "lineNumber": 481
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "OpenKeyHelper::getFrontMostAppExecuteName",
+          "lineNumber": 481
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "saveSmartSwitchKeyData",
+          "lineNumber": 482
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 486
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 487
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 490
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 491
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "EnableWindow",
+          "lineNumber": 492
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 495
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 496
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 499
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 500
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "OpenKeyHelper::registerRunOnStartup",
+          "lineNumber": 501
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 504
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 505
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "vSetCheckSpelling",
+          "lineNumber": 506
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "EnableWindow",
+          "lineNumber": 507
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "EnableWindow",
+          "lineNumber": 508
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "EnableWindow",
+          "lineNumber": 509
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 512
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "MoodWatch_ConfirmEnable",
+          "lineNumber": 515
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 516
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 519
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 522
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 523
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 526
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 527
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 530
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 531
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 534
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 535
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 538
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 539
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 542
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 543
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 546
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 547
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 550
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 551
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 554
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 555
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 558
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 559
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 562
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 563
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 566
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 567
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 570
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 571
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 574
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 575
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 578
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 579
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "OpenKeyManager::createDesktopShortcut",
+          "lineNumber": 582
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 585
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 586
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "requestRestartAsAdmin",
+          "lineNumber": 587
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 590
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 591
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 594
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 595
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 598
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 599
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 602
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 603
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SendMessage",
+          "lineNumber": 606
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 607
+        },
+        {
+          "caller": "onCheckboxClicked",
+          "callee": "SystemTrayHelper::updateData",
+          "lineNumber": 609
+        },
+        {
+          "caller": "onCharacter",
+          "callee": "GET_SWITCH_KEY",
+          "lineNumber": 615
+        },
+        {
+          "caller": "onCharacter",
+          "callee": "keyCodeToCharacter",
+          "lineNumber": 619
+        },
+        {
+          "caller": "onCharacter",
+          "callee": "setSwitchKey",
+          "lineNumber": 622
+        },
+        {
+          "caller": "onCharacter",
+          "callee": "setSwitchKeyText",
+          "lineNumber": 623
+        },
+        {
+          "caller": "setSwitchKeyText",
+          "callee": "SetWindowText",
+          "lineNumber": 629
+        },
+        {
+          "caller": "setSwitchKeyText",
+          "callee": "_T",
+          "lineNumber": 629
+        },
+        {
+          "caller": "setSwitchKeyText",
+          "callee": "SetWindowText",
+          "lineNumber": 632
+        },
+        {
+          "caller": "setSwitchKeyText",
+          "callee": "_T",
+          "lineNumber": 632
+        },
+        {
+          "caller": "setSwitchKeyText",
+          "callee": "SetWindowText",
+          "lineNumber": 636
+        },
+        {
+          "caller": "onTabIndexChanged",
+          "callee": "TabCtrl_GetCurSel",
+          "lineNumber": 641
+        },
+        {
+          "caller": "onTabIndexChanged",
+          "callee": "ShowWindow",
+          "lineNumber": 642
+        },
+        {
+          "caller": "onTabIndexChanged",
+          "callee": "ShowWindow",
+          "lineNumber": 643
+        },
+        {
+          "caller": "onTabIndexChanged",
+          "callee": "ShowWindow",
+          "lineNumber": 644
+        },
+        {
+          "caller": "onTabIndexChanged",
+          "callee": "ShowWindow",
+          "lineNumber": 645
+        },
+        {
+          "caller": "onUpdateButton",
+          "callee": "OpenKeyManager::openReleasesPage",
+          "lineNumber": 650
+        },
+        {
+          "caller": "requestRestartAsAdmin",
+          "callee": "OpenKeyHelper::registerRunOnStartup",
+          "lineNumber": 655
+        },
+        {
+          "caller": "requestRestartAsAdmin",
+          "callee": "IsUserAnAdmin",
+          "lineNumber": 656
+        },
+        {
+          "caller": "requestRestartAsAdmin",
+          "callee": "MessageBox",
+          "lineNumber": 657
+        },
+        {
+          "caller": "requestRestartAsAdmin",
+          "callee": "_T",
+          "lineNumber": 659
+        },
+        {
+          "caller": "requestRestartAsAdmin",
+          "callee": "_T",
+          "lineNumber": 660
+        },
+        {
+          "caller": "requestRestartAsAdmin",
+          "callee": "PostQuitMessage",
+          "lineNumber": 664
+        },
+        {
+          "caller": "requestRestartAsAdmin",
+          "callee": "ShellExecute",
+          "lineNumber": 665
+        },
+        {
+          "caller": "requestRestartAsAdmin",
+          "callee": "c_str",
+          "lineNumber": 665
+        },
+        {
+          "caller": "requestRestartAsAdmin",
+          "callee": "OpenKeyHelper::getFullPath",
+          "lineNumber": 665
+        },
+        {
+          "caller": "requestRestartAsAdmin",
+          "callee": "OpenKeyHelper::registerRunOnStartup",
+          "lineNumber": 669
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 14,
+        "functionCount": 14,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/MainControlDialog.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 54,
+      "nonEmptyLines": 49,
+      "classes": [
+        {
+          "name": "MainControlDialog",
+          "startLine": 17,
+          "endLine": 53,
+          "methods": [
+            "initDialog",
+            "onComboBoxSelected",
+            "onCheckboxClicked",
+            "onCharacter",
+            "setSwitchKeyText",
+            "onTabIndexChanged",
+            "onUpdateButton",
+            "requestRestartAsAdmin",
+            "eventProc",
+            "fillData",
+            "setSwitchKey"
+          ],
+          "properties": [
+            "hTab",
+            "hTabImages",
+            "comboBoxInputType",
+            "comboBoxTableCode",
+            "checkCtrl",
+            "checkVietnamese",
+            "checkModernOrthorgraphy",
+            "checkSmartSwitchKey",
+            "checkCreateDesktopShortcut",
+            "checkFixChromium",
+            "hUpdateButton",
+            "CALLBACK"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "fillData",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "setSwitchKey",
+          "line": 50,
+          "isDefault": false
+        },
+        {
+          "name": "MainControlDialog",
+          "line": 17,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 3,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 32,
+      "nonEmptyLines": 25,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/main.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 48,
+      "nonEmptyLines": 44,
+      "functions": [
+        {
+          "name": "wWinMain",
+          "startLine": 18,
+          "endLine": 48,
+          "params": [
+            "hInstance",
+            "hPrevInstance",
+            "lpCmdLine",
+            "nCmdShow"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "wWinMain",
+          "line": 18,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "wWinMain",
+          "callee": "UNREFERENCED_PARAMETER",
+          "lineNumber": 23
+        },
+        {
+          "caller": "wWinMain",
+          "callee": "UNREFERENCED_PARAMETER",
+          "lineNumber": 24
+        },
+        {
+          "caller": "wWinMain",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 28
+        },
+        {
+          "caller": "wWinMain",
+          "callee": "IsUserAnAdmin",
+          "lineNumber": 29
+        },
+        {
+          "caller": "wWinMain",
+          "callee": "ShellExecute",
+          "lineNumber": 36
+        },
+        {
+          "caller": "wWinMain",
+          "callee": "c_str",
+          "lineNumber": 36
+        },
+        {
+          "caller": "wWinMain",
+          "callee": "OpenKeyHelper::getFullPath",
+          "lineNumber": 36
+        },
+        {
+          "caller": "wWinMain",
+          "callee": "MessageBoxW",
+          "lineNumber": 38
+        },
+        {
+          "caller": "wWinMain",
+          "callee": "run",
+          "lineNumber": 47
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    }
+  ]
+}

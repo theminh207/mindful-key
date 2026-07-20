@@ -1,0 +1,599 @@
+{
+  "nodes": [
+    {
+      "id": "file:platforms/apple/macos/SystemSettingsView.h",
+      "type": "file",
+      "name": "SystemSettingsView.h",
+      "filePath": "platforms/apple/macos/SystemSettingsView.h",
+      "summary": "Header khai báo view `SystemSettingsView` (pane 'Hệ thống' trong cửa sổ Cài đặt macOS) với 2 phương thức: tính chiều cao ưa thích và làm mới trạng thái thật (login item, menu bar, phím tắt, phiên bản).",
+      "tags": ["macos", "settings-ui", "header", "appkit"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/macos/SystemSettingsView.mm",
+      "type": "file",
+      "name": "SystemSettingsView.mm",
+      "filePath": "platforms/apple/macos/SystemSettingsView.mm",
+      "summary": "Dựng pane 'Hệ thống' của cửa sổ Cài đặt bằng linh kiện brand: bật khởi động cùng máy, hiện icon menu bar, chip phím tắt chỉ-hiển-thị, và số phiên bản (đọc từ version.env) kèm link GitHub Releases. Copy nhịp bố cục từ PrivacyPaneView/BellSettingsView.",
+      "tags": ["macos", "settings-ui", "appkit", "brand-ui", "component"],
+      "complexity": "complex",
+      "languageNotes": "Objective-C++ (.mm) — tree-sitter không phân tích được nên cấu trúc rút bằng đọc trực tiếp; layout thủ công qua macro SET và tính toạ độ theo hệ toạ độ AppKit lật ngược."
+    },
+    {
+      "id": "file:platforms/apple/macos/ViewController.h",
+      "type": "file",
+      "name": "ViewController.h",
+      "filePath": "platforms/apple/macos/ViewController.h",
+      "summary": "Header của `ViewController` — bộ điều khiển cửa sổ cài đặt bộ gõ chính (kế thừa OpenKey), khai báo hàng loạt IBOutlet PillSwitch/popup cho tuỳ chọn Telex/VNI, bảng mã, phím chuyển và macro.",
+      "tags": ["macos", "view-controller", "header", "openkey"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/apple/macos/ViewController.m",
+      "type": "file",
+      "name": "ViewController.m",
+      "filePath": "platforms/apple/macos/ViewController.m",
+      "summary": "Bộ điều khiển cửa sổ cài đặt bộ gõ: quản lý 4 tab, dựng lại lưới tuỳ chọn 'Kiểu gõ' bằng NSStackView theo phong cách brand, nạp/ghi mọi tuỳ chọn qua NSUserDefaults và đồng bộ vào các biến engine toàn cục.",
+      "tags": ["macos", "view-controller", "settings-ui", "openkey", "appkit"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:platforms/apple/macos/main.m",
+      "type": "file",
+      "name": "main.m",
+      "filePath": "platforms/apple/macos/main.m",
+      "summary": "Điểm vào (entry point) của app macOS — chỉ gọi NSApplicationMain để khởi động vòng đời AppKit.",
+      "tags": ["macos", "entry-point", "appkit"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:platforms/apple/project.yml",
+      "type": "config",
+      "name": "project.yml",
+      "filePath": "platforms/apple/project.yml",
+      "summary": "Đặc tả XcodeGen sinh ra MindfulKey.xcodeproj: 3 target (app macOS, app iOS container, keyboard extension iOS), khai deployment target (macOS 13 / iOS 16), danh sách nguồn (core/engine, core/mood, macos, shared), framework phụ thuộc và cấu hình ký ad-hoc.",
+      "tags": ["xcodegen", "build-system", "ios", "macos", "configuration"],
+      "complexity": "complex",
+      "languageNotes": "XcodeGen tự phân loại file trong `sources:` theo phần mở rộng (mã nguồn -> Compile, còn lại -> Copy Bundle Resources); .xcodeproj sinh ra KHÔNG commit."
+    },
+    {
+      "id": "file:platforms/apple/shared/AppGroupBridge.h",
+      "type": "file",
+      "name": "AppGroupBridge.h",
+      "filePath": "platforms/apple/shared/AppGroupBridge.h",
+      "summary": "Header cầu nối 'nhịp tim' (heartbeat) giữa keyboard extension iOS và container app qua App Group NSUserDefaults — extension ghi timestamp mỗi lần chạy, container đọc lại để đoán bàn phím 'đã từng chạy'. Chỉ 2 khoá vận hành, tuyệt đối không chứa nội dung gõ.",
+      "tags": ["ios", "app-group", "bridge", "header", "privacy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/shared/AppGroupBridge.mm",
+      "type": "file",
+      "name": "AppGroupBridge.mm",
+      "filePath": "platforms/apple/shared/AppGroupBridge.mm",
+      "summary": "Hiện thực heartbeat App Group: ghi timestamp + cờ Full Access từ extension, đọc lại ở container và suy ra 1 trong 3 trạng thái bàn phím. Suite nil (entitlement sai) thì im lặng fallback về 'chưa từng chạy', không crash.",
+      "tags": ["ios", "app-group", "bridge", "privacy"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/shared/AppGroupConstants.h",
+      "type": "file",
+      "name": "AppGroupConstants.h",
+      "filePath": "platforms/apple/shared/AppGroupConstants.h",
+      "summary": "Điểm gom duy nhất của chuỗi App Group suite name (`group.vn.gnh.mindfulkey`) dưới dạng macro #define, để mọi bridge thêm sau dùng chung thay vì lặp literal — phải trùng byte-for-byte với 2 file .entitlements.",
+      "tags": ["ios", "app-group", "constants", "header", "shared"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/shared/BellReminderSettingsBridge.h",
+      "type": "file",
+      "name": "BellReminderSettingsBridge.h",
+      "filePath": "platforms/apple/shared/BellReminderSettingsBridge.h",
+      "summary": "Header cầu nối App Group cho 2 giá trị cấu hình chuông nhắc nghỉ (story 2.6): bật/tắt tổng và tạm hoãn N phút. Tách riêng khỏi các bridge khác theo tiền lệ '1 bridge = 1 mối quan tâm'; chỉ lưu BOOL + NSDate.",
+      "tags": ["ios", "app-group", "bridge", "header", "settings"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/apple/shared/BellReminderSettingsBridge.mm",
+      "type": "file",
+      "name": "BellReminderSettingsBridge.mm",
+      "filePath": "platforms/apple/shared/BellReminderSettingsBridge.mm",
+      "summary": "Hiện thực đọc/ghi cấu hình chuông nhắc nghỉ qua App Group: cờ bật/tắt (mặc định YES) và mốc tạm hoãn. Lõi thật tham số hoá theo suite name để API public và biến thể ForTesting cùng gọi chung.",
+      "tags": ["ios", "app-group", "bridge", "settings", "testability"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/apple/shared/BellScheduleSettingsBridge.h",
+      "type": "file",
+      "name": "BellScheduleSettingsBridge.h",
+      "filePath": "platforms/apple/shared/BellScheduleSettingsBridge.h",
+      "summary": "Header cầu nối App Group cho các lựa chọn lịch của màn 'Chuông tỉnh thức': tiếng chuông (lớn/nhỏ), 4 công tắc lịch (Định kỳ/Thưa nhặt/Hẹn khắc/Đầu giờ) và Giờ tĩnh lặng. Thành thật ghi rõ: hiện CHỈ lưu lựa chọn, bàn phím chưa thật sự ngân chuông theo lịch.",
+      "tags": ["ios", "app-group", "bridge", "header", "settings"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/apple/shared/BellScheduleSettingsBridge.mm",
+      "type": "file",
+      "name": "BellScheduleSettingsBridge.mm",
+      "filePath": "platforms/apple/shared/BellScheduleSettingsBridge.mm",
+      "summary": "Hiện thực đọc/ghi 6 khoá App Group cho lịch chuông (1 lựa chọn tiếng + 5 cờ BOOL) với giá trị mặc định riêng từng khoá. Dùng cặp helper mk_readBool/mk_writeBool tham số hoá theo suite cho cả API thật lẫn ForTesting.",
+      "tags": ["ios", "app-group", "bridge", "settings", "testability"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/apple/shared/BrandPalette.h",
+      "type": "file",
+      "name": "BrandPalette.h",
+      "filePath": "platforms/apple/shared/BrandPalette.h",
+      "summary": "Bảng màu thương hiệu tự sinh từ brand/tokens.json (đừng sửa tay) — giá trị hex thuần không phụ thuộc AppKit/UIKit, gồm màu nền/chữ/CTA và thang 5 sắc độ 'mặt hồ tâm'. Theo hiến chương: KHÔNG dùng màu nào để mã hoá cảm xúc (đèn đỏ/xanh).",
+      "tags": ["shared", "brand", "design-tokens", "header", "generated"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/shared/EngineDefaults.h",
+      "type": "file",
+      "name": "EngineDefaults.h",
+      "filePath": "platforms/apple/shared/EngineDefaults.h",
+      "summary": "Giá trị mặc định dùng chung (macro) cho 21 biến cấu hình `extern int` của core/engine — mỗi vỏ OS tự định nghĩa biến thật, file này chỉ khai giá trị khởi tạo. Riêng switch-key iOS dùng sentinel 'không có hotkey' thay cho phím tắt Option+Z của macOS.",
+      "tags": ["shared", "engine", "config", "header", "constants"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/shared/EngineKeyMap.h",
+      "type": "file",
+      "name": "EngineKeyMap.h",
+      "filePath": "platforms/apple/shared/EngineKeyMap.h",
+      "summary": "Header khai hàm trả bảng tra ký tự -> hằng số KEY_x của core/engine, rút từ OpenKey.mm để dùng chung. macOS dùng bù layout vật lý lệch chuẩn; iOS dùng làm đường vào chính vì bàn phím tự vẽ không có keycode phần cứng.",
+      "tags": ["shared", "engine", "keymap", "header"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/shared/EngineKeyMap.mm",
+      "type": "file",
+      "name": "EngineKeyMap.mm",
+      "filePath": "platforms/apple/shared/EngineKeyMap.mm",
+      "summary": "Hiện thực bảng tra ký tự -> KEY_x dưới dạng NSDictionary khởi tạo một lần (dispatch_once), copy nguyên giá trị từ OpenKey.mm macOS.",
+      "tags": ["shared", "engine", "keymap", "singleton"],
+      "complexity": "simple",
+      "languageNotes": "Dùng dispatch_once để lazy-init bảng bất biến dùng chung."
+    },
+    {
+      "id": "file:platforms/apple/shared/KeyboardSettingsBridge.h",
+      "type": "file",
+      "name": "KeyboardSettingsBridge.h",
+      "filePath": "platforms/apple/shared/KeyboardSettingsBridge.h",
+      "summary": "Header cầu nối App Group cho 2 cấu hình bàn phím iOS (story 2.3): kiểu gõ (Telex/VNI) và mức chiều cao 0.0-1.0, kèm hàm thuần quy đổi chiều cao sang bậc 1-5 cho VoiceOver. Thành thật: story 2.3 chưa dây thật vào bàn phím.",
+      "tags": ["ios", "app-group", "bridge", "header", "settings"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/apple/shared/KeyboardSettingsBridge.mm",
+      "type": "file",
+      "name": "KeyboardSettingsBridge.mm",
+      "filePath": "platforms/apple/shared/KeyboardSettingsBridge.mm",
+      "summary": "Hiện thực đọc/ghi kiểu gõ và mức chiều cao bàn phím qua App Group với fallback mặc định an toàn (Telex, 0.5) khi dữ liệu thiếu/hỏng, cùng hàm thuần quy đổi chiều cao [0,1] sang bậc 1-5.",
+      "tags": ["ios", "app-group", "bridge", "settings", "testability"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/apple/shared/MacroBridge.h",
+      "type": "file",
+      "name": "MacroBridge.h",
+      "filePath": "platforms/apple/shared/MacroBridge.h",
+      "summary": "Header cầu nối App Group cho danh sách macro gõ tắt (story 2.4) do người dùng chủ động cấu hình — lưu mảng NSDictionary {trigger, content} plist-compatible thay vì byte-format của engine, để container app không phải link core/engine.",
+      "tags": ["ios", "app-group", "bridge", "header", "macro"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/apple/shared/MacroBridge.mm",
+      "type": "file",
+      "name": "MacroBridge.mm",
+      "filePath": "platforms/apple/shared/MacroBridge.mm",
+      "summary": "Hiện thực đọc/ghi toàn bộ danh sách macro qua 1 khoá App Group — đọc có lọc bỏ phần tử hỏng (không crash), ghi thay thế trọn danh sách. Định nghĩa 2 hằng số tên trường trigger/content export cho mọi consumer.",
+      "tags": ["ios", "app-group", "bridge", "macro", "serialization"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/apple/shared/MoodJournalStore.h",
+      "type": "file",
+      "name": "MoodJournalStore.h",
+      "filePath": "platforms/apple/shared/MoodJournalStore.h",
+      "summary": "Header kho nhật ký 'khoảnh khắc căng' on-device mã hoá AES-256 cho iOS (story 3.1): consent gate, ghi event, tóm tắt hôm nay, xoá toàn bộ. Schema tối thiểu tuyệt đối {ts:int64, sendRisk:double} — không văn bản gốc, không app id.",
+      "tags": ["ios", "app-group", "privacy", "header", "encryption"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/apple/shared/MoodJournalStore.mm",
+      "type": "file",
+      "name": "MoodJournalStore.mm",
+      "filePath": "platforms/apple/shared/MoodJournalStore.mm",
+      "summary": "Kho nhật ký cảm xúc iOS mã hoá AES-256-CBC (CommonCrypto): khoá 32B trong Keychain chia sẻ, file .enc trong App Group container, event 16 byte append bằng cách giải mã cả buffer -> thêm -> mã hoá lại. Gác cổng consent (thu hồi = xoá sạch) và tóm tắt số lần gợn sóng + giờ đỉnh trong ngày.",
+      "tags": ["ios", "encryption", "keychain", "privacy", "app-group"],
+      "complexity": "complex",
+      "languageNotes": "AES-256-CBC với IV ngẫu nhiên gắn đầu ciphertext; serialize event thủ công theo little-endian (ts int64 + sendRisk double bit-pattern)."
+    },
+    {
+      "id": "document:platforms/apple/shared/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "platforms/apple/shared/README.md",
+      "summary": "Ghi chú thư mục apple/shared — liệt kê code dùng chung giữa vỏ macOS và iOS (EngineDefaults, EngineKeyMap, BrandPalette) và cảnh báo quy tắc: chỉ THÊM file mới, không sửa file macOS đang dùng, chạy make build sau mỗi thay đổi.",
+      "tags": ["documentation", "shared", "readme"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/shared/ThemeBridge.h",
+      "type": "file",
+      "name": "ThemeBridge.h",
+      "filePath": "platforms/apple/shared/ThemeBridge.h",
+      "summary": "Header cầu nối App Group cho đúng 1 giá trị: chỉ số nền bàn phím người dùng chọn (Round 3 story 3.2). Chỉ lưu 1 NSInteger (chỉ số trong danh sách cảnh cố định), không lưu ảnh nền; bàn phím thật đọc rồi tự vẽ là việc tiếp theo chưa có story.",
+      "tags": ["ios", "app-group", "bridge", "header", "theme"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/macos/SystemSettingsView.mm:StringFromHotkey",
+      "type": "function",
+      "name": "StringFromHotkey",
+      "filePath": "platforms/apple/macos/SystemSettingsView.mm",
+      "lineRange": [39, 62],
+      "summary": "Chuyển mã phím tắt (bit-packed) thành chuỗi hiển thị với ký hiệu modifier (⌃⌥⌘⇧) và tên phím — chỉ để hiển thị chip phím tắt, không thu phím mới.",
+      "tags": ["macos", "formatting", "hotkey", "utility"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/apple/macos/SystemSettingsView.mm:CurrentVersionString",
+      "type": "function",
+      "name": "CurrentVersionString",
+      "filePath": "platforms/apple/macos/SystemSettingsView.mm",
+      "lineRange": [69, 83],
+      "summary": "Đọc số phiên bản thật từ file version.env kèm theo bundle (nguồn phiên bản duy nhất), có dự phòng về CFBundleShortVersionString nếu resource không tồn tại.",
+      "tags": ["macos", "version", "utility", "resource"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/macos/SystemSettingsView.mm:SystemSettingsView",
+      "type": "class",
+      "name": "SystemSettingsView",
+      "filePath": "platforms/apple/macos/SystemSettingsView.mm",
+      "lineRange": [88, 352],
+      "summary": "NSView dựng 4 mục pane 'Hệ thống' (khởi động, thanh menu, phím tắt, phiên bản) bằng linh kiện brand, đọc trạng thái thật qua AppDelegate và tự bố trí thủ công theo hệ toạ độ lật.",
+      "tags": ["macos", "settings-ui", "appkit", "component"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:platforms/apple/macos/SystemSettingsView.mm:relayout",
+      "type": "function",
+      "name": "relayout",
+      "filePath": "platforms/apple/macos/SystemSettingsView.mm",
+      "lineRange": [280, 350],
+      "summary": "Tính và (tuỳ chọn) áp đặt khung cho toàn bộ subview của 4 mục theo chiều dọc, trả về tổng chiều cao — dùng chung cho cả preferredHeight lẫn layout thật.",
+      "tags": ["macos", "layout", "appkit"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/macos/ViewController.m:ViewController",
+      "type": "class",
+      "name": "ViewController",
+      "filePath": "platforms/apple/macos/ViewController.m",
+      "lineRange": [49, 784],
+      "summary": "Bộ điều khiển cửa sổ cài đặt bộ gõ chính: quản lý 4 tab, dựng lưới tuỳ chọn brand, và hàng loạt IBAction đồng bộ tuỳ chọn vào NSUserDefaults + biến engine toàn cục.",
+      "tags": ["macos", "view-controller", "settings-ui", "openkey"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:platforms/apple/macos/ViewController.m:viewDidLoad",
+      "type": "function",
+      "name": "viewDidLoad",
+      "filePath": "platforms/apple/macos/ViewController.m",
+      "lineRange": [62, 128],
+      "summary": "Khởi tạo cửa sổ cài đặt: giãn khung 4 tab lấp không gian, áp style card brand, nạp danh sách kiểu gõ/bảng mã, dựng lại tab chính và điền dữ liệu.",
+      "tags": ["macos", "view-controller", "initialization", "appkit"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:platforms/apple/macos/ViewController.m:showTab",
+      "type": "function",
+      "name": "showTab",
+      "filePath": "platforms/apple/macos/ViewController.m",
+      "lineRange": [232, 255],
+      "summary": "Chuyển tab: ẩn/hiện đúng box nội dung, cập nhật trạng thái + màu 4 nút tab và đưa lớp nền nút lên trên đúng thứ tự.",
+      "tags": ["macos", "view-controller", "tab", "appkit"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/apple/macos/ViewController.m:setCustomValue",
+      "type": "function",
+      "name": "setCustomValue",
+      "filePath": "platforms/apple/macos/ViewController.m",
+      "lineRange": [401, 412],
+      "summary": "Đọc trạng thái bật/tắt từ cả PillSwitch lẫn NSButton (dò kiểu bằng respondsToSelector), tuỳ chọn ghi vào NSUserDefaults theo key, trả 0/1 — helper dùng chung cho hầu hết IBAction.",
+      "tags": ["macos", "helper", "settings", "polymorphism"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/apple/macos/ViewController.m:rebuildPrimaryTabUI",
+      "type": "function",
+      "name": "rebuildPrimaryTabUI",
+      "filePath": "platforms/apple/macos/ViewController.m",
+      "lineRange": [491, 622],
+      "summary": "Xoá và dựng lại toàn bộ tab 'Kiểu gõ' bằng NSScrollView + NSStackView theo phong cách brand, gom 11 PillSwitch thành 3 nhóm (Chính tả, Gõ thông minh, Phím tắt nhanh) bằng block tạo header/row.",
+      "tags": ["macos", "settings-ui", "layout", "appkit", "brand-ui"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:platforms/apple/macos/ViewController.m:fillData",
+      "type": "function",
+      "name": "fillData",
+      "filePath": "platforms/apple/macos/ViewController.m",
+      "lineRange": [624, 733],
+      "summary": "Nạp toàn bộ trạng thái tuỳ chọn từ NSUserDefaults và vSwitchKeyStatus vào các control (radio ngôn ngữ, popup, ~25 PillSwitch), đồng thời bật/tắt phụ thuộc giữa các tuỳ chọn chính tả.",
+      "tags": ["macos", "settings-ui", "state", "appkit"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:platforms/apple/shared/AppGroupBridge.mm:KeyboardExtension_WriteHeartbeat",
+      "type": "function",
+      "name": "KeyboardExtension_WriteHeartbeat",
+      "filePath": "platforms/apple/shared/AppGroupBridge.mm",
+      "lineRange": [20, 29],
+      "summary": "Ghi timestamp hiện tại + cờ Full Access vào App Group dùng chung (gọi từ keyboard extension mỗi lần dựng). Suite nil thì im lặng bỏ qua, không crash.",
+      "tags": ["ios", "app-group", "heartbeat", "bridge"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/shared/AppGroupBridge.mm:AppGroupBridge_DeriveStatus",
+      "type": "function",
+      "name": "AppGroupBridge_DeriveStatus",
+      "filePath": "platforms/apple/shared/AppGroupBridge.mm",
+      "lineRange": [31, 37],
+      "summary": "Hàm thuần suy 1 trong 3 trạng thái bàn phím từ heartbeat + cờ Full Access — tách khỏi I/O để test được trên host không cần entitlements/Simulator.",
+      "tags": ["ios", "pure-function", "bridge", "testability"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/shared/AppGroupBridge.mm:ContainerApp_ReadKeyboardStatus",
+      "type": "function",
+      "name": "ContainerApp_ReadKeyboardStatus",
+      "filePath": "platforms/apple/shared/AppGroupBridge.mm",
+      "lineRange": [39, 49],
+      "summary": "Gọi từ container lúc vào foreground: mở App Group, đọc 2 khoá heartbeat, trả trạng thái; suite nil hoặc chưa có heartbeat thì fallback an toàn về 'chưa từng chạy'.",
+      "tags": ["ios", "app-group", "heartbeat", "bridge"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/shared/BellReminderSettingsBridge.mm:mk_readEnabled",
+      "type": "function",
+      "name": "mk_readEnabled",
+      "filePath": "platforms/apple/shared/BellReminderSettingsBridge.mm",
+      "lineRange": [23, 33],
+      "summary": "Lõi đọc cờ bật/tắt chuông nhắc nghỉ từ suite chỉ định, trả mặc định YES khi suite không mở được hoặc chưa từng ghi — nền tảng cho cả API public lẫn ForTesting.",
+      "tags": ["ios", "app-group", "settings", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/shared/BellReminderSettingsBridge.mm:mk_writeSnoozeUntil",
+      "type": "function",
+      "name": "mk_writeSnoozeUntil",
+      "filePath": "platforms/apple/shared/BellReminderSettingsBridge.mm",
+      "lineRange": [53, 61],
+      "summary": "Lõi ghi mốc tạm hoãn = bây giờ + N phút (kẹp âm về 0) vào suite chỉ định, trả NO nếu suite không mở được.",
+      "tags": ["ios", "app-group", "settings", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/shared/BellScheduleSettingsBridge.mm:mk_readBool",
+      "type": "function",
+      "name": "mk_readBool",
+      "filePath": "platforms/apple/shared/BellScheduleSettingsBridge.mm",
+      "lineRange": [30, 40],
+      "summary": "Helper đọc 1 khoá BOOL từ suite chỉ định với giá trị mặc định truyền vào — dùng lại cho cả 5 công tắc lịch chuông, trả mặc định khi suite lỗi hoặc chưa từng ghi.",
+      "tags": ["ios", "app-group", "settings", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/shared/BellScheduleSettingsBridge.mm:mk_readSoundChoice",
+      "type": "function",
+      "name": "mk_readSoundChoice",
+      "filePath": "platforms/apple/shared/BellScheduleSettingsBridge.mm",
+      "lineRange": [51, 62],
+      "summary": "Đọc lựa chọn tiếng chuông (lớn/nhỏ) từ suite, kẹp giá trị lạ về Big, mặc định Big khi chưa từng chọn.",
+      "tags": ["ios", "app-group", "settings", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/shared/EngineKeyMap.mm:EngineKeyMap_CharacterToKeyCode",
+      "type": "function",
+      "name": "EngineKeyMap_CharacterToKeyCode",
+      "filePath": "platforms/apple/shared/EngineKeyMap.mm",
+      "lineRange": [11, 32],
+      "summary": "Trả NSDictionary bất biến (khởi tạo một lần) tra ký tự bàn phím -> hằng số KEY_x của core/engine, dùng chung cho cả macOS (bù layout) và iOS (đường vào chính khi gõ).",
+      "tags": ["shared", "engine", "keymap", "singleton"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/shared/KeyboardSettingsBridge.mm:mk_readHeightLevel",
+      "type": "function",
+      "name": "mk_readHeightLevel",
+      "filePath": "platforms/apple/shared/KeyboardSettingsBridge.mm",
+      "lineRange": [57, 71],
+      "summary": "Đọc mức chiều cao bàn phím (0.0-1.0) từ suite, trả mặc định 0.5 khi suite lỗi, chưa từng ghi, hoặc dữ liệu ngoài [0,1] (fallback an toàn thay vì giá trị rác).",
+      "tags": ["ios", "app-group", "settings", "validation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/shared/KeyboardSettingsBridge.mm:mk_writeHeightLevel",
+      "type": "function",
+      "name": "mk_writeHeightLevel",
+      "filePath": "platforms/apple/shared/KeyboardSettingsBridge.mm",
+      "lineRange": [73, 80],
+      "summary": "Ghi mức chiều cao (đã kẹp về [0,1]) vào suite chỉ định, trả NO nếu suite không mở được.",
+      "tags": ["ios", "app-group", "settings", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/shared/KeyboardSettingsBridge.mm:KeyboardSettingsBridge_HeightLevelToStep",
+      "type": "function",
+      "name": "KeyboardSettingsBridge_HeightLevelToStep",
+      "filePath": "platforms/apple/shared/KeyboardSettingsBridge.mm",
+      "lineRange": [101, 107],
+      "summary": "Hàm thuần quy đổi chiều cao liên tục [0,1] sang bậc hiển thị 1-5 cho VoiceOver (kẹp biên, làm tròn) — tách khỏi I/O để test được trên host.",
+      "tags": ["ios", "pure-function", "accessibility", "testability"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/shared/MacroBridge.mm:MacroBridge_ReadAll",
+      "type": "function",
+      "name": "MacroBridge_ReadAll",
+      "filePath": "platforms/apple/shared/MacroBridge.mm",
+      "lineRange": [25, 47],
+      "summary": "Đọc toàn bộ macro từ App Group, lọc bỏ phần tử không đúng định dạng {trigger:string, content:string} (không crash), trả mảng rỗng khi suite lỗi hoặc chưa từng ghi.",
+      "tags": ["ios", "app-group", "macro", "serialization"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/apple/shared/MacroBridge.mm:MacroBridge_WriteAll",
+      "type": "function",
+      "name": "MacroBridge_WriteAll",
+      "filePath": "platforms/apple/shared/MacroBridge.mm",
+      "lineRange": [49, 58],
+      "summary": "Ghi thay thế trọn danh sách macro (plist-compatible) vào 1 khoá App Group, trả NO nếu suite không mở được.",
+      "tags": ["ios", "app-group", "macro", "serialization"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/shared/MoodJournalStore.mm:AESEncrypt",
+      "type": "function",
+      "name": "AESEncrypt",
+      "filePath": "platforms/apple/shared/MoodJournalStore.mm",
+      "lineRange": [121, 140],
+      "summary": "Mã hoá plaintext bằng AES-256-CBC (CommonCrypto) với IV ngẫu nhiên sinh mới rồi gắn vào đầu ciphertext, trả nil khi sinh IV hoặc mã hoá thất bại.",
+      "tags": ["ios", "encryption", "crypto", "security"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/apple/shared/MoodJournalStore.mm:AESDecrypt",
+      "type": "function",
+      "name": "AESDecrypt",
+      "filePath": "platforms/apple/shared/MoodJournalStore.mm",
+      "lineRange": [142, 161],
+      "summary": "Giải mã blob AES-256-CBC: tách IV ở đầu khỏi ciphertext rồi CCCrypt, trả nil nếu blob quá ngắn hoặc giải mã lỗi.",
+      "tags": ["ios", "encryption", "crypto", "security"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/apple/shared/MoodJournalStore.mm:CreateAndStoreKey",
+      "type": "function",
+      "name": "CreateAndStoreKey",
+      "filePath": "platforms/apple/shared/MoodJournalStore.mm",
+      "lineRange": [95, 110],
+      "summary": "Sinh khoá AES-256 ngẫu nhiên (SecRandomCopyBytes) và lưu vào Keychain với thuộc tính AfterFirstUnlockThisDeviceOnly (xoá bản cũ trước), trả nil nếu thao tác thất bại.",
+      "tags": ["ios", "keychain", "crypto", "security"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/apple/shared/MoodJournalStore.mm:AppendEvent",
+      "type": "function",
+      "name": "AppendEvent",
+      "filePath": "platforms/apple/shared/MoodJournalStore.mm",
+      "lineRange": [204, 218],
+      "summary": "Thêm 1 event 16 byte vào kho: giải mã cả buffer hiện có -> append -> mã hoá lại toàn bộ -> ghi đè file .enc; im lặng bỏ qua nếu Keychain hoặc App Group container không sẵn.",
+      "tags": ["ios", "encryption", "persistence", "privacy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/apple/shared/MoodJournalStore.mm:MoodJournalStore_LogTenseMoment",
+      "type": "function",
+      "name": "MoodJournalStore_LogTenseMoment",
+      "filePath": "platforms/apple/shared/MoodJournalStore.mm",
+      "lineRange": [249, 254],
+      "summary": "Ghi 1 khoảnh khắc căng tại thời điểm hiện tại — gác cổng consent trước (chưa đồng ý thì return ngay, không tạo file), rồi append event với timestamp thật.",
+      "tags": ["ios", "privacy", "consent", "persistence"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/shared/MoodJournalStore.mm:MoodJournalStore_FetchTodaySummary",
+      "type": "function",
+      "name": "MoodJournalStore_FetchTodaySummary",
+      "filePath": "platforms/apple/shared/MoodJournalStore.mm",
+      "lineRange": [258, 311],
+      "summary": "Giải mã kho, duyệt các event trong khung 'hôm nay' (giờ địa phương) để đếm số lần gợn sóng và tìm giờ đỉnh điểm; trả tóm tắt rỗng an toàn khi chưa có/hỏng dữ liệu.",
+      "tags": ["ios", "privacy", "aggregation", "reflection"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/apple/shared/MoodJournalStore.mm:MoodJournalStore_DeleteAll",
+      "type": "function",
+      "name": "MoodJournalStore_DeleteAll",
+      "filePath": "platforms/apple/shared/MoodJournalStore.mm",
+      "lineRange": [315, 323],
+      "summary": "Xoá không thể hoàn tác: gỡ file .enc trong App Group container và xoá khoá AES trong Keychain (file sót lại nếu có cũng không giải mã được nữa).",
+      "tags": ["ios", "privacy", "keychain", "data-deletion"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/shared/MoodJournalStore.mm:MoodJournalStore_SetConsent",
+      "type": "function",
+      "name": "MoodJournalStore_SetConsent",
+      "filePath": "platforms/apple/shared/MoodJournalStore.mm",
+      "lineRange": [229, 238],
+      "summary": "Ghi cờ đồng ý + đã-hỏi vào App Group suite defaults (cả container lẫn extension đều thấy); thu hồi đồng ý (granted=NO) sẽ gọi luôn DeleteAll để xoá sạch ngay.",
+      "tags": ["ios", "privacy", "consent", "app-group"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    { "source": "file:platforms/apple/macos/SystemSettingsView.mm", "target": "function:platforms/apple/macos/SystemSettingsView.mm:StringFromHotkey", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/SystemSettingsView.mm", "target": "function:platforms/apple/macos/SystemSettingsView.mm:CurrentVersionString", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/SystemSettingsView.mm", "target": "class:platforms/apple/macos/SystemSettingsView.mm:SystemSettingsView", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/SystemSettingsView.mm", "target": "class:platforms/apple/macos/SystemSettingsView.mm:SystemSettingsView", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/macos/SystemSettingsView.mm", "target": "function:platforms/apple/macos/SystemSettingsView.mm:relayout", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/ViewController.m", "target": "class:platforms/apple/macos/ViewController.m:ViewController", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/ViewController.m", "target": "class:platforms/apple/macos/ViewController.m:ViewController", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/macos/ViewController.m", "target": "function:platforms/apple/macos/ViewController.m:viewDidLoad", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/ViewController.m", "target": "function:platforms/apple/macos/ViewController.m:showTab", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/ViewController.m", "target": "function:platforms/apple/macos/ViewController.m:setCustomValue", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/ViewController.m", "target": "function:platforms/apple/macos/ViewController.m:rebuildPrimaryTabUI", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/ViewController.m", "target": "function:platforms/apple/macos/ViewController.m:fillData", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/AppGroupBridge.mm", "target": "function:platforms/apple/shared/AppGroupBridge.mm:KeyboardExtension_WriteHeartbeat", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/AppGroupBridge.mm", "target": "function:platforms/apple/shared/AppGroupBridge.mm:KeyboardExtension_WriteHeartbeat", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/shared/AppGroupBridge.mm", "target": "function:platforms/apple/shared/AppGroupBridge.mm:AppGroupBridge_DeriveStatus", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/AppGroupBridge.mm", "target": "function:platforms/apple/shared/AppGroupBridge.mm:AppGroupBridge_DeriveStatus", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/shared/AppGroupBridge.mm", "target": "function:platforms/apple/shared/AppGroupBridge.mm:ContainerApp_ReadKeyboardStatus", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/AppGroupBridge.mm", "target": "function:platforms/apple/shared/AppGroupBridge.mm:ContainerApp_ReadKeyboardStatus", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/shared/BellReminderSettingsBridge.mm", "target": "function:platforms/apple/shared/BellReminderSettingsBridge.mm:mk_readEnabled", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/BellReminderSettingsBridge.mm", "target": "function:platforms/apple/shared/BellReminderSettingsBridge.mm:mk_writeSnoozeUntil", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/BellReminderSettingsBridge.mm", "target": "file:platforms/apple/shared/AppGroupConstants.h", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/shared/BellScheduleSettingsBridge.mm", "target": "function:platforms/apple/shared/BellScheduleSettingsBridge.mm:mk_readBool", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/BellScheduleSettingsBridge.mm", "target": "function:platforms/apple/shared/BellScheduleSettingsBridge.mm:mk_readSoundChoice", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/BellScheduleSettingsBridge.mm", "target": "file:platforms/apple/shared/AppGroupConstants.h", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/shared/EngineKeyMap.mm", "target": "function:platforms/apple/shared/EngineKeyMap.mm:EngineKeyMap_CharacterToKeyCode", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/EngineKeyMap.mm", "target": "function:platforms/apple/shared/EngineKeyMap.mm:EngineKeyMap_CharacterToKeyCode", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/shared/KeyboardSettingsBridge.mm", "target": "function:platforms/apple/shared/KeyboardSettingsBridge.mm:mk_readHeightLevel", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/KeyboardSettingsBridge.mm", "target": "function:platforms/apple/shared/KeyboardSettingsBridge.mm:mk_writeHeightLevel", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/KeyboardSettingsBridge.mm", "target": "function:platforms/apple/shared/KeyboardSettingsBridge.mm:KeyboardSettingsBridge_HeightLevelToStep", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/KeyboardSettingsBridge.mm", "target": "function:platforms/apple/shared/KeyboardSettingsBridge.mm:KeyboardSettingsBridge_HeightLevelToStep", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/shared/KeyboardSettingsBridge.mm", "target": "file:platforms/apple/shared/AppGroupConstants.h", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/shared/MacroBridge.mm", "target": "function:platforms/apple/shared/MacroBridge.mm:MacroBridge_ReadAll", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/MacroBridge.mm", "target": "function:platforms/apple/shared/MacroBridge.mm:MacroBridge_ReadAll", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/shared/MacroBridge.mm", "target": "function:platforms/apple/shared/MacroBridge.mm:MacroBridge_WriteAll", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/MacroBridge.mm", "target": "function:platforms/apple/shared/MacroBridge.mm:MacroBridge_WriteAll", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/shared/MacroBridge.mm", "target": "file:platforms/apple/shared/AppGroupConstants.h", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/shared/MoodJournalStore.mm", "target": "function:platforms/apple/shared/MoodJournalStore.mm:AESEncrypt", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/MoodJournalStore.mm", "target": "function:platforms/apple/shared/MoodJournalStore.mm:AESDecrypt", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/MoodJournalStore.mm", "target": "function:platforms/apple/shared/MoodJournalStore.mm:CreateAndStoreKey", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/MoodJournalStore.mm", "target": "function:platforms/apple/shared/MoodJournalStore.mm:AppendEvent", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/MoodJournalStore.mm", "target": "function:platforms/apple/shared/MoodJournalStore.mm:MoodJournalStore_LogTenseMoment", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/MoodJournalStore.mm", "target": "function:platforms/apple/shared/MoodJournalStore.mm:MoodJournalStore_LogTenseMoment", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/shared/MoodJournalStore.mm", "target": "function:platforms/apple/shared/MoodJournalStore.mm:MoodJournalStore_FetchTodaySummary", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/MoodJournalStore.mm", "target": "function:platforms/apple/shared/MoodJournalStore.mm:MoodJournalStore_FetchTodaySummary", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/shared/MoodJournalStore.mm", "target": "function:platforms/apple/shared/MoodJournalStore.mm:MoodJournalStore_DeleteAll", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/MoodJournalStore.mm", "target": "function:platforms/apple/shared/MoodJournalStore.mm:MoodJournalStore_DeleteAll", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/shared/MoodJournalStore.mm", "target": "function:platforms/apple/shared/MoodJournalStore.mm:MoodJournalStore_SetConsent", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/shared/MoodJournalStore.mm", "target": "function:platforms/apple/shared/MoodJournalStore.mm:MoodJournalStore_SetConsent", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/shared/MoodJournalStore.mm", "target": "file:platforms/apple/shared/AppGroupConstants.h", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "config:platforms/apple/project.yml", "target": "file:platforms/apple/macos/main.m", "type": "configures", "direction": "forward", "weight": 0.6 },
+    { "source": "document:platforms/apple/shared/README.md", "target": "file:platforms/apple/shared/EngineDefaults.h", "type": "documents", "direction": "forward", "weight": 0.5 },
+    { "source": "document:platforms/apple/shared/README.md", "target": "file:platforms/apple/shared/EngineKeyMap.h", "type": "documents", "direction": "forward", "weight": 0.5 },
+    { "source": "document:platforms/apple/shared/README.md", "target": "file:platforms/apple/shared/EngineKeyMap.mm", "type": "documents", "direction": "forward", "weight": 0.5 },
+    { "source": "document:platforms/apple/shared/README.md", "target": "file:platforms/apple/shared/BrandPalette.h", "type": "documents", "direction": "forward", "weight": 0.5 }
+  ]
+}

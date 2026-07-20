@@ -156,7 +156,10 @@ static void analyzeRecentTextAsync(const wstring& word) {
             g_lastWordTs = nowTs;
             if (g_liveTrace == nil) g_liveTrace = [NSMutableArray array];
             if (g_liveTraceLastTs == 0 || (nowTs - g_liveTraceLastTs) >= (long long)kLiveSampleSeconds) {
-                [g_liveTrace addObject:@{@"ts": @(nowTs), @"value": @(g_liveEma)}];
+                // checkin=NO: điểm RAM này luôn tự-đoán từ chữ gõ, không phải tự-thuật (xem
+                // FetchLiveTrace bên dưới — nó trộn cùng key với MoodStoreMac_FetchSamplesSince,
+                // giờ có thể mang checkin=YES cho phần nền persisted).
+                [g_liveTrace addObject:@{@"ts": @(nowTs), @"value": @(g_liveEma), @"checkin": @NO}];
                 g_liveTraceLastTs = nowTs;
                 // Trim điểm cũ hơn 4h (mảng theo thứ tự thời gian nên cắt từ đầu).
                 long long cutoff = nowTs - (long long)kLiveTraceMaxAge;

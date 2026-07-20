@@ -112,6 +112,7 @@ extern bool convertToolDontAlertWhenCompleted;
     NSMenuItem* mnuQuickConvert;
     NSMenuItem* mnuMoodWatch;
     NSMenuItem* mnuGatekeeper;
+    NSMenuItem* mnuShowCheckinOnRiver;
     NSMenuItem* mnuBellSettings;
     NSMenuItem* mnuBellToggle;
 }
@@ -447,6 +448,10 @@ static BOOL IsConflictingInputMethodBundleID(NSString *bundleID) {
     // [MINDFUL] 2026-07-19 — công tắc gác cổng gửi tin (Feature #1). Dấu tích = đang canh Enter
     // trong app chat. Tắt vẫn giữ nhật ký/sông (do "Nhắc tâm" quản), chỉ ngừng chặn-mềm lúc gửi.
     mnuGatekeeper = [theMenu addItemWithTitle:@"Gác cổng gửi tin (nhịp thở)" action:@selector(onGatekeeperToggleSelected) keyEquivalent:@""];
+    // [MINDFUL] 2026-07-20 — công tắc gộp chấm tự-thuật (check-in) vào sông. Dấu tích = sông vẽ cả
+    // câu trả lời "Mặt hồ đang thế nào?" (vòng rỗng) lẫn chữ gõ (chấm đặc). Tắt = về đúng hành vi
+    // cũ, chỉ vẽ từ chữ gõ — cho ai thấy trộn 2 nguồn là rối mắt.
+    mnuShowCheckinOnRiver = [theMenu addItemWithTitle:@"Hiện chấm tự đánh giá trên sông" action:@selector(onShowCheckinOnRiverToggleSelected) keyEquivalent:@""];
     mnuBellToggle = [theMenu addItemWithTitle:@"Bật chuông tỉnh thức" action:@selector(onBellToggleSelected) keyEquivalent:@""];
     mnuBellSettings = [theMenu addItemWithTitle:@"Cài đặt Chuông tỉnh thức..." action:@selector(onBellSettingsSelected) keyEquivalent:@""];
     [theMenu addItemWithTitle:@"Tạm hoãn chuông 1 giờ" action:@selector(onSnoozeBellSelected) keyEquivalent:@""];
@@ -754,6 +759,11 @@ static BOOL IsConflictingInputMethodBundleID(NSString *bundleID) {
     vSendGatekeeper = gkValue == nil ? 1 : (int)[gkValue integerValue];
     [mnuGatekeeper setState:vSendGatekeeper ? NSControlStateValueOn : NSControlStateValueOff];
 
+    // [MINDFUL] 2026-07-20 — nạp công tắc gộp chấm tự-thuật vào sông. Mặc định BẬT.
+    NSNumber *ckValue = [[NSUserDefaults standardUserDefaults] objectForKey:@"vShowCheckinOnRiver"];
+    vShowCheckinOnRiver = ckValue == nil ? 1 : (int)[ckValue integerValue];
+    [mnuShowCheckinOnRiver setState:vShowCheckinOnRiver ? NSControlStateValueOn : NSControlStateValueOff];
+
     extern int vBell;
     vBell = (int)[[NSUserDefaults standardUserDefaults] integerForKey:@"vBell"];
     [mnuBellToggle setState:vBell ? NSControlStateValueOn : NSControlStateValueOff];
@@ -840,6 +850,17 @@ static BOOL IsConflictingInputMethodBundleID(NSString *bundleID) {
     extern int vSendGatekeeper;
     vSendGatekeeper = vSendGatekeeper ? 0 : 1;
     [[NSUserDefaults standardUserDefaults] setInteger:vSendGatekeeper forKey:@"vSendGatekeeper"];
+    [self fillData];
+    if (_panelPopover.isShown) {
+        [_panelVC refreshAll];
+    }
+}
+
+// [MINDFUL] 2026-07-20 — bật/tắt gộp chấm tự-thuật (check-in) vào sông. Cùng mạch các toggle
+// khác: lật cờ + lưu defaults + fillData + refresh popover (sông đổi ngay, không cần mở lại app).
+-(void)onShowCheckinOnRiverToggleSelected {
+    vShowCheckinOnRiver = vShowCheckinOnRiver ? 0 : 1;
+    [[NSUserDefaults standardUserDefaults] setInteger:vShowCheckinOnRiver forKey:@"vShowCheckinOnRiver"];
     [self fillData];
     if (_panelPopover.isShown) {
         [_panelVC refreshAll];

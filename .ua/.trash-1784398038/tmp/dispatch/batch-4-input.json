@@ -1,0 +1,85 @@
+{
+  "batchIndex": 4,
+  "totalBatches": 19,
+  "files": [
+    {
+      "path": "core/engine/ConvertTool.cpp",
+      "language": "cpp",
+      "sizeLines": 181,
+      "fileCategory": "code"
+    },
+    {
+      "path": "core/engine/ConvertTool.h",
+      "language": "c",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    },
+    {
+      "path": "core/engine/Engine.cpp",
+      "language": "cpp",
+      "sizeLines": 1578,
+      "fileCategory": "code"
+    },
+    {
+      "path": "core/engine/Engine.h",
+      "language": "c",
+      "sizeLines": 252,
+      "fileCategory": "code"
+    },
+    {
+      "path": "core/engine/Macro.cpp",
+      "language": "cpp",
+      "sizeLines": 293,
+      "fileCategory": "code"
+    },
+    {
+      "path": "core/engine/Macro.h",
+      "language": "c",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "core/engine/Vietnamese.cpp",
+      "language": "cpp",
+      "sizeLines": 576,
+      "fileCategory": "code"
+    },
+    {
+      "path": "core/engine/Vietnamese.h",
+      "language": "c",
+      "sizeLines": 37,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "core/engine/ConvertTool.cpp": [
+      "core/engine/ConvertTool.h",
+      "core/engine/Engine.h"
+    ],
+    "core/engine/ConvertTool.h": [],
+    "core/engine/Engine.cpp": [
+      "core/engine/Engine.h",
+      "core/engine/Macro.h"
+    ],
+    "core/engine/Engine.h": [],
+    "core/engine/Macro.cpp": [
+      "core/engine/Engine.h",
+      "core/engine/Macro.h",
+      "core/engine/Vietnamese.h"
+    ],
+    "core/engine/Macro.h": [],
+    "core/engine/Vietnamese.cpp": [
+      "core/engine/Vietnamese.h"
+    ],
+    "core/engine/Vietnamese.h": []
+  },
+  "neighborMap": {
+    "core/engine/Engine.h": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+        "batchIndex": 6,
+        "symbols": []
+      }
+    ]
+  }
+}

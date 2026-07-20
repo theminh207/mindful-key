@@ -1,0 +1,1309 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 7,
+  "filesSkipped": [
+    "platforms/apple/shared/ThemeBridge.mm",
+    "platforms/windows/installer/MindfulKey.iss",
+    "platforms/windows/win32/OpenKey/OpenKey.sln",
+    "platforms/windows/win32/OpenKey/OpenKey/DeclareDPIAware.manifest",
+    "platforms/windows/win32/OpenKey/OpenKey/OpenKey.rc",
+    "platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj",
+    "platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj.filters",
+    "platforms/windows/win32/OpenKey/OpenKey/OpenKey.vcxproj.user",
+    "platforms/windows/win32/OpenKey/OpenKey/Style.manifest",
+    "platforms/windows/win32/OpenKey/OpenKeyUpdate/DeclareDPIAware.manifest",
+    "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.rc",
+    "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj",
+    "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj.filters",
+    "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.vcxproj.user",
+    "platforms/windows/win32/OpenKey/OpenKeyUpdate/Style.manifest",
+    "tests/ios/bridge_test.mm",
+    "tests/ios/emotion_wave_test.mm",
+    "tests/ios/mood_bridge_test.mm"
+  ],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 7,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 3,
+      "failed": 0,
+      "skipped": 4
+    }
+  },
+  "results": [
+    {
+      "path": "platforms/linux/README.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 7,
+      "nonEmptyLines": 5,
+      "sections": [
+        {
+          "heading": "platforms/linux",
+          "level": 1,
+          "line": 1
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 1
+      }
+    },
+    {
+      "path": "platforms/linux/linux-upstream/README.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 4,
+      "nonEmptyLines": 4,
+      "sections": [
+        {
+          "heading": "OpenKey",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Open source Vietnamese Input App for Linux",
+          "level": 3,
+          "line": 2
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "platforms/windows/README.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 17,
+      "nonEmptyLines": 14,
+      "sections": [
+        {
+          "heading": "platforms/windows",
+          "level": 1,
+          "line": 1
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 1
+      }
+    },
+    {
+      "path": "platforms/windows/win32/README.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 77,
+      "nonEmptyLines": 70,
+      "sections": [
+        {
+          "heading": "OpenKey for Windows",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Tính năng",
+          "level": 2,
+          "line": 10
+        },
+        {
+          "heading": "Cài đặt",
+          "level": 2,
+          "line": 49
+        },
+        {
+          "heading": "Một số hình ảnh khác",
+          "level": 2,
+          "line": 55
+        },
+        {
+          "heading": "Thông tin",
+          "level": 2,
+          "line": 60
+        },
+        {
+          "heading": "Mã nguồn",
+          "level": 2,
+          "line": 68
+        },
+        {
+          "heading": "Giấy phép",
+          "level": 2,
+          "line": 70
+        },
+        {
+          "heading": "Một điều nữa",
+          "level": 2,
+          "line": 73
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 8
+      }
+    },
+    {
+      "path": "tests/core/test_engine.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 161,
+      "nonEmptyLines": 142,
+      "functions": [
+        {
+          "name": "toUtf8",
+          "startLine": 53,
+          "endLine": 59,
+          "params": [
+            "cp"
+          ]
+        },
+        {
+          "name": "decodeChar",
+          "startLine": 67,
+          "endLine": 71,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "screenStr",
+          "startLine": 73,
+          "endLine": 75,
+          "params": []
+        },
+        {
+          "name": "typeChar",
+          "startLine": 78,
+          "endLine": 106,
+          "params": [
+            "c"
+          ]
+        },
+        {
+          "name": "runCase",
+          "startLine": 108,
+          "endLine": 121,
+          "params": [
+            "telex",
+            "expect"
+          ]
+        },
+        {
+          "name": "main",
+          "startLine": 123,
+          "endLine": 161,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "main",
+          "line": 123,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "decodeChar",
+          "callee": "keyCodeToCharacter",
+          "lineNumber": 69
+        },
+        {
+          "caller": "screenStr",
+          "callee": "toUtf8",
+          "lineNumber": 74
+        },
+        {
+          "caller": "typeChar",
+          "callee": "find",
+          "lineNumber": 79
+        },
+        {
+          "caller": "typeChar",
+          "callee": "end",
+          "lineNumber": 80
+        },
+        {
+          "caller": "typeChar",
+          "callee": "vKeyHandleEvent",
+          "lineNumber": 83
+        },
+        {
+          "caller": "typeChar",
+          "callee": "empty",
+          "lineNumber": 89
+        },
+        {
+          "caller": "typeChar",
+          "callee": "pop_back",
+          "lineNumber": 89
+        },
+        {
+          "caller": "typeChar",
+          "callee": "push_back",
+          "lineNumber": 91
+        },
+        {
+          "caller": "typeChar",
+          "callee": "empty",
+          "lineNumber": 96
+        },
+        {
+          "caller": "typeChar",
+          "callee": "pop_back",
+          "lineNumber": 96
+        },
+        {
+          "caller": "typeChar",
+          "callee": "push_back",
+          "lineNumber": 98
+        },
+        {
+          "caller": "typeChar",
+          "callee": "decodeChar",
+          "lineNumber": 98
+        },
+        {
+          "caller": "typeChar",
+          "callee": "keyCodeToCharacter",
+          "lineNumber": 100
+        },
+        {
+          "caller": "typeChar",
+          "callee": "push_back",
+          "lineNumber": 101
+        },
+        {
+          "caller": "typeChar",
+          "callee": "startNewSession",
+          "lineNumber": 103
+        },
+        {
+          "caller": "runCase",
+          "callee": "clear",
+          "lineNumber": 109
+        },
+        {
+          "caller": "runCase",
+          "callee": "startNewSession",
+          "lineNumber": 110
+        },
+        {
+          "caller": "runCase",
+          "callee": "typeChar",
+          "lineNumber": 111
+        },
+        {
+          "caller": "runCase",
+          "callee": "screenStr",
+          "lineNumber": 113
+        },
+        {
+          "caller": "runCase",
+          "callee": "printf",
+          "lineNumber": 116
+        },
+        {
+          "caller": "runCase",
+          "callee": "c_str",
+          "lineNumber": 117
+        },
+        {
+          "caller": "runCase",
+          "callee": "printf",
+          "lineNumber": 120
+        },
+        {
+          "caller": "runCase",
+          "callee": "c_str",
+          "lineNumber": 120
+        },
+        {
+          "caller": "main",
+          "callee": "vKeyInit",
+          "lineNumber": 124
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 126
+        },
+        {
+          "caller": "main",
+          "callee": "runCase",
+          "lineNumber": 127
+        },
+        {
+          "caller": "main",
+          "callee": "runCase",
+          "lineNumber": 128
+        },
+        {
+          "caller": "main",
+          "callee": "runCase",
+          "lineNumber": 129
+        },
+        {
+          "caller": "main",
+          "callee": "runCase",
+          "lineNumber": 130
+        },
+        {
+          "caller": "main",
+          "callee": "runCase",
+          "lineNumber": 131
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 136
+        },
+        {
+          "caller": "main",
+          "callee": "runCase",
+          "lineNumber": 137
+        },
+        {
+          "caller": "main",
+          "callee": "runCase",
+          "lineNumber": 138
+        },
+        {
+          "caller": "main",
+          "callee": "runCase",
+          "lineNumber": 139
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 140
+        },
+        {
+          "caller": "main",
+          "callee": "runCase",
+          "lineNumber": 141
+        },
+        {
+          "caller": "main",
+          "callee": "runCase",
+          "lineNumber": 142
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 143
+        },
+        {
+          "caller": "main",
+          "callee": "runCase",
+          "lineNumber": 144
+        },
+        {
+          "caller": "main",
+          "callee": "runCase",
+          "lineNumber": 145
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 146
+        },
+        {
+          "caller": "main",
+          "callee": "runCase",
+          "lineNumber": 147
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 149
+        },
+        {
+          "caller": "main",
+          "callee": "runCase",
+          "lineNumber": 150
+        },
+        {
+          "caller": "main",
+          "callee": "runCase",
+          "lineNumber": 153
+        },
+        {
+          "caller": "main",
+          "callee": "runCase",
+          "lineNumber": 154
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 157
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 159
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 6,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/core/test_phrasing.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 157,
+      "nonEmptyLines": 137,
+      "functions": [
+        {
+          "name": "toUtf8",
+          "startLine": 25,
+          "endLine": 34,
+          "params": [
+            "in"
+          ]
+        },
+        {
+          "name": "atHour",
+          "startLine": 37,
+          "endLine": 47,
+          "params": [
+            "h"
+          ]
+        },
+        {
+          "name": "checkShape",
+          "startLine": 49,
+          "endLine": 55,
+          "params": [
+            "label",
+            "samples",
+            "expect"
+          ]
+        },
+        {
+          "name": "checkLabel",
+          "startLine": 57,
+          "endLine": 63,
+          "params": [
+            "hour",
+            "expect"
+          ]
+        },
+        {
+          "name": "checkShapeOf",
+          "startLine": 66,
+          "endLine": 72,
+          "params": [
+            "label",
+            "peak",
+            "gk",
+            "expect"
+          ]
+        },
+        {
+          "name": "main",
+          "startLine": 74,
+          "endLine": 157,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "main",
+          "line": 74,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "toUtf8",
+          "callee": "size",
+          "lineNumber": 27
+        },
+        {
+          "caller": "atHour",
+          "callee": "time",
+          "lineNumber": 38
+        },
+        {
+          "caller": "atHour",
+          "callee": "localtime_s",
+          "lineNumber": 41
+        },
+        {
+          "caller": "atHour",
+          "callee": "localtime_r",
+          "lineNumber": 43
+        },
+        {
+          "caller": "atHour",
+          "callee": "mktime",
+          "lineNumber": 46
+        },
+        {
+          "caller": "checkShape",
+          "callee": "MoodPhrasingCore_DayShapeSentence",
+          "lineNumber": 50
+        },
+        {
+          "caller": "checkShape",
+          "callee": "wstring",
+          "lineNumber": 51
+        },
+        {
+          "caller": "checkShape",
+          "callee": "printf",
+          "lineNumber": 53
+        },
+        {
+          "caller": "checkShape",
+          "callee": "c_str",
+          "lineNumber": 54
+        },
+        {
+          "caller": "checkShape",
+          "callee": "toUtf8",
+          "lineNumber": 54
+        },
+        {
+          "caller": "checkShape",
+          "callee": "c_str",
+          "lineNumber": 54
+        },
+        {
+          "caller": "checkShape",
+          "callee": "toUtf8",
+          "lineNumber": 54
+        },
+        {
+          "caller": "checkLabel",
+          "callee": "MoodPhrasingCore_TimeOfDayLabel",
+          "lineNumber": 58
+        },
+        {
+          "caller": "checkLabel",
+          "callee": "atHour",
+          "lineNumber": 58
+        },
+        {
+          "caller": "checkLabel",
+          "callee": "wstring",
+          "lineNumber": 59
+        },
+        {
+          "caller": "checkLabel",
+          "callee": "printf",
+          "lineNumber": 61
+        },
+        {
+          "caller": "checkLabel",
+          "callee": "c_str",
+          "lineNumber": 62
+        },
+        {
+          "caller": "checkLabel",
+          "callee": "toUtf8",
+          "lineNumber": 62
+        },
+        {
+          "caller": "checkLabel",
+          "callee": "c_str",
+          "lineNumber": 62
+        },
+        {
+          "caller": "checkLabel",
+          "callee": "toUtf8",
+          "lineNumber": 62
+        },
+        {
+          "caller": "checkShapeOf",
+          "callee": "MoodPhrasingCore_DayShapeOf",
+          "lineNumber": 67
+        },
+        {
+          "caller": "checkShapeOf",
+          "callee": "printf",
+          "lineNumber": 71
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 75
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 77
+        },
+        {
+          "caller": "main",
+          "callee": "checkShape",
+          "lineNumber": 79
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 81
+        },
+        {
+          "caller": "main",
+          "callee": "checkShape",
+          "lineNumber": 82
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 82
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 82
+        },
+        {
+          "caller": "main",
+          "callee": "checkShape",
+          "lineNumber": 83
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 83
+        },
+        {
+          "caller": "main",
+          "callee": "checkShape",
+          "lineNumber": 84
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 84
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 84
+        },
+        {
+          "caller": "main",
+          "callee": "checkShape",
+          "lineNumber": 85
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 85
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 85
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 85
+        },
+        {
+          "caller": "main",
+          "callee": "checkShape",
+          "lineNumber": 87
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 87
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 87
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 87
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 87
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 90
+        },
+        {
+          "caller": "main",
+          "callee": "checkShape",
+          "lineNumber": 92
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 92
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 92
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 92
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 92
+        },
+        {
+          "caller": "main",
+          "callee": "checkShape",
+          "lineNumber": 95
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 95
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 95
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 95
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 95
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 98
+        },
+        {
+          "caller": "main",
+          "callee": "checkShape",
+          "lineNumber": 99
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 99
+        },
+        {
+          "caller": "main",
+          "callee": "checkShape",
+          "lineNumber": 100
+        },
+        {
+          "caller": "main",
+          "callee": "atHour",
+          "lineNumber": 100
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 102
+        },
+        {
+          "caller": "main",
+          "callee": "checkLabel",
+          "lineNumber": 103
+        },
+        {
+          "caller": "main",
+          "callee": "checkLabel",
+          "lineNumber": 104
+        },
+        {
+          "caller": "main",
+          "callee": "checkLabel",
+          "lineNumber": 105
+        },
+        {
+          "caller": "main",
+          "callee": "checkLabel",
+          "lineNumber": 106
+        },
+        {
+          "caller": "main",
+          "callee": "checkLabel",
+          "lineNumber": 107
+        },
+        {
+          "caller": "main",
+          "callee": "checkLabel",
+          "lineNumber": 108
+        },
+        {
+          "caller": "main",
+          "callee": "checkLabel",
+          "lineNumber": 109
+        },
+        {
+          "caller": "main",
+          "callee": "checkLabel",
+          "lineNumber": 110
+        },
+        {
+          "caller": "main",
+          "callee": "checkLabel",
+          "lineNumber": 111
+        },
+        {
+          "caller": "main",
+          "callee": "checkLabel",
+          "lineNumber": 112
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 115
+        },
+        {
+          "caller": "main",
+          "callee": "checkShapeOf",
+          "lineNumber": 116
+        },
+        {
+          "caller": "main",
+          "callee": "checkShapeOf",
+          "lineNumber": 117
+        },
+        {
+          "caller": "main",
+          "callee": "checkShapeOf",
+          "lineNumber": 118
+        },
+        {
+          "caller": "main",
+          "callee": "checkShapeOf",
+          "lineNumber": 119
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 121
+        },
+        {
+          "caller": "main",
+          "callee": "MoodPhrasingCore_ReflectionQuestion",
+          "lineNumber": 128
+        },
+        {
+          "caller": "main",
+          "callee": "find",
+          "lineNumber": 129
+        },
+        {
+          "caller": "main",
+          "callee": "find",
+          "lineNumber": 129
+        },
+        {
+          "caller": "main",
+          "callee": "find",
+          "lineNumber": 130
+        },
+        {
+          "caller": "main",
+          "callee": "empty",
+          "lineNumber": 132
+        },
+        {
+          "caller": "main",
+          "callee": "MoodPhrasingCore_ReflectionQuestion",
+          "lineNumber": 135
+        },
+        {
+          "caller": "main",
+          "callee": "empty",
+          "lineNumber": 136
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 140
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 141
+        },
+        {
+          "caller": "main",
+          "callee": "MoodPhrasingCore_ReflectionQuestion",
+          "lineNumber": 144
+        },
+        {
+          "caller": "main",
+          "callee": "MoodPhrasingCore_ReflectionQuestion",
+          "lineNumber": 145
+        },
+        {
+          "caller": "main",
+          "callee": "MoodPhrasingCore_ReflectionQuestion",
+          "lineNumber": 146
+        },
+        {
+          "caller": "main",
+          "callee": "MoodPhrasingCore_ReflectionQuestion",
+          "lineNumber": 147
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 149
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 153
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 155
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 6,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/core/test_send_risk.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 105,
+      "nonEmptyLines": 90,
+      "functions": [
+        {
+          "name": "toUtf8",
+          "startLine": 25,
+          "endLine": 34,
+          "params": [
+            "in"
+          ]
+        },
+        {
+          "name": "checkRisk",
+          "startLine": 36,
+          "endLine": 42,
+          "params": [
+            "label",
+            "text",
+            "expect"
+          ]
+        },
+        {
+          "name": "checkCategory",
+          "startLine": 44,
+          "endLine": 50,
+          "params": [
+            "label",
+            "text",
+            "expect"
+          ]
+        },
+        {
+          "name": "main",
+          "startLine": 52,
+          "endLine": 105,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "main",
+          "line": 52,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "toUtf8",
+          "callee": "size",
+          "lineNumber": 27
+        },
+        {
+          "caller": "checkRisk",
+          "callee": "SendRiskAnalyzer_Analyze",
+          "lineNumber": 37
+        },
+        {
+          "caller": "checkRisk",
+          "callee": "fabs",
+          "lineNumber": 38
+        },
+        {
+          "caller": "checkRisk",
+          "callee": "printf",
+          "lineNumber": 40
+        },
+        {
+          "caller": "checkCategory",
+          "callee": "SendRiskAnalyzer_Analyze",
+          "lineNumber": 45
+        },
+        {
+          "caller": "checkCategory",
+          "callee": "wstring",
+          "lineNumber": 46
+        },
+        {
+          "caller": "checkCategory",
+          "callee": "printf",
+          "lineNumber": 48
+        },
+        {
+          "caller": "checkCategory",
+          "callee": "c_str",
+          "lineNumber": 49
+        },
+        {
+          "caller": "checkCategory",
+          "callee": "toUtf8",
+          "lineNumber": 49
+        },
+        {
+          "caller": "checkCategory",
+          "callee": "c_str",
+          "lineNumber": 49
+        },
+        {
+          "caller": "checkCategory",
+          "callee": "toUtf8",
+          "lineNumber": 49
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 53
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 55
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 56
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 57
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 58
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 59
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 61
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 62
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 63
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 64
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 65
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 66
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 68
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 69
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 70
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 71
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 73
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 74
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 75
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 76
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 77
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 82
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 83
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 84
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 85
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 87
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 88
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 89
+        },
+        {
+          "caller": "main",
+          "callee": "checkRisk",
+          "lineNumber": 90
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 92
+        },
+        {
+          "caller": "main",
+          "callee": "checkCategory",
+          "lineNumber": 93
+        },
+        {
+          "caller": "main",
+          "callee": "checkCategory",
+          "lineNumber": 94
+        },
+        {
+          "caller": "main",
+          "callee": "checkCategory",
+          "lineNumber": 95
+        },
+        {
+          "caller": "main",
+          "callee": "checkCategory",
+          "lineNumber": 96
+        },
+        {
+          "caller": "main",
+          "callee": "checkCategory",
+          "lineNumber": 97
+        },
+        {
+          "caller": "main",
+          "callee": "checkCategory",
+          "lineNumber": 98
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 101
+        },
+        {
+          "caller": "main",
+          "callee": "printf",
+          "lineNumber": 103
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    }
+  ]
+}

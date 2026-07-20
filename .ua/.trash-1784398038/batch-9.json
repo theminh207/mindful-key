@@ -1,0 +1,213 @@
+{
+  "nodes": [
+    {
+      "id": "document:docs/AGENT-BRIEF.md",
+      "type": "document",
+      "name": "AGENT-BRIEF.md",
+      "filePath": "docs/AGENT-BRIEF.md",
+      "summary": "Bản HIẾN CHƯƠNG đầy đủ của dự án — định nghĩa vai trò agent, bản sắc sản phẩm, nguyên tắc nhận diện bất khả xâm phạm (sóng ~ trung tính, cấm gamification), kiến trúc mục tiêu và ràng buộc pháp lý GPL v3.",
+      "tags": ["documentation", "governance", "constitution", "architecture", "identity"],
+      "complexity": "moderate",
+      "languageNotes": "Văn bản quản trị tối cao — mọi tài liệu và quyết định khác đều quy chiếu về đây."
+    },
+    {
+      "id": "document:docs/BMAD-SKILLS-GUIDE.md",
+      "type": "document",
+      "name": "BMAD-SKILLS-GUIDE.md",
+      "filePath": "docs/BMAD-SKILLS-GUIDE.md",
+      "summary": "Hướng dẫn tự học và tra cứu bộ skill BMAD Planning & Orchestrator — cú pháp gọi skill, lộ trình 4 buổi, bảng tra tình huống→skill và cách phân biệt ba thứ đang bị gọi chung là \"harness\".",
+      "tags": ["documentation", "guide", "bmad", "planning", "tutorial"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/BRAND-ASSETS.md",
+      "type": "document",
+      "name": "BRAND-ASSETS.md",
+      "filePath": "docs/BRAND-ASSETS.md",
+      "summary": "Quy tắc brand asset NOW BRAND OS — palette khóa cứng, dấu ấn sóng ~, các script xuất icon đa nền tảng từ SVG nguồn, và thang cảm xúc \"mặt hồ tâm\" tuân theo HIẾN CHƯƠNG 2.3.",
+      "tags": ["documentation", "brand", "assets", "design-system", "identity"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/BREATHING-PAUSE-CONTRACT.md",
+      "type": "document",
+      "name": "BREATHING-PAUSE-CONTRACT.md",
+      "filePath": "docs/BREATHING-PAUSE-CONTRACT.md",
+      "summary": "Hợp đồng thiết kế \"nhịp thở\" (Breathing Pause) cho người gác cổng gửi tin — cam kết không chặn cứng, câu chữ chánh niệm và ghi chú phần implementation thật ở Bước 5.",
+      "tags": ["documentation", "contract", "design-spec", "send-gatekeeper", "mindfulness"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/FRICTION-LOG.md",
+      "type": "document",
+      "name": "FRICTION-LOG.md",
+      "filePath": "docs/FRICTION-LOG.md",
+      "summary": "Sổ ghi \"chỗ AI phải đoán vì thiếu luật\" — danh sách các lệch pha đang mở và những điểm cần chủ dự án chốt/viết luật tiếp theo.",
+      "tags": ["documentation", "ledger", "friction-log", "process", "decision-tracking"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:docs/HUONG-DAN-SU-DUNG.html",
+      "type": "file",
+      "name": "HUONG-DAN-SU-DUNG.html",
+      "filePath": "docs/HUONG-DAN-SU-DUNG.html",
+      "summary": "Trang HTML hướng dẫn sử dụng bằng tiếng Việt cho người dùng cuối — giải thích tinh thần \"tấm gương không phải bảng điểm\", ý nghĩa con sóng ~, cơ chế cảm nhận không chấm điểm, bảng menu, các màn hình, người gác cổng và cam kết riêng tư.",
+      "tags": ["markup", "user-guide", "documentation", "html", "vietnamese"],
+      "complexity": "complex",
+      "languageNotes": "Single-page HTML tự chứa với CSS nội tuyến dùng biến màu brand (teal/cam); không có script."
+    },
+    {
+      "id": "document:docs/INSTALL-MACOS-BETA.md",
+      "type": "document",
+      "name": "INSTALL-MACOS-BETA.md",
+      "filePath": "docs/INSTALL-MACOS-BETA.md",
+      "summary": "Hướng dẫn cài bản beta macOS chưa notarize — giải thích cơ chế \"damaged\" của Gatekeeper và ba đường cài (script Terminal, tự gỡ tem quarantine, hoặc chờ bản notarize).",
+      "tags": ["documentation", "install-guide", "macos", "beta", "gatekeeper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/INSTALL.md",
+      "type": "document",
+      "name": "INSTALL.md",
+      "filePath": "docs/INSTALL.md",
+      "summary": "Hướng dẫn cài/gỡ bản ad-hoc tự dùng — cách đóng gói lại khi có build mới và kiểm tra nhanh sau khi cài theo đúng vòng lặp sản phẩm.",
+      "tags": ["documentation", "install-guide", "macos", "ad-hoc", "packaging"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/LIFECYCLE-SAFETY-CONTRACT.md",
+      "type": "document",
+      "name": "LIFECYCLE-SAFETY-CONTRACT.md",
+      "filePath": "docs/LIFECYCLE-SAFETY-CONTRACT.md",
+      "summary": "Hợp đồng khởi động an toàn — ba bất biến vòng đời app (không hành động nặng trước khi dựng xong, không đường thoát chết câm, dọn dẹp chịu được trạng thái nửa-khởi-tạo) kèm cách grep review.",
+      "tags": ["documentation", "contract", "lifecycle", "safety", "invariants"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/MOOD-WAVE-MECHANISM.md",
+      "type": "document",
+      "name": "MOOD-WAVE-MECHANISM.md",
+      "filePath": "docs/MOOD-WAVE-MECHANISM.md",
+      "summary": "Mô tả cơ chế sóng cảm xúc hiện tại trên macOS — bốn tầng từ phím tới câu chữ (chấm điểm lexicon, gom mẫu, vẽ sóng, kho câu), núm độ nhạy, điểm mù và hướng cải thiện trước-PhoBERT.",
+      "tags": ["documentation", "mechanism", "mood-layer", "sentiment", "identity"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/OPENKEY-MAP.md",
+      "type": "document",
+      "name": "OPENKEY-MAP.md",
+      "filePath": "docs/OPENKEY-MAP.md",
+      "summary": "Bản đồ code OpenKey gốc theo dòng số — kiến trúc 1 bộ não + nhiều vỏ, dòng chảy của một phím, và chỗ cắm lớp cảm xúc (móc trong engine, module MoodBuffer chung, MoodWatcher theo từng OS).",
+      "tags": ["documentation", "architecture", "code-map", "engine", "mood-layer"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/PRD.md",
+      "type": "document",
+      "name": "PRD.md",
+      "filePath": "docs/PRD.md",
+      "summary": "PRD của macOS MVP — định vị \"người gác cổng cảm xúc\", vòng lặp lõi Sense→Pause→Remind→Reflect, các non-goal, success metrics và nguyên tắc riêng tư 100% on-device.",
+      "tags": ["documentation", "prd", "product", "requirements", "macos"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/PRIVACY-NOTE.md",
+      "type": "document",
+      "name": "PRIVACY-NOTE.md",
+      "filePath": "docs/PRIVACY-NOTE.md",
+      "summary": "Bản dễ đọc cam kết riêng tư dùng trong onboarding — app biết gì, người dùng kiểm soát ra sao, các vùng mù, và vì sao bàn phím iOS phải xin Full Access.",
+      "tags": ["documentation", "privacy", "onboarding", "data-handling", "trust"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/QA-WINDOWS.md",
+      "type": "document",
+      "name": "QA-WINDOWS.md",
+      "filePath": "docs/QA-WINDOWS.md",
+      "summary": "Kịch bản kiểm thử vỏ Windows trước khi đóng gói .exe — xếp rủi ro Risk-Based, các ca E2E (gõ tiếng Việt, lớp cảm xúc, gác cổng, chuông, nhật ký mã hoá, vòng đời bộ cài), bất biến riêng tư và Definition of Done.",
+      "tags": ["documentation", "qa", "testing", "windows", "e2e"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:docs/RELEASE.md",
+      "type": "document",
+      "name": "RELEASE.md",
+      "filePath": "docs/RELEASE.md",
+      "summary": "Checklist phát hành thật cho macOS (ký Developer ID + notarize) — lấy chứng chỉ, Team ID, App Store Connect API Key, thêm secrets vào GitHub, test cục bộ và quy trình phát hành qua CI.",
+      "tags": ["documentation", "release", "signing", "notarization", "ci-cd"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/REPO-TOPOLOGY.md",
+      "type": "document",
+      "name": "REPO-TOPOLOGY.md",
+      "filePath": "docs/REPO-TOPOLOGY.md",
+      "summary": "Tổ chức repo và tách brand — hai repo dev vs public/release, monorepo đa nền tảng, cảnh báo GPL v3 định hình repo public, mô hình 1 nguồn brand → 3 đích, runbook và deploy landing qua Coolify.",
+      "tags": ["documentation", "repo-topology", "architecture", "gpl", "brand"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/ROADMAP-WINDOWS.md",
+      "type": "document",
+      "name": "ROADMAP-WINDOWS.md",
+      "filePath": "docs/ROADMAP-WINDOWS.md",
+      "summary": "Lộ trình nâng vỏ Windows lên ngang macOS trước khi đóng gói — trạng thái xuất phát đo thật, các giai đoạn từ dựng lưới an toàn, MoodWatch, SendGatekeeper, MoodStore, Nudge/Bell, Reflection tới vỏ nhận diện và đóng gói.",
+      "tags": ["documentation", "roadmap", "windows", "porting", "planning"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:docs/ROADMAP.md",
+      "type": "document",
+      "name": "ROADMAP.md",
+      "filePath": "docs/ROADMAP.md",
+      "summary": "Kế hoạch tổng thể và nề nếp nhánh git cho solo dev — chẩn đoán nhánh hiện tại, mô hình nhánh đích, và các giai đoạn từ dọn nhánh, landing/Coolify, brand, release thật tới công khai.",
+      "tags": ["documentation", "roadmap", "git-workflow", "planning", "process"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:docs/SEND-RISK-MODEL-SPEC.md",
+      "type": "document",
+      "name": "SEND-RISK-MODEL-SPEC.md",
+      "filePath": "docs/SEND-RISK-MODEL-SPEC.md",
+      "summary": "Spec (chưa implement) thay lexicon bằng PhoBERT ONNX cho send-risk — hợp đồng phải giữ nguyên, model đề xuất, ràng buộc độ trễ, fallback bắt buộc và vấn đề dữ liệu huấn luyện chưa có lời giải.",
+      "tags": ["documentation", "spec", "sentiment", "phobert", "mood-layer"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/TEST_MATRIX.md",
+      "type": "document",
+      "name": "TEST_MATRIX.md",
+      "filePath": "docs/TEST_MATRIX.md",
+      "summary": "Bảng hành vi → bằng chứng (Engine/macOS/E2E) — sổ cái phơi bày chỗ \"đã code nhưng chưa chứng minh chạy thật\" và hướng dẫn khi nào cập nhật.",
+      "tags": ["documentation", "test-matrix", "ledger", "testing", "evidence"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {"source": "document:docs/AGENT-BRIEF.md", "target": "document:docs/BRAND-ASSETS.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/AGENT-BRIEF.md", "target": "document:docs/MOOD-WAVE-MECHANISM.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/AGENT-BRIEF.md", "target": "document:docs/PRD.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/AGENT-BRIEF.md", "target": "document:docs/REPO-TOPOLOGY.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/AGENT-BRIEF.md", "target": "document:docs/OPENKEY-MAP.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/BMAD-SKILLS-GUIDE.md", "target": "document:docs/ROADMAP.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/BRAND-ASSETS.md", "target": "document:docs/MOOD-WAVE-MECHANISM.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/BREATHING-PAUSE-CONTRACT.md", "target": "document:docs/SEND-RISK-MODEL-SPEC.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/BREATHING-PAUSE-CONTRACT.md", "target": "document:docs/LIFECYCLE-SAFETY-CONTRACT.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/BREATHING-PAUSE-CONTRACT.md", "target": "document:docs/PRD.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/FRICTION-LOG.md", "target": "document:docs/TEST_MATRIX.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "file:docs/HUONG-DAN-SU-DUNG.html", "target": "document:docs/PRD.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "file:docs/HUONG-DAN-SU-DUNG.html", "target": "document:docs/MOOD-WAVE-MECHANISM.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "file:docs/HUONG-DAN-SU-DUNG.html", "target": "document:docs/PRIVACY-NOTE.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/INSTALL-MACOS-BETA.md", "target": "document:docs/INSTALL.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/INSTALL-MACOS-BETA.md", "target": "document:docs/RELEASE.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/INSTALL.md", "target": "document:docs/RELEASE.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/MOOD-WAVE-MECHANISM.md", "target": "document:docs/SEND-RISK-MODEL-SPEC.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/OPENKEY-MAP.md", "target": "document:docs/MOOD-WAVE-MECHANISM.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/PRD.md", "target": "document:docs/PRIVACY-NOTE.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/QA-WINDOWS.md", "target": "document:docs/ROADMAP-WINDOWS.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/QA-WINDOWS.md", "target": "document:docs/TEST_MATRIX.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/RELEASE.md", "target": "document:docs/REPO-TOPOLOGY.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/REPO-TOPOLOGY.md", "target": "document:docs/ROADMAP.md", "type": "related", "direction": "forward", "weight": 0.5},
+    {"source": "document:docs/ROADMAP-WINDOWS.md", "target": "document:docs/ROADMAP.md", "type": "related", "direction": "forward", "weight": 0.5}
+  ]
+}

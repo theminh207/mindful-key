@@ -28,6 +28,9 @@ static NSString *const kNoteConsentGrantedKey = @"MoodStoreNoteConsentGranted";
 static NSString *const kNoteConsentAskedKey   = @"MoodStoreNoteConsentAsked";
 static const NSUInteger kKeySize = 32; // AES-256
 
+// [MINDFUL] 2026-07-20 — xem hợp đồng ở MoodStoreMac.h. Mặc định BẬT (gộp check-in vào sông).
+int vShowCheckinOnRiver = 1;
+
 #pragma mark - Đường dẫn file
 
 static NSURL *SupportDirectoryURL(void) {
@@ -461,6 +464,20 @@ NSDictionary *MoodStoreMac_FetchTodaySummary(void) {
 // FetchTodaySamples tự ôm SQL; nay "Ngay bây giờ" (cửa sổ trượt 6 tiếng, VẮT QUA NỬA ĐÊM) cần
 // cùng câu lệnh đó với mốc khác → tách ra thay vì chép bản thứ 2 gần giống (đúng bài học đã ghi
 // ở FetchDailyAverages: 2 bản SQL na ná nhau là chỗ chúng trôi lệch nhau).
+// [MINDFUL] 2026-07-20 — quy đổi 3 mức tự thuật ("Mặt hồ đang thế nào?" — LogCheckinEvent,
+// waveLevel 1/2/3 = Phẳng lặng/Gợn nhẹ/Gợn sóng) sang CÙNG thang biên độ 0-1 với send_risk (tự
+// tính từ chữ gõ), để 2 nguồn vẽ chung 1 trục mà không cãi nhau. Không cần khớp máy móc
+// kRestThreshold/kLowThreshold của EmotionWaveView (0.05/0.50) — tự thuật là 3 mức thô do người
+// dùng chọn tay, chỉ cần nằm đúng VÙNG của mỗi trạng thái để câu mô tả (MoodPhrasing) đọc đúng ý.
+static double AmplitudeForCheckinIntensity(NSInteger intensity) {
+    switch (intensity) {
+        case 3:  return 0.80;   // Gợn sóng
+        case 2:  return 0.45;   // Gợn nhẹ
+        default: return 0.12;   // Phẳng lặng (case 1, hoặc giá trị lạ → mặc định êm, không phải 0
+                                 // hệt "chưa có dữ liệu" — đây LÀ dữ liệu, người dùng vừa tự nói)
+    }
+}
+
 static NSArray<NSDictionary *> *FetchSamplesBetween(sqlite3_int64 tsFrom, sqlite3_int64 tsTo) {
     NSMutableArray<NSDictionary *> *samples = [NSMutableArray array];
 
@@ -480,14 +497,53 @@ static NSArray<NSDictionary *> *FetchSamplesBetween(sqlite3_int64 tsFrom, sqlite
                 double risk = sqlite3_column_double(stmt, 1);
                 [samples addObject:@{
                     @"ts": @(ts),
-                    @"value": @(risk)
+                    @"value": @(risk),
+                    @"checkin": @NO
                 }];
             }
             sqlite3_finalize(stmt);
         }
+
+        // [MINDFUL] 2026-07-20 — nhập thêm sổ "checkin" (tự thuật) vào cùng nguồn nuôi sông. Trước
+        // đây chỉ đọc 'sample' — câu trả lời "Mặt hồ đang thế nào?" ghi xong cất tủ, KHÔNG nơi nào
+        // đọc lại (kể cả Soi lại) — người dùng phát hiện đúng lỗ này. Đánh dấu "checkin"=YES để
+        // tầng vẽ (EmotionRiverView/MKRiverCanvas) hiện chấm RỖNG thay chấm đặc — phân biệt tự
+        // thuật vs tự đoán bằng HÌNH DẠNG, KHÔNG phải màu (cam đã khoá riêng cho "khoảnh khắc con
+        // người" — hơi thở/cảnh báo/chuông, xem docs/BRAND-ASSETS.md dòng 17/67/76; decision-log
+        // 2026-07-20 "Nhận diện: giữ 1 trục biên độ"). vShowCheckinOnRiver = cửa thoát cho ai
+        // không muốn trộn 2 nguồn.
+        if (vShowCheckinOnRiver) {
+            sqlite3_stmt *ckStmt = NULL;
+            const char *ckSql =
+                "SELECT ts, intensity FROM mood_events "
+                "WHERE event_type = 'checkin' AND ts >= ? AND ts < ? "
+                "ORDER BY ts ASC;";
+            if (sqlite3_prepare_v2(db, ckSql, -1, &ckStmt, NULL) == SQLITE_OK) {
+                sqlite3_bind_int64(ckStmt, 1, tsFrom);
+                sqlite3_bind_int64(ckStmt, 2, tsTo);
+                while (sqlite3_step(ckStmt) == SQLITE_ROW) {
+                    sqlite3_int64 ts = sqlite3_column_int64(ckStmt, 0);
+                    NSInteger intensity = (NSInteger)sqlite3_column_int64(ckStmt, 1);
+                    [samples addObject:@{
+                        @"ts": @(ts),
+                        @"value": @(AmplitudeForCheckinIntensity(intensity)),
+                        @"checkin": @YES
+                    }];
+                }
+                sqlite3_finalize(ckStmt);
+            }
+        }
+
         FlushAndCloseDB(db, tempPath);
     }
 
+    // Gộp 2 nguồn xong PHẢI sắp lại theo ts — không thì hàng 'checkin' chen giữa phá thứ tự tăng
+    // dần mà mọi caller (gap-detection, tính xf theo vị trí) đều giả định là bất biến.
+    [samples sortUsingComparator:^NSComparisonResult(NSDictionary *a, NSDictionary *b) {
+        sqlite3_int64 ta = [a[@"ts"] longLongValue];
+        sqlite3_int64 tb = [b[@"ts"] longLongValue];
+        return ta < tb ? NSOrderedAscending : (ta > tb ? NSOrderedDescending : NSOrderedSame);
+    }];
     return samples;
 }
 

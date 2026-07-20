@@ -1,0 +1,61 @@
+{
+  "projectRoot": "/Users/now/Projects/mindful-keyboard/mindful-key",
+  "batchFiles": [
+    {"path": "core/mood/MoodPhrasing.cpp", "language": "cpp", "sizeLines": 151, "fileCategory": "code"},
+    {"path": "core/mood/MoodPhrasing.h", "language": "c", "sizeLines": 73, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/Bell.cpp", "language": "cpp", "sizeLines": 449, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/Bell.h", "language": "c", "sizeLines": 27, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/MoodStore.cpp", "language": "cpp", "sizeLines": 293, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/MoodStore.h", "language": "c", "sizeLines": 73, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp", "language": "cpp", "sizeLines": 40, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h", "language": "c", "sizeLines": 26, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp", "language": "cpp", "sizeLines": 264, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.h", "language": "c", "sizeLines": 15, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp", "language": "cpp", "sizeLines": 546, "fileCategory": "code"}
+  ],
+  "batchImportData": {
+    "core/mood/MoodPhrasing.cpp": [
+      "core/mood/MoodPhrasing.h"
+    ],
+    "core/mood/MoodPhrasing.h": [],
+    "platforms/windows/win32/OpenKey/OpenKey/Bell.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/Bell.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MoodStore.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.h",
+      "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h",
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/Bell.h": [],
+    "platforms/windows/win32/OpenKey/OpenKey/MoodStore.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/MoodStore.h",
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/MoodStore.h": [
+      "core/mood/MoodPhrasing.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h",
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h": [],
+    "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp": [
+      "core/mood/MoodPhrasing.h",
+      "platforms/windows/win32/OpenKey/OpenKey/Bell.h",
+      "platforms/windows/win32/OpenKey/OpenKey/BrandPalette.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MoodStore.h",
+      "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h",
+      "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.h",
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.h": [],
+    "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/AppDelegate.h",
+      "platforms/windows/win32/OpenKey/OpenKey/Bell.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MoodStore.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.h",
+      "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.h",
+      "platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.h",
+      "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h"
+    ]
+  }
+}

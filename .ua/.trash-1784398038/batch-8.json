@@ -1,0 +1,120 @@
+{
+  "nodes": [
+    {
+      "id": "document:CHANGELOG.md",
+      "type": "document",
+      "name": "CHANGELOG.md",
+      "filePath": "CHANGELOG.md",
+      "summary": "Nhật ký thay đổi theo chuẩn Keep a Changelog + SemVer, ghi các bản phát hành từ 0.2.0 đến 0.4.2 (Added/Changed/Fixed/Security), gồm cả lớp gác cổng macOS và cảnh báo phát hiện bộ gõ khác chạy song song.",
+      "tags": ["documentation", "changelog", "release-notes", "versioning"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:CLAUDE.md",
+      "type": "document",
+      "name": "CLAUDE.md",
+      "filePath": "CLAUDE.md",
+      "summary": "Văn bản quản trị cho AI-agent của mindful-key: kỷ luật coding (vòng lặp '4 Kỹ', sửa như phẫu thuật, zero technical debt), RULE #0 bắt giải thích bằng analogy đời thường cho vibe coder, và bảng điều phối 4 chuyên gia harness (engine/mood/platform/iOS).",
+      "tags": ["documentation", "ai-governance", "coding-standards", "contribution-guide"],
+      "complexity": "moderate",
+      "languageNotes": "Tài liệu quy tắc dự án (không phải mã thực thi) — mô tả ràng buộc nhận diện bất khả xâm phạm và ranh giới core/engine dùng chung."
+    },
+    {
+      "id": "document:CONTRIBUTING.md",
+      "type": "document",
+      "name": "CONTRIBUTING.md",
+      "filePath": "CONTRIBUTING.md",
+      "summary": "Hướng dẫn đóng góp ngắn gọn: Conventional Commits, SemVer ở version.env, bài tự kiểm nhận diện 'mô tả hay phán xét', ràng buộc bất khả xâm phạm của core/engine (phải kèm test hồi quy) và các lệnh build/test macOS.",
+      "tags": ["documentation", "contribution-guide", "development", "conventions"],
+      "complexity": "simple"
+    },
+    {
+      "id": "pipeline:Makefile",
+      "type": "pipeline",
+      "name": "Makefile",
+      "filePath": "Makefile",
+      "summary": "Đầu vào build/test duy nhất của dự án với 21 target: generate (XcodeGen), build/run app macOS, test (core + macOS + iOS), brand/brand-lint (xuất asset và kiểm nhận diện từ 1 nguồn), version (đọc version.env) và hooks/clean.",
+      "tags": ["build-system", "makefile", "task-runner", "build", "ci-cd"],
+      "complexity": "moderate",
+      "languageNotes": "Task-runner đa nền tảng gom test-core/test-macos/test-ios vào một mạch; brand-lint đóng vai cổng kiểm nhận diện trước commit."
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Trang giới thiệu dự án: định vị 'người gác cổng cảm xúc', cách app cảm và ghi nhận mà không hiển thị điểm số, các màn hình, cam kết riêng tư on-device, hướng dẫn cài macOS, cấu trúc thư mục và ghi nhận nguồn OpenKey/GPL v3.",
+      "tags": ["documentation", "entry-point", "overview", "project-readme"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:appcast.xml",
+      "type": "config",
+      "name": "appcast.xml",
+      "filePath": "appcast.xml",
+      "summary": "Khung feed tự cập nhật kiểu Sparkle (RSS) cho Mindful Keyboard — hiện chưa có <item>, sẽ được script phát hành điền khi có bản ký thật/notarize đầu tiên.",
+      "tags": ["configuration", "auto-update", "sparkle", "release"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:version.env",
+      "type": "config",
+      "name": "version.env",
+      "filePath": "version.env",
+      "summary": "Nguồn phiên bản duy nhất (single source of truth) theo SemVer với VERSION=0.4.2; mọi nơi khác đọc từ đây, bump trong cùng PR phát hành kèm cập nhật CHANGELOG.md.",
+      "tags": ["configuration", "versioning", "semver", "build-system"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:version.env",
+      "target": "pipeline:Makefile",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:appcast.xml",
+      "target": "config:version.env",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "pipeline:Makefile",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CONTRIBUTING.md",
+      "target": "pipeline:Makefile",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CLAUDE.md",
+      "target": "pipeline:Makefile",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CONTRIBUTING.md",
+      "target": "config:version.env",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:CHANGELOG.md",
+      "target": "config:version.env",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

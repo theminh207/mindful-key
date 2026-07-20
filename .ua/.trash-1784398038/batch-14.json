@@ -1,0 +1,453 @@
+{
+  "nodes": [
+    {
+      "id": "file:platforms/apple/ios/App/MindfulKeyiOS.entitlements",
+      "type": "file",
+      "name": "MindfulKeyiOS.entitlements",
+      "filePath": "platforms/apple/ios/App/MindfulKeyiOS.entitlements",
+      "summary": "Entitlements của app container iOS — khai App Group (group.vn.gnh.mindfulkey) và Keychain access group chia sẻ để đồng bộ khoá nhật ký cảm xúc với keyboard extension. Access group chỉ khớp đúng khi ký thật bằng Team ID (hiện ký ad-hoc).",
+      "tags": ["entitlements", "app-group", "keychain", "cau-hinh", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/App/MoodLakeViewController.h",
+      "type": "file",
+      "name": "MoodLakeViewController.h",
+      "filePath": "platforms/apple/ios/App/MoodLakeViewController.h",
+      "summary": "Header khai UIViewController màn \"Mặt hồ\" (soi lại cuối ngày) với 2 trạng thái nội bộ: câu hỏi phản chiếu làm trọng tâm và thang biên độ sóng 5 mức. Nhấn mạnh tuân hiến chương: không đèn đỏ/xanh, không điểm số.",
+      "tags": ["header", "view-controller", "mat-ho", "chanh-niem", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/App/MoodLakeViewController.m",
+      "type": "file",
+      "name": "MoodLakeViewController.m",
+      "filePath": "platforms/apple/ios/App/MoodLakeViewController.m",
+      "summary": "Dựng màn \"Mặt hồ\" soi lại cuối ngày: card câu hỏi phản chiếu là tiêu điểm, số liệu Q4 chỉ là bối cảnh phụ, và thang 5 mức biên độ sóng (An/Nhẹ/Gợn/Sóng/Cuộn). Chứa 2 view con tự vẽ (pill chọn, sóng sin) — màu trung tính, không mã hoá cảm xúc.",
+      "tags": ["view-controller", "ui-uikit", "mat-ho", "reflection", "chanh-niem"],
+      "complexity": "complex",
+      "languageNotes": "Ép Bold trên Dynamic Type qua UIFontMetrics scaledFontForFont để giữ co giãn chữ; gộp nhiều label thành 1 phần tử a11y cho VoiceOver đọc liền mạch."
+    },
+    {
+      "id": "file:platforms/apple/ios/App/OnboardingUI.h",
+      "type": "file",
+      "name": "OnboardingUI.h",
+      "filePath": "platforms/apple/ios/App/OnboardingUI.h",
+      "summary": "Header khai xưởng dựng UI dùng chung cho các màn onboarding — factory tạo label tiêu đề/phụ/thân, nút CTA cam, nút ghost teal, và chỉ báo bước. Mọi thứ bật Dynamic Type, không hard-code cỡ chữ.",
+      "tags": ["header", "ui-factory", "onboarding", "dynamic-type", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/App/OnboardingUI.m",
+      "type": "file",
+      "name": "OnboardingUI.m",
+      "filePath": "platforms/apple/ios/App/OnboardingUI.m",
+      "summary": "Cài đặt xưởng UI dùng chung: các phương thức lớp tạo sẵn label, nút CTA/ghost và chỉ báo bước với style + màu brand + a11y nhất quán, gom về một chỗ để DRY. Chữ CTA dùng màu tối trên nền cam theo luật cứng nhận diện.",
+      "tags": ["ui-factory", "onboarding", "brand-colors", "accessibility", "ios"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/apple/ios/App/SettingsViewController.h",
+      "type": "file",
+      "name": "SettingsViewController.h",
+      "filePath": "platforms/apple/ios/App/SettingsViewController.h",
+      "summary": "Header khai màn Cài đặt bàn phím iOS — chọn kiểu gõ Telex/VNI, chiều cao bàn phím với preview sống, cùng row chuông nhắc nghỉ (bật/tắt + tạm hoãn). Đọc/ghi qua App Group; không hiển thị số câu/số lần (không gamify).",
+      "tags": ["header", "view-controller", "settings", "app-group", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/App/SettingsViewController.m",
+      "type": "file",
+      "name": "SettingsViewController.m",
+      "filePath": "platforms/apple/ios/App/SettingsViewController.m",
+      "summary": "Dựng màn Cài đặt bàn phím: segmented Telex/VNI, slider chiều cao có preview realtime, switch + nút tạm hoãn chuông nhắc nghỉ, và lối vào màn macro. Đọc/ghi App Group qua KeyboardSettingsBridge và BellReminderSettingsBridge; tô token teal thay vì tint hệ thống.",
+      "tags": ["view-controller", "settings", "ui-uikit", "app-group", "chanh-niem"],
+      "complexity": "complex",
+      "languageNotes": "Slider ghi App Group khi thả tay (touchUpInside) chứ không mỗi pixel kéo, tránh ghi dồn dập; refresh lại từ store ở viewWillAppear đề phòng giá trị đổi từ nơi khác."
+    },
+    {
+      "id": "file:platforms/apple/ios/App/main.m",
+      "type": "file",
+      "name": "main.m",
+      "filePath": "platforms/apple/ios/App/main.m",
+      "summary": "Điểm vào (entry point) của app container iOS — gọi UIApplicationMain với AppDelegate làm delegate chính.",
+      "tags": ["entry-point", "bootstrap", "ios", "app"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:platforms/apple/ios/KeyboardExtension/Info.plist",
+      "type": "config",
+      "name": "Info.plist",
+      "filePath": "platforms/apple/ios/KeyboardExtension/Info.plist",
+      "summary": "Info.plist của keyboard extension iOS — khai NSExtension (điểm keyboard-service, principal class KeyboardViewController), bật RequestsOpenAccess (Full Access) để đọc App Group và phản chiếu nhịp gõ, đặt ngôn ngữ chính vi-VN. Nhấn mạnh mọi xử lý ngay trên máy.",
+      "tags": ["configuration", "keyboard-extension", "full-access", "app-extension", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/KeyboardExtension/KeyboardBridge.h",
+      "type": "file",
+      "name": "KeyboardBridge.h",
+      "filePath": "platforms/apple/ios/KeyboardExtension/KeyboardBridge.h",
+      "summary": "Header cầu nối DUY NHẤT giữa vỏ bàn phím iOS và bộ não C++ (core/engine) — khai KeyboardBridgeResult (số backspace + chuỗi chèn) và các hàm init, xử lý phím, space/backspace, đổi kiểu gõ Telex/VNI. Thuần Foundation để test chạy được trên host.",
+      "tags": ["header", "bridge", "engine", "keyboard-extension", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm",
+      "type": "file",
+      "name": "KeyboardBridge.mm",
+      "filePath": "platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm",
+      "summary": "Cầu nối engine cho iOS: định nghĩa 22 biến cấu hình extern mà core/engine khai báo, gọi vKeyInit(), và giải mã HookState của engine (backspace + charData/macroData) thành thao tác xoá lùi + chèn trên ô nhập. Không sửa một dòng nào trong core/engine.",
+      "tags": ["bridge", "engine", "telex-vni", "keyboard-extension", "objcpp"],
+      "complexity": "moderate",
+      "languageNotes": "charData xếp ngược (index 0 = ký tự phải nhất) nên duyệt từ cuối về đầu, trong khi macroData duyệt xuôi — nhầm thứ tự là bug đảo chữ im lặng, không crash."
+    },
+    {
+      "id": "file:platforms/apple/ios/KeyboardExtension/KeyboardExtension.entitlements",
+      "type": "file",
+      "name": "KeyboardExtension.entitlements",
+      "filePath": "platforms/apple/ios/KeyboardExtension/KeyboardExtension.entitlements",
+      "summary": "Entitlements của keyboard extension — khai App Group và Keychain access group PHẢI khớp byte-for-byte với entitlement cùng tên bên app container để chia sẻ khoá nhật ký cảm xúc.",
+      "tags": ["entitlements", "app-group", "keychain", "keyboard-extension", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/KeyboardExtension/KeyboardViewController.h",
+      "type": "file",
+      "name": "KeyboardViewController.h",
+      "filePath": "platforms/apple/ios/KeyboardExtension/KeyboardViewController.h",
+      "summary": "Header khai KeyboardViewController — lớp con UIInputViewController là principal class của keyboard extension, tự vẽ bàn phím QWERTY.",
+      "tags": ["header", "view-controller", "keyboard-extension", "uikit", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/KeyboardExtension/KeyboardViewController.mm",
+      "type": "file",
+      "name": "KeyboardViewController.mm",
+      "filePath": "platforms/apple/ios/KeyboardExtension/KeyboardViewController.mm",
+      "summary": "Bàn phím iOS tự vẽ: QWERTY + hàng chức năng, Shift/Caps, lớp số/ký hiệu, đổi Telex/VNI qua long-press. Mỗi phím đi qua KeyboardBridge để gõ Telex ra dấu rồi áp lên UITextDocumentProxy; poll send-risk mỗi 300ms để vẽ con sóng ambient, có cổng ô bảo mật + Full Access.",
+      "tags": ["view-controller", "keyboard-extension", "engine-bridge", "mood-wave", "chanh-niem"],
+      "complexity": "complex",
+      "languageNotes": "Timer poll dùng block + weak self (không target:self) để tránh retain cycle làm rò rỉ view controller và ăn vào trần RAM ~48-60MB của extension; gỡ timer ở viewWillDisappear."
+    },
+    {
+      "id": "file:platforms/apple/ios/KeyboardExtension/MoodBridge.h",
+      "type": "file",
+      "name": "MoodBridge.h",
+      "filePath": "platforms/apple/ios/KeyboardExtension/MoodBridge.h",
+      "summary": "Header cầu nối engine (vOnWordCommitted) với lớp cảm xúc iOS — khai hàm init, setter cờ ô bảo mật, getter send-risk mới nhất, và hàm flush chỉ dùng test. Hợp đồng: chạy phân tích bất đồng bộ trên serial queue riêng, không bao giờ chạy lexicon trên thread xử lý phím.",
+      "tags": ["header", "mood", "send-risk", "async", "keyboard-extension"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/KeyboardExtension/MoodBridge.mm",
+      "type": "file",
+      "name": "MoodBridge.mm",
+      "filePath": "platforms/apple/ios/KeyboardExtension/MoodBridge.mm",
+      "summary": "Cầu nối lớp cảm xúc iOS: đặt callback vOnWordCommitted của engine, gom từ qua MoodBuffer rồi tính send-risk bằng SendRiskAnalyzer trên serial queue riêng (bất đồng bộ). Gác cổng ô bảo mật (return sớm), đếm câu căng qua NudgeCoordinatorIOS và ghi nhật ký khoảnh khắc căng.",
+      "tags": ["mood", "send-risk", "async", "privacy", "objcpp"],
+      "complexity": "moderate",
+      "languageNotes": "Copy wstring cục bộ trước khi capture vào block — capture thẳng const reference C++ vào block Objective-C không đáng tin (buffer rỗng dù callback nhận đúng nội dung); dùng std::atomic thay khoá tường minh."
+    },
+    {
+      "id": "file:platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.h",
+      "type": "file",
+      "name": "NudgeCoordinatorIOS.h",
+      "filePath": "platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.h",
+      "summary": "Header chuông nhắc nghỉ iOS sau N câu căng liên tiếp — mirror 1:1 mô hình macOS (ngưỡng 0.35, trigger 3 câu, cooldown 45s). Ghi rõ nơi gọi (từ trong MoodBridge cạnh chỗ tính risk, không theo poll UI), thread safety, và cấm gamify (không getter đọc số đếm).",
+      "tags": ["header", "nudge", "bell", "mirror-macos", "chanh-niem"],
+      "complexity": "moderate",
+      "languageNotes": "Tách thuần (đếm + gate + cooldown, host-testable) khỏi hiệu ứng thật (haptic + âm, chỉ verify Simulator) bằng TARGET_OS_IPHONE; đổi tên hằng số tránh từ khoá gamification bị brand-lint chặn nhưng giữ nguyên giá trị."
+    },
+    {
+      "id": "file:platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm",
+      "type": "file",
+      "name": "NudgeCoordinatorIOS.mm",
+      "filePath": "platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm",
+      "summary": "Cài đặt chuông nhắc nghỉ iOS: lõi thuần mk_step đếm câu căng liên tiếp + gate (bật/hoãn/cooldown) tách khỏi hiệu ứng haptic+âm (chỉ biên dịch trên iOS). Hằng số copy nguyên từ macOS; state static không khoá vì luôn chạy trên serial queue của MoodBridge.",
+      "tags": ["nudge", "bell", "cooldown", "haptic", "objcpp"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/apple/ios/KeyboardExtension/SuggestionBarView.h",
+      "type": "file",
+      "name": "SuggestionBarView.h",
+      "filePath": "platforms/apple/ios/KeyboardExtension/SuggestionBarView.h",
+      "summary": "Header thanh gợi ý ~40pt trên 4 hàng phím — hiện luôn trống (engine chưa có API gợi ý từ), là bề mặt để gắn con sóng `~` chánh niệm. Khai hằng chiều cao, setSuggestions (điểm nối tương lai) và setWaveAmplitude (biên độ sóng chuẩn hoá 0-1).",
+      "tags": ["header", "suggestion-bar", "mood-wave", "keyboard-extension", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/KeyboardExtension/SuggestionBarView.mm",
+      "type": "file",
+      "name": "SuggestionBarView.mm",
+      "filePath": "platforms/apple/ios/KeyboardExtension/SuggestionBarView.mm",
+      "summary": "Thanh gợi ý UIKit thuần vẽ con sóng `~` ambient bằng CAShapeLayer (đường sin 1.5 chu kỳ, màu teal cố định, không nhánh theo risk). Lazy-tạo layer ở lần đặt biên độ đầu; tôn trọng Reduce Motion (set path tĩnh thay vì animate). Nhẹ để không vượt trần RAM extension.",
+      "tags": ["suggestion-bar", "mood-wave", "cashapelayer", "reduce-motion", "objcpp"],
+      "complexity": "moderate",
+      "languageNotes": "Lặp lại hằng màu teal dark cục bộ vì target extension không link được BrandColorsUIKit; amplitude=0 vẽ đường thẳng tuyệt đối (mặt hồ phẳng), khác BrandMarkView luôn có biên độ nền tối thiểu."
+    },
+    {
+      "id": "document:platforms/apple/ios/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "platforms/apple/ios/README.md",
+      "summary": "Tài liệu vỏ iOS — trạng thái Round 1 (walking skeleton), mandate đã chốt (nhật ký cảm xúc + nhắc thụ động, KHÔNG gác cổng gửi tin xuyên app vì sandbox chặn), và ai lo nhánh này (ios-shell-agent, skill ios-keyboard-extension, tests/ios).",
+      "tags": ["documentation", "ios", "keyboard-extension", "mandate", "sandbox"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/macos/AboutViewController.h",
+      "type": "file",
+      "name": "AboutViewController.h",
+      "filePath": "platforms/apple/macos/AboutViewController.h",
+      "summary": "Header màn Giới thiệu (About) macOS — khai các outlet phiên bản, nút kiểm tra bản mới (CTAButton), switch kiểm tra khi khởi động (PillSwitch), và link GitHub tô màu brand teal.",
+      "tags": ["header", "view-controller", "about", "macos", "brand"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/macos/AboutViewController.m",
+      "type": "file",
+      "name": "AboutViewController.m",
+      "filePath": "platforms/apple/macos/AboutViewController.m",
+      "summary": "Màn Giới thiệu macOS: hiện phiên bản/build/ngày cập nhật, tô link brand teal, mở trang GitHub repo MindfulKey. Đã gỡ bộ tự-cập-nhật của OpenKey nên nút kiểm tra bản mới chỉ báo trạng thái thật thà, không gọi mạng.",
+      "tags": ["view-controller", "about", "macos", "appkit", "brand"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/apple/macos/AppDelegate.h",
+      "type": "file",
+      "name": "AppDelegate.h",
+      "filePath": "platforms/apple/macos/AppDelegate.h",
+      "summary": "Header AppDelegate macOS — khai các hành động menu khay (đổi bộ gõ/kiểu gõ/bảng mã, macro, chuyển mã nhanh), lớp cảm xúc (mood watch, chuông, xoá nhật ký, hoãn, soi lại), quyền, chạy lúc khởi động, và ẩn/hiện status item.",
+      "tags": ["header", "app-delegate", "macos", "status-bar", "menu"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/macos/AppDelegate.m",
+      "type": "file",
+      "name": "AppDelegate.m",
+      "filePath": "platforms/apple/macos/AppDelegate.m",
+      "summary": "AppDelegate macOS — định nghĩa 22 biến cấu hình engine, dựng menu khay + popover panel trạng thái, xin quyền Accessibility/Input Monitoring, tự tắt bộ gõ xung đột (OpenKey/EVKey/GoTiengViet), khởi động lớp cảm xúc (MoodWatch/Bell/consent) và quản lý cài đặt/khởi động cùng máy.",
+      "tags": ["app-delegate", "macos", "status-bar", "permissions", "mood"],
+      "complexity": "complex",
+      "languageNotes": "Tắt bộ gõ xung đột theo bậc thang qua dispatch_after (terminate lịch sự → forceTerminate → nói thật rồi thoát) để không chặn luồng khởi động — cú terminate giữa didFinishLaunching từng gây SIGSEGV P0."
+    },
+    {
+      "id": "class:platforms/apple/ios/App/MoodLakeViewController.m:MKChipButton",
+      "type": "class",
+      "name": "MKChipButton",
+      "filePath": "platforms/apple/ios/App/MoodLakeViewController.m",
+      "lineRange": [36, 94],
+      "summary": "Lớp con UIButton dạng pill chọn 1-trong-3 với state chọn cục bộ trong phiên — bo tròn hết cỡ, khi chọn thì viền/chữ teal + nền teal nhạt. Tự cập nhật màu CGColor khi đổi theme Light/Dark và đặt trait a11y Selected.",
+      "tags": ["ui-component", "button", "pill", "accessibility", "ios"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/MoodLakeViewController.m:MKMoodWaveView",
+      "type": "class",
+      "name": "MKMoodWaveView",
+      "filePath": "platforms/apple/ios/App/MoodLakeViewController.m",
+      "lineRange": [101, 173],
+      "summary": "View vẽ một đường sin tĩnh với biên độ tăng dần theo mức (1-5) cho các hàng thang mặt hồ — biên độ quy đổi từ 5 path gốc của bản thiết kế theo chiều cao view thật. Trang trí thuần (không phải phần tử a11y), màu trung tính không mã hoá valence.",
+      "tags": ["ui-component", "wave", "cashapelayer", "mat-ho", "ios"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/MoodLakeViewController.m:MoodLakeViewController",
+      "type": "class",
+      "name": "MoodLakeViewController",
+      "filePath": "platforms/apple/ios/App/MoodLakeViewController.m",
+      "lineRange": [187, 637],
+      "summary": "View controller màn \"Mặt hồ\" với 2 trạng thái đổi tại chỗ (Soi lại ⇄ Thang mặt hồ) không push VC mới. State Soi lại đặt card câu hỏi làm tiêu điểm + số liệu Q4 phụ (mời bật consent nếu chưa); state Thang liệt kê 5 mức biên độ sóng — không biểu đồ, không gamify.",
+      "tags": ["view-controller", "mat-ho", "reflection", "state-machine", "chanh-niem"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/OnboardingUI.m:OnboardingUI",
+      "type": "class",
+      "name": "OnboardingUI",
+      "filePath": "platforms/apple/ios/App/OnboardingUI.m",
+      "lineRange": [9, 89],
+      "summary": "Xưởng UI (các phương thức lớp) tạo sẵn label tiêu đề/phụ/thân, nút CTA cam chữ tối, nút ghost teal và chỉ báo bước với style + màu brand + Dynamic Type + a11y nhất quán — dùng chung cho onboarding và các màn khác.",
+      "tags": ["ui-factory", "onboarding", "brand-colors", "dynamic-type", "ios"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/SettingsViewController.m:SettingsViewController",
+      "type": "class",
+      "name": "SettingsViewController",
+      "filePath": "platforms/apple/ios/App/SettingsViewController.m",
+      "lineRange": [22, 310],
+      "summary": "View controller màn Cài đặt bàn phím iOS: segmented Telex/VNI, slider chiều cao có preview realtime, switch + nút tạm hoãn chuông nhắc nghỉ, lối vào macro. Đọc/ghi App Group, refresh lại mỗi lần màn hiện, chỉ hiện trạng thái quan sát được (không số đếm/gamify).",
+      "tags": ["view-controller", "settings", "app-group", "preview", "ios"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm:KeyboardBridgeResult",
+      "type": "class",
+      "name": "KeyboardBridgeResult",
+      "filePath": "platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm",
+      "lineRange": [39, 40],
+      "summary": "Đối tượng kết quả đã giải mã sẵn khỏi HookState của engine — chứa số lần xoá lùi cần làm trước và chuỗi cần chèn sau, để vỏ UI áp thẳng lên ô nhập.",
+      "tags": ["data-model", "bridge", "engine", "keyboard-extension", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:platforms/apple/ios/KeyboardExtension/KeyboardViewController.mm:KeyboardViewController",
+      "type": "class",
+      "name": "KeyboardViewController",
+      "filePath": "platforms/apple/ios/KeyboardExtension/KeyboardViewController.mm",
+      "lineRange": [58, 478],
+      "summary": "Principal class của keyboard extension: dựng bàn phím QWERTY + chức năng, xử lý Shift/Caps/lớp số, đổi Telex/VNI, đưa mỗi phím qua KeyboardBridge và áp kết quả lên UITextDocumentProxy. Poll send-risk vẽ con sóng ambient, gác cổng ô bảo mật + Full Access.",
+      "tags": ["view-controller", "keyboard-extension", "engine-bridge", "mood-wave", "chanh-niem"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:platforms/apple/ios/KeyboardExtension/SuggestionBarView.mm:SuggestionBarView",
+      "type": "class",
+      "name": "SuggestionBarView",
+      "filePath": "platforms/apple/ios/KeyboardExtension/SuggestionBarView.mm",
+      "lineRange": [47, 162],
+      "summary": "View thanh gợi ý vẽ con sóng `~` ambient bằng CAShapeLayer (đường sin, màu teal cố định), lazy-tạo layer ở lần đặt biên độ đầu tiên. setSuggestions còn trống (chưa có API gợi ý), setWaveAmplitude chuyển tiếp mượt hoặc tĩnh theo Reduce Motion.",
+      "tags": ["ui-component", "suggestion-bar", "mood-wave", "reduce-motion", "ios"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/macos/AboutViewController.m:AboutViewController",
+      "type": "class",
+      "name": "AboutViewController",
+      "filePath": "platforms/apple/macos/AboutViewController.m",
+      "lineRange": [17, 63],
+      "summary": "View controller màn Giới thiệu macOS — hiện phiên bản/build/ngày cập nhật, tô link brand teal, mở trang GitHub/releases, và báo trạng thái cập nhật thật thà (không gọi mạng vì đã gỡ updater OpenKey).",
+      "tags": ["view-controller", "about", "macos", "appkit", "brand"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/macos/AppDelegate.m:AppDelegate",
+      "type": "class",
+      "name": "AppDelegate",
+      "filePath": "platforms/apple/macos/AppDelegate.m",
+      "lineRange": [85, 984],
+      "summary": "Delegate ứng dụng macOS quản lý toàn bộ vòng đời: menu khay + popover panel, xin quyền Accessibility/Input Monitoring, tự tắt bộ gõ xung đột, khởi động lớp cảm xúc (MoodWatch/Bell/consent/reflection), cấu hình engine qua UserDefaults, và chạy cùng máy.",
+      "tags": ["app-delegate", "macos", "status-bar", "permissions", "mood"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm:KeyboardBridge_HandleKeyTap",
+      "type": "function",
+      "name": "KeyboardBridge_HandleKeyTap",
+      "filePath": "platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm",
+      "lineRange": [72, 157],
+      "summary": "Đưa một lần chạm phím vào vKeyHandleEvent() của engine rồi giải mã HookState thành KeyboardBridgeResult — xử lý các nhánh vWillProcess/vRestore (chèn chữ có dấu), vReplaceMaro (bung macro), và vDoNothing (chèn ký tự thô). Cửa chính chuyển gõ Telex thành tiếng Việt trên iOS.",
+      "tags": ["bridge", "engine", "telex-vni", "hookstate", "keyboard-extension"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:platforms/apple/ios/KeyboardExtension/MoodBridge.mm:MoodBridge_OnWordCommitted",
+      "type": "function",
+      "name": "MoodBridge_OnWordCommitted",
+      "filePath": "platforms/apple/ios/KeyboardExtension/MoodBridge.mm",
+      "lineRange": [33, 66],
+      "summary": "Callback engine gọi mỗi khi một từ hoàn chỉnh — gác cổng ô bảo mật + ngôn ngữ, copy từ ra wstring cục bộ rồi dispatch_async sang serial queue để gom buffer, tính send-risk, đếm câu căng và ghi nhật ký. Không bao giờ chạy phân tích trên thread xử lý phím.",
+      "tags": ["mood", "callback", "async", "send-risk", "privacy"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm:mk_step",
+      "type": "function",
+      "name": "mk_step",
+      "filePath": "platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm",
+      "lineRange": [50, 84],
+      "summary": "Lõi thuần đếm số câu căng liên tiếp và quyết định có rung chuông không — reset về 0 khi câu dịu lại, đạt ngưỡng thì reset ngay rồi qua chuỗi gate (bật/hoãn/cooldown). Không side-effect ngoài 2 tham số state, dùng chung bởi production và test.",
+      "tags": ["nudge", "bell", "cooldown", "pure-logic", "testable"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm:NudgeCoordinatorIOS_RegisterSentenceRisk",
+      "type": "function",
+      "name": "NudgeCoordinatorIOS_RegisterSentenceRisk",
+      "filePath": "platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm",
+      "lineRange": [86, 95],
+      "summary": "Điểm vào production của chuông nhắc — đọc cấu hình bật/tắt + trạng thái hoãn qua BellReminderSettingsBridge và đồng hồ thật, gọi lõi mk_step, và kích hiệu ứng haptic + âm nếu đủ điều kiện. Fire-and-forget, gọi từ MoodBridge cạnh chỗ tính risk.",
+      "tags": ["nudge", "bell", "haptic", "keyboard-extension", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/macos/AppDelegate.m:applicationDidFinishLaunching",
+      "type": "function",
+      "name": "applicationDidFinishLaunching",
+      "filePath": "platforms/apple/macos/AppDelegate.m",
+      "lineRange": [260, 395],
+      "summary": "Điểm khởi động chính macOS: quét + tự tắt bộ gõ xung đột đang chạy, kiểm quyền Accessibility/Input Monitoring, dựng menu khay, khởi tạo event tap, kích hoạt lớp cảm xúc (MoodWatch/Bell) và hỏi consent ghi nhật ký. Nhắc quyền được đẩy xuống cuối để UI render trước.",
+      "tags": ["app-delegate", "lifecycle", "bootstrap", "permissions", "macos"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:platforms/apple/macos/AppDelegate.m:quitConflictingInputMethods",
+      "type": "function",
+      "name": "quitConflictingInputMethods",
+      "filePath": "platforms/apple/macos/AppDelegate.m",
+      "lineRange": [220, 258],
+      "summary": "Tắt danh sách bộ gõ xung đột theo bậc thang qua dispatch_after: terminate lịch sự → 1.5s sau forceTerminate đứa còn sống → 1.5s nữa vẫn sống thì báo thật rồi tự thoát. Không chặn luồng khởi động; block giữ mạnh từng NSRunningApplication để tránh dính PID tái dùng.",
+      "tags": ["app-delegate", "conflict-handling", "process-management", "macos", "stability"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {"source": "file:platforms/apple/ios/App/MoodLakeViewController.m", "target": "class:platforms/apple/ios/App/MoodLakeViewController.m:MKChipButton", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/ios/App/MoodLakeViewController.m", "target": "class:platforms/apple/ios/App/MoodLakeViewController.m:MKMoodWaveView", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/ios/App/MoodLakeViewController.m", "target": "class:platforms/apple/ios/App/MoodLakeViewController.m:MoodLakeViewController", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/ios/App/OnboardingUI.m", "target": "class:platforms/apple/ios/App/OnboardingUI.m:OnboardingUI", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/ios/App/SettingsViewController.m", "target": "class:platforms/apple/ios/App/SettingsViewController.m:SettingsViewController", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm", "target": "class:platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm:KeyboardBridgeResult", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm", "target": "function:platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm:KeyboardBridge_HandleKeyTap", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/KeyboardViewController.mm", "target": "class:platforms/apple/ios/KeyboardExtension/KeyboardViewController.mm:KeyboardViewController", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/MoodBridge.mm", "target": "function:platforms/apple/ios/KeyboardExtension/MoodBridge.mm:MoodBridge_OnWordCommitted", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm", "target": "function:platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm:mk_step", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm", "target": "function:platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm:NudgeCoordinatorIOS_RegisterSentenceRisk", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/SuggestionBarView.mm", "target": "class:platforms/apple/ios/KeyboardExtension/SuggestionBarView.mm:SuggestionBarView", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/macos/AboutViewController.m", "target": "class:platforms/apple/macos/AboutViewController.m:AboutViewController", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/macos/AppDelegate.m", "target": "class:platforms/apple/macos/AppDelegate.m:AppDelegate", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/macos/AppDelegate.m", "target": "function:platforms/apple/macos/AppDelegate.m:applicationDidFinishLaunching", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/apple/macos/AppDelegate.m", "target": "function:platforms/apple/macos/AppDelegate.m:quitConflictingInputMethods", "type": "contains", "direction": "forward", "weight": 1.0},
+
+    {"source": "file:platforms/apple/ios/App/OnboardingUI.m", "target": "class:platforms/apple/ios/App/OnboardingUI.m:OnboardingUI", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:platforms/apple/ios/App/MoodLakeViewController.m", "target": "class:platforms/apple/ios/App/MoodLakeViewController.m:MoodLakeViewController", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:platforms/apple/ios/App/SettingsViewController.m", "target": "class:platforms/apple/ios/App/SettingsViewController.m:SettingsViewController", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm", "target": "class:platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm:KeyboardBridgeResult", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm", "target": "function:platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm:KeyboardBridge_HandleKeyTap", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/KeyboardViewController.mm", "target": "class:platforms/apple/ios/KeyboardExtension/KeyboardViewController.mm:KeyboardViewController", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm", "target": "function:platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm:NudgeCoordinatorIOS_RegisterSentenceRisk", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/SuggestionBarView.mm", "target": "class:platforms/apple/ios/KeyboardExtension/SuggestionBarView.mm:SuggestionBarView", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:platforms/apple/macos/AboutViewController.m", "target": "class:platforms/apple/macos/AboutViewController.m:AboutViewController", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:platforms/apple/macos/AppDelegate.m", "target": "class:platforms/apple/macos/AppDelegate.m:AppDelegate", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:platforms/apple/ios/App/MoodLakeViewController.m", "target": "file:platforms/apple/ios/App/MoodLakeViewController.h", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/apple/ios/App/MoodLakeViewController.m", "target": "file:platforms/apple/ios/App/OnboardingUI.h", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/apple/ios/App/OnboardingUI.m", "target": "file:platforms/apple/ios/App/OnboardingUI.h", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/apple/ios/App/SettingsViewController.m", "target": "file:platforms/apple/ios/App/SettingsViewController.h", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/apple/ios/App/SettingsViewController.m", "target": "file:platforms/apple/ios/App/OnboardingUI.h", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm", "target": "file:platforms/apple/ios/KeyboardExtension/KeyboardBridge.h", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/KeyboardViewController.mm", "target": "file:platforms/apple/ios/KeyboardExtension/KeyboardViewController.h", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/KeyboardViewController.mm", "target": "file:platforms/apple/ios/KeyboardExtension/KeyboardBridge.h", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/KeyboardViewController.mm", "target": "file:platforms/apple/ios/KeyboardExtension/SuggestionBarView.h", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/KeyboardViewController.mm", "target": "file:platforms/apple/ios/KeyboardExtension/MoodBridge.h", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/MoodBridge.mm", "target": "file:platforms/apple/ios/KeyboardExtension/MoodBridge.h", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/MoodBridge.mm", "target": "file:platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.h", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm", "target": "file:platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.h", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/apple/ios/KeyboardExtension/SuggestionBarView.mm", "target": "file:platforms/apple/ios/KeyboardExtension/SuggestionBarView.h", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/apple/macos/AboutViewController.m", "target": "file:platforms/apple/macos/AboutViewController.h", "type": "depends_on", "direction": "forward", "weight": 0.6},
+    {"source": "file:platforms/apple/macos/AppDelegate.m", "target": "file:platforms/apple/macos/AppDelegate.h", "type": "depends_on", "direction": "forward", "weight": 0.6},
+
+    {"source": "class:platforms/apple/ios/KeyboardExtension/KeyboardViewController.mm:KeyboardViewController", "target": "function:platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm:KeyboardBridge_HandleKeyTap", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:platforms/apple/ios/KeyboardExtension/MoodBridge.mm:MoodBridge_OnWordCommitted", "target": "function:platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm:NudgeCoordinatorIOS_RegisterSentenceRisk", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm:NudgeCoordinatorIOS_RegisterSentenceRisk", "target": "function:platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm:mk_step", "type": "calls", "direction": "forward", "weight": 0.8},
+
+    {"source": "document:platforms/apple/ios/README.md", "target": "file:platforms/apple/ios/KeyboardExtension/KeyboardViewController.mm", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:platforms/apple/ios/README.md", "target": "file:platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm", "type": "documents", "direction": "forward", "weight": 0.5},
+    {"source": "document:platforms/apple/ios/README.md", "target": "file:platforms/apple/ios/KeyboardExtension/MoodBridge.mm", "type": "documents", "direction": "forward", "weight": 0.5},
+
+    {"source": "config:platforms/apple/ios/KeyboardExtension/Info.plist", "target": "file:platforms/apple/ios/KeyboardExtension/KeyboardViewController.mm", "type": "configures", "direction": "forward", "weight": 0.6}
+  ]
+}

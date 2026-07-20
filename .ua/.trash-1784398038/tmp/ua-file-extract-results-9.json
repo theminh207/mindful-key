@@ -1,0 +1,1179 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 19,
+  "filesSkipped": [
+    "docs/HUONG-DAN-SU-DUNG.html"
+  ],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 19,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 0,
+      "failed": 0,
+      "skipped": 19
+    }
+  },
+  "results": [
+    {
+      "path": "docs/AGENT-BRIEF.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 120,
+      "nonEmptyLines": 100,
+      "sections": [
+        {
+          "heading": "Agent Brief — Dự án `mindful-keyboard` (HIẾN CHƯƠNG)",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "0. Vai trò của Agent",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "1. Bản sắc sản phẩm",
+          "level": 2,
+          "line": 18
+        },
+        {
+          "heading": "2. NGUYÊN TẮC NHẬN DIỆN — bắt buộc tuyệt đối",
+          "level": 2,
+          "line": 25
+        },
+        {
+          "heading": "2.1 Ẩn dụ gốc: \"Tâm như mặt nước\"",
+          "level": 3,
+          "line": 27
+        },
+        {
+          "heading": "2.2 ĐIỀU TỐI KỴ — không bao giờ vi phạm",
+          "level": 3,
+          "line": 33
+        },
+        {
+          "heading": "2.3 Thay thế đúng tinh thần",
+          "level": 3,
+          "line": 39
+        },
+        {
+          "heading": "3. Kiến trúc & cấu trúc thư mục",
+          "level": 2,
+          "line": 46
+        },
+        {
+          "heading": "3.1 Kế thừa lõi OpenKey",
+          "level": 3,
+          "line": 48
+        },
+        {
+          "heading": "3.2 Cấu trúc đích — học theo `sonpiaz/haynoi`",
+          "level": 3,
+          "line": 58
+        },
+        {
+          "heading": "3.3 Quy ước \"vibe code chuẩn\" bắt buộc",
+          "level": 3,
+          "line": 83
+        },
+        {
+          "heading": "4. Lộ trình nền tảng (không đảo thứ tự)",
+          "level": 2,
+          "line": 91
+        },
+        {
+          "heading": "5. Chuẩn kỹ thuật & chất lượng",
+          "level": 2,
+          "line": 97
+        },
+        {
+          "heading": "6. Pháp lý & ghi nhận nguồn",
+          "level": 2,
+          "line": 104
+        },
+        {
+          "heading": "7. Khởi động (những bước đầu)",
+          "level": 2,
+          "line": 111
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 15
+      }
+    },
+    {
+      "path": "docs/BMAD-SKILLS-GUIDE.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 172,
+      "nonEmptyLines": 138,
+      "sections": [
+        {
+          "heading": "Hướng dẫn dùng bộ skill BMAD Planning & Orchestrator",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. Tư duy cốt lõi trước khi học cú pháp",
+          "level": 2,
+          "line": 13
+        },
+        {
+          "heading": "2. Cú pháp gọi skill",
+          "level": 2,
+          "line": 30
+        },
+        {
+          "heading": "3. Lộ trình tự học — 4 buổi, học từ từ",
+          "level": 2,
+          "line": 50
+        },
+        {
+          "heading": "4. Bảng tra cứu nhanh (tình huống → skill → kết quả)",
+          "level": 2,
+          "line": 78
+        },
+        {
+          "heading": "5. Bài tập thực hành thật — dùng chính mindful-keyboard",
+          "level": 2,
+          "line": 103
+        },
+        {
+          "heading": "6. Ba thứ đang bị gọi chung là \"Harness\" — đừng nhầm",
+          "level": 2,
+          "line": 136
+        },
+        {
+          "heading": "7. Vận hành / khắc phục sự cố",
+          "level": 2,
+          "line": 158
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 8
+      }
+    },
+    {
+      "path": "docs/BRAND-ASSETS.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 97,
+      "nonEmptyLines": 79,
+      "sections": [
+        {
+          "heading": "Brand Assets — NOW BRAND OS (GNH)",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. Palette (khóa cứng)",
+          "level": 2,
+          "line": 7
+        },
+        {
+          "heading": "2. Dấu ấn (mark)",
+          "level": 2,
+          "line": 24
+        },
+        {
+          "heading": "3. Nguồn & cách tái tạo",
+          "level": 2,
+          "line": 27
+        },
+        {
+          "heading": "3b. App icon đa nền tảng — `bash brand/export-appicon.sh` → `brand/appicon/`",
+          "level": 3,
+          "line": 33
+        },
+        {
+          "heading": "3c. Truyền thông — `bash brand/export-marketing.sh` → `brand/marketing/`",
+          "level": 3,
+          "line": 39
+        },
+        {
+          "heading": "3d. Icon UI (đơn sắc ngọc bích) — `bash brand/export-ui.sh` → `brand/png-ui/` (24/48px)",
+          "level": 3,
+          "line": 46
+        },
+        {
+          "heading": "3e. Icon nền tảng khác — `bash brand/export-platform.sh` → `brand/platform/`",
+          "level": 3,
+          "line": 54
+        },
+        {
+          "heading": "4. Bộ asset (map vào ModernKey/Resources)",
+          "level": 2,
+          "line": 59
+        },
+        {
+          "heading": "5. Thang cảm xúc — \"mặt hồ tâm\" (tuân HIẾN CHƯƠNG 2.3)",
+          "level": 2,
+          "line": 75
+        },
+        {
+          "heading": "6. Việc còn lại (wiring — thuộc platform-shell / mood-layer)",
+          "level": 2,
+          "line": 88
+        },
+        {
+          "heading": "7. Bốn nguyên tắc \"giữ đúng tinh thần\"",
+          "level": 2,
+          "line": 93
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 12
+      }
+    },
+    {
+      "path": "docs/BREATHING-PAUSE-CONTRACT.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 75,
+      "nonEmptyLines": 61,
+      "sections": [
+        {
+          "heading": "Design note: hợp đồng \"nhịp thở\" (Breathing Pause)",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. Vì sao cần 1 hợp đồng riêng, tách khỏi MoodWatchMac hiện có",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "2. Hợp đồng",
+          "level": 2,
+          "line": 21
+        },
+        {
+          "heading": "3. Cam kết không chặn cứng (điều khoản quan trọng nhất)",
+          "level": 2,
+          "line": 35
+        },
+        {
+          "heading": "4. Câu chữ (copy) cho cộng đồng chánh niệm",
+          "level": 2,
+          "line": 42
+        },
+        {
+          "heading": "5. Bước 5 — implementation thật (đã xong)",
+          "level": 2,
+          "line": 53
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 6
+      }
+    },
+    {
+      "path": "docs/FRICTION-LOG.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 85,
+      "nonEmptyLines": 69,
+      "sections": [
+        {
+          "heading": "FRICTION-LOG — sổ ghi \"chỗ phải đoán\"",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Cách dùng",
+          "level": 2,
+          "line": 11
+        },
+        {
+          "heading": "Bảng",
+          "level": 2,
+          "line": 18
+        },
+        {
+          "heading": "Ghi chú",
+          "level": 2,
+          "line": 80
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 4
+      }
+    },
+    {
+      "path": "docs/INSTALL-MACOS-BETA.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 65,
+      "nonEmptyLines": 47,
+      "sections": [
+        {
+          "heading": "Cài MindfulKey trên macOS — bản beta (chưa notarize)",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Vì sao bị \"damaged\" — cơ chế thật, không phải app hỏng",
+          "level": 2,
+          "line": 6
+        },
+        {
+          "heading": "Ba đường cài, chọn một",
+          "level": 2,
+          "line": 20
+        },
+        {
+          "heading": "1. Script Terminal (khuyên dùng cho beta)",
+          "level": 3,
+          "line": 22
+        },
+        {
+          "heading": "2. Tải bằng trình duyệt + tự gỡ tem",
+          "level": 3,
+          "line": 36
+        },
+        {
+          "heading": "3. Chờ bản notarize (đường duy nhất cho công chúng)",
+          "level": 3,
+          "line": 48
+        },
+        {
+          "heading": "Ranh giới đã kiểm chứng",
+          "level": 2,
+          "line": 58
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": "docs/INSTALL.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 39,
+      "nonEmptyLines": 30,
+      "sections": [
+        {
+          "heading": "Cài đặt / gỡ cài đặt (bản ad-hoc, tự dùng)",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Đóng gói lại (khi có bản build mới)",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "Cài đặt",
+          "level": 2,
+          "line": 16
+        },
+        {
+          "heading": "Gỡ cài đặt",
+          "level": 2,
+          "line": 26
+        },
+        {
+          "heading": "Kiểm tra nhanh sau khi cài (đúng vòng lặp sản phẩm)",
+          "level": 2,
+          "line": 37
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 5
+      }
+    },
+    {
+      "path": "docs/LIFECYCLE-SAFETY-CONTRACT.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 72,
+      "nonEmptyLines": 59,
+      "sections": [
+        {
+          "heading": "Hợp đồng khởi động an toàn (Lifecycle Safety Contract)",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Vì sao có file này",
+          "level": 2,
+          "line": 7
+        },
+        {
+          "heading": "Ba bất biến",
+          "level": 2,
+          "line": 27
+        },
+        {
+          "heading": "#1 — Không hành động nặng trước khi app dựng xong",
+          "level": 3,
+          "line": 29
+        },
+        {
+          "heading": "#2 — Không đường thoát nào được chết câm",
+          "level": 3,
+          "line": 42
+        },
+        {
+          "heading": "#3 — Mọi dọn dẹp phải chịu được trạng thái nửa-khởi-tạo",
+          "level": 3,
+          "line": 52
+        },
+        {
+          "heading": "Cách soi (grep review)",
+          "level": 2,
+          "line": 58
+        },
+        {
+          "heading": "Lịch sử",
+          "level": 2,
+          "line": 69
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 8
+      }
+    },
+    {
+      "path": "docs/MOOD-WAVE-MECHANISM.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 143,
+      "nonEmptyLines": 115,
+      "sections": [
+        {
+          "heading": "MOOD-WAVE-MECHANISM — cơ chế sóng cảm xúc hiện tại (macOS)",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. Bốn tầng, từ phím tới câu chữ",
+          "level": 2,
+          "line": 12
+        },
+        {
+          "heading": "2. Tầng 1 — chấm điểm (lexicon + bão hòa)",
+          "level": 2,
+          "line": 26
+        },
+        {
+          "heading": "3. Tầng 2+3 — gom mẫu và vẽ",
+          "level": 2,
+          "line": 54
+        },
+        {
+          "heading": "4. Tầng 4 — kho câu chữ (fix khung, lắp ruột)",
+          "level": 2,
+          "line": 66
+        },
+        {
+          "heading": "5. Độ nhạy — MỘT núm, những ai ăn theo",
+          "level": 2,
+          "line": 80
+        },
+        {
+          "heading": "6. Điểm mù hiện tại (nói thẳng)",
+          "level": 2,
+          "line": 109
+        },
+        {
+          "heading": "7. Hướng cải thiện NGAY (trước-PhoBERT) — đề xuất chờ chốt",
+          "level": 2,
+          "line": 122
+        },
+        {
+          "heading": "8. Khi nào cập nhật tài liệu này",
+          "level": 2,
+          "line": 139
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 9
+      }
+    },
+    {
+      "path": "docs/OPENKEY-MAP.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 117,
+      "nonEmptyLines": 93,
+      "sections": [
+        {
+          "heading": "Bản đồ OpenKey — soi code để dựng \"bộ gõ chánh niệm\"",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. Kiến trúc: 1 BỘ NÃO + 3 (sắp tới 4-5) CÁI VỎ",
+          "level": 2,
+          "line": 9
+        },
+        {
+          "heading": "2. Dòng chảy của 1 phím (lấy Windows làm ví dụ)",
+          "level": 2,
+          "line": 30
+        },
+        {
+          "heading": "3. ⭐ CHỖ CẮM lớp cảm xúc (cái cần nhất)",
+          "level": 2,
+          "line": 60
+        },
+        {
+          "heading": "3.1. Sửa BỘ NÃO — chỉ thêm 1 cái móc (~10-15 dòng)",
+          "level": 3,
+          "line": 64
+        },
+        {
+          "heading": "3.2. Module MỚI dùng chung — `MoodBuffer` (C++, ~100 dòng)",
+          "level": 3,
+          "line": 74
+        },
+        {
+          "heading": "3.3. Module MỚI theo từng OS — `MoodWatcher` (tầng vỏ)",
+          "level": 3,
+          "line": 80
+        },
+        {
+          "heading": "3.4. App chính (đã có sẵn khung)",
+          "level": 3,
+          "line": 86
+        },
+        {
+          "heading": "4. Cảnh báo / điểm phải biết trước",
+          "level": 2,
+          "line": 102
+        },
+        {
+          "heading": "5. Bước tiếp theo đề xuất",
+          "level": 2,
+          "line": 112
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 10
+      }
+    },
+    {
+      "path": "docs/PRD.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 54,
+      "nonEmptyLines": 37,
+      "sections": [
+        {
+          "heading": "PRD — Mindful Keyboard: macOS MVP",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. Định vị: \"Người gác cổng cảm xúc\" (Emotional Gatekeeper)",
+          "level": 2,
+          "line": 3
+        },
+        {
+          "heading": "2. Vòng lặp lõi: Sense → Pause → Remind → Reflect",
+          "level": 2,
+          "line": 13
+        },
+        {
+          "heading": "3. Non-goals (loại trừ rõ ràng)",
+          "level": 2,
+          "line": 22
+        },
+        {
+          "heading": "4. Success metrics (đo được, đúng tầm MVP)",
+          "level": 2,
+          "line": 34
+        },
+        {
+          "heading": "5. Nguyên tắc riêng tư: 100% on-device",
+          "level": 2,
+          "line": 44
+        },
+        {
+          "heading": "6. Phạm vi kỹ thuật MVP",
+          "level": 2,
+          "line": 52
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": "docs/PRIVACY-NOTE.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 47,
+      "nonEmptyLines": 28,
+      "sections": [
+        {
+          "heading": "Mindful Keyboard xử lý dữ liệu của bạn như thế nào",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Điều quan trọng nhất",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "Vậy app \"biết\" gì?",
+          "level": 2,
+          "line": 9
+        },
+        {
+          "heading": "Bạn luôn có quyền kiểm soát",
+          "level": 2,
+          "line": 26
+        },
+        {
+          "heading": "Vùng mù — nói thẳng để bạn không hiểu lầm",
+          "level": 2,
+          "line": 32
+        },
+        {
+          "heading": "Trên iPhone: vì sao bàn phím xin \"Full Access\"",
+          "level": 2,
+          "line": 36
+        },
+        {
+          "heading": "Vì sao chúng tôi làm vậy",
+          "level": 2,
+          "line": 45
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": "docs/QA-WINDOWS.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 309,
+      "nonEmptyLines": 248,
+      "sections": [
+        {
+          "heading": "QA-WINDOWS — kịch bản kiểm thử trước khi đóng gói .exe cho người dùng",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "0. Cần gì để chạy kịch bản này",
+          "level": 2,
+          "line": 13
+        },
+        {
+          "heading": "1. Xếp rủi ro (Risk-Based) — cho vỏ Windows",
+          "level": 2,
+          "line": 22
+        },
+        {
+          "heading": "2. Nguyên tắc của mọi ca dưới đây",
+          "level": 2,
+          "line": 35
+        },
+        {
+          "heading": "3. E2E — Gõ tiếng Việt (làm trong Notepad)",
+          "level": 2,
+          "line": 48
+        },
+        {
+          "heading": "4. E2E — Lớp cảm xúc (ngưỡng 0.5)",
+          "level": 2,
+          "line": 67
+        },
+        {
+          "heading": "4b. E2E — Gác cổng gửi tin (Feature #1)",
+          "level": 2,
+          "line": 87
+        },
+        {
+          "heading": "4c. E2E — Chuông tỉnh thức + tiếng cá nhân hoá (GĐ4)",
+          "level": 2,
+          "line": 115
+        },
+        {
+          "heading": "4d. E2E — Nhật ký cảm xúc mã hoá (GĐ3)",
+          "level": 2,
+          "line": 142
+        },
+        {
+          "heading": "4e. E2E — Vòng đời bộ cài: cài mới / cài LẠI / gỡ (đợt R)",
+          "level": 2,
+          "line": 166
+        },
+        {
+          "heading": "5. Bất biến riêng tư — test cả điều KHÔNG được xảy ra",
+          "level": 2,
+          "line": 195
+        },
+        {
+          "heading": "6. Nhận diện & hiển thị",
+          "level": 2,
+          "line": 235
+        },
+        {
+          "heading": "7. Definition of Done — chốt trước khi đóng gói `.exe`",
+          "level": 2,
+          "line": 246
+        },
+        {
+          "heading": "Cổng máy (tự động, không cần người)",
+          "level": 3,
+          "line": 248
+        },
+        {
+          "heading": "Cổng người (bắt buộc — không ai thay được)",
+          "level": 3,
+          "line": 256
+        },
+        {
+          "heading": "Cổng sổ sách",
+          "level": 3,
+          "line": 267
+        },
+        {
+          "heading": "Cổng chủ dự án",
+          "level": 3,
+          "line": 272
+        },
+        {
+          "heading": "8. Mẫu báo cáo (giọng mô tả, KHÔNG gamify)",
+          "level": 2,
+          "line": 278
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 18
+      }
+    },
+    {
+      "path": "docs/RELEASE.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 134,
+      "nonEmptyLines": 105,
+      "sections": [
+        {
+          "heading": "Release thật (ký Developer ID + notarize) — checklist",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. Lấy chứng chỉ \"Developer ID Application\"",
+          "level": 2,
+          "line": 31
+        },
+        {
+          "heading": "2. Lấy Team ID",
+          "level": 2,
+          "line": 49
+        },
+        {
+          "heading": "3. Chuẩn bị App Store Connect API Key (dùng để notarize, KHÔNG phải cùng cert ở bước 1)",
+          "level": 2,
+          "line": 54
+        },
+        {
+          "heading": "4. Thêm secrets vào GitHub repo — `theminh207/mindful-key`",
+          "level": 2,
+          "line": 65
+        },
+        {
+          "heading": "5. Test cục bộ trước khi tin tưởng CI (khuyên làm)",
+          "level": 2,
+          "line": 91
+        },
+        {
+          "heading": "6. Quy trình phát hành thật (sau khi có đủ secrets ở bước 4)",
+          "level": 2,
+          "line": 114
+        },
+        {
+          "heading": "Còn thiếu so với haynoi (biết trước, không phải sự cố)",
+          "level": 2,
+          "line": 125
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 8
+      }
+    },
+    {
+      "path": "docs/REPO-TOPOLOGY.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 152,
+      "nonEmptyLines": 112,
+      "sections": [
+        {
+          "heading": "Tổ chức repo & tách brand — dev vs public/release",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. Hai repo, hai vai",
+          "level": 2,
+          "line": 12
+        },
+        {
+          "heading": "2. Mọi nền tảng ở **một** monorepo — kể cả iOS/Android",
+          "level": 2,
+          "line": 35
+        },
+        {
+          "heading": "3. Cảnh báo định hình repo public: **GPL v3**",
+          "level": 2,
+          "line": 68
+        },
+        {
+          "heading": "4. Tách brand: **1 nguồn → 3 đích**",
+          "level": 2,
+          "line": 81
+        },
+        {
+          "heading": "5. Runbook",
+          "level": 2,
+          "line": 108
+        },
+        {
+          "heading": "6. Deploy landing (Coolify) — chốt 2026-07-15",
+          "level": 2,
+          "line": 130
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": "docs/ROADMAP-WINDOWS.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 280,
+      "nonEmptyLines": 195,
+      "sections": [
+        {
+          "heading": "ROADMAP-WINDOWS — nâng vỏ Windows lên ngang macOS rồi mới đóng gói",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "0. Trạng thái xuất phát (đo thật, 2026-07-16)",
+          "level": 2,
+          "line": 9
+        },
+        {
+          "heading": "1. Nguyên tắc xuyên suốt",
+          "level": 2,
+          "line": 30
+        },
+        {
+          "heading": "2. GIAI ĐOẠN 0 — Dựng lưới an toàn TRƯỚC khi viết UI",
+          "level": 2,
+          "line": 41
+        },
+        {
+          "heading": "0.1 ✅ XONG (2026-07-17, `97327e0`) — `brand-lint` đã hết mù với vỏ Windows",
+          "level": 3,
+          "line": 45
+        },
+        {
+          "heading": "0.2 ✅ XONG (2026-07-17) — Mốc 1 đạt: vỏ Windows compile + link sạch",
+          "level": 3,
+          "line": 74
+        },
+        {
+          "heading": "0.3 ✅ XONG (2026-07-17, `fe50b38`) — bảng màu sinh từ `tokens.json` cho cả 3 vỏ",
+          "level": 3,
+          "line": 94
+        },
+        {
+          "heading": "3. GIAI ĐOẠN 1 — ✅ XONG (2026-07-17, `543ea49`) — MoodWatch gọi core",
+          "level": 2,
+          "line": 135
+        },
+        {
+          "heading": "4. GIAI ĐOẠN 2 — Module 2: SendGatekeeper (Feature #1)",
+          "level": 2,
+          "line": 161
+        },
+        {
+          "heading": "5. GIAI ĐOẠN 3 — Module 3: MoodStore (RỦI RO CAO NHẤT)",
+          "level": 2,
+          "line": 176
+        },
+        {
+          "heading": "6. GIAI ĐOẠN 4 — Module 4: Nudge + Bell",
+          "level": 2,
+          "line": 193
+        },
+        {
+          "heading": "7. GIAI ĐOẠN 5 — Module 5+6: Reflection + EmotionRiver",
+          "level": 2,
+          "line": 204
+        },
+        {
+          "heading": "8. GIAI ĐOẠN 6 — Vỏ nhận diện (khối UI lớn nhất)",
+          "level": 2,
+          "line": 215
+        },
+        {
+          "heading": "9. GIAI ĐOẠN 7 — Đóng gói (ĐÃ DỰNG SẴN)",
+          "level": 2,
+          "line": 229
+        },
+        {
+          "heading": "10. Thứ tự và lý do",
+          "level": 2,
+          "line": 237
+        },
+        {
+          "heading": "11. Rủi ro lớn nhất",
+          "level": 2,
+          "line": 257
+        },
+        {
+          "heading": "12. Chờ chủ dự án chốt",
+          "level": 2,
+          "line": 269
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 17
+      }
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 99,
+      "nonEmptyLines": 76,
+      "sections": [
+        {
+          "heading": "Kế hoạch tổng thể + nề nếp nhánh — bám theo để triển khai",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Trước → Sau — ý tổng thể (đọc trước)",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "1. Chẩn đoán nhánh hiện tại (07/2026)",
+          "level": 2,
+          "line": 42
+        },
+        {
+          "heading": "2. Mô hình nhánh đích (đơn giản, hợp solo)",
+          "level": 2,
+          "line": 55
+        },
+        {
+          "heading": "3. Kế hoạch tổng thể theo giai đoạn",
+          "level": 2,
+          "line": 63
+        },
+        {
+          "heading": "▶ Giai đoạn 0 — Dọn nhánh  *(BẠN ĐANG Ở ĐÂY — làm trước, là nền cho mọi thứ sau)*",
+          "level": 3,
+          "line": 65
+        },
+        {
+          "heading": "▶ Giai đoạn 1 — Landing + Coolify",
+          "level": 3,
+          "line": 76
+        },
+        {
+          "heading": "▶ Giai đoạn 2 — Brand hết trôi màu  *(tùy chọn, nhẹ)*",
+          "level": 3,
+          "line": 82
+        },
+        {
+          "heading": "▶ Giai đoạn 3 — Release thật  *(khi có Apple Developer Program)*",
+          "level": 3,
+          "line": 85
+        },
+        {
+          "heading": "▶ Giai đoạn 4 — Công khai (hướng a)  *(khi sẵn sàng ra mắt)*",
+          "level": 3,
+          "line": 89
+        },
+        {
+          "heading": "4. Nề nếp git từ nay (quy tắc bám theo)",
+          "level": 2,
+          "line": 93
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 11
+      }
+    },
+    {
+      "path": "docs/SEND-RISK-MODEL-SPEC.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 61,
+      "nonEmptyLines": 47,
+      "sections": [
+        {
+          "heading": "Spec: thay lexicon bằng PhoBERT ONNX cho send-risk (chưa implement)",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "1. Hợp đồng phải giữ nguyên",
+          "level": 2,
+          "line": 6
+        },
+        {
+          "heading": "2. Model đề xuất",
+          "level": 2,
+          "line": 19
+        },
+        {
+          "heading": "3. Ràng buộc độ trễ & luồng chạy",
+          "level": 2,
+          "line": 28
+        },
+        {
+          "heading": "4. Fallback bắt buộc",
+          "level": 2,
+          "line": 37
+        },
+        {
+          "heading": "5. Dữ liệu huấn luyện — vấn đề chưa có lời giải, nêu rõ thay vì giả định",
+          "level": 2,
+          "line": 45
+        },
+        {
+          "heading": "6. Checklist khi thực sự làm bước này (fast-follow sau MVP)",
+          "level": 2,
+          "line": 54
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": "docs/TEST_MATRIX.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 187,
+      "nonEmptyLines": 174,
+      "sections": [
+        {
+          "heading": "TEST_MATRIX — bảng hành vi → bằng chứng",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Cách đọc các cột",
+          "level": 2,
+          "line": 11
+        },
+        {
+          "heading": "Bảng",
+          "level": 2,
+          "line": 22
+        },
+        {
+          "heading": "Đọc bảng này thấy gì (tính đến 2026-07-10)",
+          "level": 2,
+          "line": 151
+        },
+        {
+          "heading": "Khi nào cập nhật file này",
+          "level": 2,
+          "line": 181
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 5
+      }
+    }
+  ]
+}

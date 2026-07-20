@@ -13,6 +13,10 @@
 //    - 1 hue teal, chỉ đổi biên độ. KHÔNG valence-color (tốt/xấu), KHÔNG số/chuỗi-ngày-liên-tục/heatmap.
 //    - CHƯA có mẫu (samples nil/rỗng) → KHÔNG vẽ đường sông/chấm giả. Hiện trạng thái trống
 //      THẬT THÀ (vd "Hồ chưa đủ nét — ngày mới bắt đầu"), không giả vờ "phẳng lặng".
+//    - [2026-07-20] Chấm tự-thuật (check-in) vs tự-đoán (gõ chữ) phân biệt bằng HÌNH DẠNG (vòng
+//      rỗng vs đặc, key "checkin" trong dict samples), KHÔNG bằng màu thứ 2 — cam đã khoá riêng
+//      cho "khoảnh khắc con người" (hơi thở/cảnh báo/chuông), không dùng cho việc này. Xem
+//      decision-log 2026-07-20 "Nhận diện: giữ 1 trục biên độ".
 //
 
 #import <Cocoa/Cocoa.h>
@@ -33,8 +37,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// phải — tức luôn nằm dưới nhãn "Tối", kể cả khi nó vừa được ghi lúc 10h sáng. Bắt được trên máy
 /// chủ dự án 2026-07-16: 7 mẫu trong 48 phút buổi sáng bị vẽ như trọn một ngày.
 ///
-/// @param samples Mảng dict `{@"ts": epoch giây (NSNumber), @"value": biên độ 0..1 (NSNumber)}`,
-///                xếp tăng dần theo ts — đúng dạng `MoodStoreMac_FetchTodaySamples()` trả về.
+/// @param samples Mảng dict `{@"ts": epoch giây (NSNumber), @"value": biên độ 0..1 (NSNumber),
+///                @"checkin": BOOL (tùy chọn, vắng = NO)}`, xếp tăng dần theo ts — đúng dạng
+///                `MoodStoreMac_FetchTodaySamples()` trả về. checkin=YES vẽ vòng RỖNG (tự thuật
+///                từ "Mặt hồ đang thế nào?"), NO vẽ chấm ĐẶC (tự đoán từ chữ gõ) — xem 2026-07-20.
 /// @param gapSeconds 2 mẫu cách nhau quá ngần này = quãng không gõ → không nối nước qua (dec.4).
 ///                   Thường là `vBellInterval * 60 * 1.5`. Truyền 0 để không bao giờ ngắt.
 - (void)setTodaySamples:(nullable NSArray<NSDictionary *> *)samples gapSeconds:(double)gapSeconds;
@@ -44,7 +50,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// người dùng có 2 tầm nhìn cùng một ngày. Trục tự đặt mốc TƯƠNG ĐỐI ("6 giờ trước … bây giờ"),
 /// KHÔNG dùng Sáng/Trưa/Chiều/Tối — cửa sổ 6 tiếng không map được vào buổi.
 ///
-/// @param samples     dạng `MoodStoreMac_FetchSamplesSince()` trả về (`{@"ts", @"value"}`, tăng dần).
+/// @param samples     dạng `MoodStoreMac_FetchSamplesSince()` trả về (`{@"ts", @"value", @"checkin"}`,
+///                    tăng dần) — xem chú thích key "checkin" ở `setTodaySamples:gapSeconds:` trên.
 /// @param windowSeconds bề rộng cửa sổ (vd 6*3600).
 /// @param gapSeconds  2 mẫu cách nhau quá ngần này = quãng không gõ → không nối nước qua (dec.4).
 /// @param liveHead    biên độ NGAY LÚC NÀY (`MoodWatchMac_LastSendRisk()`) cắm ở mép phải — tươi hơn

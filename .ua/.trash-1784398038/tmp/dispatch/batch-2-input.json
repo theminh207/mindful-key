@@ -1,0 +1,260 @@
+{
+  "batchIndex": 2,
+  "totalBatches": 19,
+  "files": [
+    {
+      "path": "core/mood/MoodPhrasing.cpp",
+      "language": "cpp",
+      "sizeLines": 151,
+      "fileCategory": "code"
+    },
+    {
+      "path": "core/mood/MoodPhrasing.h",
+      "language": "c",
+      "sizeLines": 73,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/Bell.cpp",
+      "language": "cpp",
+      "sizeLines": 449,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/Bell.h",
+      "language": "c",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/MoodStore.cpp",
+      "language": "cpp",
+      "sizeLines": 293,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/MoodStore.h",
+      "language": "c",
+      "sizeLines": 73,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp",
+      "language": "cpp",
+      "sizeLines": 40,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h",
+      "language": "c",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp",
+      "language": "cpp",
+      "sizeLines": 264,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.h",
+      "language": "c",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp",
+      "language": "cpp",
+      "sizeLines": 546,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "core/mood/MoodPhrasing.cpp": [
+      "core/mood/MoodPhrasing.h"
+    ],
+    "core/mood/MoodPhrasing.h": [],
+    "platforms/windows/win32/OpenKey/OpenKey/Bell.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/Bell.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MoodStore.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.h",
+      "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h",
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/Bell.h": [],
+    "platforms/windows/win32/OpenKey/OpenKey/MoodStore.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/MoodStore.h",
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/MoodStore.h": [
+      "core/mood/MoodPhrasing.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h",
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h": [],
+    "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp": [
+      "core/mood/MoodPhrasing.h",
+      "platforms/windows/win32/OpenKey/OpenKey/Bell.h",
+      "platforms/windows/win32/OpenKey/OpenKey/BrandPalette.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MoodStore.h",
+      "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h",
+      "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.h",
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.h": [],
+    "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/AppDelegate.h",
+      "platforms/windows/win32/OpenKey/OpenKey/Bell.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MoodStore.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.h",
+      "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.h",
+      "platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.h",
+      "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h"
+    ]
+  },
+  "neighborMap": {
+    "platforms/windows/win32/OpenKey/OpenKey/Bell.cpp": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.h",
+        "batchIndex": 1,
+        "symbols": []
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+        "batchIndex": 6,
+        "symbols": []
+      }
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/Bell.h": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp",
+        "batchIndex": 3,
+        "symbols": [
+          "MoodWatch_LastSendRisk",
+          "MoodWatch_DrainSampleAverage",
+          "MoodWatch_OnWord",
+          "MoodWatch_ConfirmEnable",
+          "MoodWatch_Toggle",
+          "MoodWatch_Init"
+        ]
+      }
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/MoodStore.cpp": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+        "batchIndex": 6,
+        "symbols": []
+      }
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/MoodStore.h": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp",
+        "batchIndex": 3,
+        "symbols": [
+          "MoodWatch_LastSendRisk",
+          "MoodWatch_DrainSampleAverage",
+          "MoodWatch_OnWord",
+          "MoodWatch_ConfirmEnable",
+          "MoodWatch_Toggle",
+          "MoodWatch_Init"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.cpp",
+        "batchIndex": 5,
+        "symbols": [
+          "SendGatekeeper_Init",
+          "SendGatekeeper_ShouldIntercept",
+          "SendGatekeeper_ShowPause",
+          "SendGatekeeper_LastAppName",
+          "SendGatekeeper_IsAppWatched",
+          "SendGatekeeper_ToggleLastApp"
+        ]
+      }
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+        "batchIndex": 6,
+        "symbols": []
+      }
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp",
+        "batchIndex": 3,
+        "symbols": [
+          "MoodWatch_LastSendRisk",
+          "MoodWatch_DrainSampleAverage",
+          "MoodWatch_OnWord",
+          "MoodWatch_ConfirmEnable",
+          "MoodWatch_Toggle",
+          "MoodWatch_Init"
+        ]
+      }
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/BrandPalette.h",
+        "batchIndex": 5,
+        "symbols": []
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+        "batchIndex": 6,
+        "symbols": []
+      }
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/AppDelegate.h",
+        "batchIndex": 1,
+        "symbols": [
+          "BaseDialog",
+          "run",
+          "createMainDialog",
+          "closeDialog",
+          "onInputMethodChangedFromHotKey",
+          "onDefaultConfig",
+          "onToggleVietnamese",
+          "onToggleCheckSpelling",
+          "onToggleUseSmartSwitchKey",
+          "onToggleUseMacro",
+          "onMacroTable",
+          "onConvertTool",
+          "onQuickConvert",
+          "onInputType",
+          "onTableCode",
+          "onControlPanel",
+          "onOpenKeyAbout",
+          "onOpenKeyExit",
+          "AppDelegate"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.h",
+        "batchIndex": 1,
+        "symbols": []
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.h",
+        "batchIndex": 5,
+        "symbols": []
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h",
+        "batchIndex": 3,
+        "symbols": [
+          "createSystemTrayIcon",
+          "updateData",
+          "showWaveAlert",
+          "checkRivalInputMethod",
+          "removeSystemTray",
+          "SystemTrayHelper"
+        ]
+      }
+    ]
+  }
+}

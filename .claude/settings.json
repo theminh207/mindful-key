@@ -4,9 +4,15 @@
       {
         "matcher": "Edit|Write",
         "hooks": [
-          { "type": "command", "command": "\"$CLAUDE_PROJECT_DIR\"/scripts/brand-guard.sh" }
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/scripts/brand-guard.sh"
+          }
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "understand-anything@understand-anything": true
   }
 }

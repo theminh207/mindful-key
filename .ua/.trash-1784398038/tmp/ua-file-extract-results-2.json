@@ -1,0 +1,3581 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 11,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 11,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 11,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "core/mood/MoodPhrasing.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 151,
+      "nonEmptyLines": 133,
+      "functions": [
+        {
+          "name": "LocalTime",
+          "startLine": 21,
+          "endLine": 28,
+          "params": [
+            "epochSeconds",
+            "out"
+          ]
+        },
+        {
+          "name": "TimeOfDayOf",
+          "startLine": 30,
+          "endLine": 39,
+          "params": [
+            "epochSeconds"
+          ]
+        },
+        {
+          "name": "CapitalizeFirst",
+          "startLine": 54,
+          "endLine": 60,
+          "params": [
+            "s"
+          ]
+        },
+        {
+          "name": "JoinNatural",
+          "startLine": 63,
+          "endLine": 72,
+          "params": [
+            "parts"
+          ]
+        },
+        {
+          "name": "MoodPhrasingCore_TimeOfDayLabel",
+          "startLine": 76,
+          "endLine": 83,
+          "params": [
+            "epochSeconds"
+          ]
+        },
+        {
+          "name": "MoodPhrasingCore_DayShapeSentence",
+          "startLine": 85,
+          "endLine": 117,
+          "params": [
+            "todaySamples",
+            "rippleThreshold"
+          ]
+        },
+        {
+          "name": "MoodPhrasingCore_DayShapeOf",
+          "startLine": 119,
+          "endLine": 125,
+          "params": [
+            "peakAmp",
+            "gatekeeperCount",
+            "rippleThreshold"
+          ]
+        },
+        {
+          "name": "MoodPhrasingCore_ReflectionQuestion",
+          "startLine": 127,
+          "endLine": 151,
+          "params": [
+            "shape",
+            "index"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "LocalTime",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "TimeOfDayOf",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "CapitalizeFirst",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "JoinNatural",
+          "line": 63,
+          "isDefault": false
+        },
+        {
+          "name": "MoodPhrasingCore_TimeOfDayLabel",
+          "line": 76,
+          "isDefault": false
+        },
+        {
+          "name": "MoodPhrasingCore_DayShapeSentence",
+          "line": 85,
+          "isDefault": false
+        },
+        {
+          "name": "MoodPhrasingCore_DayShapeOf",
+          "line": 119,
+          "isDefault": false
+        },
+        {
+          "name": "MoodPhrasingCore_ReflectionQuestion",
+          "line": 127,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "LocalTime",
+          "callee": "localtime_s",
+          "lineNumber": 24
+        },
+        {
+          "caller": "LocalTime",
+          "callee": "localtime_r",
+          "lineNumber": 26
+        },
+        {
+          "caller": "TimeOfDayOf",
+          "callee": "LocalTime",
+          "lineNumber": 32
+        },
+        {
+          "caller": "CapitalizeFirst",
+          "callee": "empty",
+          "lineNumber": 55
+        },
+        {
+          "caller": "CapitalizeFirst",
+          "callee": "(wchar_t)",
+          "lineNumber": 58
+        },
+        {
+          "caller": "JoinNatural",
+          "callee": "empty",
+          "lineNumber": 64
+        },
+        {
+          "caller": "JoinNatural",
+          "callee": "size",
+          "lineNumber": 65
+        },
+        {
+          "caller": "JoinNatural",
+          "callee": "size",
+          "lineNumber": 67
+        },
+        {
+          "caller": "JoinNatural",
+          "callee": "back",
+          "lineNumber": 71
+        },
+        {
+          "caller": "MoodPhrasingCore_TimeOfDayLabel",
+          "callee": "TimeOfDayOf",
+          "lineNumber": 77
+        },
+        {
+          "caller": "MoodPhrasingCore_DayShapeSentence",
+          "callee": "empty",
+          "lineNumber": 87
+        },
+        {
+          "caller": "MoodPhrasingCore_DayShapeSentence",
+          "callee": "size",
+          "lineNumber": 95
+        },
+        {
+          "caller": "MoodPhrasingCore_DayShapeSentence",
+          "callee": "TimeOfDayOf",
+          "lineNumber": 97
+        },
+        {
+          "caller": "MoodPhrasingCore_DayShapeSentence",
+          "callee": "push_back",
+          "lineNumber": 105
+        },
+        {
+          "caller": "MoodPhrasingCore_DayShapeSentence",
+          "callee": "ShortLabel",
+          "lineNumber": 105
+        },
+        {
+          "caller": "MoodPhrasingCore_DayShapeSentence",
+          "callee": "empty",
+          "lineNumber": 108
+        },
+        {
+          "caller": "MoodPhrasingCore_DayShapeSentence",
+          "callee": "CapitalizeFirst",
+          "lineNumber": 111
+        },
+        {
+          "caller": "MoodPhrasingCore_DayShapeSentence",
+          "callee": "JoinNatural",
+          "lineNumber": 111
+        },
+        {
+          "caller": "MoodPhrasingCore_DayShapeSentence",
+          "callee": "size",
+          "lineNumber": 114
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 8,
+        "functionCount": 8,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "core/mood/MoodPhrasing.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 73,
+      "nonEmptyLines": 64,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/Bell.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 449,
+      "nonEmptyLines": 399,
+      "functions": [
+        {
+          "name": "ResourceIdForSoundId",
+          "startLine": 62,
+          "endLine": 66,
+          "params": [
+            "sid"
+          ]
+        },
+        {
+          "name": "SoundIdFromStored",
+          "startLine": 69,
+          "endLine": 80,
+          "params": [
+            "stored"
+          ]
+        },
+        {
+          "name": "ScalePcm16InPlace",
+          "startLine": 85,
+          "endLine": 117,
+          "params": [
+            "wav",
+            "vol"
+          ]
+        },
+        {
+          "name": "LoadResourceWav",
+          "startLine": 119,
+          "endLine": 129,
+          "params": [
+            "resId",
+            "out"
+          ]
+        },
+        {
+          "name": "LoadFileWav",
+          "startLine": 131,
+          "endLine": 144,
+          "params": [
+            "path",
+            "out"
+          ]
+        },
+        {
+          "name": "PlayBellWav",
+          "startLine": 150,
+          "endLine": 176,
+          "params": [
+            "sid",
+            "vol"
+          ]
+        },
+        {
+          "name": "playBellSound",
+          "startLine": 180,
+          "endLine": 189,
+          "params": []
+        },
+        {
+          "name": "Bell_InstallCustomSound",
+          "startLine": 191,
+          "endLine": 220,
+          "params": [
+            "path",
+            "outMessage"
+          ]
+        },
+        {
+          "name": "Bell_PreviewSound",
+          "startLine": 222,
+          "endLine": 224,
+          "params": []
+        },
+        {
+          "name": "bellThread",
+          "startLine": 247,
+          "endLine": 253,
+          "params": [
+            "p"
+          ]
+        },
+        {
+          "name": "showBellPrompt",
+          "startLine": 255,
+          "endLine": 259,
+          "params": [
+            "message"
+          ]
+        },
+        {
+          "name": "isSnoozed",
+          "startLine": 261,
+          "endLine": 263,
+          "params": []
+        },
+        {
+          "name": "isInBellRange",
+          "startLine": 265,
+          "endLine": 269,
+          "params": [
+            "hour"
+          ]
+        },
+        {
+          "name": "Bell_RingForTenseStreak",
+          "startLine": 271,
+          "endLine": 280,
+          "params": []
+        },
+        {
+          "name": "Bell_Snooze",
+          "startLine": 282,
+          "endLine": 286,
+          "params": [
+            "minutes"
+          ]
+        },
+        {
+          "name": "Bell_TimerProc",
+          "startLine": 288,
+          "endLine": 312,
+          "params": [
+            "hwnd",
+            "msg",
+            "id",
+            "t"
+          ]
+        },
+        {
+          "name": "Bell_ApplySettings",
+          "startLine": 314,
+          "endLine": 328,
+          "params": []
+        },
+        {
+          "name": "Bell_Init",
+          "startLine": 330,
+          "endLine": 339,
+          "params": []
+        },
+        {
+          "name": "BellDlgProc",
+          "startLine": 346,
+          "endLine": 445,
+          "params": [
+            "hDlg",
+            "msg",
+            "wParam",
+            "lParam"
+          ]
+        },
+        {
+          "name": "Bell_ShowSettings",
+          "startLine": 447,
+          "endLine": 449,
+          "params": [
+            "parent"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "Bell_InstallCustomSound",
+          "line": 191,
+          "isDefault": false
+        },
+        {
+          "name": "Bell_PreviewSound",
+          "line": 222,
+          "isDefault": false
+        },
+        {
+          "name": "Bell_RingForTenseStreak",
+          "line": 271,
+          "isDefault": false
+        },
+        {
+          "name": "Bell_Snooze",
+          "line": 282,
+          "isDefault": false
+        },
+        {
+          "name": "Bell_ApplySettings",
+          "line": 314,
+          "isDefault": false
+        },
+        {
+          "name": "Bell_Init",
+          "line": 330,
+          "isDefault": false
+        },
+        {
+          "name": "Bell_ShowSettings",
+          "line": 447,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "SoundIdFromStored",
+          "callee": "empty",
+          "lineNumber": 70
+        },
+        {
+          "caller": "SoundIdFromStored",
+          "callee": "_T",
+          "lineNumber": 76
+        },
+        {
+          "caller": "SoundIdFromStored",
+          "callee": "_T",
+          "lineNumber": 77
+        },
+        {
+          "caller": "SoundIdFromStored",
+          "callee": "_T",
+          "lineNumber": 78
+        },
+        {
+          "caller": "ScalePcm16InPlace",
+          "callee": "size",
+          "lineNumber": 86
+        },
+        {
+          "caller": "ScalePcm16InPlace",
+          "callee": "memcmp",
+          "lineNumber": 86
+        },
+        {
+          "caller": "ScalePcm16InPlace",
+          "callee": "memcmp",
+          "lineNumber": 86
+        },
+        {
+          "caller": "ScalePcm16InPlace",
+          "callee": "size",
+          "lineNumber": 91
+        },
+        {
+          "caller": "ScalePcm16InPlace",
+          "callee": "memcpy",
+          "lineNumber": 93
+        },
+        {
+          "caller": "ScalePcm16InPlace",
+          "callee": "size",
+          "lineNumber": 96
+        },
+        {
+          "caller": "ScalePcm16InPlace",
+          "callee": "(DWORD)",
+          "lineNumber": 97
+        },
+        {
+          "caller": "ScalePcm16InPlace",
+          "callee": "size",
+          "lineNumber": 97
+        },
+        {
+          "caller": "ScalePcm16InPlace",
+          "callee": "memcmp",
+          "lineNumber": 99
+        },
+        {
+          "caller": "ScalePcm16InPlace",
+          "callee": "memcmp",
+          "lineNumber": 101
+        },
+        {
+          "caller": "LoadResourceWav",
+          "callee": "FindResource",
+          "lineNumber": 120
+        },
+        {
+          "caller": "LoadResourceWav",
+          "callee": "MAKEINTRESOURCE",
+          "lineNumber": 120
+        },
+        {
+          "caller": "LoadResourceWav",
+          "callee": "_T",
+          "lineNumber": 120
+        },
+        {
+          "caller": "LoadResourceWav",
+          "callee": "LoadResource",
+          "lineNumber": 122
+        },
+        {
+          "caller": "LoadResourceWav",
+          "callee": "SizeofResource",
+          "lineNumber": 124
+        },
+        {
+          "caller": "LoadResourceWav",
+          "callee": "LockResource",
+          "lineNumber": 125
+        },
+        {
+          "caller": "LoadResourceWav",
+          "callee": "assign",
+          "lineNumber": 127
+        },
+        {
+          "caller": "LoadFileWav",
+          "callee": "CreateFile",
+          "lineNumber": 132
+        },
+        {
+          "caller": "LoadFileWav",
+          "callee": "GetFileSize",
+          "lineNumber": 135
+        },
+        {
+          "caller": "LoadFileWav",
+          "callee": "resize",
+          "lineNumber": 138
+        },
+        {
+          "caller": "LoadFileWav",
+          "callee": "ReadFile",
+          "lineNumber": 140
+        },
+        {
+          "caller": "LoadFileWav",
+          "callee": "CloseHandle",
+          "lineNumber": 142
+        },
+        {
+          "caller": "PlayBellWav",
+          "callee": "swprintf_s",
+          "lineNumber": 152
+        },
+        {
+          "caller": "PlayBellWav",
+          "callee": "empty",
+          "lineNumber": 155
+        },
+        {
+          "caller": "PlayBellWav",
+          "callee": "OpenKeyHelper::getRegString",
+          "lineNumber": 159
+        },
+        {
+          "caller": "PlayBellWav",
+          "callee": "_T",
+          "lineNumber": 159
+        },
+        {
+          "caller": "PlayBellWav",
+          "callee": "empty",
+          "lineNumber": 160
+        },
+        {
+          "caller": "PlayBellWav",
+          "callee": "LoadFileWav",
+          "lineNumber": 160
+        },
+        {
+          "caller": "PlayBellWav",
+          "callee": "c_str",
+          "lineNumber": 160
+        },
+        {
+          "caller": "PlayBellWav",
+          "callee": "LoadResourceWav",
+          "lineNumber": 163
+        },
+        {
+          "caller": "PlayBellWav",
+          "callee": "ResourceIdForSoundId",
+          "lineNumber": 163
+        },
+        {
+          "caller": "PlayBellWav",
+          "callee": "LoadResourceWav",
+          "lineNumber": 166
+        },
+        {
+          "caller": "PlayBellWav",
+          "callee": "ResourceIdForSoundId",
+          "lineNumber": 166
+        },
+        {
+          "caller": "PlayBellWav",
+          "callee": "ScalePcm16InPlace",
+          "lineNumber": 168
+        },
+        {
+          "caller": "PlayBellWav",
+          "callee": "swap",
+          "lineNumber": 169
+        },
+        {
+          "caller": "PlayBellWav",
+          "callee": "PlaySound",
+          "lineNumber": 175
+        },
+        {
+          "caller": "playBellSound",
+          "callee": "SoundIdFromStored",
+          "lineNumber": 181
+        },
+        {
+          "caller": "playBellSound",
+          "callee": "OpenKeyHelper::getRegString",
+          "lineNumber": 181
+        },
+        {
+          "caller": "playBellSound",
+          "callee": "_T",
+          "lineNumber": 181
+        },
+        {
+          "caller": "playBellSound",
+          "callee": "OpenKeyHelper::getRegInt",
+          "lineNumber": 185
+        },
+        {
+          "caller": "playBellSound",
+          "callee": "PlayBellWav",
+          "lineNumber": 188
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "LoadFileWav",
+          "lineNumber": 194
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "size",
+          "lineNumber": 194
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "memcmp",
+          "lineNumber": 195
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "memcmp",
+          "lineNumber": 195
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "_T",
+          "lineNumber": 197
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "FAILED",
+          "lineNumber": 203
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "SHGetFolderPath",
+          "lineNumber": 203
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "_T",
+          "lineNumber": 204
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "wstring",
+          "lineNumber": 207
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "_T",
+          "lineNumber": 207
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "CreateDirectory",
+          "lineNumber": 208
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "c_str",
+          "lineNumber": 208
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "_T",
+          "lineNumber": 209
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "CopyFile",
+          "lineNumber": 211
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "c_str",
+          "lineNumber": 211
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "_T",
+          "lineNumber": 212
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "OpenKeyHelper::setRegString",
+          "lineNumber": 216
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "c_str",
+          "lineNumber": 216
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "OpenKeyHelper::setRegString",
+          "lineNumber": 217
+        },
+        {
+          "caller": "Bell_InstallCustomSound",
+          "callee": "clear",
+          "lineNumber": 218
+        },
+        {
+          "caller": "Bell_PreviewSound",
+          "callee": "playBellSound",
+          "lineNumber": 223
+        },
+        {
+          "caller": "bellThread",
+          "callee": "MessageBoxW",
+          "lineNumber": 251
+        },
+        {
+          "caller": "showBellPrompt",
+          "callee": "playBellSound",
+          "lineNumber": 256
+        },
+        {
+          "caller": "showBellPrompt",
+          "callee": "CreateThread",
+          "lineNumber": 257
+        },
+        {
+          "caller": "showBellPrompt",
+          "callee": "CloseHandle",
+          "lineNumber": 258
+        },
+        {
+          "caller": "isSnoozed",
+          "callee": "GetTickCount",
+          "lineNumber": 262
+        },
+        {
+          "caller": "Bell_RingForTenseStreak",
+          "callee": "isSnoozed",
+          "lineNumber": 272
+        },
+        {
+          "caller": "Bell_RingForTenseStreak",
+          "callee": "NudgeCoordinator_ShouldNudge",
+          "lineNumber": 274
+        },
+        {
+          "caller": "Bell_RingForTenseStreak",
+          "callee": "showBellPrompt",
+          "lineNumber": 278
+        },
+        {
+          "caller": "Bell_RingForTenseStreak",
+          "callee": "NudgeCoordinator_MarkNudged",
+          "lineNumber": 279
+        },
+        {
+          "caller": "Bell_Snooze",
+          "callee": "GetTickCount",
+          "lineNumber": 284
+        },
+        {
+          "caller": "Bell_TimerProc",
+          "callee": "MoodWatch_DrainSampleAverage",
+          "lineNumber": 293
+        },
+        {
+          "caller": "Bell_TimerProc",
+          "callee": "MoodStore_LogSampleEvent",
+          "lineNumber": 294
+        },
+        {
+          "caller": "Bell_TimerProc",
+          "callee": "isSnoozed",
+          "lineNumber": 296
+        },
+        {
+          "caller": "Bell_TimerProc",
+          "callee": "GetLocalTime",
+          "lineNumber": 300
+        },
+        {
+          "caller": "Bell_TimerProc",
+          "callee": "isInBellRange",
+          "lineNumber": 301
+        },
+        {
+          "caller": "Bell_TimerProc",
+          "callee": "NudgeCoordinator_ShouldNudge",
+          "lineNumber": 305
+        },
+        {
+          "caller": "Bell_TimerProc",
+          "callee": "showBellPrompt",
+          "lineNumber": 310
+        },
+        {
+          "caller": "Bell_TimerProc",
+          "callee": "NudgeCoordinator_MarkNudged",
+          "lineNumber": 311
+        },
+        {
+          "caller": "Bell_ApplySettings",
+          "callee": "KillTimer",
+          "lineNumber": 316
+        },
+        {
+          "caller": "Bell_ApplySettings",
+          "callee": "SetTimer",
+          "lineNumber": 327
+        },
+        {
+          "caller": "Bell_Init",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 331
+        },
+        {
+          "caller": "Bell_Init",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 332
+        },
+        {
+          "caller": "Bell_Init",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 333
+        },
+        {
+          "caller": "Bell_Init",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 334
+        },
+        {
+          "caller": "Bell_Init",
+          "callee": "Bell_ApplySettings",
+          "lineNumber": 338
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "CheckDlgButton",
+          "lineNumber": 349
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "SetDlgItemInt",
+          "lineNumber": 350
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "SetDlgItemInt",
+          "lineNumber": 351
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "SetDlgItemInt",
+          "lineNumber": 352
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "SetDlgItemInt",
+          "lineNumber": 353
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "OpenKeyHelper::getRegInt",
+          "lineNumber": 353
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "GetDlgItem",
+          "lineNumber": 359
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "SendMessage",
+          "lineNumber": 361
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "_T",
+          "lineNumber": 361
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "SendMessage",
+          "lineNumber": 362
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "_T",
+          "lineNumber": 362
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "SendMessage",
+          "lineNumber": 363
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "_T",
+          "lineNumber": 363
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "SendMessage",
+          "lineNumber": 364
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "_T",
+          "lineNumber": 364
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "SendMessage",
+          "lineNumber": 365
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "_T",
+          "lineNumber": 365
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "SoundIdFromStored",
+          "lineNumber": 367
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "OpenKeyHelper::getRegString",
+          "lineNumber": 367
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "_T",
+          "lineNumber": 367
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "SendMessage",
+          "lineNumber": 373
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "LOWORD",
+          "lineNumber": 377
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "Bell_PreviewSound",
+          "lineNumber": 378
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "LOWORD",
+          "lineNumber": 381
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "_T",
+          "lineNumber": 388
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "GetOpenFileName",
+          "lineNumber": 392
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "Bell_InstallCustomSound",
+          "lineNumber": 394
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "SendMessage",
+          "lineNumber": 395
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "GetDlgItem",
+          "lineNumber": 395
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "Bell_PreviewSound",
+          "lineNumber": 396
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "MessageBoxW",
+          "lineNumber": 398
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "c_str",
+          "lineNumber": 398
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "LOWORD",
+          "lineNumber": 403
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "IsDlgButtonChecked",
+          "lineNumber": 404
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "GetDlgItemInt",
+          "lineNumber": 406
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "GetDlgItemInt",
+          "lineNumber": 412
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "GetDlgItemInt",
+          "lineNumber": 414
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "GetDlgItemInt",
+          "lineNumber": 416
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 421
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 422
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 423
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 424
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "OpenKeyHelper::setRegInt",
+          "lineNumber": 425
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "SendMessage",
+          "lineNumber": 429
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "GetDlgItem",
+          "lineNumber": 429
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "OpenKeyHelper::setRegString",
+          "lineNumber": 431
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "clear",
+          "lineNumber": 432
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "Bell_ApplySettings",
+          "lineNumber": 434
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "EndDialog",
+          "lineNumber": 435
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "LOWORD",
+          "lineNumber": 438
+        },
+        {
+          "caller": "BellDlgProc",
+          "callee": "EndDialog",
+          "lineNumber": 439
+        },
+        {
+          "caller": "Bell_ShowSettings",
+          "callee": "DialogBoxParam",
+          "lineNumber": 448
+        },
+        {
+          "caller": "Bell_ShowSettings",
+          "callee": "GetModuleHandle",
+          "lineNumber": 448
+        },
+        {
+          "caller": "Bell_ShowSettings",
+          "callee": "MAKEINTRESOURCE",
+          "lineNumber": 448
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 7,
+        "functionCount": 20,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/Bell.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 27,
+      "nonEmptyLines": 22,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/MoodStore.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 293,
+      "nonEmptyLines": 252,
+      "functions": [
+        {
+          "name": "StorePath",
+          "startLine": 29,
+          "endLine": 36,
+          "params": []
+        },
+        {
+          "name": "Protect",
+          "startLine": 40,
+          "endLine": 53,
+          "params": [
+            "plain",
+            "out"
+          ]
+        },
+        {
+          "name": "Unprotect",
+          "startLine": 55,
+          "endLine": 67,
+          "params": [
+            "cipher",
+            "out"
+          ]
+        },
+        {
+          "name": "ReadAll",
+          "startLine": 76,
+          "endLine": 92,
+          "params": [
+            "out"
+          ]
+        },
+        {
+          "name": "WriteAll",
+          "startLine": 94,
+          "endLine": 120,
+          "params": [
+            "plain"
+          ]
+        },
+        {
+          "name": "MoodStore_HasConsent",
+          "startLine": 124,
+          "endLine": 126,
+          "params": []
+        },
+        {
+          "name": "MoodStore_HasAskedConsent",
+          "startLine": 128,
+          "endLine": 130,
+          "params": []
+        },
+        {
+          "name": "MoodStore_SetConsent",
+          "startLine": 132,
+          "endLine": 137,
+          "params": [
+            "granted"
+          ]
+        },
+        {
+          "name": "MoodStore_AskConsentIfNeeded",
+          "startLine": 139,
+          "endLine": 152,
+          "params": []
+        },
+        {
+          "name": "AppendEvent",
+          "startLine": 158,
+          "endLine": 183,
+          "params": [
+            "eventType",
+            "sendRisk",
+            "app",
+            "choice"
+          ]
+        },
+        {
+          "name": "MoodStore_LogGatekeeperEvent",
+          "startLine": 185,
+          "endLine": 187,
+          "params": [
+            "sendRisk",
+            "appExeName",
+            "choice"
+          ]
+        },
+        {
+          "name": "MoodStore_LogSampleEvent",
+          "startLine": 189,
+          "endLine": 191,
+          "params": [
+            "avgRisk"
+          ]
+        },
+        {
+          "name": "MoodStore_FetchTodaySummary",
+          "startLine": 195,
+          "endLine": 249,
+          "params": []
+        },
+        {
+          "name": "MoodStore_FetchTodaySamples",
+          "startLine": 251,
+          "endLine": 285,
+          "params": []
+        },
+        {
+          "name": "MoodStore_DeleteAll",
+          "startLine": 287,
+          "endLine": 293,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "MoodStore_HasConsent",
+          "line": 124,
+          "isDefault": false
+        },
+        {
+          "name": "MoodStore_HasAskedConsent",
+          "line": 128,
+          "isDefault": false
+        },
+        {
+          "name": "MoodStore_SetConsent",
+          "line": 132,
+          "isDefault": false
+        },
+        {
+          "name": "MoodStore_AskConsentIfNeeded",
+          "line": 139,
+          "isDefault": false
+        },
+        {
+          "name": "MoodStore_LogGatekeeperEvent",
+          "line": 185,
+          "isDefault": false
+        },
+        {
+          "name": "MoodStore_LogSampleEvent",
+          "line": 189,
+          "isDefault": false
+        },
+        {
+          "name": "MoodStore_FetchTodaySummary",
+          "line": 195,
+          "isDefault": false
+        },
+        {
+          "name": "MoodStore_FetchTodaySamples",
+          "line": 251,
+          "isDefault": false
+        },
+        {
+          "name": "MoodStore_DeleteAll",
+          "line": 287,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "StorePath",
+          "callee": "FAILED",
+          "lineNumber": 31
+        },
+        {
+          "caller": "StorePath",
+          "callee": "SHGetFolderPath",
+          "lineNumber": 31
+        },
+        {
+          "caller": "StorePath",
+          "callee": "wstring",
+          "lineNumber": 32
+        },
+        {
+          "caller": "StorePath",
+          "callee": "wstring",
+          "lineNumber": 33
+        },
+        {
+          "caller": "StorePath",
+          "callee": "_T",
+          "lineNumber": 33
+        },
+        {
+          "caller": "StorePath",
+          "callee": "CreateDirectory",
+          "lineNumber": 34
+        },
+        {
+          "caller": "StorePath",
+          "callee": "c_str",
+          "lineNumber": 34
+        },
+        {
+          "caller": "StorePath",
+          "callee": "_T",
+          "lineNumber": 35
+        },
+        {
+          "caller": "Protect",
+          "callee": "c_str",
+          "lineNumber": 42
+        },
+        {
+          "caller": "Protect",
+          "callee": "(DWORD)",
+          "lineNumber": 43
+        },
+        {
+          "caller": "Protect",
+          "callee": "size",
+          "lineNumber": 43
+        },
+        {
+          "caller": "Protect",
+          "callee": "CryptProtectData",
+          "lineNumber": 47
+        },
+        {
+          "caller": "Protect",
+          "callee": "assign",
+          "lineNumber": 50
+        },
+        {
+          "caller": "Protect",
+          "callee": "LocalFree",
+          "lineNumber": 51
+        },
+        {
+          "caller": "Unprotect",
+          "callee": "empty",
+          "lineNumber": 56
+        },
+        {
+          "caller": "Unprotect",
+          "callee": "size",
+          "lineNumber": 59
+        },
+        {
+          "caller": "Unprotect",
+          "callee": "CryptUnprotectData",
+          "lineNumber": 60
+        },
+        {
+          "caller": "Unprotect",
+          "callee": "assign",
+          "lineNumber": 62
+        },
+        {
+          "caller": "Unprotect",
+          "callee": "empty",
+          "lineNumber": 63
+        },
+        {
+          "caller": "Unprotect",
+          "callee": "back",
+          "lineNumber": 63
+        },
+        {
+          "caller": "Unprotect",
+          "callee": "pop_back",
+          "lineNumber": 64
+        },
+        {
+          "caller": "Unprotect",
+          "callee": "LocalFree",
+          "lineNumber": 65
+        },
+        {
+          "caller": "ReadAll",
+          "callee": "StorePath",
+          "lineNumber": 77
+        },
+        {
+          "caller": "ReadAll",
+          "callee": "empty",
+          "lineNumber": 78
+        },
+        {
+          "caller": "ReadAll",
+          "callee": "CreateFile",
+          "lineNumber": 79
+        },
+        {
+          "caller": "ReadAll",
+          "callee": "c_str",
+          "lineNumber": 79
+        },
+        {
+          "caller": "ReadAll",
+          "callee": "GetFileSize",
+          "lineNumber": 82
+        },
+        {
+          "caller": "ReadAll",
+          "callee": "resize",
+          "lineNumber": 86
+        },
+        {
+          "caller": "ReadAll",
+          "callee": "ReadFile",
+          "lineNumber": 88
+        },
+        {
+          "caller": "ReadAll",
+          "callee": "CloseHandle",
+          "lineNumber": 90
+        },
+        {
+          "caller": "ReadAll",
+          "callee": "Unprotect",
+          "lineNumber": 91
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "StorePath",
+          "lineNumber": 95
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "empty",
+          "lineNumber": 96
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "Protect",
+          "lineNumber": 98
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "empty",
+          "lineNumber": 98
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "_T",
+          "lineNumber": 102
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "CreateFile",
+          "lineNumber": 103
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "c_str",
+          "lineNumber": 103
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "WriteFile",
+          "lineNumber": 107
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "size",
+          "lineNumber": 107
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "size",
+          "lineNumber": 108
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "FlushFileBuffers",
+          "lineNumber": 109
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "CloseHandle",
+          "lineNumber": 110
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "DeleteFile",
+          "lineNumber": 112
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "c_str",
+          "lineNumber": 112
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "MoveFileEx",
+          "lineNumber": 115
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "c_str",
+          "lineNumber": 115
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "c_str",
+          "lineNumber": 115
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "DeleteFile",
+          "lineNumber": 116
+        },
+        {
+          "caller": "WriteAll",
+          "callee": "c_str",
+          "lineNumber": 116
+        },
+        {
+          "caller": "MoodStore_HasConsent",
+          "callee": "OpenKeyHelper::getRegInt",
+          "lineNumber": 125
+        },
+        {
+          "caller": "MoodStore_HasAskedConsent",
+          "callee": "OpenKeyHelper::getRegInt",
+          "lineNumber": 129
+        },
+        {
+          "caller": "MoodStore_SetConsent",
+          "callee": "OpenKeyHelper::setRegInt",
+          "lineNumber": 133
+        },
+        {
+          "caller": "MoodStore_SetConsent",
+          "callee": "OpenKeyHelper::setRegInt",
+          "lineNumber": 134
+        },
+        {
+          "caller": "MoodStore_SetConsent",
+          "callee": "MoodStore_DeleteAll",
+          "lineNumber": 136
+        },
+        {
+          "caller": "MoodStore_AskConsentIfNeeded",
+          "callee": "MoodStore_HasAskedConsent",
+          "lineNumber": 140
+        },
+        {
+          "caller": "MoodStore_AskConsentIfNeeded",
+          "callee": "MessageBoxW",
+          "lineNumber": 143
+        },
+        {
+          "caller": "MoodStore_AskConsentIfNeeded",
+          "callee": "MoodStore_SetConsent",
+          "lineNumber": 151
+        },
+        {
+          "caller": "AppendEvent",
+          "callee": "MoodStore_HasConsent",
+          "lineNumber": 160
+        },
+        {
+          "caller": "AppendEvent",
+          "callee": "ReadAll",
+          "lineNumber": 166
+        },
+        {
+          "caller": "AppendEvent",
+          "callee": "empty",
+          "lineNumber": 166
+        },
+        {
+          "caller": "AppendEvent",
+          "callee": "wstring",
+          "lineNumber": 167
+        },
+        {
+          "caller": "AppendEvent",
+          "callee": "size",
+          "lineNumber": 172
+        },
+        {
+          "caller": "AppendEvent",
+          "callee": "time",
+          "lineNumber": 176
+        },
+        {
+          "caller": "AppendEvent",
+          "callee": "str",
+          "lineNumber": 180
+        },
+        {
+          "caller": "AppendEvent",
+          "callee": "WriteAll",
+          "lineNumber": 182
+        },
+        {
+          "caller": "MoodStore_LogGatekeeperEvent",
+          "callee": "AppendEvent",
+          "lineNumber": 186
+        },
+        {
+          "caller": "MoodStore_LogSampleEvent",
+          "callee": "AppendEvent",
+          "lineNumber": 190
+        },
+        {
+          "caller": "MoodStore_FetchTodaySummary",
+          "callee": "MoodStore_HasConsent",
+          "lineNumber": 197
+        },
+        {
+          "caller": "MoodStore_FetchTodaySummary",
+          "callee": "ReadAll",
+          "lineNumber": 202
+        },
+        {
+          "caller": "MoodStore_FetchTodaySummary",
+          "callee": "time",
+          "lineNumber": 207
+        },
+        {
+          "caller": "MoodStore_FetchTodaySummary",
+          "callee": "localtime_s",
+          "lineNumber": 209
+        },
+        {
+          "caller": "MoodStore_FetchTodaySummary",
+          "callee": "mktime",
+          "lineNumber": 211
+        },
+        {
+          "caller": "MoodStore_FetchTodaySummary",
+          "callee": "getline",
+          "lineNumber": 217
+        },
+        {
+          "caller": "MoodStore_FetchTodaySummary",
+          "callee": "getline",
+          "lineNumber": 218
+        },
+        {
+          "caller": "MoodStore_FetchTodaySummary",
+          "callee": "empty",
+          "lineNumber": 219
+        },
+        {
+          "caller": "MoodStore_FetchTodaySummary",
+          "callee": "getline",
+          "lineNumber": 222
+        },
+        {
+          "caller": "MoodStore_FetchTodaySummary",
+          "callee": "getline",
+          "lineNumber": 223
+        },
+        {
+          "caller": "MoodStore_FetchTodaySummary",
+          "callee": "getline",
+          "lineNumber": 224
+        },
+        {
+          "caller": "MoodStore_FetchTodaySummary",
+          "callee": "empty",
+          "lineNumber": 225
+        },
+        {
+          "caller": "MoodStore_FetchTodaySummary",
+          "callee": "_wtoi64",
+          "lineNumber": 227
+        },
+        {
+          "caller": "MoodStore_FetchTodaySummary",
+          "callee": "c_str",
+          "lineNumber": 227
+        },
+        {
+          "caller": "MoodStore_FetchTodaySummary",
+          "callee": "empty",
+          "lineNumber": 232
+        },
+        {
+          "caller": "MoodStore_FetchTodaySummary",
+          "callee": "_wtof",
+          "lineNumber": 233
+        },
+        {
+          "caller": "MoodStore_FetchTodaySummary",
+          "callee": "c_str",
+          "lineNumber": 233
+        },
+        {
+          "caller": "MoodStore_FetchTodaySummary",
+          "callee": "localtime_s",
+          "lineNumber": 239
+        },
+        {
+          "caller": "MoodStore_FetchTodaySamples",
+          "callee": "MoodStore_HasConsent",
+          "lineNumber": 253
+        },
+        {
+          "caller": "MoodStore_FetchTodaySamples",
+          "callee": "ReadAll",
+          "lineNumber": 258
+        },
+        {
+          "caller": "MoodStore_FetchTodaySamples",
+          "callee": "time",
+          "lineNumber": 261
+        },
+        {
+          "caller": "MoodStore_FetchTodaySamples",
+          "callee": "localtime_s",
+          "lineNumber": 263
+        },
+        {
+          "caller": "MoodStore_FetchTodaySamples",
+          "callee": "mktime",
+          "lineNumber": 265
+        },
+        {
+          "caller": "MoodStore_FetchTodaySamples",
+          "callee": "getline",
+          "lineNumber": 269
+        },
+        {
+          "caller": "MoodStore_FetchTodaySamples",
+          "callee": "getline",
+          "lineNumber": 270
+        },
+        {
+          "caller": "MoodStore_FetchTodaySamples",
+          "callee": "empty",
+          "lineNumber": 271
+        },
+        {
+          "caller": "MoodStore_FetchTodaySamples",
+          "callee": "getline",
+          "lineNumber": 274
+        },
+        {
+          "caller": "MoodStore_FetchTodaySamples",
+          "callee": "getline",
+          "lineNumber": 275
+        },
+        {
+          "caller": "MoodStore_FetchTodaySamples",
+          "callee": "getline",
+          "lineNumber": 276
+        },
+        {
+          "caller": "MoodStore_FetchTodaySamples",
+          "callee": "empty",
+          "lineNumber": 277
+        },
+        {
+          "caller": "MoodStore_FetchTodaySamples",
+          "callee": "empty",
+          "lineNumber": 277
+        },
+        {
+          "caller": "MoodStore_FetchTodaySamples",
+          "callee": "_wtoi64",
+          "lineNumber": 279
+        },
+        {
+          "caller": "MoodStore_FetchTodaySamples",
+          "callee": "c_str",
+          "lineNumber": 279
+        },
+        {
+          "caller": "MoodStore_FetchTodaySamples",
+          "callee": "_wtof",
+          "lineNumber": 281
+        },
+        {
+          "caller": "MoodStore_FetchTodaySamples",
+          "callee": "c_str",
+          "lineNumber": 281
+        },
+        {
+          "caller": "MoodStore_FetchTodaySamples",
+          "callee": "push_back",
+          "lineNumber": 282
+        },
+        {
+          "caller": "MoodStore_DeleteAll",
+          "callee": "StorePath",
+          "lineNumber": 289
+        },
+        {
+          "caller": "MoodStore_DeleteAll",
+          "callee": "empty",
+          "lineNumber": 290
+        },
+        {
+          "caller": "MoodStore_DeleteAll",
+          "callee": "DeleteFile",
+          "lineNumber": 291
+        },
+        {
+          "caller": "MoodStore_DeleteAll",
+          "callee": "c_str",
+          "lineNumber": 291
+        },
+        {
+          "caller": "MoodStore_DeleteAll",
+          "callee": "DeleteFile",
+          "lineNumber": 292
+        },
+        {
+          "caller": "MoodStore_DeleteAll",
+          "callee": "c_str",
+          "lineNumber": 292
+        },
+        {
+          "caller": "MoodStore_DeleteAll",
+          "callee": "_T",
+          "lineNumber": 292
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 9,
+        "functionCount": 15,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/MoodStore.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 73,
+      "nonEmptyLines": 67,
+      "classes": [
+        {
+          "name": "MoodTodaySummary",
+          "startLine": 58,
+          "endLine": 64,
+          "methods": [],
+          "properties": [
+            "gatekeeperCount",
+            "sampleCount",
+            "avgRisk",
+            "peakRisk",
+            "peakHour"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "MoodTodaySummary",
+          "line": 58,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 40,
+      "nonEmptyLines": 35,
+      "functions": [
+        {
+          "name": "NudgeCoordinator_ShouldNudge",
+          "startLine": 11,
+          "endLine": 17,
+          "params": []
+        },
+        {
+          "name": "NudgeCoordinator_MarkNudged",
+          "startLine": 19,
+          "endLine": 22,
+          "params": []
+        },
+        {
+          "name": "NudgeCoordinator_TenseStreakTrigger",
+          "startLine": 24,
+          "endLine": 31,
+          "params": []
+        },
+        {
+          "name": "NudgeCoordinator_RippleThreshold",
+          "startLine": 33,
+          "endLine": 40,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "NudgeCoordinator_ShouldNudge",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "NudgeCoordinator_MarkNudged",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "NudgeCoordinator_TenseStreakTrigger",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "NudgeCoordinator_RippleThreshold",
+          "line": 33,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "NudgeCoordinator_ShouldNudge",
+          "callee": "GetTickCount",
+          "lineNumber": 16
+        },
+        {
+          "caller": "NudgeCoordinator_MarkNudged",
+          "callee": "GetTickCount",
+          "lineNumber": 20
+        },
+        {
+          "caller": "NudgeCoordinator_TenseStreakTrigger",
+          "callee": "OpenKeyHelper::getRegInt",
+          "lineNumber": 25
+        },
+        {
+          "caller": "NudgeCoordinator_TenseStreakTrigger",
+          "callee": "_T",
+          "lineNumber": 25
+        },
+        {
+          "caller": "NudgeCoordinator_RippleThreshold",
+          "callee": "OpenKeyHelper::getRegInt",
+          "lineNumber": 34
+        },
+        {
+          "caller": "NudgeCoordinator_RippleThreshold",
+          "callee": "_T",
+          "lineNumber": 34
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 4,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 26,
+      "nonEmptyLines": 23,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 264,
+      "nonEmptyLines": 234,
+      "functions": [
+        {
+          "name": "XFractionOf",
+          "startLine": 63,
+          "endLine": 68,
+          "params": [
+            "ts",
+            "startOfDay"
+          ]
+        },
+        {
+          "name": "AmpAt",
+          "startLine": 76,
+          "endLine": 90,
+          "params": [
+            "xf",
+            "xs",
+            "ys",
+            "gapXf",
+            "outAmp"
+          ]
+        },
+        {
+          "name": "DrawRiver",
+          "startLine": 92,
+          "endLine": 170,
+          "params": [
+            "g",
+            "area"
+          ]
+        },
+        {
+          "name": "TodayTitle",
+          "startLine": 174,
+          "endLine": 183,
+          "params": []
+        },
+        {
+          "name": "ReflectDlgProc",
+          "startLine": 185,
+          "endLine": 238,
+          "params": [
+            "hDlg",
+            "msg",
+            "wParam",
+            "lParam"
+          ]
+        },
+        {
+          "name": "ReflectionScreen_Show",
+          "startLine": 240,
+          "endLine": 264,
+          "params": [
+            "parent"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ReflectionScreen_Show",
+          "line": 240,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "XFractionOf",
+          "callee": "(REAL)",
+          "lineNumber": 67
+        },
+        {
+          "caller": "AmpAt",
+          "callee": "empty",
+          "lineNumber": 77
+        },
+        {
+          "caller": "AmpAt",
+          "callee": "front",
+          "lineNumber": 78
+        },
+        {
+          "caller": "AmpAt",
+          "callee": "back",
+          "lineNumber": 78
+        },
+        {
+          "caller": "AmpAt",
+          "callee": "size",
+          "lineNumber": 80
+        },
+        {
+          "caller": "AmpAt",
+          "callee": "back",
+          "lineNumber": 88
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "empty",
+          "lineNumber": 93
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "time",
+          "lineNumber": 98
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "localtime_s",
+          "lineNumber": 100
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "mktime",
+          "lineNumber": 102
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "size",
+          "lineNumber": 105
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "push_back",
+          "lineNumber": 106
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "XFractionOf",
+          "lineNumber": 106
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "push_back",
+          "lineNumber": 107
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "(REAL)",
+          "lineNumber": 111
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "SetSmoothingMode",
+          "lineNumber": 117
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "Color",
+          "lineNumber": 120
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "(ARGB)",
+          "lineNumber": 120
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "SetDashPattern",
+          "lineNumber": 122
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "DrawLine",
+          "lineNumber": 123
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "SetStartCap",
+          "lineNumber": 127
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "SetEndCap",
+          "lineNumber": 128
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "SetLineJoin",
+          "lineNumber": 129
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "AmpAt",
+          "lineNumber": 134
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "size",
+          "lineNumber": 135
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "DrawLines",
+          "lineNumber": 135
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "size",
+          "lineNumber": 135
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "clear",
+          "lineNumber": 136
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "push_back",
+          "lineNumber": 141
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "PointF",
+          "lineNumber": 141
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "sin",
+          "lineNumber": 141
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "size",
+          "lineNumber": 143
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "DrawLines",
+          "lineNumber": 143
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "size",
+          "lineNumber": 143
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "size",
+          "lineNumber": 148
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "sin",
+          "lineNumber": 150
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "FillEllipse",
+          "lineNumber": 151
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "Color",
+          "lineNumber": 159
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "(ARGB)",
+          "lineNumber": 159
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "SetAlignment",
+          "lineNumber": 161
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "MoodPhrasingCore_TimeOfDayLabel",
+          "lineNumber": 165
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "rfind",
+          "lineNumber": 166
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "substr",
+          "lineNumber": 166
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "(REAL)",
+          "lineNumber": 167
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "DrawString",
+          "lineNumber": 168
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "c_str",
+          "lineNumber": 168
+        },
+        {
+          "caller": "DrawRiver",
+          "callee": "PointF",
+          "lineNumber": 168
+        },
+        {
+          "caller": "TodayTitle",
+          "callee": "time",
+          "lineNumber": 175
+        },
+        {
+          "caller": "TodayTitle",
+          "callee": "localtime_s",
+          "lineNumber": 177
+        },
+        {
+          "caller": "TodayTitle",
+          "callee": "swprintf_s",
+          "lineNumber": 181
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "SetWindowTextW",
+          "lineNumber": 188
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "c_str",
+          "lineNumber": 188
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "TodayTitle",
+          "lineNumber": 188
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "NudgeCoordinator_RippleThreshold",
+          "lineNumber": 190
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "SetDlgItemTextW",
+          "lineNumber": 191
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "c_str",
+          "lineNumber": 192
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "MoodPhrasingCore_DayShapeSentence",
+          "lineNumber": 192
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "MoodPhrasingCore_DayShapeOf",
+          "lineNumber": 198
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "time",
+          "lineNumber": 200
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "localtime_s",
+          "lineNumber": 201
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "SetDlgItemTextW",
+          "lineNumber": 202
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "c_str",
+          "lineNumber": 203
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "MoodPhrasingCore_ReflectionQuestion",
+          "lineNumber": 203
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "swprintf_s",
+          "lineNumber": 208
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "SetDlgItemTextW",
+          "lineNumber": 213
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "c_str",
+          "lineNumber": 213
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "(REAL)",
+          "lineNumber": 223
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "(REAL)",
+          "lineNumber": 224
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "FillRectangle",
+          "lineNumber": 225
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "DrawRiver",
+          "lineNumber": 227
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "LOWORD",
+          "lineNumber": 231
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "LOWORD",
+          "lineNumber": 231
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "EndDialog",
+          "lineNumber": 232
+        },
+        {
+          "caller": "ReflectDlgProc",
+          "callee": "LOWORD",
+          "lineNumber": 232
+        },
+        {
+          "caller": "ReflectionScreen_Show",
+          "callee": "MoodStore_HasConsent",
+          "lineNumber": 241
+        },
+        {
+          "caller": "ReflectionScreen_Show",
+          "callee": "MessageBoxW",
+          "lineNumber": 242
+        },
+        {
+          "caller": "ReflectionScreen_Show",
+          "callee": "MoodStore_FetchTodaySamples",
+          "lineNumber": 249
+        },
+        {
+          "caller": "ReflectionScreen_Show",
+          "callee": "MoodStore_FetchTodaySummary",
+          "lineNumber": 250
+        },
+        {
+          "caller": "ReflectionScreen_Show",
+          "callee": "GdiplusStartup",
+          "lineNumber": 255
+        },
+        {
+          "caller": "ReflectionScreen_Show",
+          "callee": "DialogBoxParam",
+          "lineNumber": 258
+        },
+        {
+          "caller": "ReflectionScreen_Show",
+          "callee": "GetModuleHandle",
+          "lineNumber": 258
+        },
+        {
+          "caller": "ReflectionScreen_Show",
+          "callee": "MAKEINTRESOURCE",
+          "lineNumber": 258
+        },
+        {
+          "caller": "ReflectionScreen_Show",
+          "callee": "GdiplusShutdown",
+          "lineNumber": 261
+        },
+        {
+          "caller": "ReflectionScreen_Show",
+          "callee": "clear",
+          "lineNumber": 263
+        }
+      ],
+      "metrics": {
+        "importCount": 7,
+        "exportCount": 1,
+        "functionCount": 6,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 15,
+      "nonEmptyLines": 14,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 546,
+      "nonEmptyLines": 505,
+      "functions": [
+        {
+          "name": "WndProc",
+          "startLine": 108,
+          "endLine": 318,
+          "params": [
+            "hWnd",
+            "message",
+            "wParam",
+            "lParam"
+          ]
+        },
+        {
+          "name": "createFakeWindow",
+          "startLine": 320,
+          "endLine": 344,
+          "params": [
+            "hIns"
+          ]
+        },
+        {
+          "name": "createPopupMenu",
+          "startLine": 346,
+          "endLine": 389,
+          "params": []
+        },
+        {
+          "name": "loadTrayIcon",
+          "startLine": 391,
+          "endLine": 409,
+          "params": []
+        },
+        {
+          "name": "updateData",
+          "startLine": 411,
+          "endLine": 474,
+          "params": []
+        },
+        {
+          "name": "_createSystemTrayIcon",
+          "startLine": 479,
+          "endLine": 519,
+          "params": [
+            "hIns"
+          ]
+        },
+        {
+          "name": "SystemTrayHelper::WaitToCreateFakeWindow",
+          "startLine": 522,
+          "endLine": 525,
+          "params": [
+            "hwnd",
+            "uMsg",
+            "timerId",
+            "dwTime"
+          ]
+        },
+        {
+          "name": "createSystemTrayIcon",
+          "startLine": 527,
+          "endLine": 529,
+          "params": [
+            "hIns"
+          ]
+        },
+        {
+          "name": "removeSystemTray",
+          "startLine": 531,
+          "endLine": 533,
+          "params": []
+        },
+        {
+          "name": "showWaveAlert",
+          "startLine": 536,
+          "endLine": 539,
+          "params": []
+        },
+        {
+          "name": "checkRivalInputMethod",
+          "startLine": 543,
+          "endLine": 546,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "WndProc",
+          "line": 108,
+          "isDefault": false
+        },
+        {
+          "name": "createFakeWindow",
+          "line": 320,
+          "isDefault": false
+        },
+        {
+          "name": "createPopupMenu",
+          "line": 346,
+          "isDefault": false
+        },
+        {
+          "name": "updateData",
+          "line": 411,
+          "isDefault": false
+        },
+        {
+          "name": "_createSystemTrayIcon",
+          "line": 479,
+          "isDefault": false
+        },
+        {
+          "name": "SystemTrayHelper::WaitToCreateFakeWindow",
+          "line": 522,
+          "isDefault": false
+        },
+        {
+          "name": "createSystemTrayIcon",
+          "line": 527,
+          "isDefault": false
+        },
+        {
+          "name": "removeSystemTray",
+          "line": 531,
+          "isDefault": false
+        },
+        {
+          "name": "showWaveAlert",
+          "line": 536,
+          "isDefault": false
+        },
+        {
+          "name": "checkRivalInputMethod",
+          "line": 543,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "WndProc",
+          "callee": "RegisterWindowMessage",
+          "lineNumber": 113
+        },
+        {
+          "caller": "WndProc",
+          "callee": "_T",
+          "lineNumber": 113
+        },
+        {
+          "caller": "WndProc",
+          "callee": "SystemTrayHelper::updateData",
+          "lineNumber": 118
+        },
+        {
+          "caller": "WndProc",
+          "callee": "KillTimer",
+          "lineNumber": 119
+        },
+        {
+          "caller": "WndProc",
+          "callee": "SetTimer",
+          "lineNumber": 120
+        },
+        {
+          "caller": "WndProc",
+          "callee": "KillTimer",
+          "lineNumber": 124
+        },
+        {
+          "caller": "WndProc",
+          "callee": "SystemTrayHelper::updateData",
+          "lineNumber": 126
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onControlPanel",
+          "lineNumber": 131
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 131
+        },
+        {
+          "caller": "WndProc",
+          "callee": "FindWindow",
+          "lineNumber": 145
+        },
+        {
+          "caller": "WndProc",
+          "callee": "CreateToolhelp32Snapshot",
+          "lineNumber": 153
+        },
+        {
+          "caller": "WndProc",
+          "callee": "Process32FirstW",
+          "lineNumber": 157
+        },
+        {
+          "caller": "WndProc",
+          "callee": "ARRAYSIZE",
+          "lineNumber": 159
+        },
+        {
+          "caller": "WndProc",
+          "callee": "_wcsicmp",
+          "lineNumber": 160
+        },
+        {
+          "caller": "WndProc",
+          "callee": "empty",
+          "lineNumber": 165
+        },
+        {
+          "caller": "WndProc",
+          "callee": "Process32NextW",
+          "lineNumber": 165
+        },
+        {
+          "caller": "WndProc",
+          "callee": "CloseHandle",
+          "lineNumber": 167
+        },
+        {
+          "caller": "WndProc",
+          "callee": "empty",
+          "lineNumber": 170
+        },
+        {
+          "caller": "WndProc",
+          "callee": "SetForegroundWindow",
+          "lineNumber": 174
+        },
+        {
+          "caller": "WndProc",
+          "callee": "MessageBoxW",
+          "lineNumber": 175
+        },
+        {
+          "caller": "WndProc",
+          "callee": "c_str",
+          "lineNumber": 175
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onOpenKeyExit",
+          "lineNumber": 194
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 194
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onOpenKeyExit",
+          "lineNumber": 204
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 204
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onControlPanel",
+          "lineNumber": 209
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 209
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onToggleVietnamese",
+          "lineNumber": 212
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 212
+        },
+        {
+          "caller": "WndProc",
+          "callee": "SystemTrayHelper::updateData",
+          "lineNumber": 213
+        },
+        {
+          "caller": "WndProc",
+          "callee": "GetCursorPos",
+          "lineNumber": 216
+        },
+        {
+          "caller": "WndProc",
+          "callee": "SetForegroundWindow",
+          "lineNumber": 217
+        },
+        {
+          "caller": "WndProc",
+          "callee": "TrackPopupMenu",
+          "lineNumber": 218
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onToggleVietnamese",
+          "lineNumber": 229
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 229
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onToggleCheckSpelling",
+          "lineNumber": 232
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 232
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onToggleUseSmartSwitchKey",
+          "lineNumber": 235
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 235
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onToggleUseMacro",
+          "lineNumber": 238
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 238
+        },
+        {
+          "caller": "WndProc",
+          "callee": "MoodWatch_Toggle",
+          "lineNumber": 241
+        },
+        {
+          "caller": "WndProc",
+          "callee": "Bell_ShowSettings",
+          "lineNumber": 244
+        },
+        {
+          "caller": "WndProc",
+          "callee": "SendGatekeeper_ToggleLastApp",
+          "lineNumber": 247
+        },
+        {
+          "caller": "WndProc",
+          "callee": "ReflectionScreen_Show",
+          "lineNumber": 250
+        },
+        {
+          "caller": "WndProc",
+          "callee": "MessageBoxW",
+          "lineNumber": 255
+        },
+        {
+          "caller": "WndProc",
+          "callee": "MoodStore_DeleteAll",
+          "lineNumber": 259
+        },
+        {
+          "caller": "WndProc",
+          "callee": "MessageBoxW",
+          "lineNumber": 260
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onMacroTable",
+          "lineNumber": 264
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 264
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onConvertTool",
+          "lineNumber": 267
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 267
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onQuickConvert",
+          "lineNumber": 270
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 270
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onInputType",
+          "lineNumber": 273
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 273
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onInputType",
+          "lineNumber": 276
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 276
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onInputType",
+          "lineNumber": 279
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 279
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onTableCode",
+          "lineNumber": 282
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 282
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onTableCode",
+          "lineNumber": 285
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 285
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onTableCode",
+          "lineNumber": 288
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 288
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onTableCode",
+          "lineNumber": 291
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 291
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onTableCode",
+          "lineNumber": 294
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 294
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onControlPanel",
+          "lineNumber": 297
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 297
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onOpenKeyAbout",
+          "lineNumber": 300
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 300
+        },
+        {
+          "caller": "WndProc",
+          "callee": "onOpenKeyExit",
+          "lineNumber": 303
+        },
+        {
+          "caller": "WndProc",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 303
+        },
+        {
+          "caller": "WndProc",
+          "callee": "SystemTrayHelper::updateData",
+          "lineNumber": 306
+        },
+        {
+          "caller": "WndProc",
+          "callee": "Shell_NotifyIcon",
+          "lineNumber": 313
+        },
+        {
+          "caller": "WndProc",
+          "callee": "DefWindowProc",
+          "lineNumber": 315
+        },
+        {
+          "caller": "createFakeWindow",
+          "callee": "LoadIcon",
+          "lineNumber": 329
+        },
+        {
+          "caller": "createFakeWindow",
+          "callee": "MAKEINTRESOURCE",
+          "lineNumber": 329
+        },
+        {
+          "caller": "createFakeWindow",
+          "callee": "(HBRUSH)",
+          "lineNumber": 331
+        },
+        {
+          "caller": "createFakeWindow",
+          "callee": "RegisterClassExW",
+          "lineNumber": 335
+        },
+        {
+          "caller": "createFakeWindow",
+          "callee": "CreateWindowW",
+          "lineNumber": 336
+        },
+        {
+          "caller": "createFakeWindow",
+          "callee": "_T",
+          "lineNumber": 336
+        },
+        {
+          "caller": "createFakeWindow",
+          "callee": "ShowWindow",
+          "lineNumber": 341
+        },
+        {
+          "caller": "createFakeWindow",
+          "callee": "UpdateWindow",
+          "lineNumber": 342
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "CreatePopupMenu",
+          "lineNumber": 347
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 348
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 349
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 350
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 351
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 352
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 353
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 354
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 355
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 356
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 357
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 358
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 359
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 360
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 361
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 362
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 365
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 366
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 367
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 370
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 372
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 373
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 374
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "CreatePopupMenu",
+          "lineNumber": 376
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 377
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 378
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 379
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "_T",
+          "lineNumber": 379
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 381
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 383
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 384
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 385
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "AppendMenu",
+          "lineNumber": 386
+        },
+        {
+          "caller": "createPopupMenu",
+          "callee": "SetMenuDefaultItem",
+          "lineNumber": 388
+        },
+        {
+          "caller": "loadTrayIcon",
+          "callee": "LoadIcon",
+          "lineNumber": 396
+        },
+        {
+          "caller": "loadTrayIcon",
+          "callee": "GetModuleHandle",
+          "lineNumber": 396
+        },
+        {
+          "caller": "loadTrayIcon",
+          "callee": "MAKEINTRESOURCE",
+          "lineNumber": 396
+        },
+        {
+          "caller": "loadTrayIcon",
+          "callee": "LoadString",
+          "lineNumber": 397
+        },
+        {
+          "caller": "loadTrayIcon",
+          "callee": "GetModuleHandle",
+          "lineNumber": 397
+        },
+        {
+          "caller": "loadTrayIcon",
+          "callee": "LoadString",
+          "lineNumber": 402
+        },
+        {
+          "caller": "loadTrayIcon",
+          "callee": "GetModuleHandle",
+          "lineNumber": 402
+        },
+        {
+          "caller": "loadTrayIcon",
+          "callee": "LoadString",
+          "lineNumber": 406
+        },
+        {
+          "caller": "loadTrayIcon",
+          "callee": "GetModuleHandle",
+          "lineNumber": 406
+        },
+        {
+          "caller": "loadTrayIcon",
+          "callee": "LoadIcon",
+          "lineNumber": 408
+        },
+        {
+          "caller": "loadTrayIcon",
+          "callee": "GetModuleHandle",
+          "lineNumber": 408
+        },
+        {
+          "caller": "loadTrayIcon",
+          "callee": "MAKEINTRESOURCE",
+          "lineNumber": 408
+        },
+        {
+          "caller": "updateData",
+          "callee": "loadTrayIcon",
+          "lineNumber": 412
+        },
+        {
+          "caller": "updateData",
+          "callee": "Shell_NotifyIcon",
+          "lineNumber": 413
+        },
+        {
+          "caller": "updateData",
+          "callee": "MODIFY_MENU",
+          "lineNumber": 415
+        },
+        {
+          "caller": "updateData",
+          "callee": "MODIFY_MENU",
+          "lineNumber": 416
+        },
+        {
+          "caller": "updateData",
+          "callee": "MODIFY_MENU",
+          "lineNumber": 417
+        },
+        {
+          "caller": "updateData",
+          "callee": "MODIFY_MENU",
+          "lineNumber": 418
+        },
+        {
+          "caller": "updateData",
+          "callee": "MODIFY_MENU",
+          "lineNumber": 419
+        },
+        {
+          "caller": "updateData",
+          "callee": "MODIFY_MENU",
+          "lineNumber": 422
+        },
+        {
+          "caller": "updateData",
+          "callee": "SendGatekeeper_IsAppWatched",
+          "lineNumber": 422
+        },
+        {
+          "caller": "updateData",
+          "callee": "SendGatekeeper_LastAppName",
+          "lineNumber": 422
+        },
+        {
+          "caller": "updateData",
+          "callee": "MODIFY_MENU",
+          "lineNumber": 423
+        },
+        {
+          "caller": "updateData",
+          "callee": "MODIFY_MENU",
+          "lineNumber": 424
+        },
+        {
+          "caller": "updateData",
+          "callee": "MODIFY_MENU",
+          "lineNumber": 425
+        },
+        {
+          "caller": "updateData",
+          "callee": "MODIFY_MENU",
+          "lineNumber": 426
+        },
+        {
+          "caller": "updateData",
+          "callee": "MODIFY_MENU",
+          "lineNumber": 427
+        },
+        {
+          "caller": "updateData",
+          "callee": "MODIFY_MENU",
+          "lineNumber": 428
+        },
+        {
+          "caller": "updateData",
+          "callee": "MODIFY_MENU",
+          "lineNumber": 429
+        },
+        {
+          "caller": "updateData",
+          "callee": "MODIFY_MENU",
+          "lineNumber": 430
+        },
+        {
+          "caller": "updateData",
+          "callee": "ModifyMenu",
+          "lineNumber": 473
+        },
+        {
+          "caller": "updateData",
+          "callee": "c_str",
+          "lineNumber": 473
+        },
+        {
+          "caller": "_createSystemTrayIcon",
+          "callee": "createFakeWindow",
+          "lineNumber": 480
+        },
+        {
+          "caller": "_createSystemTrayIcon",
+          "callee": "MessageBoxW",
+          "lineNumber": 487
+        },
+        {
+          "caller": "_createSystemTrayIcon",
+          "callee": "PostQuitMessage",
+          "lineNumber": 491
+        },
+        {
+          "caller": "_createSystemTrayIcon",
+          "callee": "SetTimer",
+          "lineNumber": 495
+        },
+        {
+          "caller": "_createSystemTrayIcon",
+          "callee": "createPopupMenu",
+          "lineNumber": 499
+        },
+        {
+          "caller": "_createSystemTrayIcon",
+          "callee": "loadTrayIcon",
+          "lineNumber": 507
+        },
+        {
+          "caller": "_createSystemTrayIcon",
+          "callee": "LoadString",
+          "lineNumber": 508
+        },
+        {
+          "caller": "_createSystemTrayIcon",
+          "callee": "Shell_NotifyIcon",
+          "lineNumber": 514
+        },
+        {
+          "caller": "_createSystemTrayIcon",
+          "callee": "Sleep",
+          "lineNumber": 517
+        },
+        {
+          "caller": "SystemTrayHelper::WaitToCreateFakeWindow",
+          "callee": "_createSystemTrayIcon",
+          "lineNumber": 523
+        },
+        {
+          "caller": "SystemTrayHelper::WaitToCreateFakeWindow",
+          "callee": "KillTimer",
+          "lineNumber": 524
+        },
+        {
+          "caller": "createSystemTrayIcon",
+          "callee": "_createSystemTrayIcon",
+          "lineNumber": 528
+        },
+        {
+          "caller": "removeSystemTray",
+          "callee": "Shell_NotifyIcon",
+          "lineNumber": 532
+        },
+        {
+          "caller": "showWaveAlert",
+          "callee": "PostMessage",
+          "lineNumber": 538
+        },
+        {
+          "caller": "checkRivalInputMethod",
+          "callee": "PostMessage",
+          "lineNumber": 545
+        }
+      ],
+      "metrics": {
+        "importCount": 7,
+        "exportCount": 10,
+        "functionCount": 11,
+        "classCount": 0
+      }
+    }
+  ]
+}

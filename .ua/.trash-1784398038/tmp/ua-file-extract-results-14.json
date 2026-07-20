@@ -1,0 +1,194 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 11,
+  "filesSkipped": [
+    "platforms/apple/ios/App/MindfulKeyiOS.entitlements",
+    "platforms/apple/ios/App/MoodLakeViewController.m",
+    "platforms/apple/ios/App/OnboardingUI.m",
+    "platforms/apple/ios/App/SettingsViewController.m",
+    "platforms/apple/ios/App/main.m",
+    "platforms/apple/ios/KeyboardExtension/Info.plist",
+    "platforms/apple/ios/KeyboardExtension/KeyboardBridge.mm",
+    "platforms/apple/ios/KeyboardExtension/KeyboardExtension.entitlements",
+    "platforms/apple/ios/KeyboardExtension/KeyboardViewController.mm",
+    "platforms/apple/ios/KeyboardExtension/MoodBridge.mm",
+    "platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.mm",
+    "platforms/apple/ios/KeyboardExtension/SuggestionBarView.mm",
+    "platforms/apple/macos/AboutViewController.m",
+    "platforms/apple/macos/AppDelegate.m"
+  ],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 11,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 10,
+      "failed": 0,
+      "skipped": 1
+    }
+  },
+  "results": [
+    {
+      "path": "platforms/apple/ios/App/MoodLakeViewController.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 23,
+      "nonEmptyLines": 18,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/ios/App/OnboardingUI.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 27,
+      "nonEmptyLines": 22,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/ios/App/SettingsViewController.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 29,
+      "nonEmptyLines": 25,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/ios/KeyboardExtension/KeyboardBridge.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 53,
+      "nonEmptyLines": 46,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/ios/KeyboardExtension/KeyboardViewController.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 12,
+      "nonEmptyLines": 9,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/ios/KeyboardExtension/MoodBridge.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 53,
+      "nonEmptyLines": 44,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/ios/KeyboardExtension/NudgeCoordinatorIOS.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 92,
+      "nonEmptyLines": 80,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/ios/KeyboardExtension/SuggestionBarView.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 39,
+      "nonEmptyLines": 31,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/ios/README.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 35,
+      "nonEmptyLines": 26,
+      "sections": [
+        {
+          "heading": "apple/ios",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Mandate đã chốt (2026-07-10)",
+          "level": 2,
+          "line": 11
+        },
+        {
+          "heading": "Ai lo nhánh này",
+          "level": 2,
+          "line": 27
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 3
+      }
+    },
+    {
+      "path": "platforms/apple/macos/AboutViewController.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 25,
+      "nonEmptyLines": 20,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/AppDelegate.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 47,
+      "nonEmptyLines": 35,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

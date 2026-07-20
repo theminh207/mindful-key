@@ -1,0 +1,206 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 9,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 9,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 0,
+      "failed": 0,
+      "skipped": 9
+    }
+  },
+  "results": [
+    {
+      "path": "tests/ios/MANUAL-TEST-SCRIPT.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 120,
+      "nonEmptyLines": 81,
+      "sections": [
+        {
+          "heading": "MANUAL-TEST-SCRIPT — Round 1 iOS, kiểm tay trước khi coi là \"trải nghiệm được\"",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Chuẩn bị (1 lệnh)",
+          "level": 2,
+          "line": 14
+        },
+        {
+          "heading": "Phần A — Onboarding (story 1.7 → FR-A04/A05)",
+          "level": 2,
+          "line": 20
+        },
+        {
+          "heading": "Phần B — Gõ Telex ra dấu (story 1.2 → FR-A01, Mốc B) ⭐ quan trọng nhất",
+          "level": 2,
+          "line": 37
+        },
+        {
+          "heading": "Phần C — Shift/Caps + lớp số + ô mật khẩu (story 1.3, 1.4 → FR-A02, FR-A07)",
+          "level": 2,
+          "line": 57
+        },
+        {
+          "heading": "Phần D — Thiết bị thật (bắt buộc, Simulator không mô phỏng đúng)",
+          "level": 2,
+          "line": 71
+        },
+        {
+          "heading": "Phần E — App Group heartbeat (story 1.6 → FR-A06, đã có UI placeholder ở 1.7)",
+          "level": 2,
+          "line": 86
+        },
+        {
+          "heading": "Phần F — Round 3 · Kho nhật ký cảm xúc (story 3.1 → FR-A13 nền) — DEVICE-ONLY",
+          "level": 2,
+          "line": 98
+        },
+        {
+          "heading": "Sau khi xong (định nghĩa \"đã trải nghiệm thật\")",
+          "level": 2,
+          "line": 112
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 9
+      }
+    },
+    {
+      "path": "tests/ios/README.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 33,
+      "nonEmptyLines": 24,
+      "sections": [
+        {
+          "heading": "tests/ios/",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Trạng thái",
+          "level": 2,
+          "line": 7
+        },
+        {
+          "heading": "Bằng chứng build-verification (story 1.5 — đóng Risk R5 của tech-spec)",
+          "level": 2,
+          "line": 17
+        },
+        {
+          "heading": "Kiểm thủ công còn lại (cần simulator/thiết bị + máy chủ dự án)",
+          "level": 2,
+          "line": 31
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 4
+      }
+    },
+    {
+      "path": "tests/ios/build.sh",
+      "language": "shell",
+      "fileCategory": "script",
+      "totalLines": 22,
+      "nonEmptyLines": 20,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/ios/build_smoke.sh",
+      "language": "shell",
+      "fileCategory": "script",
+      "totalLines": 18,
+      "nonEmptyLines": 15,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/ios/emotion_wave_build.sh",
+      "language": "shell",
+      "fileCategory": "script",
+      "totalLines": 17,
+      "nonEmptyLines": 16,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/ios/mood_bridge_build.sh",
+      "language": "shell",
+      "fileCategory": "script",
+      "totalLines": 33,
+      "nonEmptyLines": 31,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/ios/mood_journal_store_build.sh",
+      "language": "shell",
+      "fileCategory": "script",
+      "totalLines": 18,
+      "nonEmptyLines": 17,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/ios/nudge_coordinator_ios_build.sh",
+      "language": "shell",
+      "fileCategory": "script",
+      "totalLines": 17,
+      "nonEmptyLines": 16,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "tests/ios/settings_bridge_build.sh",
+      "language": "shell",
+      "fileCategory": "script",
+      "totalLines": 15,
+      "nonEmptyLines": 14,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

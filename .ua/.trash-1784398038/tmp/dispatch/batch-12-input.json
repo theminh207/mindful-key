@@ -1,0 +1,186 @@
+{
+  "batchIndex": 12,
+  "totalBatches": 19,
+  "files": [
+    {
+      "path": "core/engine/DataType.h",
+      "language": "c",
+      "sizeLines": 156,
+      "fileCategory": "code"
+    },
+    {
+      "path": "core/engine/SmartSwitchKey.cpp",
+      "language": "cpp",
+      "sizeLines": 73,
+      "fileCategory": "code"
+    },
+    {
+      "path": "core/engine/SmartSwitchKey.h",
+      "language": "c",
+      "sizeLines": 38,
+      "fileCategory": "code"
+    },
+    {
+      "path": "core/engine/platforms/linux.h",
+      "language": "c",
+      "sizeLines": 77,
+      "fileCategory": "code"
+    },
+    {
+      "path": "core/engine/platforms/mac.h",
+      "language": "c",
+      "sizeLines": 77,
+      "fileCategory": "code"
+    },
+    {
+      "path": "core/engine/platforms/win32.h",
+      "language": "c",
+      "sizeLines": 78,
+      "fileCategory": "code"
+    },
+    {
+      "path": "docs/WINDOWS-CODE-SIGNING.md",
+      "language": "markdown",
+      "sizeLines": 71,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/WINDOWS-UI-REDESIGN.md",
+      "language": "markdown",
+      "sizeLines": 55,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/diagrams/workflow-macos-team.drawio",
+      "language": "drawio",
+      "sizeLines": 224,
+      "fileCategory": "code"
+    },
+    {
+      "path": "docs/diagrams/workflow-mindful-key.drawio",
+      "language": "drawio",
+      "sizeLines": 198,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/README.md",
+      "language": "markdown",
+      "sizeLines": 23,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "platforms/android/README.md",
+      "language": "markdown",
+      "sizeLines": 12,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/Charcoal.colorset/Contents.json",
+      "language": "json",
+      "sizeLines": 20,
+      "fileCategory": "config"
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/Contents.json",
+      "language": "json",
+      "sizeLines": 5,
+      "fileCategory": "config"
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/Divider.colorset/Contents.json",
+      "language": "json",
+      "sizeLines": 20,
+      "fileCategory": "config"
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/Muted.colorset/Contents.json",
+      "language": "json",
+      "sizeLines": 20,
+      "fileCategory": "config"
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/NOWOrange.colorset/Contents.json",
+      "language": "json",
+      "sizeLines": 20,
+      "fileCategory": "config"
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/NOWTeal.colorset/Contents.json",
+      "language": "json",
+      "sizeLines": 20,
+      "fileCategory": "config"
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/OrangeLight.colorset/Contents.json",
+      "language": "json",
+      "sizeLines": 20,
+      "fileCategory": "config"
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/SoftWhite.colorset/Contents.json",
+      "language": "json",
+      "sizeLines": 20,
+      "fileCategory": "config"
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/Stone.colorset/Contents.json",
+      "language": "json",
+      "sizeLines": 20,
+      "fileCategory": "config"
+    },
+    {
+      "path": "platforms/apple/Resources/Assets.xcassets/TealLight.colorset/Contents.json",
+      "language": "json",
+      "sizeLines": 20,
+      "fileCategory": "config"
+    },
+    {
+      "path": "platforms/apple/Resources/Base.lproj/Main.storyboard",
+      "language": "storyboard",
+      "sizeLines": 2489,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/Resources/Icon.icns",
+      "language": "icns",
+      "sizeLines": 1063,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/Resources/Info.plist",
+      "language": "xml",
+      "sizeLines": 42,
+      "fileCategory": "config"
+    }
+  ],
+  "batchImportData": {
+    "core/engine/DataType.h": [],
+    "core/engine/SmartSwitchKey.cpp": [
+      "core/engine/SmartSwitchKey.h"
+    ],
+    "core/engine/SmartSwitchKey.h": [],
+    "core/engine/platforms/linux.h": [],
+    "core/engine/platforms/mac.h": [],
+    "core/engine/platforms/win32.h": [],
+    "docs/WINDOWS-CODE-SIGNING.md": [],
+    "docs/WINDOWS-UI-REDESIGN.md": [],
+    "docs/diagrams/workflow-macos-team.drawio": [],
+    "docs/diagrams/workflow-mindful-key.drawio": [],
+    "platforms/README.md": [],
+    "platforms/android/README.md": [],
+    "platforms/apple/Resources/Assets.xcassets/Charcoal.colorset/Contents.json": [],
+    "platforms/apple/Resources/Assets.xcassets/Contents.json": [],
+    "platforms/apple/Resources/Assets.xcassets/Divider.colorset/Contents.json": [],
+    "platforms/apple/Resources/Assets.xcassets/Muted.colorset/Contents.json": [],
+    "platforms/apple/Resources/Assets.xcassets/NOWOrange.colorset/Contents.json": [],
+    "platforms/apple/Resources/Assets.xcassets/NOWTeal.colorset/Contents.json": [],
+    "platforms/apple/Resources/Assets.xcassets/OrangeLight.colorset/Contents.json": [],
+    "platforms/apple/Resources/Assets.xcassets/SoftWhite.colorset/Contents.json": [],
+    "platforms/apple/Resources/Assets.xcassets/Stone.colorset/Contents.json": [],
+    "platforms/apple/Resources/Assets.xcassets/TealLight.colorset/Contents.json": [],
+    "platforms/apple/Resources/Base.lproj/Main.storyboard": [],
+    "platforms/apple/Resources/Icon.icns": [],
+    "platforms/apple/Resources/Info.plist": []
+  },
+  "neighborMap": {}
+}

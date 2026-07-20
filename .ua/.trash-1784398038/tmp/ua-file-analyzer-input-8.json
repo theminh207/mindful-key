@@ -1,0 +1,21 @@
+{
+  "projectRoot": "/Users/now/Projects/mindful-keyboard/mindful-key",
+  "batchFiles": [
+    {"path": "CHANGELOG.md", "language": "markdown", "sizeLines": 172, "fileCategory": "docs"},
+    {"path": "CLAUDE.md", "language": "markdown", "sizeLines": 130, "fileCategory": "docs"},
+    {"path": "CONTRIBUTING.md", "language": "markdown", "sizeLines": 27, "fileCategory": "docs"},
+    {"path": "Makefile", "language": "makefile", "sizeLines": 139, "fileCategory": "infra"},
+    {"path": "README.md", "language": "markdown", "sizeLines": 150, "fileCategory": "docs"},
+    {"path": "appcast.xml", "language": "xml", "sizeLines": 10, "fileCategory": "config"},
+    {"path": "version.env", "language": "config", "sizeLines": 3, "fileCategory": "config"}
+  ],
+  "batchImportData": {
+    "CHANGELOG.md": [],
+    "CLAUDE.md": [],
+    "CONTRIBUTING.md": [],
+    "Makefile": [],
+    "README.md": [],
+    "appcast.xml": [],
+    "version.env": []
+  }
+}

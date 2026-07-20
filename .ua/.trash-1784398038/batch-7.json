@@ -1,0 +1,177 @@
+{
+  "nodes": [
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp",
+      "type": "file",
+      "name": "OpenKeyUpdate.cpp",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp",
+      "summary": "Bộ cập nhật độc lập (standalone updater) cho bản Windows: tải version.json từ GitHub, so ra phiên bản mới nhất rồi tải file .zip release, giải nén bằng PowerShell và thay thế OpenKey64.exe. Toàn bộ chạy trong một thread nền kèm hộp thoại tiến trình.",
+      "tags": ["entry-point", "self-updater", "windows", "network", "downloader"],
+      "complexity": "moderate",
+      "languageNotes": "Các URL tải về vẫn trỏ tới repo gốc tuyenvm/OpenKey (upstream), chưa đổi sang fork mindful-keyboard. Việc tách versionName làm bằng chuỗi substr/find thủ công thay vì parser JSON thật."
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.h",
+      "type": "file",
+      "name": "OpenKeyUpdate.h",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.h",
+      "summary": "Header khai báo của updater — chỉ kéo vào resource.h (bảng ID tài nguyên do Visual Studio sinh). File gần như rỗng, đóng vai trò cầu nối tài nguyên.",
+      "tags": ["header", "windows", "boilerplate", "resource"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/framework.h",
+      "type": "file",
+      "name": "framework.h",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKeyUpdate/framework.h",
+      "summary": "Header gom sẵn kéo vào windows.h cùng các header C runtime (stdlib, malloc, memory, tchar), bật WIN32_LEAN_AND_MEAN để loại bớt phần ít dùng của Windows headers.",
+      "tags": ["header", "windows", "boilerplate", "build-system"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/resource.h",
+      "type": "file",
+      "name": "resource.h",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKeyUpdate/resource.h",
+      "summary": "File sinh tự động bởi Visual Studio, định nghĩa các hằng ID tài nguyên (icon, dialog, menu như IDD_DIALOG_UPDATER, IDI_OPENKEYUPDATE) dùng cho OpenKeyUpdate.rc.",
+      "tags": ["resource", "windows", "boilerplate", "generated"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/targetver.h",
+      "type": "file",
+      "name": "targetver.h",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKeyUpdate/targetver.h",
+      "summary": "Khai báo phiên bản Windows SDK tối thiểu bằng cách include SDKDDKVer.h — mặc định nhắm tới nền tảng Windows mới nhất có sẵn khi build.",
+      "tags": ["header", "windows", "boilerplate", "build-system"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp:wWinMain",
+      "type": "function",
+      "name": "wWinMain",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp",
+      "lineRange": [28, 48],
+      "summary": "Điểm vào (entry point) của updater: tạo hộp thoại từ tài nguyên IDD_DIALOG_UPDATER rồi chạy vòng lặp thông điệp (message loop) Win32 để hộp thoại phản hồi.",
+      "tags": ["entry-point", "windows", "message-loop", "dialog"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp:MainDialogProcess",
+      "type": "function",
+      "name": "MainDialogProcess",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp",
+      "lineRange": [51, 72],
+      "summary": "Hàm callback xử lý thông điệp cho hộp thoại: lúc khởi tạo (WM_INITDIALOG) thì gắn icon và gọi StartUpdate, còn WM_COMMAND xử lý nút OK/Cancel để đóng hộp thoại.",
+      "tags": ["event-handler", "windows", "dialog", "callback"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp:UpdateThreadFunction",
+      "type": "function",
+      "name": "UpdateThreadFunction",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp",
+      "lineRange": [74, 130],
+      "summary": "Hàm chạy trong thread nền thực hiện toàn bộ luồng cập nhật: tải version.json, tách chuỗi lấy versionName, tải file zip release từ GitHub, giải nén bằng PowerShell rồi thay thế OpenKey64.exe; báo kết quả lỗi/thành công qua MessageBox và thoát tiến trình.",
+      "tags": ["network", "downloader", "file-replacement", "threading", "self-updater"],
+      "complexity": "moderate",
+      "languageNotes": "Dùng URLDownloadToFile (Urlmon) để tải và WinExec gọi PowerShell Expand-Archive để giải nén; parse JSON theo kiểu cắt chuỗi thủ công nên khá mong manh nếu định dạng version.json đổi."
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp:StartUpdate",
+      "type": "function",
+      "name": "StartUpdate",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp",
+      "lineRange": [132, 141],
+      "summary": "Tạo một thread nền chạy UpdateThreadFunction để việc tải/cập nhật không chặn giao diện hộp thoại.",
+      "tags": ["threading", "windows", "self-updater"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp",
+      "target": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp",
+      "target": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/framework.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.h",
+      "target": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/resource.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/framework.h",
+      "target": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/targetver.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp:wWinMain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp:MainDialogProcess",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp:UpdateThreadFunction",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp:StartUpdate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp:wWinMain",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp:MainDialogProcess",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp:UpdateThreadFunction",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp:StartUpdate",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

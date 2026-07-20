@@ -1,0 +1,2418 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 8,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 8,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 8,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "core/mood/BreathingPause.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 35,
+      "nonEmptyLines": 28,
+      "functions": [
+        {
+          "name": "BreathingPause_Evaluate",
+          "startLine": 15,
+          "endLine": 26,
+          "params": [
+            "sendRisk",
+            "outPrompt"
+          ]
+        },
+        {
+          "name": "BreathingPause_ReportChoice",
+          "startLine": 28,
+          "endLine": 31,
+          "params": [
+            "choice"
+          ]
+        },
+        {
+          "name": "BreathingPause_LastChoice",
+          "startLine": 33,
+          "endLine": 35,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "BreathingPause_Evaluate",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "BreathingPause_ReportChoice",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "BreathingPause_LastChoice",
+          "line": 33,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 3,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "core/mood/BreathingPause.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 59,
+      "nonEmptyLines": 48,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/BrandControls.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 113,
+      "nonEmptyLines": 101,
+      "functions": [
+        {
+          "name": "BrandControls_Font",
+          "startLine": 16,
+          "endLine": 42,
+          "params": [
+            "role"
+          ]
+        },
+        {
+          "name": "BrandControls_FillRect",
+          "startLine": 45,
+          "endLine": 49,
+          "params": [
+            "hdc",
+            "rc",
+            "brandHex"
+          ]
+        },
+        {
+          "name": "DarkenColor",
+          "startLine": 52,
+          "endLine": 57,
+          "params": [
+            "c",
+            "t"
+          ]
+        },
+        {
+          "name": "BrandControls_DrawButton",
+          "startLine": 60,
+          "endLine": 113,
+          "params": [
+            "dis",
+            "style"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "BrandControls_Font",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "BrandControls_FillRect",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "BrandControls_DrawButton",
+          "line": 60,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "BrandControls_Font",
+          "callee": "GetDC",
+          "lineNumber": 23
+        },
+        {
+          "caller": "BrandControls_Font",
+          "callee": "GetDeviceCaps",
+          "lineNumber": 24
+        },
+        {
+          "caller": "BrandControls_Font",
+          "callee": "ReleaseDC",
+          "lineNumber": 25
+        },
+        {
+          "caller": "BrandControls_Font",
+          "callee": "MulDiv",
+          "lineNumber": 35
+        },
+        {
+          "caller": "BrandControls_Font",
+          "callee": "CreateFontW",
+          "lineNumber": 37
+        },
+        {
+          "caller": "BrandControls_FillRect",
+          "callee": "CreateSolidBrush",
+          "lineNumber": 46
+        },
+        {
+          "caller": "BrandControls_FillRect",
+          "callee": "MK_COLORREF",
+          "lineNumber": 46
+        },
+        {
+          "caller": "BrandControls_FillRect",
+          "callee": "FillRect",
+          "lineNumber": 47
+        },
+        {
+          "caller": "BrandControls_FillRect",
+          "callee": "DeleteObject",
+          "lineNumber": 48
+        },
+        {
+          "caller": "DarkenColor",
+          "callee": "GetRValue",
+          "lineNumber": 53
+        },
+        {
+          "caller": "DarkenColor",
+          "callee": "GetGValue",
+          "lineNumber": 54
+        },
+        {
+          "caller": "DarkenColor",
+          "callee": "GetBValue",
+          "lineNumber": 55
+        },
+        {
+          "caller": "DarkenColor",
+          "callee": "RGB",
+          "lineNumber": 56
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "MK_COLORREF",
+          "lineNumber": 69
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "MK_COLORREF",
+          "lineNumber": 70
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "MK_COLORREF",
+          "lineNumber": 73
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "MK_COLORREF",
+          "lineNumber": 76
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "MK_COLORREF",
+          "lineNumber": 80
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "MK_COLORREF",
+          "lineNumber": 81
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "MK_COLORREF",
+          "lineNumber": 82
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "DarkenColor",
+          "lineNumber": 87
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "CreateRoundRectRgn",
+          "lineNumber": 90
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "CreateSolidBrush",
+          "lineNumber": 92
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "FillRgn",
+          "lineNumber": 93
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "DeleteObject",
+          "lineNumber": 94
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "CreateSolidBrush",
+          "lineNumber": 96
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "FrameRgn",
+          "lineNumber": 97
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "DeleteObject",
+          "lineNumber": 98
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "DeleteObject",
+          "lineNumber": 100
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "GetWindowTextW",
+          "lineNumber": 104
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "SetBkMode",
+          "lineNumber": 106
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "SetTextColor",
+          "lineNumber": 107
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "MK_COLORREF",
+          "lineNumber": 107
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "BrandControls_Font",
+          "lineNumber": 108
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "SelectObject",
+          "lineNumber": 109
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "DrawTextW",
+          "lineNumber": 111
+        },
+        {
+          "caller": "BrandControls_DrawButton",
+          "callee": "SelectObject",
+          "lineNumber": 112
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 3,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/BrandControls.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 40,
+      "nonEmptyLines": 37,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/BrandPalette.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 41,
+      "nonEmptyLines": 36,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/OpenKey.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 738,
+      "nonEmptyLines": 667,
+      "functions": [
+        {
+          "name": "OpenKeyFree",
+          "startLine": 75,
+          "endLine": 79,
+          "params": []
+        },
+        {
+          "name": "OpenKeyInit",
+          "startLine": 81,
+          "endLine": 194,
+          "params": []
+        },
+        {
+          "name": "saveSmartSwitchKeyData",
+          "startLine": 196,
+          "endLine": 199,
+          "params": []
+        },
+        {
+          "name": "InsertKeyLength",
+          "startLine": 201,
+          "endLine": 203,
+          "params": [
+            "len"
+          ]
+        },
+        {
+          "name": "prepareKeyEvent",
+          "startLine": 205,
+          "endLine": 212,
+          "params": [
+            "input",
+            "keycode",
+            "isPress"
+          ]
+        },
+        {
+          "name": "prepareUnicodeEvent",
+          "startLine": 214,
+          "endLine": 221,
+          "params": [
+            "input",
+            "unicode",
+            "isPress"
+          ]
+        },
+        {
+          "name": "SendCombineKey",
+          "startLine": 223,
+          "endLine": 233,
+          "params": [
+            "key1",
+            "key2"
+          ]
+        },
+        {
+          "name": "SendKeyCode",
+          "startLine": 235,
+          "endLine": 291,
+          "params": [
+            "data"
+          ]
+        },
+        {
+          "name": "SendBackspace",
+          "startLine": 293,
+          "endLine": 312,
+          "params": []
+        },
+        {
+          "name": "SendEmptyCharacter",
+          "startLine": 314,
+          "endLine": 323,
+          "params": []
+        },
+        {
+          "name": "SendNewCharString",
+          "startLine": 325,
+          "endLine": 405,
+          "params": []
+        },
+        {
+          "name": "checkHotKey",
+          "startLine": 407,
+          "endLine": 423,
+          "params": [
+            "hotKeyData"
+          ]
+        },
+        {
+          "name": "switchLanguage",
+          "startLine": 425,
+          "endLine": 438,
+          "params": []
+        },
+        {
+          "name": "SendPureCharacter",
+          "startLine": 440,
+          "endLine": 451,
+          "params": [
+            "ch"
+          ]
+        },
+        {
+          "name": "handleMacro",
+          "startLine": 453,
+          "endLine": 479,
+          "params": []
+        },
+        {
+          "name": "SetModifierMask",
+          "startLine": 481,
+          "endLine": 499,
+          "params": [
+            "vkCode"
+          ]
+        },
+        {
+          "name": "UnsetModifierMask",
+          "startLine": 501,
+          "endLine": 514,
+          "params": [
+            "vkCode"
+          ]
+        },
+        {
+          "name": "keyboardHookProcess",
+          "startLine": 516,
+          "endLine": 683,
+          "params": [
+            "nCode",
+            "wParam",
+            "lParam"
+          ]
+        },
+        {
+          "name": "mouseHookProcess",
+          "startLine": 685,
+          "endLine": 707,
+          "params": [
+            "nCode",
+            "wParam",
+            "lParam"
+          ]
+        },
+        {
+          "name": "winEventProcCallback",
+          "startLine": 709,
+          "endLine": 738,
+          "params": [
+            "hWinEventHook",
+            "dwEvent",
+            "hwnd",
+            "idObject",
+            "idChild",
+            "dwEventThread",
+            "dwmsEventTime"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "OpenKeyFree",
+          "line": 75,
+          "isDefault": false
+        },
+        {
+          "name": "OpenKeyInit",
+          "line": 81,
+          "isDefault": false
+        },
+        {
+          "name": "saveSmartSwitchKeyData",
+          "line": 196,
+          "isDefault": false
+        },
+        {
+          "name": "checkHotKey",
+          "line": 407,
+          "isDefault": false
+        },
+        {
+          "name": "switchLanguage",
+          "line": 425,
+          "isDefault": false
+        },
+        {
+          "name": "keyboardHookProcess",
+          "line": 516,
+          "isDefault": false
+        },
+        {
+          "name": "mouseHookProcess",
+          "line": 685,
+          "isDefault": false
+        },
+        {
+          "name": "winEventProcCallback",
+          "line": 709,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "OpenKeyFree",
+          "callee": "UnhookWindowsHookEx",
+          "lineNumber": 76
+        },
+        {
+          "caller": "OpenKeyFree",
+          "callee": "UnhookWindowsHookEx",
+          "lineNumber": 77
+        },
+        {
+          "caller": "OpenKeyFree",
+          "callee": "UnhookWinEvent",
+          "lineNumber": 78
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 82
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 83
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 85
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 86
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 87
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 88
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 89
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 90
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 91
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 92
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 93
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 94
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 95
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 96
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 97
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 98
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "OpenKeyHelper::registerRunOnStartup",
+          "lineNumber": 99
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 100
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 101
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 102
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 103
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 104
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 105
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 106
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 107
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 108
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 109
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 110
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 111
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 112
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 113
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 116
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 117
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 118
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 119
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 120
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 121
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 122
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 123
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 124
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "vKeyInit",
+          "lineNumber": 129
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "SecureField_Init",
+          "lineNumber": 135
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "APP_GET_DATA",
+          "lineNumber": 136
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "MoodWatch_Init",
+          "lineNumber": 137
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "Bell_Init",
+          "lineNumber": 138
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "SendGatekeeper_Init",
+          "lineNumber": 139
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "GetKeyState",
+          "lineNumber": 171
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "GetKeyState",
+          "lineNumber": 171
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "GetKeyState",
+          "lineNumber": 172
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "GetKeyState",
+          "lineNumber": 172
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "GetKeyState",
+          "lineNumber": 173
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "GetKeyState",
+          "lineNumber": 173
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "GetKeyState",
+          "lineNumber": 174
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "GetKeyState",
+          "lineNumber": 174
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "GetKeyState",
+          "lineNumber": 175
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "GetKeyState",
+          "lineNumber": 176
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "GetKeyState",
+          "lineNumber": 177
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "OpenKeyHelper::getRegBinary",
+          "lineNumber": 181
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "_T",
+          "lineNumber": 181
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "initMacroMap",
+          "lineNumber": 182
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "OpenKeyHelper::getRegBinary",
+          "lineNumber": 186
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "_T",
+          "lineNumber": 186
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "initSmartSwitchKey",
+          "lineNumber": 187
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "GetModuleHandle",
+          "lineNumber": 190
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "SetWindowsHookEx",
+          "lineNumber": 191
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "SetWindowsHookEx",
+          "lineNumber": 192
+        },
+        {
+          "caller": "OpenKeyInit",
+          "callee": "SetWinEventHook",
+          "lineNumber": 193
+        },
+        {
+          "caller": "saveSmartSwitchKeyData",
+          "callee": "getSmartSwitchKeySaveData",
+          "lineNumber": 197
+        },
+        {
+          "caller": "saveSmartSwitchKeyData",
+          "callee": "OpenKeyHelper::setRegBinary",
+          "lineNumber": 198
+        },
+        {
+          "caller": "saveSmartSwitchKeyData",
+          "callee": "_T",
+          "lineNumber": 198
+        },
+        {
+          "caller": "saveSmartSwitchKeyData",
+          "callee": "data",
+          "lineNumber": 198
+        },
+        {
+          "caller": "saveSmartSwitchKeyData",
+          "callee": "size",
+          "lineNumber": 198
+        },
+        {
+          "caller": "InsertKeyLength",
+          "callee": "push_back",
+          "lineNumber": 202
+        },
+        {
+          "caller": "SendCombineKey",
+          "callee": "prepareKeyEvent",
+          "lineNumber": 224
+        },
+        {
+          "caller": "SendCombineKey",
+          "callee": "SendInput",
+          "lineNumber": 225
+        },
+        {
+          "caller": "SendCombineKey",
+          "callee": "prepareKeyEvent",
+          "lineNumber": 227
+        },
+        {
+          "caller": "SendCombineKey",
+          "callee": "prepareKeyEvent",
+          "lineNumber": 228
+        },
+        {
+          "caller": "SendCombineKey",
+          "callee": "SendInput",
+          "lineNumber": 229
+        },
+        {
+          "caller": "SendCombineKey",
+          "callee": "prepareKeyEvent",
+          "lineNumber": 231
+        },
+        {
+          "caller": "SendCombineKey",
+          "callee": "SendInput",
+          "lineNumber": 232
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "IS_DOUBLE_CODE",
+          "lineNumber": 238
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "InsertKeyLength",
+          "lineNumber": 239
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "keyCodeToCharacter",
+          "lineNumber": 241
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "prepareKeyEvent",
+          "lineNumber": 244
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "prepareKeyEvent",
+          "lineNumber": 245
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "SendInput",
+          "lineNumber": 246
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "prepareUnicodeEvent",
+          "lineNumber": 248
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "prepareUnicodeEvent",
+          "lineNumber": 249
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "SendInput",
+          "lineNumber": 250
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "prepareUnicodeEvent",
+          "lineNumber": 254
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "prepareUnicodeEvent",
+          "lineNumber": 255
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "SendInput",
+          "lineNumber": 256
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "HIBYTE",
+          "lineNumber": 258
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "LOBYTE",
+          "lineNumber": 259
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "prepareUnicodeEvent",
+          "lineNumber": 261
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "prepareUnicodeEvent",
+          "lineNumber": 262
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "SendInput",
+          "lineNumber": 263
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "InsertKeyLength",
+          "lineNumber": 267
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "prepareUnicodeEvent",
+          "lineNumber": 268
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "prepareUnicodeEvent",
+          "lineNumber": 269
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "SendInput",
+          "lineNumber": 270
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "InsertKeyLength",
+          "lineNumber": 273
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "InsertKeyLength",
+          "lineNumber": 280
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "prepareUnicodeEvent",
+          "lineNumber": 281
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "prepareUnicodeEvent",
+          "lineNumber": 282
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "SendInput",
+          "lineNumber": 283
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "prepareUnicodeEvent",
+          "lineNumber": 285
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "prepareUnicodeEvent",
+          "lineNumber": 286
+        },
+        {
+          "caller": "SendKeyCode",
+          "callee": "SendInput",
+          "lineNumber": 287
+        },
+        {
+          "caller": "SendBackspace",
+          "callee": "SendInput",
+          "lineNumber": 294
+        },
+        {
+          "caller": "SendBackspace",
+          "callee": "compare",
+          "lineNumber": 295
+        },
+        {
+          "caller": "SendBackspace",
+          "callee": "OpenKeyHelper::getLastAppExecuteName",
+          "lineNumber": 295
+        },
+        {
+          "caller": "SendBackspace",
+          "callee": "SendMessage",
+          "lineNumber": 296
+        },
+        {
+          "caller": "SendBackspace",
+          "callee": "SendMessage",
+          "lineNumber": 297
+        },
+        {
+          "caller": "SendBackspace",
+          "callee": "IS_DOUBLE_CODE",
+          "lineNumber": 299
+        },
+        {
+          "caller": "SendBackspace",
+          "callee": "back",
+          "lineNumber": 300
+        },
+        {
+          "caller": "SendBackspace",
+          "callee": "SendInput",
+          "lineNumber": 304
+        },
+        {
+          "caller": "SendBackspace",
+          "callee": "compare",
+          "lineNumber": 305
+        },
+        {
+          "caller": "SendBackspace",
+          "callee": "OpenKeyHelper::getLastAppExecuteName",
+          "lineNumber": 305
+        },
+        {
+          "caller": "SendBackspace",
+          "callee": "SendMessage",
+          "lineNumber": 306
+        },
+        {
+          "caller": "SendBackspace",
+          "callee": "SendMessage",
+          "lineNumber": 307
+        },
+        {
+          "caller": "SendBackspace",
+          "callee": "pop_back",
+          "lineNumber": 310
+        },
+        {
+          "caller": "SendEmptyCharacter",
+          "callee": "IS_DOUBLE_CODE",
+          "lineNumber": 315
+        },
+        {
+          "caller": "SendEmptyCharacter",
+          "callee": "InsertKeyLength",
+          "lineNumber": 316
+        },
+        {
+          "caller": "SendEmptyCharacter",
+          "callee": "prepareUnicodeEvent",
+          "lineNumber": 320
+        },
+        {
+          "caller": "SendEmptyCharacter",
+          "callee": "prepareUnicodeEvent",
+          "lineNumber": 321
+        },
+        {
+          "caller": "SendEmptyCharacter",
+          "callee": "SendInput",
+          "lineNumber": 322
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "size",
+          "lineNumber": 327
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "size",
+          "lineNumber": 328
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "resize",
+          "lineNumber": 329
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "size",
+          "lineNumber": 335
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "DYNA_DATA",
+          "lineNumber": 338
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "IS_DOUBLE_CODE",
+          "lineNumber": 341
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "InsertKeyLength",
+          "lineNumber": 342
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "IS_DOUBLE_CODE",
+          "lineNumber": 345
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "InsertKeyLength",
+          "lineNumber": 346
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "keyCodeToCharacter",
+          "lineNumber": 347
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "HIBYTE",
+          "lineNumber": 353
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "LOBYTE",
+          "lineNumber": 354
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "InsertKeyLength",
+          "lineNumber": 359
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "InsertKeyLength",
+          "lineNumber": 365
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "InsertKeyLength",
+          "lineNumber": 371
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "keyCodeToCharacter",
+          "lineNumber": 384
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "keyCodeToCharacter",
+          "lineNumber": 386
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "startNewSession",
+          "lineNumber": 392
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "OpenKeyHelper::setClipboardText",
+          "lineNumber": 395
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "data",
+          "lineNumber": 395
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "SendCombineKey",
+          "lineNumber": 398
+        },
+        {
+          "caller": "SendNewCharString",
+          "callee": "SendKeyCode",
+          "lineNumber": 403
+        },
+        {
+          "caller": "checkHotKey",
+          "callee": "HAS_CONTROL",
+          "lineNumber": 410
+        },
+        {
+          "caller": "checkHotKey",
+          "callee": "GET_BOOL",
+          "lineNumber": 410
+        },
+        {
+          "caller": "checkHotKey",
+          "callee": "HAS_OPTION",
+          "lineNumber": 412
+        },
+        {
+          "caller": "checkHotKey",
+          "callee": "GET_BOOL",
+          "lineNumber": 412
+        },
+        {
+          "caller": "checkHotKey",
+          "callee": "HAS_COMMAND",
+          "lineNumber": 414
+        },
+        {
+          "caller": "checkHotKey",
+          "callee": "GET_BOOL",
+          "lineNumber": 414
+        },
+        {
+          "caller": "checkHotKey",
+          "callee": "HAS_SHIFT",
+          "lineNumber": 416
+        },
+        {
+          "caller": "checkHotKey",
+          "callee": "GET_BOOL",
+          "lineNumber": 416
+        },
+        {
+          "caller": "checkHotKey",
+          "callee": "GET_SWITCH_KEY",
+          "lineNumber": 419
+        },
+        {
+          "caller": "switchLanguage",
+          "callee": "HAS_BEEP",
+          "lineNumber": 430
+        },
+        {
+          "caller": "switchLanguage",
+          "callee": "MessageBeep",
+          "lineNumber": 431
+        },
+        {
+          "caller": "switchLanguage",
+          "callee": "onInputMethodChangedFromHotKey",
+          "lineNumber": 432
+        },
+        {
+          "caller": "switchLanguage",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 432
+        },
+        {
+          "caller": "switchLanguage",
+          "callee": "setAppInputMethodStatus",
+          "lineNumber": 434
+        },
+        {
+          "caller": "switchLanguage",
+          "callee": "OpenKeyHelper::getFrontMostAppExecuteName",
+          "lineNumber": 434
+        },
+        {
+          "caller": "switchLanguage",
+          "callee": "saveSmartSwitchKeyData",
+          "lineNumber": 435
+        },
+        {
+          "caller": "switchLanguage",
+          "callee": "startNewSession",
+          "lineNumber": 437
+        },
+        {
+          "caller": "SendPureCharacter",
+          "callee": "SendKeyCode",
+          "lineNumber": 442
+        },
+        {
+          "caller": "SendPureCharacter",
+          "callee": "prepareUnicodeEvent",
+          "lineNumber": 444
+        },
+        {
+          "caller": "SendPureCharacter",
+          "callee": "prepareUnicodeEvent",
+          "lineNumber": 445
+        },
+        {
+          "caller": "SendPureCharacter",
+          "callee": "SendInput",
+          "lineNumber": 446
+        },
+        {
+          "caller": "SendPureCharacter",
+          "callee": "IS_DOUBLE_CODE",
+          "lineNumber": 447
+        },
+        {
+          "caller": "SendPureCharacter",
+          "callee": "InsertKeyLength",
+          "lineNumber": 448
+        },
+        {
+          "caller": "handleMacro",
+          "callee": "SendEmptyCharacter",
+          "lineNumber": 456
+        },
+        {
+          "caller": "handleMacro",
+          "callee": "SendBackspace",
+          "lineNumber": 463
+        },
+        {
+          "caller": "handleMacro",
+          "callee": "SendNewCharString",
+          "lineNumber": 468
+        },
+        {
+          "caller": "handleMacro",
+          "callee": "size",
+          "lineNumber": 470
+        },
+        {
+          "caller": "handleMacro",
+          "callee": "SendPureCharacter",
+          "lineNumber": 472
+        },
+        {
+          "caller": "handleMacro",
+          "callee": "SendKeyCode",
+          "lineNumber": 474
+        },
+        {
+          "caller": "handleMacro",
+          "callee": "SendKeyCode",
+          "lineNumber": 478
+        },
+        {
+          "caller": "SetModifierMask",
+          "callee": "GetKeyState",
+          "lineNumber": 484
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "CallNextHookEx",
+          "lineNumber": 520
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "SendGatekeeper_ShouldIntercept",
+          "lineNumber": 529
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "SendGatekeeper_ShowPause",
+          "lineNumber": 530
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "GetForegroundWindow",
+          "lineNumber": 535
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "ImmGetDefaultIMEWnd",
+          "lineNumber": 536
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "SendMessage",
+          "lineNumber": 537
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "CallNextHookEx",
+          "lineNumber": 539
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "SetModifierMask",
+          "lineNumber": 545
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "UnsetModifierMask",
+          "lineNumber": 548
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "GET_SWITCH_KEY",
+          "lineNumber": 555
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "GET_SWITCH_KEY",
+          "lineNumber": 555
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "GET_SWITCH_KEY",
+          "lineNumber": 558
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "checkHotKey",
+          "lineNumber": 558
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "GET_SWITCH_KEY",
+          "lineNumber": 558
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "switchLanguage",
+          "lineNumber": 559
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "GET_SWITCH_KEY",
+          "lineNumber": 564
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "checkHotKey",
+          "lineNumber": 564
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "GET_SWITCH_KEY",
+          "lineNumber": 564
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "onQuickConvert",
+          "lineNumber": 565
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 565
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "checkHotKey",
+          "lineNumber": 577
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "GET_SWITCH_KEY",
+          "lineNumber": 577
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "switchLanguage",
+          "lineNumber": 578
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "checkHotKey",
+          "lineNumber": 581
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "GET_SWITCH_KEY",
+          "lineNumber": 581
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "onQuickConvert",
+          "lineNumber": 582
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 582
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "vTempOffSpellChecking",
+          "lineNumber": 587
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "vTempOffEngine",
+          "lineNumber": 590
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "CallNextHookEx",
+          "lineNumber": 596
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "vEnglishMode",
+          "lineNumber": 602
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "handleMacro",
+          "lineNumber": 608
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "CallNextHookEx",
+          "lineNumber": 612
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "vKeyHandleEvent",
+          "lineNumber": 618
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "IS_DOUBLE_CODE",
+          "lineNumber": 624
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "clear",
+          "lineNumber": 626
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "size",
+          "lineNumber": 628
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "back",
+          "lineNumber": 629
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "SendInput",
+          "lineNumber": 631
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "pop_back",
+          "lineNumber": 633
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "InsertKeyLength",
+          "lineNumber": 636
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "CallNextHookEx",
+          "lineNumber": 639
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "std::find",
+          "lineNumber": 644
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "begin",
+          "lineNumber": 644
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "end",
+          "lineNumber": 644
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "OpenKeyHelper::getLastAppExecuteName",
+          "lineNumber": 644
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "end",
+          "lineNumber": 644
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "SendCombineKey",
+          "lineNumber": 645
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "SendEmptyCharacter",
+          "lineNumber": 649
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "SendBackspace",
+          "lineNumber": 657
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "SendNewCharString",
+          "lineNumber": 663
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "SendKeyCode",
+          "lineNumber": 667
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "SendKeyCode",
+          "lineNumber": 671
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "startNewSession",
+          "lineNumber": 674
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "handleMacro",
+          "lineNumber": 678
+        },
+        {
+          "caller": "keyboardHookProcess",
+          "callee": "CallNextHookEx",
+          "lineNumber": 682
+        },
+        {
+          "caller": "mouseHookProcess",
+          "callee": "vKeyHandleEvent",
+          "lineNumber": 700
+        },
+        {
+          "caller": "mouseHookProcess",
+          "callee": "IS_DOUBLE_CODE",
+          "lineNumber": 701
+        },
+        {
+          "caller": "mouseHookProcess",
+          "callee": "clear",
+          "lineNumber": 702
+        },
+        {
+          "caller": "mouseHookProcess",
+          "callee": "CallNextHookEx",
+          "lineNumber": 706
+        },
+        {
+          "caller": "winEventProcCallback",
+          "callee": "OpenKeyHelper::getFrontMostAppExecuteName",
+          "lineNumber": 712
+        },
+        {
+          "caller": "winEventProcCallback",
+          "callee": "compare",
+          "lineNumber": 713
+        },
+        {
+          "caller": "winEventProcCallback",
+          "callee": "getAppInputMethodStatus",
+          "lineNumber": 715
+        },
+        {
+          "caller": "winEventProcCallback",
+          "callee": "vTempOffEngine",
+          "lineNumber": 716
+        },
+        {
+          "caller": "winEventProcCallback",
+          "callee": "onInputMethodChangedFromHotKey",
+          "lineNumber": 720
+        },
+        {
+          "caller": "winEventProcCallback",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 720
+        },
+        {
+          "caller": "winEventProcCallback",
+          "callee": "saveSmartSwitchKeyData",
+          "lineNumber": 722
+        },
+        {
+          "caller": "winEventProcCallback",
+          "callee": "startNewSession",
+          "lineNumber": 725
+        },
+        {
+          "caller": "winEventProcCallback",
+          "callee": "onTableCode",
+          "lineNumber": 728
+        },
+        {
+          "caller": "winEventProcCallback",
+          "callee": "AppDelegate::getInstance",
+          "lineNumber": 728
+        },
+        {
+          "caller": "winEventProcCallback",
+          "callee": "saveSmartSwitchKeyData",
+          "lineNumber": 730
+        },
+        {
+          "caller": "winEventProcCallback",
+          "callee": "compare",
+          "lineNumber": 733
+        },
+        {
+          "caller": "winEventProcCallback",
+          "callee": "SendMessage",
+          "lineNumber": 734
+        },
+        {
+          "caller": "winEventProcCallback",
+          "callee": "SendMessage",
+          "lineNumber": 735
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 8,
+        "functionCount": 20,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 272,
+      "nonEmptyLines": 242,
+      "functions": [
+        {
+          "name": "SplitList",
+          "startLine": 32,
+          "endLine": 45,
+          "params": [
+            "s"
+          ]
+        },
+        {
+          "name": "JoinList",
+          "startLine": 47,
+          "endLine": 54,
+          "params": [
+            "v"
+          ]
+        },
+        {
+          "name": "EqualsNoCase",
+          "startLine": 58,
+          "endLine": 60,
+          "params": [
+            "a",
+            "b"
+          ]
+        },
+        {
+          "name": "SendGatekeeper_Init",
+          "startLine": 62,
+          "endLine": 66,
+          "params": []
+        },
+        {
+          "name": "IsFrontmostAppWatched",
+          "startLine": 68,
+          "endLine": 81,
+          "params": []
+        },
+        {
+          "name": "SendGatekeeper_ShouldIntercept",
+          "startLine": 83,
+          "endLine": 104,
+          "params": [
+            "wParam",
+            "key"
+          ]
+        },
+        {
+          "name": "PauseDialogProc",
+          "startLine": 110,
+          "endLine": 165,
+          "params": [
+            "hDlg",
+            "message",
+            "wParam",
+            "lParam"
+          ]
+        },
+        {
+          "name": "pauseThread",
+          "startLine": 167,
+          "endLine": 203,
+          "params": [
+            "p"
+          ]
+        },
+        {
+          "name": "SendGatekeeper_ShowPause",
+          "startLine": 205,
+          "endLine": 223,
+          "params": []
+        },
+        {
+          "name": "SendGatekeeper_LastAppName",
+          "startLine": 227,
+          "endLine": 230,
+          "params": []
+        },
+        {
+          "name": "SendGatekeeper_IsAppWatched",
+          "startLine": 232,
+          "endLine": 239,
+          "params": [
+            "exeName"
+          ]
+        },
+        {
+          "name": "SendGatekeeper_ToggleLastApp",
+          "startLine": 241,
+          "endLine": 272,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "SendGatekeeper_Init",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "SendGatekeeper_ShouldIntercept",
+          "line": 83,
+          "isDefault": false
+        },
+        {
+          "name": "SendGatekeeper_ShowPause",
+          "line": 205,
+          "isDefault": false
+        },
+        {
+          "name": "SendGatekeeper_LastAppName",
+          "line": 227,
+          "isDefault": false
+        },
+        {
+          "name": "SendGatekeeper_IsAppWatched",
+          "line": 232,
+          "isDefault": false
+        },
+        {
+          "name": "SendGatekeeper_ToggleLastApp",
+          "line": 241,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "SplitList",
+          "callee": "size",
+          "lineNumber": 35
+        },
+        {
+          "caller": "SplitList",
+          "callee": "find",
+          "lineNumber": 36
+        },
+        {
+          "caller": "SplitList",
+          "callee": "size",
+          "lineNumber": 37
+        },
+        {
+          "caller": "SplitList",
+          "callee": "substr",
+          "lineNumber": 38
+        },
+        {
+          "caller": "SplitList",
+          "callee": "empty",
+          "lineNumber": 39
+        },
+        {
+          "caller": "SplitList",
+          "callee": "push_back",
+          "lineNumber": 40
+        },
+        {
+          "caller": "SplitList",
+          "callee": "size",
+          "lineNumber": 41
+        },
+        {
+          "caller": "JoinList",
+          "callee": "size",
+          "lineNumber": 49
+        },
+        {
+          "caller": "EqualsNoCase",
+          "callee": "size",
+          "lineNumber": 59
+        },
+        {
+          "caller": "EqualsNoCase",
+          "callee": "size",
+          "lineNumber": 59
+        },
+        {
+          "caller": "EqualsNoCase",
+          "callee": "_wcsicmp",
+          "lineNumber": 59
+        },
+        {
+          "caller": "EqualsNoCase",
+          "callee": "c_str",
+          "lineNumber": 59
+        },
+        {
+          "caller": "EqualsNoCase",
+          "callee": "c_str",
+          "lineNumber": 59
+        },
+        {
+          "caller": "SendGatekeeper_Init",
+          "callee": "OpenKeyHelper::getRegString",
+          "lineNumber": 63
+        },
+        {
+          "caller": "SendGatekeeper_Init",
+          "callee": "_T",
+          "lineNumber": 63
+        },
+        {
+          "caller": "SendGatekeeper_Init",
+          "callee": "SplitList",
+          "lineNumber": 65
+        },
+        {
+          "caller": "IsFrontmostAppWatched",
+          "callee": "OpenKeyHelper::getFrontMostAppExecuteName",
+          "lineNumber": 70
+        },
+        {
+          "caller": "IsFrontmostAppWatched",
+          "callee": "empty",
+          "lineNumber": 71
+        },
+        {
+          "caller": "IsFrontmostAppWatched",
+          "callee": "utf8ToWideString",
+          "lineNumber": 73
+        },
+        {
+          "caller": "IsFrontmostAppWatched",
+          "callee": "size",
+          "lineNumber": 76
+        },
+        {
+          "caller": "IsFrontmostAppWatched",
+          "callee": "EqualsNoCase",
+          "lineNumber": 77
+        },
+        {
+          "caller": "SendGatekeeper_ShouldIntercept",
+          "callee": "GetKeyState",
+          "lineNumber": 89
+        },
+        {
+          "caller": "SendGatekeeper_ShouldIntercept",
+          "callee": "SecureField_IsActive",
+          "lineNumber": 96
+        },
+        {
+          "caller": "SendGatekeeper_ShouldIntercept",
+          "callee": "IsFrontmostAppWatched",
+          "lineNumber": 100
+        },
+        {
+          "caller": "SendGatekeeper_ShouldIntercept",
+          "callee": "MoodWatch_LastSendRisk",
+          "lineNumber": 103
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "SetDlgItemTextW",
+          "lineNumber": 113
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "c_str",
+          "lineNumber": 113
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "SendDlgItemMessageW",
+          "lineNumber": 115
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "BrandControls_Font",
+          "lineNumber": 116
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "SetTimer",
+          "lineNumber": 120
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "GetClientRect",
+          "lineNumber": 127
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "BrandControls_FillRect",
+          "lineNumber": 128
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "SetBkMode",
+          "lineNumber": 133
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "SetTextColor",
+          "lineNumber": 134
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "MK_COLORREF",
+          "lineNumber": 134
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "GetStockObject",
+          "lineNumber": 135
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "BrandControls_DrawButton",
+          "lineNumber": 140
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "BrandControls_DrawButton",
+          "lineNumber": 142
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "KillTimer",
+          "lineNumber": 146
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "EndDialog",
+          "lineNumber": 148
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "LOWORD",
+          "lineNumber": 151
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "EndDialog",
+          "lineNumber": 152
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "LOWORD",
+          "lineNumber": 157
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "LOWORD",
+          "lineNumber": 157
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "LOWORD",
+          "lineNumber": 158
+        },
+        {
+          "caller": "PauseDialogProc",
+          "callee": "EndDialog",
+          "lineNumber": 159
+        },
+        {
+          "caller": "pauseThread",
+          "callee": "MoodWatch_LastSendRisk",
+          "lineNumber": 175
+        },
+        {
+          "caller": "pauseThread",
+          "callee": "SendGatekeeper_LastAppName",
+          "lineNumber": 176
+        },
+        {
+          "caller": "pauseThread",
+          "callee": "DialogBoxParam",
+          "lineNumber": 178
+        },
+        {
+          "caller": "pauseThread",
+          "callee": "GetModuleHandle",
+          "lineNumber": 178
+        },
+        {
+          "caller": "pauseThread",
+          "callee": "MAKEINTRESOURCE",
+          "lineNumber": 178
+        },
+        {
+          "caller": "pauseThread",
+          "callee": "BreathingPause_ReportChoice",
+          "lineNumber": 181
+        },
+        {
+          "caller": "pauseThread",
+          "callee": "MoodStore_LogGatekeeperEvent",
+          "lineNumber": 187
+        },
+        {
+          "caller": "pauseThread",
+          "callee": "SendInput",
+          "lineNumber": 197
+        },
+        {
+          "caller": "pauseThread",
+          "callee": "InterlockedExchange",
+          "lineNumber": 201
+        },
+        {
+          "caller": "SendGatekeeper_ShowPause",
+          "callee": "InterlockedCompareExchange",
+          "lineNumber": 206
+        },
+        {
+          "caller": "SendGatekeeper_ShowPause",
+          "callee": "BreathingPause_Evaluate",
+          "lineNumber": 210
+        },
+        {
+          "caller": "SendGatekeeper_ShowPause",
+          "callee": "MoodWatch_LastSendRisk",
+          "lineNumber": 210
+        },
+        {
+          "caller": "SendGatekeeper_ShowPause",
+          "callee": "InterlockedExchange",
+          "lineNumber": 212
+        },
+        {
+          "caller": "SendGatekeeper_ShowPause",
+          "callee": "CreateThread",
+          "lineNumber": 216
+        },
+        {
+          "caller": "SendGatekeeper_ShowPause",
+          "callee": "CloseHandle",
+          "lineNumber": 218
+        },
+        {
+          "caller": "SendGatekeeper_ShowPause",
+          "callee": "InterlockedExchange",
+          "lineNumber": 221
+        },
+        {
+          "caller": "SendGatekeeper_LastAppName",
+          "callee": "OpenKeyHelper::getLastAppExecuteName",
+          "lineNumber": 228
+        },
+        {
+          "caller": "SendGatekeeper_LastAppName",
+          "callee": "empty",
+          "lineNumber": 229
+        },
+        {
+          "caller": "SendGatekeeper_LastAppName",
+          "callee": "wstring",
+          "lineNumber": 229
+        },
+        {
+          "caller": "SendGatekeeper_LastAppName",
+          "callee": "utf8ToWideString",
+          "lineNumber": 229
+        },
+        {
+          "caller": "SendGatekeeper_IsAppWatched",
+          "callee": "size",
+          "lineNumber": 234
+        },
+        {
+          "caller": "SendGatekeeper_IsAppWatched",
+          "callee": "EqualsNoCase",
+          "lineNumber": 235
+        },
+        {
+          "caller": "SendGatekeeper_ToggleLastApp",
+          "callee": "SendGatekeeper_LastAppName",
+          "lineNumber": 242
+        },
+        {
+          "caller": "SendGatekeeper_ToggleLastApp",
+          "callee": "empty",
+          "lineNumber": 243
+        },
+        {
+          "caller": "SendGatekeeper_ToggleLastApp",
+          "callee": "size",
+          "lineNumber": 251
+        },
+        {
+          "caller": "SendGatekeeper_ToggleLastApp",
+          "callee": "EqualsNoCase",
+          "lineNumber": 252
+        },
+        {
+          "caller": "SendGatekeeper_ToggleLastApp",
+          "callee": "erase",
+          "lineNumber": 253
+        },
+        {
+          "caller": "SendGatekeeper_ToggleLastApp",
+          "callee": "begin",
+          "lineNumber": 253
+        },
+        {
+          "caller": "SendGatekeeper_ToggleLastApp",
+          "callee": "push_back",
+          "lineNumber": 259
+        },
+        {
+          "caller": "SendGatekeeper_ToggleLastApp",
+          "callee": "JoinList",
+          "lineNumber": 262
+        },
+        {
+          "caller": "SendGatekeeper_ToggleLastApp",
+          "callee": "OpenKeyHelper::setRegString",
+          "lineNumber": 264
+        },
+        {
+          "caller": "SendGatekeeper_ToggleLastApp",
+          "callee": "c_str",
+          "lineNumber": 264
+        },
+        {
+          "caller": "SendGatekeeper_ToggleLastApp",
+          "callee": "MoodStore_AskConsentIfNeeded",
+          "lineNumber": 271
+        }
+      ],
+      "metrics": {
+        "importCount": 8,
+        "exportCount": 6,
+        "functionCount": 12,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 40,
+      "nonEmptyLines": 36,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

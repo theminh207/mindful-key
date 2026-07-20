@@ -1,0 +1,120 @@
+{
+  "nodes": [
+    {
+      "id": "document:tests/core/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "tests/core/README.md",
+      "summary": "Ghi chú ngắn về thư mục test của bộ não C++ dùng chung: ai sở hữu (đội core), cách chạy (`make test-core` hoặc `make test`), và nội dung — harness tự viết `test_engine.cpp` (case hard-code trong `main()`, không dùng framework) cùng `build.sh`.",
+      "tags": ["documentation", "test", "engine", "core"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/core/build.sh",
+      "type": "file",
+      "name": "build.sh",
+      "filePath": "tests/core/build.sh",
+      "summary": "Script biên dịch harness regression cho engine — gom `test_engine.cpp` với các nguồn `core/engine/*.cpp` (Engine, Vietnamese, Macro, SmartSwitchKey, ConvertTool) qua cờ `-I`, tự thêm `-DLINUX` khi chạy trên Linux/WSL, không sửa gì trong engine.",
+      "tags": ["build-system", "test", "engine", "script"],
+      "complexity": "simple",
+      "languageNotes": "Chọn shim nền tảng qua nhánh `#ifdef` trong DataType.h: macOS rơi vào nhánh `#else` (mac.h) nên không cần cờ, chỉ Linux mới thêm `-DLINUX`."
+    },
+    {
+      "id": "file:tests/core/phrasing_build.sh",
+      "type": "file",
+      "name": "phrasing_build.sh",
+      "filePath": "tests/core/phrasing_build.sh",
+      "summary": "Script biên dịch test regression cho `core/mood/MoodPhrasing` (bộ kể hình dạng ngày dùng chung cho 3 vỏ) — ghép `test_phrasing.cpp` với `MoodPhrasing.cpp` qua `-I`, không cần engine.",
+      "tags": ["build-system", "test", "mood", "script"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/core/send_risk_build.sh",
+      "type": "file",
+      "name": "send_risk_build.sh",
+      "filePath": "tests/core/send_risk_build.sh",
+      "summary": "Script biên dịch test regression cho `core/mood/SendRiskAnalyzer` (bộ chấm điểm rủi ro gửi tin dùng chung) — chỉ ghép `test_send_risk.cpp` với `SendRiskAnalyzer.cpp`, cố ý không cần engine hay platform shim vì chỉ chấm một chuỗi, không mô phỏng gõ phím.",
+      "tags": ["build-system", "test", "mood", "send-risk"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "document:tests/core/README.md",
+      "target": "file:tests/core/build.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:tests/core/build.sh",
+      "target": "file:tests/core/test_engine.cpp",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/core/build.sh",
+      "target": "file:core/engine/Engine.cpp",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/core/build.sh",
+      "target": "file:core/engine/Vietnamese.cpp",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/core/build.sh",
+      "target": "file:core/engine/Macro.cpp",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/core/build.sh",
+      "target": "file:core/engine/SmartSwitchKey.cpp",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/core/build.sh",
+      "target": "file:core/engine/ConvertTool.cpp",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/core/phrasing_build.sh",
+      "target": "file:tests/core/test_phrasing.cpp",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/core/phrasing_build.sh",
+      "target": "file:core/mood/MoodPhrasing.cpp",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/core/send_risk_build.sh",
+      "target": "file:tests/core/test_send_risk.cpp",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:tests/core/send_risk_build.sh",
+      "target": "file:core/mood/SendRiskAnalyzer.cpp",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    }
+  ]
+}

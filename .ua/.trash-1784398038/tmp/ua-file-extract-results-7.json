@@ -1,0 +1,475 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 5,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 5,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 5,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 141,
+      "nonEmptyLines": 127,
+      "functions": [
+        {
+          "name": "wWinMain",
+          "startLine": 28,
+          "endLine": 48,
+          "params": [
+            "hInstance",
+            "hPrevInstance",
+            "lpCmdLine",
+            "nCmdShow"
+          ]
+        },
+        {
+          "name": "MainDialogProcess",
+          "startLine": 51,
+          "endLine": 72,
+          "params": [
+            "hDlg",
+            "message",
+            "wParam",
+            "lParam"
+          ]
+        },
+        {
+          "name": "UpdateThreadFunction",
+          "startLine": 74,
+          "endLine": 130,
+          "params": [
+            "lpParam"
+          ]
+        },
+        {
+          "name": "StartUpdate",
+          "startLine": 132,
+          "endLine": 141,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "wWinMain",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "MainDialogProcess",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "UpdateThreadFunction",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "StartUpdate",
+          "line": 132,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "wWinMain",
+          "callee": "UNREFERENCED_PARAMETER",
+          "lineNumber": 33
+        },
+        {
+          "caller": "wWinMain",
+          "callee": "UNREFERENCED_PARAMETER",
+          "lineNumber": 34
+        },
+        {
+          "caller": "wWinMain",
+          "callee": "CreateDialogParam",
+          "lineNumber": 36
+        },
+        {
+          "caller": "wWinMain",
+          "callee": "MAKEINTRESOURCE",
+          "lineNumber": 36
+        },
+        {
+          "caller": "wWinMain",
+          "callee": "ShowWindow",
+          "lineNumber": 37
+        },
+        {
+          "caller": "wWinMain",
+          "callee": "GetMessage",
+          "lineNumber": 41
+        },
+        {
+          "caller": "wWinMain",
+          "callee": "IsDialogMessage",
+          "lineNumber": 42
+        },
+        {
+          "caller": "wWinMain",
+          "callee": "TranslateMessage",
+          "lineNumber": 43
+        },
+        {
+          "caller": "wWinMain",
+          "callee": "DispatchMessage",
+          "lineNumber": 44
+        },
+        {
+          "caller": "MainDialogProcess",
+          "callee": "UNREFERENCED_PARAMETER",
+          "lineNumber": 53
+        },
+        {
+          "caller": "MainDialogProcess",
+          "callee": "LoadIcon",
+          "lineNumber": 56
+        },
+        {
+          "caller": "MainDialogProcess",
+          "callee": "GetModuleHandle",
+          "lineNumber": 56
+        },
+        {
+          "caller": "MainDialogProcess",
+          "callee": "MAKEINTRESOURCE",
+          "lineNumber": 56
+        },
+        {
+          "caller": "MainDialogProcess",
+          "callee": "SendMessage",
+          "lineNumber": 58
+        },
+        {
+          "caller": "MainDialogProcess",
+          "callee": "StartUpdate",
+          "lineNumber": 60
+        },
+        {
+          "caller": "MainDialogProcess",
+          "callee": "LOWORD",
+          "lineNumber": 64
+        },
+        {
+          "caller": "MainDialogProcess",
+          "callee": "LOWORD",
+          "lineNumber": 64
+        },
+        {
+          "caller": "MainDialogProcess",
+          "callee": "EndDialog",
+          "lineNumber": 66
+        },
+        {
+          "caller": "MainDialogProcess",
+          "callee": "LOWORD",
+          "lineNumber": 66
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "GetCurrentDirectory",
+          "lineNumber": 77
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "wsprintf",
+          "lineNumber": 78
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "TEXT",
+          "lineNumber": 78
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "URLDownloadToFile",
+          "lineNumber": 79
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "rdbuf",
+          "lineNumber": 85
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "close",
+          "lineNumber": 86
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "DeleteFile",
+          "lineNumber": 87
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "str",
+          "lineNumber": 88
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "MessageBox",
+          "lineNumber": 90
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "_T",
+          "lineNumber": 90
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "_T",
+          "lineNumber": 90
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "ExitProcess",
+          "lineNumber": 91
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "substr",
+          "lineNumber": 96
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "find",
+          "lineNumber": 96
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "substr",
+          "lineNumber": 97
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "find",
+          "lineNumber": 97
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "substr",
+          "lineNumber": 98
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "substr",
+          "lineNumber": 99
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "find",
+          "lineNumber": 99
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "substr",
+          "lineNumber": 100
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "substr",
+          "lineNumber": 101
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "find",
+          "lineNumber": 101
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "wsprintf",
+          "lineNumber": 105
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "TEXT",
+          "lineNumber": 105
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "c_str",
+          "lineNumber": 106
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "c_str",
+          "lineNumber": 107
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "wsprintf",
+          "lineNumber": 108
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "TEXT",
+          "lineNumber": 108
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "URLDownloadToFile",
+          "lineNumber": 109
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "DeleteFile",
+          "lineNumber": 113
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "WinExec",
+          "lineNumber": 115
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "Sleep",
+          "lineNumber": 116
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "MoveFile",
+          "lineNumber": 117
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "DeleteFile",
+          "lineNumber": 118
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "DeleteFile",
+          "lineNumber": 119
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "DeleteFile",
+          "lineNumber": 120
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "DeleteFile",
+          "lineNumber": 121
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "RemoveDirectory",
+          "lineNumber": 122
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "MessageBox",
+          "lineNumber": 123
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "_T",
+          "lineNumber": 123
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "_T",
+          "lineNumber": 123
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "ExitProcess",
+          "lineNumber": 124
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "MessageBox",
+          "lineNumber": 126
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "_T",
+          "lineNumber": 126
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "_T",
+          "lineNumber": 126
+        },
+        {
+          "caller": "UpdateThreadFunction",
+          "callee": "ExitProcess",
+          "lineNumber": 127
+        },
+        {
+          "caller": "StartUpdate",
+          "callee": "CreateThread",
+          "lineNumber": 134
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 4,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKeyUpdate/OpenKeyUpdate.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 3,
+      "nonEmptyLines": 2,
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKeyUpdate/framework.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 15,
+      "nonEmptyLines": 13,
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKeyUpdate/resource.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 29,
+      "nonEmptyLines": 28,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKeyUpdate/targetver.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 6,
+      "nonEmptyLines": 5,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

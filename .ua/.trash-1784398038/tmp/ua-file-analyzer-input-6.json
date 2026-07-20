@@ -1,0 +1,40 @@
+{
+  "projectRoot": "/Users/now/Projects/mindful-keyboard/mindful-key",
+  "batchFiles": [
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp", "language": "cpp", "sizeLines": 339, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h", "language": "c", "sizeLines": 53, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp", "language": "cpp", "sizeLines": 97, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h", "language": "c", "sizeLines": 29, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/resource.h", "language": "c", "sizeLines": 224, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.cpp", "language": "cpp", "sizeLines": 15, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.h", "language": "c", "sizeLines": 94, "fileCategory": "code"},
+    {"path": "platforms/windows/win32/OpenKey/OpenKey/targetver.h", "language": "c", "sizeLines": 22, "fileCategory": "code"}
+  ],
+  "batchImportData": {
+    "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h": [
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h": [
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/resource.h": [],
+    "platforms/windows/win32/OpenKey/OpenKey/stdafx.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/stdafx.h": [
+      "core/engine/Engine.h",
+      "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h",
+      "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h",
+      "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h",
+      "platforms/windows/win32/OpenKey/OpenKey/resource.h",
+      "platforms/windows/win32/OpenKey/OpenKey/targetver.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/targetver.h": []
+  }
+}

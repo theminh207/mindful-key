@@ -1,0 +1,175 @@
+{
+  "batchIndex": 3,
+  "totalBatches": 19,
+  "files": [
+    {
+      "path": "core/mood/EmotionWaveAmplitude.cpp",
+      "language": "cpp",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "core/mood/EmotionWaveAmplitude.h",
+      "language": "c",
+      "sizeLines": 46,
+      "fileCategory": "code"
+    },
+    {
+      "path": "core/mood/MoodBuffer.cpp",
+      "language": "cpp",
+      "sizeLines": 39,
+      "fileCategory": "code"
+    },
+    {
+      "path": "core/mood/MoodBuffer.h",
+      "language": "c",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    },
+    {
+      "path": "core/mood/SendRiskAnalyzer.cpp",
+      "language": "cpp",
+      "sizeLines": 182,
+      "fileCategory": "code"
+    },
+    {
+      "path": "core/mood/SendRiskAnalyzer.h",
+      "language": "c",
+      "sizeLines": 51,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp",
+      "language": "cpp",
+      "sizeLines": 277,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp",
+      "language": "cpp",
+      "sizeLines": 165,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/SecureField.h",
+      "language": "c",
+      "sizeLines": 34,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h",
+      "language": "c",
+      "sizeLines": 34,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "core/mood/EmotionWaveAmplitude.cpp": [
+      "core/mood/EmotionWaveAmplitude.h"
+    ],
+    "core/mood/EmotionWaveAmplitude.h": [],
+    "core/mood/MoodBuffer.cpp": [
+      "core/mood/MoodBuffer.h"
+    ],
+    "core/mood/MoodBuffer.h": [],
+    "core/mood/SendRiskAnalyzer.cpp": [
+      "core/mood/SendRiskAnalyzer.h"
+    ],
+    "core/mood/SendRiskAnalyzer.h": [],
+    "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp": [
+      "core/mood/EmotionWaveAmplitude.h",
+      "core/mood/MoodBuffer.h",
+      "core/mood/SendRiskAnalyzer.h",
+      "platforms/windows/win32/OpenKey/OpenKey/Bell.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MoodStore.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.h",
+      "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h",
+      "platforms/windows/win32/OpenKey/OpenKey/SecureField.h",
+      "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h",
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/SecureField.h",
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/SecureField.h": [],
+    "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h": [
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ]
+  },
+  "neighborMap": {
+    "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/Bell.h",
+        "batchIndex": 2,
+        "symbols": []
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/MoodStore.h",
+        "batchIndex": 2,
+        "symbols": [
+          "MoodTodaySummary"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.h",
+        "batchIndex": 1,
+        "symbols": []
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h",
+        "batchIndex": 2,
+        "symbols": []
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+        "batchIndex": 6,
+        "symbols": []
+      }
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+        "batchIndex": 6,
+        "symbols": []
+      }
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/SecureField.h": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.cpp",
+        "batchIndex": 5,
+        "symbols": [
+          "SendGatekeeper_Init",
+          "SendGatekeeper_ShouldIntercept",
+          "SendGatekeeper_ShowPause",
+          "SendGatekeeper_LastAppName",
+          "SendGatekeeper_IsAppWatched",
+          "SendGatekeeper_ToggleLastApp"
+        ]
+      }
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+        "batchIndex": 6,
+        "symbols": []
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp",
+        "batchIndex": 2,
+        "symbols": [
+          "WndProc",
+          "createFakeWindow",
+          "createPopupMenu",
+          "updateData",
+          "_createSystemTrayIcon",
+          "SystemTrayHelper::WaitToCreateFakeWindow",
+          "createSystemTrayIcon",
+          "removeSystemTray",
+          "showWaveAlert",
+          "checkRivalInputMethod"
+        ]
+      }
+    ]
+  }
+}

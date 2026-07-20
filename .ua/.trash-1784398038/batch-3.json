@@ -1,0 +1,354 @@
+{
+  "nodes": [
+    {
+      "id": "file:core/mood/EmotionWaveAmplitude.cpp",
+      "type": "file",
+      "name": "EmotionWaveAmplitude.cpp",
+      "filePath": "core/mood/EmotionWaveAmplitude.cpp",
+      "summary": "Định nghĩa hàm thuần EmotionWaveAmplitude quy đổi điểm send-risk [0,1] thành biên độ sóng chuẩn hoá bằng smoothstep, có ngưỡng chết 0.3 ('mặt hồ phẳng'), dùng chung cho mọi vỏ OS.",
+      "tags": ["utility", "core", "mood", "wave-amplitude", "platform-neutral"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:core/mood/EmotionWaveAmplitude.h",
+      "type": "file",
+      "name": "EmotionWaveAmplitude.h",
+      "filePath": "core/mood/EmotionWaveAmplitude.h",
+      "summary": "Khai báo hợp đồng C++ thuần: hằng ngưỡng chết kEmotionWaveDeadZoneThreshold và hàm EmotionWaveAmplitude(risk) quy đổi risk sang biên độ sóng liên tục, không phụ thuộc UIKit/Foundation nên host-testable.",
+      "tags": ["type-definition", "core", "mood", "contract", "platform-neutral"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:core/mood/MoodBuffer.cpp",
+      "type": "file",
+      "name": "MoodBuffer.cpp",
+      "filePath": "core/mood/MoodBuffer.cpp",
+      "summary": "Cài đặt MoodBuffer — bộ đệm trượt gom các từ đã hoàn tất thành câu gần đây (cửa sổ maxWords), chung cho mọi vỏ, không biết gì về phân tích hay hiển thị.",
+      "tags": ["core", "mood", "buffer", "data-model", "platform-neutral"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:core/mood/MoodBuffer.h",
+      "type": "file",
+      "name": "MoodBuffer.h",
+      "filePath": "core/mood/MoodBuffer.h",
+      "summary": "Khai báo lớp MoodBuffer — bộ đệm C++ trung lập nền tảng gom từ đã commit; vỏ Windows/macOS tự quyết cách phân tích và hiển thị lời nhắc chánh niệm.",
+      "tags": ["core", "mood", "buffer", "type-definition", "platform-neutral"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:core/mood/SendRiskAnalyzer.cpp",
+      "type": "file",
+      "name": "SendRiskAnalyzer.cpp",
+      "filePath": "core/mood/SendRiskAnalyzer.cpp",
+      "summary": "Cài đặt bộ chấm send-risk theo lexicon: chuẩn hoá + hạ chữ thường tiếng Việt, gộp ký tự lặp, dò từ khoá tiêu cực rồi ép về một điểm [0,1] bằng hàm bão hoà — chỉ con số rời khỏi hàm, nội dung câu ở lại (cột trụ riêng tư).",
+      "tags": ["core", "mood", "sentiment", "send-risk", "lexicon"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:core/mood/SendRiskAnalyzer.h",
+      "type": "file",
+      "name": "SendRiskAnalyzer.h",
+      "filePath": "core/mood/SendRiskAnalyzer.h",
+      "summary": "Khai báo hợp đồng send-risk dùng chung: struct SendRiskResult (risk + topCategory) và hai hàm Analyze/Normalize — một bản DUY NHẤT cho cả ba vỏ để lexicon không trôi lệch, thuần không I/O.",
+      "tags": ["core", "mood", "sentiment", "contract", "type-definition"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp",
+      "type": "file",
+      "name": "MoodWatch.cpp",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp",
+      "summary": "Vỏ Windows của lớp cảm xúc: nhận từng từ đã commit (MoodWatch_OnWord), đẩy sang luồng worker riêng để chấm send-risk bất đồng bộ, rồi kích hoạt cảnh báo sóng ở khay/chuông/lời nhắc — có gác ô mật khẩu và consent.",
+      "tags": ["platform-shell", "windows", "mood", "event-handler", "concurrency"],
+      "complexity": "complex",
+      "languageNotes": "Tách phân tích cảm xúc sang luồng worker riêng (condition variable + hàng đợi) để không bao giờ chen vào mạch gõ phím low-level."
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp",
+      "type": "file",
+      "name": "SecureField.cpp",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp",
+      "summary": "Cổng ô mật khẩu cho vỏ Windows: theo dõi focus qua SetWinEventHook trên luồng COM riêng, hỏi UI Automation xem control đang focus có phải ô mật khẩu, mặc định fail-closed để lớp cảm xúc không bao giờ đọc mật khẩu.",
+      "tags": ["platform-shell", "windows", "privacy", "security", "concurrency"],
+      "complexity": "moderate",
+      "languageNotes": "Cô lập lệnh UIA (qua COM, có thể treo) sang luồng riêng — không bao giờ chạy trên luồng WH_KEYBOARD_LL vốn bị Windows gỡ nếu quá LowLevelHooksTimeout."
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/SecureField.h",
+      "type": "file",
+      "name": "SecureField.h",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SecureField.h",
+      "summary": "Khai báo cổng ô mật khẩu Windows: SecureField_Init() dựng luồng theo dõi UIA và SecureField_IsActive() trả cờ fail-closed an toàn gọi từ mọi luồng — vá lỗ hổng riêng tư mà Windows không có Secure Input Mode như macOS/iOS.",
+      "tags": ["platform-shell", "windows", "privacy", "type-definition", "security"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h",
+      "type": "file",
+      "name": "SystemTrayHelper.h",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h",
+      "summary": "Khai báo lớp SystemTrayHelper (kế thừa OpenKey gốc, GPL) quản lý icon khay hệ thống Windows; bổ sung showWaveAlert() đổi icon sang sóng biên độ cao rồi tự lắng, và checkRivalInputMethod() cảnh báo khi OpenKey gốc chạy song song.",
+      "tags": ["platform-shell", "windows", "ui", "system-tray", "type-definition"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:core/mood/EmotionWaveAmplitude.cpp:EmotionWaveAmplitude",
+      "type": "function",
+      "name": "EmotionWaveAmplitude",
+      "filePath": "core/mood/EmotionWaveAmplitude.cpp",
+      "lineRange": [12, 24],
+      "summary": "Quy đổi điểm send-risk sang biên độ sóng chuẩn hoá [0,1]: clamp đầu vào, trả 0 dưới ngưỡng chết 0.3, tăng đơn điệu liên tục bằng smoothstep tới 1.0 — thuần, không side-effect.",
+      "tags": ["utility", "wave-amplitude", "math", "pure-function"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:core/mood/MoodBuffer.h:MoodBuffer",
+      "type": "class",
+      "name": "MoodBuffer",
+      "filePath": "core/mood/MoodBuffer.h",
+      "lineRange": [16, 28],
+      "summary": "Bộ đệm trượt C++ trung lập nền tảng: gom tối đa maxWords từ đã commit thành câu gần đây (recentText), có pushWord/clear/empty; không phân tích, không hiển thị.",
+      "tags": ["buffer", "data-model", "core", "mood"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:core/mood/SendRiskAnalyzer.cpp:toLowerVi",
+      "type": "function",
+      "name": "toLowerVi",
+      "filePath": "core/mood/SendRiskAnalyzer.cpp",
+      "lineRange": [72, 95],
+      "summary": "Hạ chữ thường cho một ký tự wide: xử lý ASCII và các dải chữ hoa tiếng Việt dựng sẵn (có dấu) về dạng thường, an toàn cho wchar_t 2 byte lẫn 4 byte.",
+      "tags": ["utility", "normalization", "vietnamese", "text-processing"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:core/mood/SendRiskAnalyzer.cpp:SendRiskAnalyzer_Normalize",
+      "type": "function",
+      "name": "SendRiskAnalyzer_Normalize",
+      "filePath": "core/mood/SendRiskAnalyzer.cpp",
+      "lineRange": [97, 112],
+      "summary": "Chuẩn hoá câu đầu vào: hạ chữ thường (gồm toàn bộ chữ tiếng Việt) và đổi dấu câu thành khoảng trắng, giữ trong lõi để ba vỏ không trôi lệch; phơi ra cho tests/core khoá hành vi.",
+      "tags": ["normalization", "sentiment", "text-processing", "vietnamese"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:core/mood/SendRiskAnalyzer.cpp:collapseRuns",
+      "type": "function",
+      "name": "collapseRuns",
+      "filePath": "core/mood/SendRiskAnalyzer.cpp",
+      "lineRange": [115, 131],
+      "summary": "Gộp các ký tự lặp liên tiếp (vd 'giậnnnn') về tối đa hai lần để lexicon vẫn khớp được từ khi người dùng kéo dài chữ lúc căng thẳng.",
+      "tags": ["normalization", "text-processing", "sentiment"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:core/mood/SendRiskAnalyzer.cpp:SendRiskAnalyzer_Analyze",
+      "type": "function",
+      "name": "SendRiskAnalyzer_Analyze",
+      "filePath": "core/mood/SendRiskAnalyzer.cpp",
+      "lineRange": [133, 182],
+      "summary": "Hàm chính chấm send-risk: chuẩn hoá câu, dò từng từ khoá lexicon theo trọng số danh mục, cộng dồn rồi ép về [0,1] bằng hàm bão hoà (exp); trả kèm danh mục tiêu cực nặng nhất chỉ để chọn chữ nhắc.",
+      "tags": ["sentiment", "send-risk", "lexicon", "core"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:analyzeOnWorker",
+      "type": "function",
+      "name": "analyzeOnWorker",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp",
+      "lineRange": [110, 159],
+      "summary": "Chạy trên luồng worker: đẩy từ vào MoodBuffer, gọi SendRiskAnalyzer_Analyze, quy đổi qua EmotionWaveAmplitude rồi quyết định hiện cảnh báo sóng ở khay, rung chuông theo chuỗi câu căng, hay lời nhắc chánh niệm — luôn ngoài mạch gõ phím.",
+      "tags": ["event-handler", "concurrency", "mood", "windows"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:workerLoop",
+      "type": "function",
+      "name": "workerLoop",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp",
+      "lineRange": [161, 180],
+      "summary": "Vòng lặp luồng worker: chờ condition variable, rút từng từ khỏi hàng đợi và gọi analyzeOnWorker — tách hẳn việc phân tích cảm xúc khỏi luồng gõ phím để không gây trễ.",
+      "tags": ["concurrency", "event-loop", "mood", "windows"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:MoodWatch_DrainSampleAverage",
+      "type": "function",
+      "name": "MoodWatch_DrainSampleAverage",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp",
+      "lineRange": [186, 195],
+      "summary": "Rút và trả trung bình các mẫu send-risk tích luỹ (rồi reset) để lớp nhật ký lấy mẫu định kỳ mà không phải đọc từng câu.",
+      "tags": ["mood", "sampling", "windows", "getter"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:MoodWatch_OnWord",
+      "type": "function",
+      "name": "MoodWatch_OnWord",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp",
+      "lineRange": [197, 228],
+      "summary": "Điểm vào từ engine cho mỗi từ hoàn tất trên Windows: bỏ qua nếu tắt hoặc đang ở ô mật khẩu (SecureField_IsActive), giới hạn hàng đợi rồi đánh thức luồng worker phân tích — không chặn luồng gõ.",
+      "tags": ["event-handler", "entry-point", "mood", "windows"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:MoodWatch_ConfirmEnable",
+      "type": "function",
+      "name": "MoodWatch_ConfirmEnable",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp",
+      "lineRange": [232, 247],
+      "summary": "Hiện hộp thoại xin đồng ý một lần trước khi bật theo dõi cảm xúc, đúng nguyên tắc consent không hỏi giữa lúc căng thẳng.",
+      "tags": ["mood", "consent", "ui", "windows"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:MoodWatch_Toggle",
+      "type": "function",
+      "name": "MoodWatch_Toggle",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp",
+      "lineRange": [249, 267],
+      "summary": "Bật/tắt lớp theo dõi cảm xúc: xin consent nếu cần, lưu trạng thái, dọn buffer và đánh thức hoặc ru ngủ luồng worker cho phù hợp.",
+      "tags": ["mood", "toggle", "windows", "state"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:MoodWatch_Init",
+      "type": "function",
+      "name": "MoodWatch_Init",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp",
+      "lineRange": [269, 277],
+      "summary": "Khởi tạo lớp cảm xúc trên Windows: dựng và detach luồng worker phân tích — gọi một lần lúc app khởi động.",
+      "tags": ["mood", "entry-point", "initialization", "windows"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp:IsWin32PasswordControlFocused",
+      "type": "function",
+      "name": "IsWin32PasswordControlFocused",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp",
+      "lineRange": [29, 56],
+      "summary": "Đường nhanh: kiểm control đang focus có phải ô mật khẩu Win32 cổ điển không, dựa vào tên lớp cửa sổ và cờ style ES_PASSWORD — không cần gọi UIA.",
+      "tags": ["privacy", "windows", "detection", "security"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp:IsUiaFocusedElementPassword",
+      "type": "function",
+      "name": "IsUiaFocusedElementPassword",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp",
+      "lineRange": [62, 86],
+      "summary": "Hỏi UI Automation phần tử đang focus có thuộc tính IsPassword không, cho các app hiện đại mà cách Win32 cổ điển không nhận ra; chạy trên luồng COM riêng.",
+      "tags": ["privacy", "windows", "detection", "ui-automation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp:WinEventProc",
+      "type": "function",
+      "name": "WinEventProc",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp",
+      "lineRange": [89, 106],
+      "summary": "Callback SetWinEventHook cho sự kiện đổi focus: cập nhật cờ 'đang ở ô mật khẩu' bằng cách thử đường Win32 nhanh trước rồi mới tới UIA, ghi cờ qua InterlockedExchange.",
+      "tags": ["event-handler", "privacy", "windows", "hook"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp:SecureFieldThreadProc",
+      "type": "function",
+      "name": "SecureFieldThreadProc",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp",
+      "lineRange": [108, 146],
+      "summary": "Thân luồng riêng của SecureField: khởi COM apartment, dựng UIA, cài SetWinEventHook và chạy message loop — cô lập mọi lệnh UIA có thể treo khỏi luồng hook bàn phím low-level.",
+      "tags": ["concurrency", "privacy", "windows", "com"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp:SecureField_Init",
+      "type": "function",
+      "name": "SecureField_Init",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp",
+      "lineRange": [148, 157],
+      "summary": "Tạo luồng theo dõi ô mật khẩu (SecureFieldThreadProc), gọi một lần lúc khởi động cạnh MoodWatch_Init.",
+      "tags": ["initialization", "privacy", "windows", "entry-point"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp:SecureField_IsActive",
+      "type": "function",
+      "name": "SecureField_IsActive",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp",
+      "lineRange": [159, 165],
+      "summary": "Trả cờ 'đang ở ô mật khẩu hoặc chưa chắc là không' (fail-closed); chỉ đọc cờ trong bộ nhớ nên an toàn gọi từ mọi luồng kể cả luồng hook.",
+      "tags": ["privacy", "windows", "getter", "security"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h:SystemTrayHelper",
+      "type": "class",
+      "name": "SystemTrayHelper",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h",
+      "lineRange": [17, 33],
+      "summary": "Lớp tiện ích quản lý icon khay hệ thống Windows (kế thừa OpenKey gốc): tạo/gỡ tray, menu chuột phải, cập nhật trạng thái; bổ sung showWaveAlert() báo 'tâm đang động' và checkRivalInputMethod().",
+      "tags": ["ui", "system-tray", "windows", "platform-shell"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {"source": "file:core/mood/EmotionWaveAmplitude.cpp", "target": "function:core/mood/EmotionWaveAmplitude.cpp:EmotionWaveAmplitude", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:core/mood/MoodBuffer.h", "target": "class:core/mood/MoodBuffer.h:MoodBuffer", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:core/mood/SendRiskAnalyzer.cpp", "target": "function:core/mood/SendRiskAnalyzer.cpp:toLowerVi", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:core/mood/SendRiskAnalyzer.cpp", "target": "function:core/mood/SendRiskAnalyzer.cpp:SendRiskAnalyzer_Normalize", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:core/mood/SendRiskAnalyzer.cpp", "target": "function:core/mood/SendRiskAnalyzer.cpp:collapseRuns", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:core/mood/SendRiskAnalyzer.cpp", "target": "function:core/mood/SendRiskAnalyzer.cpp:SendRiskAnalyzer_Analyze", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:analyzeOnWorker", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:workerLoop", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:MoodWatch_DrainSampleAverage", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:MoodWatch_OnWord", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:MoodWatch_ConfirmEnable", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:MoodWatch_Toggle", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:MoodWatch_Init", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp:IsWin32PasswordControlFocused", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp:IsUiaFocusedElementPassword", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp:WinEventProc", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp:SecureFieldThreadProc", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp:SecureField_Init", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp:SecureField_IsActive", "type": "contains", "direction": "forward", "weight": 1.0},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h", "target": "class:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h:SystemTrayHelper", "type": "contains", "direction": "forward", "weight": 1.0},
+
+    {"source": "file:core/mood/EmotionWaveAmplitude.cpp", "target": "function:core/mood/EmotionWaveAmplitude.cpp:EmotionWaveAmplitude", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:core/mood/MoodBuffer.h", "target": "class:core/mood/MoodBuffer.h:MoodBuffer", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:core/mood/SendRiskAnalyzer.cpp", "target": "function:core/mood/SendRiskAnalyzer.cpp:SendRiskAnalyzer_Normalize", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:core/mood/SendRiskAnalyzer.cpp", "target": "function:core/mood/SendRiskAnalyzer.cpp:SendRiskAnalyzer_Analyze", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:MoodWatch_DrainSampleAverage", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:MoodWatch_OnWord", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:MoodWatch_ConfirmEnable", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:MoodWatch_Toggle", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:MoodWatch_Init", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp:SecureField_Init", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp:SecureField_IsActive", "type": "exports", "direction": "forward", "weight": 0.8},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h", "target": "class:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h:SystemTrayHelper", "type": "exports", "direction": "forward", "weight": 0.8},
+
+    {"source": "file:core/mood/EmotionWaveAmplitude.cpp", "target": "file:core/mood/EmotionWaveAmplitude.h", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:core/mood/MoodBuffer.cpp", "target": "file:core/mood/MoodBuffer.h", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:core/mood/SendRiskAnalyzer.cpp", "target": "file:core/mood/SendRiskAnalyzer.h", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "file:core/mood/EmotionWaveAmplitude.h", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "file:core/mood/MoodBuffer.h", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "file:core/mood/SendRiskAnalyzer.h", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/Bell.h", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/MoodStore.h", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.h", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.h", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/SecureField.h", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/stdafx.h", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/SecureField.h", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp", "target": "file:platforms/windows/win32/OpenKey/OpenKey/stdafx.h", "type": "imports", "direction": "forward", "weight": 0.7},
+    {"source": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h", "target": "file:platforms/windows/win32/OpenKey/OpenKey/stdafx.h", "type": "imports", "direction": "forward", "weight": 0.7},
+
+    {"source": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:analyzeOnWorker", "target": "function:core/mood/SendRiskAnalyzer.cpp:SendRiskAnalyzer_Analyze", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:analyzeOnWorker", "target": "function:core/mood/EmotionWaveAmplitude.cpp:EmotionWaveAmplitude", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:analyzeOnWorker", "target": "class:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h:SystemTrayHelper", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:analyzeOnWorker", "target": "class:core/mood/MoodBuffer.h:MoodBuffer", "type": "calls", "direction": "forward", "weight": 0.8},
+    {"source": "function:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp:MoodWatch_OnWord", "target": "function:platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp:SecureField_IsActive", "type": "calls", "direction": "forward", "weight": 0.8}
+  ]
+}

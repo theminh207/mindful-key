@@ -1,0 +1,111 @@
+{
+  "nodes": [
+    {
+      "id": "document:tests/ios/MANUAL-TEST-SCRIPT.md",
+      "type": "document",
+      "name": "MANUAL-TEST-SCRIPT.md",
+      "filePath": "tests/ios/MANUAL-TEST-SCRIPT.md",
+      "summary": "Kịch bản kiểm thủ công Round 1 cho vỏ iOS — gom và sắp thứ tự các Acceptance Criteria đã khóa (onboarding, gõ Telex ra dấu, Shift/lớp số, ô mật khẩu, App Group heartbeat, kho nhật ký cảm xúc) thành checklist bấm tay trên Simulator và thiết bị thật. Cố ý không đẻ nguồn sự thật mới, chỉ trỏ về story ACs và EXPERIENCE.md.",
+      "tags": ["documentation", "test", "manual-testing", "ios", "checklist"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:tests/ios/README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "tests/ios/README.md",
+      "summary": "Giới thiệu thư mục test vỏ iOS — trạng thái bridge test và build-smoke (đã wire vào `make test-ios`), bằng chứng build-verification đóng Risk R5 của tech-spec, và danh sách kiểm thủ công còn lại cần simulator/thiết bị.",
+      "tags": ["documentation", "entry-point", "test", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/ios/build.sh",
+      "type": "file",
+      "name": "build.sh",
+      "filePath": "tests/ios/build.sh",
+      "summary": "Script biên dịch bridge_test.mm cho iOS (KeyboardBridge + EngineKeyMap + core/engine sources) trên host macOS bằng clang++, không cần Simulator — unit test logic cầu nối gõ Telex (Mốc B).",
+      "tags": ["script", "build-system", "test", "ios", "engine"],
+      "complexity": "simple",
+      "languageNotes": "Shell build script gọi clang++ với -fobjc-arc; file .mm biên dịch Objective-C++, .cpp biên dịch C++ theo đuôi file."
+    },
+    {
+      "id": "file:tests/ios/build_smoke.sh",
+      "type": "file",
+      "name": "build_smoke.sh",
+      "filePath": "tests/ios/build_smoke.sh",
+      "summary": "Script build-smoke (story 1.8) — chạy `xcodegen generate` rồi `xcodebuild` scheme MindfulKeyKeyboard cho iOS Simulator để chứng minh keyboard extension compile+link thật, bắt lỗi mà bridge test host (Foundation thuần) không thấy.",
+      "tags": ["script", "build-system", "test", "ios", "ci-cd"],
+      "complexity": "simple",
+      "languageNotes": "Dùng `set -euo pipefail` để xcodebuild non-zero là make test-ios gate được; chỉ `build`, không boot Simulator."
+    },
+    {
+      "id": "file:tests/ios/emotion_wave_build.sh",
+      "type": "file",
+      "name": "emotion_wave_build.sh",
+      "filePath": "tests/ios/emotion_wave_build.sh",
+      "summary": "Script biên dịch emotion_wave_test.mm với EmotionWaveAmplitude (story 2.5: đường cong biên độ sóng ambient) trên host macOS — hàm thuần không UIKit/Foundation nên không cần link engine/mood/bridge.",
+      "tags": ["script", "build-system", "test", "ios", "mood"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/ios/mood_bridge_build.sh",
+      "type": "file",
+      "name": "mood_bridge_build.sh",
+      "filePath": "tests/ios/mood_bridge_build.sh",
+      "summary": "Script biên dịch mood_bridge_test.mm cho lớp cảm xúc iOS (MoodBridge + SendRiskAnalyzer + NudgeCoordinatorIOS + MoodJournalStore) trên host macOS, link đầy đủ engine/mood/bridge cùng framework Foundation và Security.",
+      "tags": ["script", "build-system", "test", "ios", "mood"],
+      "complexity": "simple",
+      "languageNotes": "Script link nhiều source nhất trong batch — comment ghi rõ vì sao phải thêm NudgeCoordinatorIOS.mm/MoodJournalStore.mm (tránh thiếu symbol lúc link)."
+    },
+    {
+      "id": "file:tests/ios/mood_journal_store_build.sh",
+      "type": "file",
+      "name": "mood_journal_store_build.sh",
+      "filePath": "tests/ios/mood_journal_store_build.sh",
+      "summary": "Script biên dịch mood_journal_store_test.mm với MoodJournalStore (Round 3, story 3.1: kho nhật ký cảm xúc mã hóa on-device + consent) trên host macOS, link framework Security cho SecItemAdd/SecRandomCopyBytes (Keychain), CommonCrypto có sẵn qua libSystem.",
+      "tags": ["script", "build-system", "test", "ios", "security"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/ios/nudge_coordinator_ios_build.sh",
+      "type": "file",
+      "name": "nudge_coordinator_ios_build.sh",
+      "filePath": "tests/ios/nudge_coordinator_ios_build.sh",
+      "summary": "Script biên dịch nudge_coordinator_ios_test.mm với NudgeCoordinatorIOS (story 2.6: chuông nhắc nghỉ) trên host macOS — module tự né UIKit qua TARGET_OS_IPHONE nên chỉ cần link Foundation, không cần AudioToolbox.",
+      "tags": ["script", "build-system", "test", "ios", "mood"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/ios/settings_bridge_build.sh",
+      "type": "file",
+      "name": "settings_bridge_build.sh",
+      "filePath": "tests/ios/settings_bridge_build.sh",
+      "summary": "Script biên dịch settings_bridge_test.mm với KeyboardSettingsBridge (story 2.3: kiểu gõ + chiều cao bàn phím) trên host macOS — bridge thuần Foundation, không đụng core/engine nên không cần link engine sources.",
+      "tags": ["script", "build-system", "test", "ios", "configuration"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "document:tests/ios/MANUAL-TEST-SCRIPT.md",
+      "target": "document:tests/ios/README.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:tests/ios/README.md",
+      "target": "file:tests/ios/build.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:tests/ios/README.md",
+      "target": "file:tests/ios/build_smoke.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

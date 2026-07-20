@@ -1,0 +1,184 @@
+{
+  "batchIndex": 16,
+  "totalBatches": 19,
+  "files": [
+    {
+      "path": "platforms/apple/macos/MoodPhrasingMac.h",
+      "language": "c",
+      "sizeLines": 51,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/MoodPhrasingMac.mm",
+      "language": "mm",
+      "sizeLines": 54,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/MoodStoreMac.h",
+      "language": "c",
+      "sizeLines": 118,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/MoodStoreMac.mm",
+      "language": "mm",
+      "sizeLines": 991,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/MoodWatchMac.h",
+      "language": "c",
+      "sizeLines": 35,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/MoodWatchMac.mm",
+      "language": "mm",
+      "sizeLines": 233,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/MyTextField.h",
+      "language": "c",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/MyTextField.m",
+      "language": "m",
+      "sizeLines": 68,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/NotesHistoryMac.h",
+      "language": "c",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/NotesHistoryMac.mm",
+      "language": "mm",
+      "sizeLines": 217,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/NudgeCoordinatorMac.h",
+      "language": "c",
+      "sizeLines": 39,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/NudgeCoordinatorMac.mm",
+      "language": "mm",
+      "sizeLines": 43,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/OpenKey.mm",
+      "language": "mm",
+      "sizeLines": 825,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/OpenKeyManager.h",
+      "language": "c",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/OpenKeyManager.m",
+      "language": "m",
+      "sizeLines": 152,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/PanelViewController.h",
+      "language": "c",
+      "sizeLines": 36,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/PanelViewController.mm",
+      "language": "mm",
+      "sizeLines": 663,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/PrivacyPaneView.h",
+      "language": "c",
+      "sizeLines": 9,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/PrivacyPaneView.mm",
+      "language": "mm",
+      "sizeLines": 344,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/ReflectionScreenMac.h",
+      "language": "c",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/ReflectionScreenMac.mm",
+      "language": "mm",
+      "sizeLines": 610,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/SendGatekeeperMac.h",
+      "language": "c",
+      "sizeLines": 33,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/SendGatekeeperMac.mm",
+      "language": "mm",
+      "sizeLines": 194,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/SettingsWindowController.h",
+      "language": "c",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/apple/macos/SettingsWindowController.mm",
+      "language": "mm",
+      "sizeLines": 714,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "platforms/apple/macos/MoodPhrasingMac.h": [],
+    "platforms/apple/macos/MoodPhrasingMac.mm": [],
+    "platforms/apple/macos/MoodStoreMac.h": [],
+    "platforms/apple/macos/MoodStoreMac.mm": [],
+    "platforms/apple/macos/MoodWatchMac.h": [],
+    "platforms/apple/macos/MoodWatchMac.mm": [],
+    "platforms/apple/macos/MyTextField.h": [],
+    "platforms/apple/macos/MyTextField.m": [],
+    "platforms/apple/macos/NotesHistoryMac.h": [],
+    "platforms/apple/macos/NotesHistoryMac.mm": [],
+    "platforms/apple/macos/NudgeCoordinatorMac.h": [],
+    "platforms/apple/macos/NudgeCoordinatorMac.mm": [],
+    "platforms/apple/macos/OpenKey.mm": [],
+    "platforms/apple/macos/OpenKeyManager.h": [],
+    "platforms/apple/macos/OpenKeyManager.m": [],
+    "platforms/apple/macos/PanelViewController.h": [],
+    "platforms/apple/macos/PanelViewController.mm": [],
+    "platforms/apple/macos/PrivacyPaneView.h": [],
+    "platforms/apple/macos/PrivacyPaneView.mm": [],
+    "platforms/apple/macos/ReflectionScreenMac.h": [],
+    "platforms/apple/macos/ReflectionScreenMac.mm": [],
+    "platforms/apple/macos/SendGatekeeperMac.h": [],
+    "platforms/apple/macos/SendGatekeeperMac.mm": [],
+    "platforms/apple/macos/SettingsWindowController.h": [],
+    "platforms/apple/macos/SettingsWindowController.mm": []
+  },
+  "neighborMap": {}
+}

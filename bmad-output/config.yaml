@@ -5,7 +5,7 @@
 bmad_version: "6.x"
 
 project:
-  name: "Mindful Keyboard — Windows Port"
+  name: "Mindful Keyboard — mindful-key (macOS + iOS)"
   # Scale-adaptive track (never a numbered level):
   #   quick-flow   = 1-15 stories, tech-spec only
   #   bmad-method  = 10-50+ stories, PRD + Architecture (+ optional UX)
@@ -15,6 +15,11 @@ project:
 
 paths:
   output_folder: "bmad-output"
+  # File này gánh 2 vai: (1) config chung của workspace, (2) config MẶC ĐỊNH của đội
+  # macOS — vì `macos/` cố ý KHÔNG có config.yaml riêng. Vậy nên `stories_folder`
+  # dưới đây trỏ vào story của macOS, KHÔNG phải "story của cả workspace".
+  # Đội iOS override bằng `bmad-output/ios/config.yaml` (track quick-flow, stories
+  # riêng). Mở đội mới → cho nó config.yaml riêng theo khuôn `ios/`, đừng sửa dòng này.
   stories_folder: "bmad-output/macos/stories"
   decision_log: "bmad-output/decision-log.md"
   project_context: "bmad-output/project-context.md"

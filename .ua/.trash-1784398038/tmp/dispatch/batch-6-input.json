@@ -1,0 +1,295 @@
+{
+  "batchIndex": 6,
+  "totalBatches": 19,
+  "files": [
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "language": "cpp",
+      "sizeLines": 339,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h",
+      "language": "c",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp",
+      "language": "cpp",
+      "sizeLines": 97,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h",
+      "language": "c",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/resource.h",
+      "language": "c",
+      "sizeLines": 224,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.cpp",
+      "language": "cpp",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+      "language": "c",
+      "sizeLines": 94,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/targetver.h",
+      "language": "c",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h": [
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h": [
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/resource.h": [],
+    "platforms/windows/win32/OpenKey/OpenKey/stdafx.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/stdafx.h": [
+      "core/engine/Engine.h",
+      "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h",
+      "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h",
+      "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h",
+      "platforms/windows/win32/OpenKey/OpenKey/resource.h",
+      "platforms/windows/win32/OpenKey/OpenKey/targetver.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/targetver.h": []
+  },
+  "neighborMap": {
+    "platforms/windows/win32/OpenKey/OpenKey/stdafx.h": [
+      {
+        "path": "core/engine/Engine.h",
+        "batchIndex": 4,
+        "symbols": []
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h",
+        "batchIndex": 3,
+        "symbols": [
+          "createSystemTrayIcon",
+          "updateData",
+          "showWaveAlert",
+          "checkRivalInputMethod",
+          "removeSystemTray",
+          "SystemTrayHelper"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/AboutDialog.cpp",
+        "batchIndex": 1,
+        "symbols": [
+          "AboutDialog",
+          "~AboutDialog",
+          "fillData",
+          "eventProc",
+          "initDialog",
+          "onUpdateButton"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/AppDelegate.h",
+        "batchIndex": 1,
+        "symbols": [
+          "BaseDialog",
+          "run",
+          "createMainDialog",
+          "closeDialog",
+          "onInputMethodChangedFromHotKey",
+          "onDefaultConfig",
+          "onToggleVietnamese",
+          "onToggleCheckSpelling",
+          "onToggleUseSmartSwitchKey",
+          "onToggleUseMacro",
+          "onMacroTable",
+          "onConvertTool",
+          "onQuickConvert",
+          "onInputType",
+          "onTableCode",
+          "onControlPanel",
+          "onOpenKeyAbout",
+          "onOpenKeyExit",
+          "AppDelegate"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/BaseDialog.h",
+        "batchIndex": 1,
+        "symbols": [
+          "show",
+          "bringOnTop",
+          "fillData",
+          "getHwnd",
+          "closeDialog",
+          "BaseDialog"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/Bell.cpp",
+        "batchIndex": 2,
+        "symbols": [
+          "Bell_InstallCustomSound",
+          "Bell_PreviewSound",
+          "Bell_RingForTenseStreak",
+          "Bell_Snooze",
+          "Bell_ApplySettings",
+          "Bell_Init",
+          "Bell_ShowSettings"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/BrandControls.cpp",
+        "batchIndex": 5,
+        "symbols": [
+          "BrandControls_Font",
+          "BrandControls_FillRect",
+          "BrandControls_DrawButton"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/ConvertToolDialog.cpp",
+        "batchIndex": 1,
+        "symbols": [
+          "ConvertToolDialog",
+          "~ConvertToolDialog",
+          "eventProc",
+          "initDialog",
+          "fillData",
+          "setSwitchKeyText",
+          "setLogic",
+          "onComboBoxSelected",
+          "onCheckboxClicked",
+          "onCharacter",
+          "onSwitchButton",
+          "onConvertButton"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/MacroDialog.cpp",
+        "batchIndex": 1,
+        "symbols": [
+          "MacroDialog",
+          "~MacroDialog",
+          "eventProc",
+          "initDialog",
+          "fillData",
+          "saveAndReload",
+          "insertItem",
+          "onSelectItem",
+          "onAddMacroButton",
+          "onDeleteMacroButton",
+          "onImportMacroButton",
+          "onExportMacrobutton",
+          "onCheckboxClicked"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/MoodStore.cpp",
+        "batchIndex": 2,
+        "symbols": [
+          "MoodStore_HasConsent",
+          "MoodStore_HasAskedConsent",
+          "MoodStore_SetConsent",
+          "MoodStore_AskConsentIfNeeded",
+          "MoodStore_LogGatekeeperEvent",
+          "MoodStore_LogSampleEvent",
+          "MoodStore_FetchTodaySummary",
+          "MoodStore_FetchTodaySamples",
+          "MoodStore_DeleteAll"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp",
+        "batchIndex": 3,
+        "symbols": [
+          "MoodWatch_LastSendRisk",
+          "MoodWatch_DrainSampleAverage",
+          "MoodWatch_OnWord",
+          "MoodWatch_ConfirmEnable",
+          "MoodWatch_Toggle",
+          "MoodWatch_Init"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/NudgeCoordinator.cpp",
+        "batchIndex": 2,
+        "symbols": [
+          "NudgeCoordinator_ShouldNudge",
+          "NudgeCoordinator_MarkNudged",
+          "NudgeCoordinator_TenseStreakTrigger",
+          "NudgeCoordinator_RippleThreshold"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/OpenKey.cpp",
+        "batchIndex": 5,
+        "symbols": [
+          "OpenKeyFree",
+          "OpenKeyInit",
+          "saveSmartSwitchKeyData",
+          "checkHotKey",
+          "switchLanguage",
+          "keyboardHookProcess",
+          "mouseHookProcess",
+          "winEventProcCallback"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/ReflectionScreen.cpp",
+        "batchIndex": 2,
+        "symbols": [
+          "ReflectionScreen_Show"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp",
+        "batchIndex": 3,
+        "symbols": [
+          "SecureField_Init",
+          "SecureField_IsActive"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.cpp",
+        "batchIndex": 5,
+        "symbols": [
+          "SendGatekeeper_Init",
+          "SendGatekeeper_ShouldIntercept",
+          "SendGatekeeper_ShowPause",
+          "SendGatekeeper_LastAppName",
+          "SendGatekeeper_IsAppWatched",
+          "SendGatekeeper_ToggleLastApp"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/main.cpp",
+        "batchIndex": 1,
+        "symbols": [
+          "wWinMain"
+        ]
+      }
+    ]
+  }
+}

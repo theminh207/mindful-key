@@ -1,0 +1,309 @@
+{
+  "nodes": [
+    {
+      "id": "file:platforms/apple/macos/OpenKeyManager.h",
+      "type": "file",
+      "name": "OpenKeyManager.h",
+      "filePath": "platforms/apple/macos/OpenKeyManager.h",
+      "summary": "Khai báo OpenKeyManager: lớp tiện ích quản lý vòng đời CGEventTap (init/stop), danh sách bảng mã, ngày build, hộp thoại thông báo và chức năng chuyển mã nhanh.",
+      "tags": ["macos-shell", "header", "event-tap", "engine-hook", "objective-c"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/macos/OpenKeyManager.m",
+      "type": "file",
+      "name": "OpenKeyManager.m",
+      "filePath": "platforms/apple/macos/OpenKeyManager.m",
+      "summary": "Quản lý CGEventTap: tạo/gắn/gỡ event tap và run-loop source cho OpenKeyCallback, khởi tạo engine, cung cấp danh sách bảng mã và chuyển mã nhanh từ clipboard; bộ tự-cập-nhật kế thừa OpenKey đã bị gỡ.",
+      "tags": ["macos-shell", "event-tap", "engine-hook", "clipboard-convert", "objective-c"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/apple/macos/PanelViewController.h",
+      "type": "file",
+      "name": "PanelViewController.h",
+      "filePath": "platforms/apple/macos/PanelViewController.h",
+      "summary": "Khai báo controller nội dung popover menu-bar bố cục 3 tab (Hôm nay · Chuông · Bộ gõ) với các callback ghi phím tắt, mở menu, mở cài đặt đầy đủ và kích thước nội dung mong muốn.",
+      "tags": ["macos-shell", "popover", "header", "ui-appkit", "tabbed"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/macos/PanelViewController.mm",
+      "type": "file",
+      "name": "PanelViewController.mm",
+      "filePath": "platforms/apple/macos/PanelViewController.mm",
+      "summary": "Dựng popover menu-bar 3 tab: header trắng liền mạch với pill VN nhị phân, thẻ Gác cổng + độ nhạy + dòng sông cho tab Hôm nay, và khung check-in \"Mặt hồ đang thế nào?\" bám nhịp chung BellMac; reflow co chiều cao theo tab đang mở và màn hình thật.",
+      "tags": ["popover", "ui-appkit", "emotion-river", "checkin", "macos-shell"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:platforms/apple/macos/PrivacyPaneView.h",
+      "type": "file",
+      "name": "PrivacyPaneView.h",
+      "filePath": "platforms/apple/macos/PrivacyPaneView.h",
+      "summary": "Khai báo view pane \"Riêng tư\" với preferredHeight và refresh — mặt điều khiển consent, xuất CSV, tự xóa định kỳ và xóa toàn bộ nhật ký.",
+      "tags": ["macos-shell", "privacy", "header", "ui-appkit"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/macos/PrivacyPaneView.mm",
+      "type": "file",
+      "name": "PrivacyPaneView.mm",
+      "filePath": "platforms/apple/macos/PrivacyPaneView.mm",
+      "summary": "Pane Riêng tư bốn mục: bật/tắt nhật ký (tắt = xóa sạch), xuất CSV qua NSSavePanel, chọn số ngày tự xóa, và xóa toàn bộ có xác nhận; copy nói rõ ô ghi được chừa khỏi auto-purge.",
+      "tags": ["privacy", "ui-appkit", "consent-gate", "export", "macos-shell"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:platforms/apple/macos/ReflectionScreenMac.h",
+      "type": "file",
+      "name": "ReflectionScreenMac.h",
+      "filePath": "platforms/apple/macos/ReflectionScreenMac.h",
+      "summary": "Khai báo màn soi lại cuối ngày: đọc tóm tắt hôm nay, hiện một câu phản chiếu không phán xét làm trọng tâm với số liệu chỉ là bối cảnh phụ.",
+      "tags": ["macos-shell", "reflection", "header", "quan-sát-không-phán-xét"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/macos/ReflectionScreenMac.mm",
+      "type": "file",
+      "name": "ReflectionScreenMac.mm",
+      "filePath": "platforms/apple/macos/ReflectionScreenMac.mm",
+      "summary": "Màn Soi lại cuối ngày ba nhịp (Nhận ra/Soi/Nuôi dưỡng): phân hình dạng ngày từ dữ liệu để chọn câu quan sát, câu hỏi phản chiếu và gợi ý theo ngày (không bốc ngẫu nhiên), có dòng sông, ô ghi cảm nhận có consent, lối vào chồng ghi chú và link chỉnh chuông.",
+      "tags": ["reflection", "ui-appkit", "daily-note", "quan-sát-không-phán-xét", "emotion-river"],
+      "complexity": "complex",
+      "languageNotes": "Layout cộng dồn khoảng cách TỪ ĐỈNH xuống rồi lật toạ độ qua đúng một hàm ReflY() — tránh lớp lỗi 2 công thức tưởng khớp nhau."
+    },
+    {
+      "id": "file:platforms/apple/macos/SendGatekeeperMac.h",
+      "type": "file",
+      "name": "SendGatekeeperMac.h",
+      "filePath": "platforms/apple/macos/SendGatekeeperMac.h",
+      "summary": "Khai báo gác cổng gửi tin (Feature #1): phát hiện Enter-không-Shift trong app chat allow-list khi send-risk vượt ngưỡng và hiện overlay nhịp thở non-activating.",
+      "tags": ["macos-shell", "gác-cổng", "header", "send-risk", "breathing-pause"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/macos/SendGatekeeperMac.mm",
+      "type": "file",
+      "name": "SendGatekeeperMac.mm",
+      "filePath": "platforms/apple/macos/SendGatekeeperMac.mm",
+      "summary": "Gác cổng gửi tin thật: chặn phím Enter khi ở app chat đã xác minh bundle-id và send-risk vượt ngưỡng, hiện NSPanel nhịp thở hai nút (Đợi chút/Vẫn gửi), ghi log lựa chọn và phát lại Enter gắn myEventSource nếu người dùng vẫn gửi.",
+      "tags": ["gác-cổng", "send-risk", "breathing-pause", "ui-appkit", "macos-shell"],
+      "complexity": "moderate",
+      "languageNotes": "Enter phát lại gắn myEventSource để check đầu OpenKeyCallback bỏ qua, tránh vòng lặp gác cổng tự chặn chính phím nó vừa tạo."
+    },
+    {
+      "id": "file:platforms/apple/macos/SettingsWindowController.h",
+      "type": "file",
+      "name": "SettingsWindowController.h",
+      "filePath": "platforms/apple/macos/SettingsWindowController.h",
+      "summary": "Khai báo cửa sổ cài đặt duy nhất với nav trái 6 mục (Hôm nay · Chuông · Bộ gõ · Riêng tư · Hệ thống · Giới thiệu) và API chọn mục theo chỉ số.",
+      "tags": ["macos-shell", "settings", "header", "ui-appkit", "navigation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/macos/SettingsWindowController.mm",
+      "type": "file",
+      "name": "SettingsWindowController.mm",
+      "filePath": "platforms/apple/macos/SettingsWindowController.mm",
+      "summary": "Cửa sổ cài đặt hợp nhất 6 mục: nhúng lại các NSBox/VC cũ từ storyboard qua reparent và containment (không sửa VC gốc), dựng pane Hôm nay/Chuông/Riêng tư/Hệ thống mới, và một NSScrollView duy nhất cho pane cao hơn khung nhìn.",
+      "tags": ["settings", "ui-appkit", "view-embedding", "navigation", "macos-shell"],
+      "complexity": "complex",
+      "languageNotes": "Reparent NSBox chỉ reset origin, giữ nguyên kích thước vì shadowPath tính theo self.bounds lúc viewDidLoad — resize là bóng đổ lệch."
+    },
+    {
+      "id": "class:platforms/apple/macos/OpenKeyManager.m:OpenKeyManager",
+      "type": "class",
+      "name": "OpenKeyManager",
+      "filePath": "platforms/apple/macos/OpenKeyManager.m",
+      "lineRange": [24, 152],
+      "summary": "Lớp tiện ích class-method quản lý CGEventTap: initEventTap tạo tap + run-loop source cho OpenKeyCallback và gọi OpenKeyInit, stopEventTap dọn tài nguyên, quickConvert chuyển mã clipboard, cùng danh sách bảng mã và hộp thoại.",
+      "tags": ["event-tap", "engine-hook", "clipboard-convert", "objective-c"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/macos/PanelViewController.mm:MKTabBar",
+      "type": "class",
+      "name": "MKTabBar",
+      "filePath": "platforms/apple/macos/PanelViewController.mm",
+      "lineRange": [67, 167],
+      "summary": "Thanh tab kiểu segmented (track xám nhạt, ô đang chọn = pill trắng nổi có bóng nhẹ) với chỉ báo trượt tôn trọng \"Giảm chuyển động\"; cố ý không dùng teal-fill để tách khỏi control field-level.",
+      "tags": ["ui-appkit", "tabbed", "segmented-control", "popover"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/macos/PanelViewController.mm:PanelViewController",
+      "type": "class",
+      "name": "PanelViewController",
+      "filePath": "platforms/apple/macos/PanelViewController.mm",
+      "lineRange": [171, 663],
+      "summary": "Controller popover 3 tab: dựng header + tab bar + các thẻ (Gác cổng, độ nhạy, dòng sông, dòng chuông kế tiếp), reflow co chiều cao theo tab và màn hình thật, và khung check-in bám nhịp chung BellMac dựng từ -init để không phụ thuộc việc mở popover.",
+      "tags": ["popover", "ui-appkit", "emotion-river", "checkin", "macos-shell"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:platforms/apple/macos/PrivacyPaneView.mm:PrivacyPaneView",
+      "type": "class",
+      "name": "PrivacyPaneView",
+      "filePath": "platforms/apple/macos/PrivacyPaneView.mm",
+      "lineRange": [24, 344],
+      "summary": "View pane Riêng tư bốn mục thẻ: toggle consent, xuất CSV qua NSSavePanel, popup số ngày tự xóa và nút xóa toàn bộ có xác nhận; relayout tính chiều cao và chạy auto-purge một lần khi mở.",
+      "tags": ["privacy", "ui-appkit", "consent-gate", "export"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:platforms/apple/macos/ReflectionScreenMac.mm:ObservationParagraph",
+      "type": "function",
+      "name": "ObservationParagraph",
+      "filePath": "platforms/apple/macos/ReflectionScreenMac.mm",
+      "lineRange": [81, 94],
+      "summary": "Gộp \"đỉnh gợn vào buổi nào\" và \"quãng lặng dài nhất vào buổi nào\" thành một đoạn quan sát tường thuật theo thời-điểm-trong-ngày, không số thô.",
+      "tags": ["reflection", "copy", "quan-sát-không-phán-xét", "mood-phrasing"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/macos/ReflectionScreenMac.mm:ReflectivePromptsFor",
+      "type": "function",
+      "name": "ReflectivePromptsFor",
+      "filePath": "platforms/apple/macos/ReflectionScreenMac.mm",
+      "lineRange": [121, 144],
+      "summary": "Trả rổ câu hỏi phản chiếu mở, không phán xét, riêng cho từng hình dạng ngày (gác cổng/gợn/phẳng lặng) — ngày êm không bị hỏi về cơn nóng không hề xảy ra.",
+      "tags": ["reflection", "copy", "quan-sát-không-phán-xét", "day-shape"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/macos/ReflectionScreenMac.mm:TinySuggestionsFor",
+      "type": "function",
+      "name": "TinySuggestionsFor",
+      "filePath": "platforms/apple/macos/ReflectionScreenMac.mm",
+      "lineRange": [148, 168],
+      "summary": "Trả rổ gợi ý nhỏ làm-được-ngay theo hình dạng ngày; ngày êm thì gợi ý là giữ lấy cái đang tốt, không có gì để \"khắc phục\".",
+      "tags": ["reflection", "copy", "quan-sát-không-phán-xét", "day-shape"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:platforms/apple/macos/ReflectionScreenMac.mm:MKReflectionWindowController",
+      "type": "class",
+      "name": "MKReflectionWindowController",
+      "filePath": "platforms/apple/macos/ReflectionScreenMac.mm",
+      "lineRange": [196, 269],
+      "summary": "Window controller giữ ô ghi cảm nhận: hỏi consent đúng lúc người dùng lần đầu chạm ô, lưu note khi kết thúc chỉnh sửa hoặc đóng cửa sổ, mở link chuông và chồng ghi chú.",
+      "tags": ["reflection", "daily-note", "consent-gate", "ui-appkit"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/apple/macos/ReflectionScreenMac.mm:ReflectionScreenMac_Show",
+      "type": "function",
+      "name": "ReflectionScreenMac_Show",
+      "filePath": "platforms/apple/macos/ReflectionScreenMac.mm",
+      "lineRange": [273, 610],
+      "summary": "Dựng cửa sổ Soi lại trên main queue: lấy mẫu + tóm tắt hôm nay, tính đỉnh và quãng lặng, chọn câu quan sát/hỏi/gợi ý theo hình dạng ngày, và bố trí ba nhịp cùng dòng sông, ô ghi và các link — thoát sớm nếu chưa consent hoặc hồ chưa đủ nét.",
+      "tags": ["reflection", "ui-appkit", "daily-note", "emotion-river"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:platforms/apple/macos/SendGatekeeperMac.mm:SendGatekeeperMac_ShouldIntercept",
+      "type": "function",
+      "name": "SendGatekeeperMac_ShouldIntercept",
+      "filePath": "platforms/apple/macos/SendGatekeeperMac.mm",
+      "lineRange": [44, 60],
+      "summary": "Quyết định có chặn-mềm hay không: chỉ khi là phím Return không Shift, app trên cùng nằm trong allow-list chat, và send-risk hiện tại vượt ngưỡng nhịp thở.",
+      "tags": ["gác-cổng", "send-risk", "keyboard", "breathing-pause"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/macos/SendGatekeeperMac.mm:ClosePausePanel",
+      "type": "function",
+      "name": "ClosePausePanel",
+      "filePath": "platforms/apple/macos/SendGatekeeperMac.mm",
+      "lineRange": [83, 105],
+      "summary": "Đóng overlay nhịp thở, báo lựa chọn cho hợp đồng BreathingPause, ghi log gác cổng (chỉ risk + app + lựa chọn), và nếu \"Vẫn gửi\" thì phát lại một phím Enter thật gắn myEventSource.",
+      "tags": ["gác-cổng", "breathing-pause", "nhật-ký-cảm-xúc", "ui-appkit"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/macos/SendGatekeeperMac.mm:SendGatekeeperMac_ShowPause",
+      "type": "function",
+      "name": "SendGatekeeperMac_ShowPause",
+      "filePath": "platforms/apple/macos/SendGatekeeperMac.mm",
+      "lineRange": [113, 194],
+      "summary": "Hiện NSPanel nhịp thở non-activating (không cướp focus app chat) với câu nhắc từ BreathingPause_Evaluate, hai nút Đợi chút/Vẫn gửi, nền cam brand-chrome, và tự đóng dạng Dismissed sau thời lượng hợp đồng.",
+      "tags": ["gác-cổng", "breathing-pause", "ui-appkit", "macos-shell"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:platforms/apple/macos/SettingsWindowController.mm:MKSettingsNavRow",
+      "type": "class",
+      "name": "MKSettingsNavRow",
+      "filePath": "platforms/apple/macos/SettingsWindowController.mm",
+      "lineRange": [94, 150],
+      "summary": "Một hàng nav trái: chấm 6px + nhãn, overlay nút trong suốt bắt-toàn-hàng, đổi màu nền/chấm/chữ (teal khi chọn) qua setSelectedRow.",
+      "tags": ["settings", "ui-appkit", "navigation", "list-row"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:platforms/apple/macos/SettingsWindowController.mm:MKDateRangeSeg",
+      "type": "class",
+      "name": "MKDateRangeSeg",
+      "filePath": "platforms/apple/macos/SettingsWindowController.mm",
+      "lineRange": [163, 217],
+      "summary": "Segmented control tự vẽ \"Ngày / Tuần / Tháng\" (pill teal cho mục chọn) riêng cho cửa sổ cài đặt để tránh đụng MKSegmented đang thay đổi từ phiên song song.",
+      "tags": ["settings", "ui-appkit", "segmented-control", "emotion-river"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/macos/SettingsWindowController.mm:SettingsWindowController",
+      "type": "class",
+      "name": "SettingsWindowController",
+      "filePath": "platforms/apple/macos/SettingsWindowController.mm",
+      "lineRange": [221, 714],
+      "summary": "Cửa sổ cài đặt duy nhất: dựng nav 6 mục + sub-nav Bộ gõ, nhúng lại các VC cũ qua reparent/containment, dựng pane Hôm nay/Chuông/Riêng tư/Hệ thống, và chuyển pane trong một NSScrollView với xử lý vẽ lại clip view để tránh vệt chữ nhòe.",
+      "tags": ["settings", "ui-appkit", "view-embedding", "navigation"],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    { "source": "file:platforms/apple/macos/OpenKeyManager.m", "target": "class:platforms/apple/macos/OpenKeyManager.m:OpenKeyManager", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/OpenKeyManager.m", "target": "class:platforms/apple/macos/OpenKeyManager.m:OpenKeyManager", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/macos/OpenKeyManager.m", "target": "file:platforms/apple/macos/OpenKeyManager.h", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/macos/OpenKeyManager.m", "target": "file:platforms/apple/macos/OpenKey.mm", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/macos/PanelViewController.mm", "target": "class:platforms/apple/macos/PanelViewController.mm:MKTabBar", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/PanelViewController.mm", "target": "class:platforms/apple/macos/PanelViewController.mm:PanelViewController", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/PanelViewController.mm", "target": "class:platforms/apple/macos/PanelViewController.mm:PanelViewController", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/macos/PanelViewController.mm", "target": "file:platforms/apple/macos/PanelViewController.h", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/macos/PanelViewController.mm", "target": "file:platforms/apple/macos/MoodStoreMac.mm", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/macos/PrivacyPaneView.mm", "target": "class:platforms/apple/macos/PrivacyPaneView.mm:PrivacyPaneView", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/PrivacyPaneView.mm", "target": "class:platforms/apple/macos/PrivacyPaneView.mm:PrivacyPaneView", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/macos/PrivacyPaneView.mm", "target": "file:platforms/apple/macos/PrivacyPaneView.h", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/macos/PrivacyPaneView.mm", "target": "file:platforms/apple/macos/MoodStoreMac.mm", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/macos/ReflectionScreenMac.mm", "target": "function:platforms/apple/macos/ReflectionScreenMac.mm:ObservationParagraph", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/ReflectionScreenMac.mm", "target": "function:platforms/apple/macos/ReflectionScreenMac.mm:ReflectivePromptsFor", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/ReflectionScreenMac.mm", "target": "function:platforms/apple/macos/ReflectionScreenMac.mm:TinySuggestionsFor", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/ReflectionScreenMac.mm", "target": "class:platforms/apple/macos/ReflectionScreenMac.mm:MKReflectionWindowController", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/ReflectionScreenMac.mm", "target": "function:platforms/apple/macos/ReflectionScreenMac.mm:ReflectionScreenMac_Show", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/ReflectionScreenMac.mm", "target": "function:platforms/apple/macos/ReflectionScreenMac.mm:ReflectionScreenMac_Show", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/macos/ReflectionScreenMac.mm", "target": "file:platforms/apple/macos/ReflectionScreenMac.h", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/macos/ReflectionScreenMac.mm", "target": "file:platforms/apple/macos/MoodStoreMac.mm", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/macos/ReflectionScreenMac.mm", "target": "file:platforms/apple/macos/NotesHistoryMac.mm", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/macos/ReflectionScreenMac.mm", "target": "file:platforms/apple/macos/MoodPhrasingMac.mm", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "function:platforms/apple/macos/ReflectionScreenMac.mm:ReflectionScreenMac_Show", "target": "function:platforms/apple/macos/ReflectionScreenMac.mm:ObservationParagraph", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:platforms/apple/macos/ReflectionScreenMac.mm:ReflectionScreenMac_Show", "target": "function:platforms/apple/macos/ReflectionScreenMac.mm:ReflectivePromptsFor", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "function:platforms/apple/macos/ReflectionScreenMac.mm:ReflectionScreenMac_Show", "target": "function:platforms/apple/macos/ReflectionScreenMac.mm:TinySuggestionsFor", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/macos/SendGatekeeperMac.mm", "target": "function:platforms/apple/macos/SendGatekeeperMac.mm:SendGatekeeperMac_ShouldIntercept", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/SendGatekeeperMac.mm", "target": "function:platforms/apple/macos/SendGatekeeperMac.mm:ClosePausePanel", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/SendGatekeeperMac.mm", "target": "function:platforms/apple/macos/SendGatekeeperMac.mm:SendGatekeeperMac_ShowPause", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/SendGatekeeperMac.mm", "target": "function:platforms/apple/macos/SendGatekeeperMac.mm:SendGatekeeperMac_ShouldIntercept", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/macos/SendGatekeeperMac.mm", "target": "function:platforms/apple/macos/SendGatekeeperMac.mm:SendGatekeeperMac_ShowPause", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/macos/SendGatekeeperMac.mm", "target": "file:platforms/apple/macos/SendGatekeeperMac.h", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/macos/SendGatekeeperMac.mm", "target": "file:platforms/apple/macos/MoodWatchMac.mm", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/macos/SendGatekeeperMac.mm", "target": "file:platforms/apple/macos/MoodStoreMac.mm", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "function:platforms/apple/macos/SendGatekeeperMac.mm:SendGatekeeperMac_ShowPause", "target": "function:platforms/apple/macos/SendGatekeeperMac.mm:ClosePausePanel", "type": "calls", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/macos/SettingsWindowController.mm", "target": "class:platforms/apple/macos/SettingsWindowController.mm:MKSettingsNavRow", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/SettingsWindowController.mm", "target": "class:platforms/apple/macos/SettingsWindowController.mm:MKDateRangeSeg", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/SettingsWindowController.mm", "target": "class:platforms/apple/macos/SettingsWindowController.mm:SettingsWindowController", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/macos/SettingsWindowController.mm", "target": "class:platforms/apple/macos/SettingsWindowController.mm:SettingsWindowController", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/macos/SettingsWindowController.mm", "target": "file:platforms/apple/macos/SettingsWindowController.h", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/macos/SettingsWindowController.mm", "target": "file:platforms/apple/macos/PrivacyPaneView.mm", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/macos/SettingsWindowController.mm", "target": "file:platforms/apple/macos/MoodStoreMac.mm", "type": "depends_on", "direction": "forward", "weight": 0.6 }
+  ]
+}

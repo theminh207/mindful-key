@@ -43,14 +43,28 @@ NSDictionary *MoodStoreMac_FetchTodaySummary(void);
 
 // [MINDFUL] Story 2.3 — lấy mẫu định kỳ và check-in tự nguyện
 void MoodStoreMac_LogSampleEvent(double avgAmplitude);
+// [MINDFUL] 2026-07-20 — dict giờ có thêm key thứ 3 "checkin" (NSNumber BOOL): YES = điểm này đến
+// từ câu trả lời tự thuật "Mặt hồ đang thế nào?" (LogCheckinEvent), quy đổi sang cùng thang biên
+// độ 0-1; NO = tự tính từ chữ gõ (send_risk), như trước giờ. Gộp 2 nguồn vào ĐÂY (không phải ở
+// tầng vẽ) để mọi nơi đọc mẫu — "Ngay bây giờ", "Hôm nay", "Soi lại" — đều thấy đủ cả 2, không
+// còn cảnh trả lời xong rồi biến mất khỏi mọi màn hình. Tắt được qua cờ vShowCheckinOnRiver.
+// TUẦN/THÁNG (FetchWeekSamples/FetchMonthSamples) CHƯA gộp — đó là trung bình theo NGÀY (1 chấm =
+// 1 ngày), khái niệm "chấm này tự thuật hay tự đoán" không còn ý nghĩa ở granularity đó; để ngỏ,
+// xem docs/FRICTION-LOG.md 2026-07-20.
 NSArray<NSDictionary *> *MoodStoreMac_FetchTodaySamples(void);
 
 // [MINDFUL] 2026-07-16 — mẫu trong `secondsAgo` giây gần nhất, cửa sổ TRƯỢT tính từ BÂY GIỜ (khác
 // FetchTodaySamples: cái đó cắt theo mốc nửa đêm). Dùng cho "Ngay bây giờ" (zoom-in 6 tiếng) — cửa
-// sổ này VẮT QUA NỬA ĐÊM được, đúng thứ FetchTodaySamples không làm nổi. Cùng dạng trả về:
-// {@"ts": epoch giây, @"value": biên độ 0..1}, xếp tăng dần theo ts.
+// sổ này VẮT QUA NỬA ĐÊM được, đúng thứ FetchTodaySamples không làm nổi. Cùng dạng trả về (xem
+// key "checkin" ở chú thích FetchTodaySamples ngay trên):
+// {@"ts": epoch giây, @"value": biên độ 0..1, @"checkin": BOOL}, xếp tăng dần theo ts.
 NSArray<NSDictionary *> *MoodStoreMac_FetchSamplesSince(double secondsAgo);
 void MoodStoreMac_LogCheckinEvent(NSInteger waveLevel);
+
+// [MINDFUL] 2026-07-20 — công tắc gộp check-in tự thuật vào sông. Mặc định BẬT (=1): sửa đúng lỗ
+// "trả lời xong biến mất" người dùng phát hiện. Tắt = sông chỉ vẽ từ chữ gõ (send_risk) như bản
+// cũ, cho ai thấy trộn 2 nguồn là rối. Đổi qua menu khay "Hiện chấm tự đánh giá trên sông".
+extern int vShowCheckinOnRiver;
 
 // [MINDFUL] Story 3.7/3.8 — dòng sông theo Tuần/Tháng. Mỗi phần tử: {"day": NSString "yyyy-MM-dd",
 // "value": NSNumber 0..1 (trung bình send_risk trong ngày) HOẶC NSNull (ngày đó 0 mẫu — quãng

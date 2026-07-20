@@ -1,0 +1,274 @@
+{
+  "batchIndex": 1,
+  "totalBatches": 19,
+  "files": [
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/AboutDialog.cpp",
+      "language": "cpp",
+      "sizeLines": 91,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/AboutDialog.h",
+      "language": "c",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/AppDelegate.cpp",
+      "language": "cpp",
+      "sizeLines": 319,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/AppDelegate.h",
+      "language": "c",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/BaseDialog.cpp",
+      "language": "cpp",
+      "sizeLines": 93,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/BaseDialog.h",
+      "language": "c",
+      "sizeLines": 37,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/ConvertToolDialog.cpp",
+      "language": "cpp",
+      "sizeLines": 246,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/ConvertToolDialog.h",
+      "language": "c",
+      "sizeLines": 39,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/MacroDialog.cpp",
+      "language": "cpp",
+      "sizeLines": 252,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/MacroDialog.h",
+      "language": "c",
+      "sizeLines": 45,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/MainControlDialog.cpp",
+      "language": "cpp",
+      "sizeLines": 671,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/MainControlDialog.h",
+      "language": "c",
+      "sizeLines": 54,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.h",
+      "language": "c",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/main.cpp",
+      "language": "cpp",
+      "sizeLines": 47,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "platforms/windows/win32/OpenKey/OpenKey/AboutDialog.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/AboutDialog.h",
+      "platforms/windows/win32/OpenKey/OpenKey/AppDelegate.h",
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/AboutDialog.h": [
+      "platforms/windows/win32/OpenKey/OpenKey/BaseDialog.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/AppDelegate.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/AppDelegate.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/AppDelegate.h": [
+      "platforms/windows/win32/OpenKey/OpenKey/AboutDialog.h",
+      "platforms/windows/win32/OpenKey/OpenKey/ConvertToolDialog.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MacroDialog.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MainControlDialog.h",
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/BaseDialog.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/BaseDialog.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/BaseDialog.h": [
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/ConvertToolDialog.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/AppDelegate.h",
+      "platforms/windows/win32/OpenKey/OpenKey/ConvertToolDialog.h",
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/ConvertToolDialog.h": [
+      "platforms/windows/win32/OpenKey/OpenKey/BaseDialog.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/MacroDialog.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/AppDelegate.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MacroDialog.h",
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/MacroDialog.h": [
+      "platforms/windows/win32/OpenKey/OpenKey/BaseDialog.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/MainControlDialog.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/AppDelegate.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MainControlDialog.h",
+      "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/MainControlDialog.h": [
+      "platforms/windows/win32/OpenKey/OpenKey/BaseDialog.h"
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.h": [],
+    "platforms/windows/win32/OpenKey/OpenKey/main.cpp": [
+      "platforms/windows/win32/OpenKey/OpenKey/AppDelegate.h",
+      "platforms/windows/win32/OpenKey/OpenKey/stdafx.h"
+    ]
+  },
+  "neighborMap": {
+    "platforms/windows/win32/OpenKey/OpenKey/AboutDialog.cpp": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+        "batchIndex": 6,
+        "symbols": []
+      }
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/AppDelegate.h": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+        "batchIndex": 6,
+        "symbols": []
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/OpenKey.cpp",
+        "batchIndex": 5,
+        "symbols": [
+          "OpenKeyFree",
+          "OpenKeyInit",
+          "saveSmartSwitchKeyData",
+          "checkHotKey",
+          "switchLanguage",
+          "keyboardHookProcess",
+          "mouseHookProcess",
+          "winEventProcCallback"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp",
+        "batchIndex": 2,
+        "symbols": [
+          "WndProc",
+          "createFakeWindow",
+          "createPopupMenu",
+          "updateData",
+          "_createSystemTrayIcon",
+          "SystemTrayHelper::WaitToCreateFakeWindow",
+          "createSystemTrayIcon",
+          "removeSystemTray",
+          "showWaveAlert",
+          "checkRivalInputMethod"
+        ]
+      }
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/BaseDialog.h": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+        "batchIndex": 6,
+        "symbols": []
+      }
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/ConvertToolDialog.cpp": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+        "batchIndex": 6,
+        "symbols": []
+      }
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/MacroDialog.cpp": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+        "batchIndex": 6,
+        "symbols": []
+      }
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.h": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/Bell.cpp",
+        "batchIndex": 2,
+        "symbols": [
+          "Bell_InstallCustomSound",
+          "Bell_PreviewSound",
+          "Bell_RingForTenseStreak",
+          "Bell_Snooze",
+          "Bell_ApplySettings",
+          "Bell_Init",
+          "Bell_ShowSettings"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp",
+        "batchIndex": 3,
+        "symbols": [
+          "MoodWatch_LastSendRisk",
+          "MoodWatch_DrainSampleAverage",
+          "MoodWatch_OnWord",
+          "MoodWatch_ConfirmEnable",
+          "MoodWatch_Toggle",
+          "MoodWatch_Init"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/SendGatekeeper.cpp",
+        "batchIndex": 5,
+        "symbols": [
+          "SendGatekeeper_Init",
+          "SendGatekeeper_ShouldIntercept",
+          "SendGatekeeper_ShowPause",
+          "SendGatekeeper_LastAppName",
+          "SendGatekeeper_IsAppWatched",
+          "SendGatekeeper_ToggleLastApp"
+        ]
+      },
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.cpp",
+        "batchIndex": 2,
+        "symbols": [
+          "WndProc",
+          "createFakeWindow",
+          "createPopupMenu",
+          "updateData",
+          "_createSystemTrayIcon",
+          "SystemTrayHelper::WaitToCreateFakeWindow",
+          "createSystemTrayIcon",
+          "removeSystemTray",
+          "showWaveAlert",
+          "checkRivalInputMethod"
+        ]
+      }
+    ],
+    "platforms/windows/win32/OpenKey/OpenKey/main.cpp": [
+      {
+        "path": "platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+        "batchIndex": 6,
+        "symbols": []
+      }
+    ]
+  }
+}

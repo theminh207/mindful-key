@@ -1,0 +1,188 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 12,
+  "filesSkipped": [
+    "platforms/apple/macos/MoodPhrasingMac.mm",
+    "platforms/apple/macos/MoodStoreMac.mm",
+    "platforms/apple/macos/MoodWatchMac.mm",
+    "platforms/apple/macos/MyTextField.m",
+    "platforms/apple/macos/NotesHistoryMac.mm",
+    "platforms/apple/macos/NudgeCoordinatorMac.mm",
+    "platforms/apple/macos/OpenKey.mm",
+    "platforms/apple/macos/OpenKeyManager.m",
+    "platforms/apple/macos/PanelViewController.mm",
+    "platforms/apple/macos/PrivacyPaneView.mm",
+    "platforms/apple/macos/ReflectionScreenMac.mm",
+    "platforms/apple/macos/SendGatekeeperMac.mm",
+    "platforms/apple/macos/SettingsWindowController.mm"
+  ],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 12,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 12,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "platforms/apple/macos/MoodPhrasingMac.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 51,
+      "nonEmptyLines": 43,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/MoodStoreMac.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 118,
+      "nonEmptyLines": 97,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/MoodWatchMac.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 35,
+      "nonEmptyLines": 27,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/MyTextField.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 22,
+      "nonEmptyLines": 18,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/NotesHistoryMac.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 44,
+      "nonEmptyLines": 37,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/NudgeCoordinatorMac.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 39,
+      "nonEmptyLines": 31,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/OpenKeyManager.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 27,
+      "nonEmptyLines": 20,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/PanelViewController.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 36,
+      "nonEmptyLines": 26,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/PrivacyPaneView.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 9,
+      "nonEmptyLines": 6,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/ReflectionScreenMac.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 24,
+      "nonEmptyLines": 19,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/SendGatekeeperMac.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 33,
+      "nonEmptyLines": 26,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/SettingsWindowController.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 29,
+      "nonEmptyLines": 22,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

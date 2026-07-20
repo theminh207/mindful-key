@@ -33,6 +33,7 @@
 
 -(void)onMoodWatchSelected;
 -(void)onGatekeeperToggleSelected;
+-(void)onShowCheckinOnRiverToggleSelected;
 -(void)onBellSettingsSelected;
 -(void)onDeleteMoodLogSelected;
 -(void)onSnoozeBellSelected;

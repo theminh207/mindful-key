@@ -1,0 +1,256 @@
+<title>Understand-Anything — Hướng dẫn cho mindful-key</title>
+<style>
+  :root{
+    --teal:#1D7C91; --teal-light:#E8F2F4; --teal-ink:#125766;
+    --orange:#FF7A1A; --orange-light:#FFF2E8;
+    --ground:#F5F6F5; --card:#FFFFFF; --ink:#23302F; --muted:#5E6B6A; --stone:#8A9BA0;
+    --divider:#E4E8E7;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    --serif:Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  .doc{background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.68;
+       font-size:17px;-webkit-font-smoothing:antialiased;padding:0;margin:0}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px}
+  .doc h1,.doc h2,.doc h3{color:var(--ink);text-wrap:balance;line-height:1.22;margin:0}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--stone)}
+  .lead{font-size:20px;color:var(--muted);line-height:1.6}
+  .quote{font-family:var(--serif);font-style:italic;font-size:22px;line-height:1.5;color:var(--teal-ink)}
+  .p{margin:14px 0}
+  .muted{color:var(--muted)}
+  code,.mono{font-family:var(--mono)}
+
+  .hero{background:linear-gradient(180deg,var(--teal-light),var(--ground));padding:60px 0 44px;border-bottom:1px solid var(--divider)}
+  .hero h1{font-size:40px;font-weight:700;letter-spacing:-.5px;margin:14px 0 0}
+  .hero .lead{margin-top:14px;max-width:58ch}
+
+  section{padding:48px 0}
+  section+section{border-top:1px solid var(--divider)}
+  .h2{font-size:27px;font-weight:700;letter-spacing:-.3px;margin:10px 0 0}
+  .h3{font-size:19px;font-weight:700;letter-spacing:-.2px;margin:30px 0 0}
+  .sec-lead{max-width:64ch;margin-top:12px}
+
+  .note{background:var(--card);border:1px solid var(--divider);border-left:3px solid var(--teal);
+        border-radius:0 12px 12px 0;padding:16px 20px;margin:20px 0}
+  .note .k{font-weight:600;color:var(--teal-ink)}
+  .warn{background:var(--card);border:1px solid var(--divider);border-left:3px solid var(--orange);
+        border-radius:0 12px 12px 0;padding:16px 20px;margin:20px 0}
+  .warn .k{font-weight:600;color:#B85A15}
+
+  .steps{display:grid;gap:12px;margin-top:22px}
+  .step{display:grid;grid-template-columns:32px 1fr;gap:14px;align-items:start;
+        background:var(--card);border:1px solid var(--divider);border-radius:12px;padding:14px 16px}
+  .step .n{width:32px;height:32px;border-radius:50%;background:var(--teal-light);color:var(--teal-ink);
+           font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex:none}
+  .step h3{font-size:15.5px;font-weight:600;margin:0}
+  .step p{margin:4px 0 0;font-size:14.5px;color:var(--muted);line-height:1.6}
+
+  .cmdgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+  .cmdcard{background:var(--card);border:1px solid var(--divider);border-radius:12px;padding:14px 16px}
+  .cmdcard .cmd{font-family:var(--mono);font-weight:700;color:var(--teal-ink);font-size:14.5px;
+                background:var(--teal-light);border-radius:7px;padding:3px 8px;display:inline-block}
+  .cmdcard p{margin:8px 0 0;font-size:14px;color:var(--muted);line-height:1.55}
+  .cmdcard.skip{opacity:.55}
+  .cmdcard.skip .cmd{background:#EEEFEE;color:var(--stone)}
+
+  .flowcols{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+  .flowcol{background:var(--card);border:1px solid var(--divider);border-radius:12px;padding:16px 16px 18px}
+  .flowcol .eyebrow{font-size:11px}
+  .flowcol ul{margin:10px 0 0;padding-left:0;list-style:none;display:grid;gap:9px}
+  .flowcol li{font-size:14px;color:var(--ink);line-height:1.5;padding-left:16px;position:relative}
+  .flowcol li::before{content:"→";position:absolute;left:0;color:var(--teal);font-weight:700}
+  .flowcol li b{font-family:var(--mono);font-weight:700;color:var(--teal-ink);font-size:13px}
+
+  table.tbl{width:100%;border-collapse:collapse;margin-top:22px;background:var(--card);
+            border:1px solid var(--divider);border-radius:12px;overflow:hidden;font-size:14.5px}
+  table.tbl th{background:var(--teal-light);color:var(--teal-ink);text-align:left;
+               font-size:12px;letter-spacing:.4px;text-transform:uppercase;padding:10px 14px}
+  table.tbl td{padding:11px 14px;border-top:1px solid var(--divider);vertical-align:top;color:var(--ink)}
+  table.tbl td:nth-child(2){font-family:var(--mono);font-weight:700;color:var(--teal-ink);white-space:nowrap}
+  table.tbl td:last-child{color:var(--muted)}
+
+  pre.code{background:#1B2523;color:#D8E5E3;border-radius:10px;padding:14px 18px;margin:16px 0;
+           font-family:var(--mono);font-size:13.5px;line-height:1.7;overflow-x:auto}
+  pre.code .c{color:#8FA6A2}
+
+  .faq{background:var(--card);border:1px solid var(--divider);border-radius:14px;padding:18px 22px;margin:22px 0}
+  .faq dt{font-weight:600;color:var(--ink);font-size:15px;margin-top:14px}
+  .faq dt:first-child{margin-top:0}
+  .faq dd{margin:4px 0 0;color:var(--muted);font-size:14.5px;line-height:1.6}
+
+  .credit{padding:36px 0 56px;text-align:center;color:var(--muted);font-size:14px}
+  .credit .mark{width:40px;height:40px;margin:0 auto 10px;display:block}
+
+  @media (max-width:640px){
+    .hero h1{font-size:31px}.h2{font-size:23px}.doc{font-size:16px}
+    .cmdgrid{grid-template-columns:1fr}
+    .flowcols{grid-template-columns:1fr}
+  }
+</style>
+
+<div class="doc">
+
+  <div class="hero">
+    <div class="wrap">
+      <div class="eyebrow">Hướng dẫn dùng · công cụ nội bộ</div>
+      <h1>Understand-Anything</h1>
+      <p class="lead">Bản đồ tri thức (knowledge graph) cho code <b>mindful-key</b> — quét 1 lần, đọc hiểu nhanh nhiều lần. Chỉ đọc hiểu, không sửa code.</p>
+      <figure style="margin:26px 0 0;background:var(--card);border:1px solid var(--divider);border-radius:16px;padding:22px 26px 16px">
+        <svg viewBox="0 0 260 100" width="100%" height="100" role="img" aria-label="Sơ đồ các node nối với nhau bằng cạnh — hình dung bản đồ tri thức">
+          <line x1="46" y1="72" x2="110" y2="30" stroke="#1D7C91" stroke-width="1.6"/>
+          <line x1="110" y1="30" x2="182" y2="52" stroke="#1D7C91" stroke-width="1.6"/>
+          <line x1="110" y1="30" x2="140" y2="82" stroke="#1D7C91" stroke-width="1.6"/>
+          <line x1="182" y1="52" x2="222" y2="24" stroke="#1D7C91" stroke-width="1.6"/>
+          <line x1="46" y1="72" x2="140" y2="82" stroke="#1D7C91" stroke-width="1.2" stroke-dasharray="2 4" opacity=".6"/>
+          <circle cx="46" cy="72" r="5.5" fill="#1D7C91"/>
+          <circle cx="110" cy="30" r="7" fill="#1D7C91"/>
+          <circle cx="182" cy="52" r="5.5" fill="#1D7C91"/>
+          <circle cx="140" cy="82" r="4.5" fill="#FF7A1A"/>
+          <circle cx="222" cy="24" r="4.5" fill="#FF7A1A"/>
+        </svg>
+        <figcaption style="font-size:13px;color:var(--muted);text-align:center;margin-top:10px">core/ và platforms/ là các node teal (đường xá chắc chắn — tree-sitter đọc thẳng cú pháp); mô tả cam là phần AI suy diễn — có thể sai, cần verify.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="eyebrow">Tinh thần</div>
+      <h2 class="h2">Một tấm bản đồ, không phải người thay não</h2>
+      <p class="p sec-lead">Code của <code>mindful-key</code> giống một thành phố: <code>core/</code> (bộ não C++ dùng chung) làm trung tâm, tỏa ra các khu <code>platforms/</code> (vỏ macOS/Windows/Android/iOS). Đọc code trực tiếp giống đi bộ dò từng con hẻm — chậm, dễ lạc. Understand-Anything khảo sát cả thành phố 1 lần rồi vẽ bản đồ: click vào 1 tòa nhà (file/hàm/class) là biết nó làm gì, nối với ai, thuộc khu nào.</p>
+      <p class="quote">"Bản đồ giúp đi nhanh hơn — không có nghĩa là khỏi cần biết đường."</p>
+      <div class="note">
+        <p style="margin:0"><span class="k">Quan hệ với tài liệu tay đã có:</span> <code>OPENKEY-MAP.md</code>, <code>BREATHING-PAUSE-CONTRACT.md</code>... đã viết tay, xác minh theo dòng số cụ thể. Bản đồ AI sinh ra <b>không thay thế</b> mấy file đó — dùng như gương soi: lệch pha thì ghi vào <code>FRICTION-LOG.md</code>, đừng sửa tài liệu gốc theo AI ngay.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="eyebrow">Câu lệnh</div>
+      <h2 class="h2">7 lệnh hay dùng</h2>
+      <p class="p sec-lead">Gõ thẳng trong Claude Code, không cần cài thêm — plugin đã ở scope <b>project</b>, chỉ áp dụng repo này.</p>
+      <div class="cmdgrid">
+        <div class="cmdcard"><span class="cmd">/understand</span><p>Quét code, dựng hoặc vá bản đồ. Chạy lần đầu, sau đó để nó tự vá incremental.</p></div>
+        <div class="cmdcard"><span class="cmd">/understand-dashboard</span><p>Mở lại bản đồ trực quan (web, chạy trên máy) — không quét lại.</p></div>
+        <div class="cmdcard"><span class="cmd">/understand-chat "..."</span><p>Hỏi nhanh về code, trả lời dựa trên bản đồ đã có sẵn.</p></div>
+        <div class="cmdcard"><span class="cmd">/understand-explain &lt;path&gt;</span><p>Đào sâu 1 file/hàm cụ thể trước khi sửa — vai trò, láng giềng, luồng dữ liệu.</p></div>
+        <div class="cmdcard"><span class="cmd">/understand-diff</span><p>Trước khi commit/push: soi thay đổi rung dây chuyền tới đâu.</p></div>
+        <div class="cmdcard"><span class="cmd">/understand-domain</span><p>Vẽ luồng nghiệp vụ (business flow) — đối chiếu với tài liệu tay.</p></div>
+        <div class="cmdcard"><span class="cmd">/understand-onboard</span><p>Sinh 1 file Markdown onboarding đầy đủ: layer, tour, file map, điểm phức tạp.</p></div>
+        <div class="cmdcard skip"><span class="cmd">/understand-knowledge · /understand-figma</span><p>Không áp dụng — dành cho wiki Karpathy-pattern và file Figma, dự án này không có.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="eyebrow">Cơ chế</div>
+      <h2 class="h2">Lưu ở đâu — có tốn token quét lại không</h2>
+      <p class="p sec-lead">Đây là phần hay quên nhất: bản đồ <b>không nằm trong bộ nhớ hội thoại</b> — nó nằm trên đĩa, thư mục <code>.ua/</code> tại gốc repo. Giống viết ra sổ tay để trên bàn thay vì nhớ trong đầu: mở cửa sổ Claude Code mới, sổ vẫn còn nguyên.</p>
+
+      <div class="steps">
+        <div class="step"><div class="n">1</div><div><h3>Chưa đổi commit nào</h3><p>Nó chỉ hỏi bạn muốn làm gì (rebuild / review / bỏ qua) — không tự đốt token quét lại.</p></div></div>
+        <div class="step"><div class="n">2</div><div><h3>Có sửa vài file</h3><p>Chỉ quét lại đúng file đã đổi (incremental) — rẻ hơn nhiều so với lần đầu.</p></div></div>
+        <div class="step"><div class="n">3</div><div><h3>Gõ <code>--full</code></h3><p>Bắt buộc quét lại toàn bộ từ đầu — tốn như lần quét đầu tiên. Chỉ dùng khi thật cần.</p></div></div>
+        <div class="step"><div class="n">4</div><div><h3>Hỏi/xem bản đồ</h3><p><code>understand-chat</code>, <code>understand-dashboard</code>, <code>understand-diff</code>, <code>understand-explain</code>, <code>understand-onboard</code> chỉ đọc file <code>knowledge-graph.json</code> có sẵn — gần như miễn phí, không quét lại.</p></div></div>
+      </div>
+
+      <div class="warn">
+        <p style="margin:0"><span class="k">Bật 1 lần cho khỏe:</span> <code>/understand --auto-update</code> gắn hook chạy sau mỗi commit, tự vá bản đồ mà không cần nhớ tay gọi lại.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="eyebrow">Tra cứu nhanh</div>
+      <h2 class="h2">Tình huống → lệnh → mục đích</h2>
+      <table class="tbl">
+        <tr><th>Tình huống</th><th>Lệnh</th><th>Mục đích</th></tr>
+        <tr><td>Lần đầu / lâu rồi chưa quét</td><td>/understand</td><td>Dựng hoặc vá bản đồ tri thức</td></tr>
+        <tr><td>Muốn xem lại bản đồ trực quan</td><td>/understand-dashboard</td><td>Mở web dashboard, không quét lại</td></tr>
+        <tr><td>Thắc mắc nhanh lúc code</td><td>/understand-chat</td><td>Trả lời dựa trên bản đồ đã có</td></tr>
+        <tr><td>Sắp sửa 1 file/hàm lạ</td><td>/understand-explain</td><td>Vai trò, láng giềng, luồng dữ liệu</td></tr>
+        <tr><td>Trước khi commit/push</td><td>/understand-diff</td><td>Soi thay đổi rung dây chuyền tới đâu</td></tr>
+        <tr><td>Muốn xem luồng nghiệp vụ</td><td>/understand-domain</td><td>Vẽ domain/flow — đối chiếu tài liệu tay</td></tr>
+        <tr><td>Cần tài liệu tổng quan dễ đọc</td><td>/understand-onboard</td><td>Sinh Markdown: layer, tour, file map</td></tr>
+        <tr><td>Sau lần quét lớn đầu tiên</td><td>--auto-update</td><td>Bật tự vá bản đồ mỗi commit</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="eyebrow">Thực hành</div>
+      <h2 class="h2">Quy trình dùng cho dự án này</h2>
+      <div class="flowcols">
+        <div class="flowcol">
+          <div class="eyebrow">Lần đầu</div>
+          <ul>
+            <li><b>/understand</b> chạy quét</li>
+            <li>duyệt <b>.understandignore</b> trước khi xác nhận</li>
+            <li>dashboard tự bật, lướt tổng quan</li>
+            <li><b>/understand-onboard</b> 1 lần</li>
+          </ul>
+        </div>
+        <div class="flowcol">
+          <div class="eyebrow">Hằng ngày</div>
+          <ul>
+            <li>sắp sửa chỗ lạ → <b>/understand-explain</b></li>
+            <li>có thắc mắc → <b>/understand-chat</b></li>
+            <li>trước khi push → <b>/understand-diff</b></li>
+          </ul>
+        </div>
+        <div class="flowcol">
+          <div class="eyebrow">Định kỳ</div>
+          <ul>
+            <li>bật <b>--auto-update</b> 1 lần</li>
+            <li>thỉnh thoảng <b>/understand-domain</b></li>
+            <li>đối chiếu với OPENKEY-MAP.md</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="eyebrow">Riêng cho mindful-key</div>
+      <h2 class="h2">Chỗ cần chỉnh tay</h2>
+      <p class="p sec-lead">Repo này trộn code kỹ thuật (<code>core/</code>, <code>platforms/</code>) chung với web marketing (<code>site/</code>) và build artifact. Quét chung hết sẽ loãng bản đồ, tốn token vô ích. Khi <code>.understandignore</code> hiện ra để duyệt, loại các thư mục:</p>
+      <pre class="code">site/<span class="c">          # web marketing, khác bản chất</span>
+build/<span class="c">         # sản phẩm build, không phải nguồn</span>
+release-out/<span class="c">   # gói phát hành</span>
+models/<span class="c">        # file model/binary</span></pre>
+      <p class="p">Giữ lại <code>core/</code>, <code>platforms/</code>, <code>docs/</code>, <code>bmad-output/</code> — vì đó là "vì sao" đằng sau code kỹ thuật.</p>
+      <p class="p"><code>.gitignore</code> hiện chưa chặn <code>.ua/</code> — thêm 2 dòng sau để khỏi commit rác tạm, nhưng <b>giữ lại</b> <code>knowledge-graph.json</code> + <code>meta.json</code> để commit thật (đổi máy hay thêm người vào đội thì <code>git pull</code> là có sẵn bản đồ):</p>
+      <pre class="code">.ua/intermediate/
+.ua/diff-overlay.json</pre>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="eyebrow">Khắc phục sự cố</div>
+      <h2 class="h2">Hỏi nhanh</h2>
+      <dl class="faq">
+        <dt>Dashboard không mở được?</dt>
+        <dd>Kiểm tra <code>.ua/knowledge-graph.json</code> đã tồn tại chưa — nếu chưa, <code>/understand</code> vẫn đang chạy dở hoặc chưa chạy lần nào.</dd>
+        <dt>Nghi ngờ mô tả graph sai?</dt>
+        <dd>Đọc lại source thật tại <code>filePath</code> ghi trong node đó — mô tả là AI suy diễn, không phải nguồn sự thật. Đúng luật "CẤM đoán" trong CLAUDE.md.</dd>
+        <dt>Session mới có phải quét lại không?</dt>
+        <dd>Không — bản đồ nằm trên đĩa, không nằm trong bộ nhớ hội thoại. Session mới chỉ đọc file có sẵn.</dd>
+        <dt>Nơi lưu artifact?</dt>
+        <dd><code>.ua/</code> tại gốc repo. Cài scope <b>project</b>, không cộng token always-on vào project khác.</dd>
+      </dl>
+    </div>
+  </section>
+
+  <div class="credit">
+    <svg class="mark" viewBox="0 0 52 52" aria-label="Biểu tượng bản đồ tri thức"><circle cx="26" cy="26" r="25" fill="#E8F2F4"/><line x1="16" y1="34" x2="26" y2="18" stroke="#1D7C91" stroke-width="2"/><line x1="26" y1="18" x2="36" y2="28" stroke="#1D7C91" stroke-width="2"/><circle cx="16" cy="34" r="3.4" fill="#1D7C91"/><circle cx="26" cy="18" r="4" fill="#1D7C91"/><circle cx="36" cy="28" r="3" fill="#FF7A1A"/></svg>
+    <div>Understand-Anything cho <b style="color:var(--ink)">mindful-key</b> — bản đồ đọc hiểu code, không sửa code.</div>
+  </div>
+
+</div>

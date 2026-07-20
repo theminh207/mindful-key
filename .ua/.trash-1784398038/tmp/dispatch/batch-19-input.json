@@ -1,0 +1,51 @@
+{
+  "batchIndex": 19,
+  "totalBatches": 19,
+  "files": [
+    {
+      "path": "tests/ios/mood_journal_store_test.mm",
+      "language": "mm",
+      "sizeLines": 215,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/ios/nudge_coordinator_ios_test.mm",
+      "language": "mm",
+      "sizeLines": 217,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/ios/settings_bridge_test.mm",
+      "language": "mm",
+      "sizeLines": 106,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/macos/README.md",
+      "language": "markdown",
+      "sizeLines": 40,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "tests/macos/mood_pipeline_build.sh",
+      "language": "shell",
+      "sizeLines": 36,
+      "fileCategory": "script"
+    },
+    {
+      "path": "tests/macos/mood_pipeline_test.mm",
+      "language": "mm",
+      "sizeLines": 318,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "tests/ios/mood_journal_store_test.mm": [],
+    "tests/ios/nudge_coordinator_ios_test.mm": [],
+    "tests/ios/settings_bridge_test.mm": [],
+    "tests/macos/README.md": [],
+    "tests/macos/mood_pipeline_build.sh": [],
+    "tests/macos/mood_pipeline_test.mm": []
+  },
+  "neighborMap": {}
+}

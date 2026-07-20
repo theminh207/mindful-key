@@ -30,6 +30,12 @@ tests/ios/*_test
 *.html
 # ...nhưng landing page trong site/ PHẢI được commit (deploy qua Coolify)
 !site/**/*.html
+# ...và tài liệu hướng dẫn minh họa trong docs/ cũng PHẢI được commit
+!docs/**/*.html
 
 # macOS host-test compiled binaries (không commit — chỉ commit .mm nguồn)
 tests/macos/*_test
+
+# Understand-Anything (bản đồ tri thức đọc hiểu code — rác tạm, không phải nguồn)
+.ua/intermediate/
+.ua/diff-overlay.json

@@ -30,9 +30,24 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
 // Nay view cha tính sẵn VỊ TRÍ (xf = 0..1 trên bề ngang) cho từng mẫu rồi đưa xuống:
 //   - Hôm nay  → xf từ giờ thật  ⇒ nhãn giờ nói thật.
 //   - Tuần/Tháng → xf = m/(k-1)  ⇒ 1 chấm = 1 ngày, giãn đều VẪN ĐÚNG, hành vi y như cũ.
+// [MINDFUL] 2026-07-20 — mỗi entry giờ là NSDictionary {@"pt": NSValue(NSPoint), @"checkin":
+// NSNumber BOOL} thay vì NSValue trần, để mang thêm "chấm này tự thuật hay tự đoán" tới tận vòng
+// vẽ. NSNull cho quãng trống giữ NGUYÊN không đổi. 2 hàm inline sau là NƠI DUY NHẤT unwrap —
+// ampAt:/drawRect: gọi qua đây, không tự bóc tay để lỡ đổi format sau này chỉ sửa 1 chỗ.
+static inline NSPoint MKEntryPoint(id entry) {
+    return [(NSValue *)((NSDictionary *)entry)[@"pt"] pointValue];
+}
+static inline BOOL MKEntryIsCheckin(id entry) {
+    return [((NSDictionary *)entry)[@"checkin"] boolValue];
+}
+static inline NSDictionary *MKMakeEntry(CGFloat xf, double value, BOOL isCheckin) {
+    return @{@"pt": [NSValue valueWithPoint:NSMakePoint(xf, value)], @"checkin": @(isCheckin)};
+}
+
 @interface MKRiverCanvas : NSView
-/// NSValue(NSPoint{x = vị trí 0..1 trên bề ngang, y = biên độ 0..1}), hoặc NSNull = NGẮT nước
-/// giữa 2 mẫu kề nó (quãng không gõ). Rỗng/nil = chưa có mẫu → KHÔNG vẽ gì (dec.4).
+/// Dict {@"pt": NSValue(NSPoint{x = vị trí 0..1 trên bề ngang, y = biên độ 0..1}), @"checkin":
+/// NSNumber BOOL}, hoặc NSNull = NGẮT nước giữa 2 mẫu kề nó (quãng không gõ). Rỗng/nil = chưa có
+/// mẫu → KHÔNG vẽ gì (dec.4). checkin=YES vẽ vòng RỖNG (tự thuật), NO vẽ chấm ĐẶC (tự đoán).
 @property (nonatomic, copy, nullable) NSArray *entries;
 @end
 
@@ -52,11 +67,11 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
     for (NSUInteger m = 0; m < k; m++) {
         id e = _entries[m];
         if (e == [NSNull null]) continue;
-        if ([(NSValue *)e pointValue].x <= xf) i = (NSInteger)m; else break;
+        if (MKEntryPoint(e).x <= xf) i = (NSInteger)m; else break;
     }
     if (i < 0) return NO;                       // xf nằm trước mẫu đầu tiên
 
-    NSPoint a = [(NSValue *)_entries[(NSUInteger)i] pointValue];
+    NSPoint a = MKEntryPoint(_entries[(NSUInteger)i]);
     NSUInteger n = (NSUInteger)i + 1;
     id nx = (n < k) ? _entries[n] : nil;
 
@@ -66,7 +81,7 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
         return NO;
     }
 
-    NSPoint b = [(NSValue *)nx pointValue];
+    NSPoint b = MKEntryPoint(nx);
     if (b.x <= a.x) { *outAmp = a.y; return YES; }   // 2 mẫu trùng vị trí — khỏi chia cho 0
     *outAmp = a.y + (b.y - a.y) * ((xf - a.x) / (b.x - a.x));
     return YES;
@@ -135,7 +150,7 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
     for (NSUInteger m = 0; m < k; m++) {
         id e = _entries[m];
         if (e == [NSNull null]) continue;
-        NSPoint s = [(NSValue *)e pointValue];
+        NSPoint s = MKEntryPoint(e);
         CGFloat mx = s.x * w;
         NSPoint closestP = NSMakePoint(mx, midY - s.y * maxWaveH * sin(mx * 0.19));
 
@@ -144,8 +159,18 @@ static const CGFloat kCaptionH   = 32.0;   // tối đa 2 dòng
         // không thấy. Nay tô teal đặc, to hơn chút → thành cái chấm rõ nằm trên dòng nước.
         NSRect dot = NSMakeRect(closestP.x - 3.3, closestP.y - 3.3, 6.6, 6.6);
         NSBezierPath *dotPath = [NSBezierPath bezierPathWithOvalInRect:dot];
-        [teal setFill];
-        [dotPath fill];
+        if (MKEntryIsCheckin(e)) {
+            // [MINDFUL] 2026-07-20 — chấm TỰ THUẬT ("Mặt hồ đang thế nào?" — LogCheckinEvent):
+            // vòng RỖNG viền teal, KHÔNG tô đặc. Tô nền trắng/background để sóng không đâm xuyên qua.
+            dotPath.lineWidth = 1.8;
+            [[NSColor windowBackgroundColor] setFill];
+            [dotPath fill];
+            [teal setStroke];
+            [dotPath stroke];
+        } else {
+            [teal setFill];
+            [dotPath fill];
+        }
     }
 }
 
@@ -264,7 +289,9 @@ static const CGFloat kAxisHourEvening    = 21.0;   // giữa buổi tối   (18-
         }
         validCount++;
         CGFloat xf = (k > 1) ? (CGFloat)m / (CGFloat)(k - 1) : 0.5;
-        [entries addObject:[NSValue valueWithPoint:NSMakePoint(xf, [val doubleValue])]];
+        // checkin luôn NO ở đây: Tuần/Tháng là TRUNG BÌNH theo ngày (1 chấm = 1 ngày, đã gộp mọi
+        // nhịp trong ngày đó lại) — "chấm này tự thuật hay tự đoán" không còn ý nghĩa ở mức 1 ngày.
+        [entries addObject:MKMakeEntry(xf, [val doubleValue], NO)];
     }
     [self applyEntries:entries validCount:validCount];
 }
@@ -307,7 +334,9 @@ static const CGFloat kAxisHourEvening    = 21.0;   // giữa buổi tối   (18-
         validCount++;
         CGFloat xf = (CGFloat)(((double)ts - originSec) / spanSec);
         xf = MAX(0.0, MIN(1.0, xf));
-        [entries addObject:[NSValue valueWithPoint:NSMakePoint(xf, [samples[m][@"value"] doubleValue])]];
+        // "checkin" vắng mặt (caller cũ chưa cập nhật) -> boolValue trên nil = NO an toàn, không crash.
+        BOOL isCheckin = [samples[m][@"checkin"] boolValue];
+        [entries addObject:MKMakeEntry(xf, [samples[m][@"value"] doubleValue], isCheckin)];
     }
     [self applyEntries:entries validCount:validCount];
 }
@@ -361,8 +390,8 @@ static const CGFloat kAxisHourEvening    = 21.0;   // giữa buổi tối   (18-
         validCount++;
         // Nén quá khứ vào [0, kNowFrac] (thay vì [0,1]) để chừa chỗ cho tương lai bên phải.
         CGFloat xf = (CGFloat)(((double)ts - originSec) / windowSeconds) * kNowFrac;
-        [entries addObject:[NSValue valueWithPoint:NSMakePoint(MAX(0.0, MIN(kNowFrac, xf)),
-                                                                [s[@"value"] doubleValue])]];
+        BOOL isCheckin = [s[@"checkin"] boolValue];
+        [entries addObject:MKMakeEntry(MAX(0.0, MIN(kNowFrac, xf)), [s[@"value"] doubleValue], isCheckin)];
     }
 
     // Đầu sóng "bây giờ" = mốc kNowFrac (KHÔNG phải mép phải). liveHead < 0 (đã im/chưa gõ) thì
@@ -373,7 +402,8 @@ static const CGFloat kAxisHourEvening    = 21.0;   // giữa buổi tối   (18-
             [entries addObject:[NSNull null]];
         }
         validCount++;
-        [entries addObject:[NSValue valueWithPoint:NSMakePoint(kNowFrac, liveHead)]];
+        // liveHead luôn tự-đoán (MoodWatchMac_LiveAmplitude) — không phải câu tự thuật.
+        [entries addObject:MKMakeEntry(kNowFrac, liveHead, NO)];
     }
 
     [self applyEntries:entries validCount:validCount];

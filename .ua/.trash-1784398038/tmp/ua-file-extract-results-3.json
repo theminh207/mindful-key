@@ -1,0 +1,1059 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 10,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 10,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 10,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "core/mood/EmotionWaveAmplitude.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 24,
+      "nonEmptyLines": 19,
+      "functions": [
+        {
+          "name": "EmotionWaveAmplitude",
+          "startLine": 12,
+          "endLine": 24,
+          "params": [
+            "risk"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "EmotionWaveAmplitude",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "core/mood/EmotionWaveAmplitude.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 46,
+      "nonEmptyLines": 40,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "core/mood/MoodBuffer.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 39,
+      "nonEmptyLines": 32,
+      "functions": [
+        {
+          "name": "MoodBuffer",
+          "startLine": 10,
+          "endLine": 12,
+          "params": [
+            "maxWords"
+          ]
+        },
+        {
+          "name": "pushWord",
+          "startLine": 14,
+          "endLine": 21,
+          "params": [
+            "word"
+          ]
+        },
+        {
+          "name": "recentText",
+          "startLine": 23,
+          "endLine": 31,
+          "params": []
+        },
+        {
+          "name": "clear",
+          "startLine": 33,
+          "endLine": 35,
+          "params": []
+        },
+        {
+          "name": "empty",
+          "startLine": 37,
+          "endLine": 39,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "MoodBuffer",
+          "line": 10,
+          "isDefault": false
+        },
+        {
+          "name": "pushWord",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "recentText",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "clear",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "empty",
+          "line": 37,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "pushWord",
+          "callee": "empty",
+          "lineNumber": 15
+        },
+        {
+          "caller": "pushWord",
+          "callee": "push_back",
+          "lineNumber": 18
+        },
+        {
+          "caller": "pushWord",
+          "callee": "size",
+          "lineNumber": 19
+        },
+        {
+          "caller": "pushWord",
+          "callee": "erase",
+          "lineNumber": 20
+        },
+        {
+          "caller": "pushWord",
+          "callee": "begin",
+          "lineNumber": 20
+        },
+        {
+          "caller": "recentText",
+          "callee": "size",
+          "lineNumber": 25
+        },
+        {
+          "caller": "recentText",
+          "callee": "empty",
+          "lineNumber": 26
+        },
+        {
+          "caller": "clear",
+          "callee": "clear",
+          "lineNumber": 34
+        },
+        {
+          "caller": "empty",
+          "callee": "empty",
+          "lineNumber": 38
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 5,
+        "functionCount": 5,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "core/mood/MoodBuffer.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 30,
+      "nonEmptyLines": 24,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "core/mood/SendRiskAnalyzer.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 182,
+      "nonEmptyLines": 154,
+      "functions": [
+        {
+          "name": "categoryWeight",
+          "startLine": 28,
+          "endLine": 32,
+          "params": [
+            "cat"
+          ]
+        },
+        {
+          "name": "toLowerVi",
+          "startLine": 72,
+          "endLine": 95,
+          "params": [
+            "c"
+          ]
+        },
+        {
+          "name": "SendRiskAnalyzer_Normalize",
+          "startLine": 97,
+          "endLine": 112,
+          "params": [
+            "text"
+          ]
+        },
+        {
+          "name": "collapseRuns",
+          "startLine": 115,
+          "endLine": 131,
+          "params": [
+            "in"
+          ]
+        },
+        {
+          "name": "SendRiskAnalyzer_Analyze",
+          "startLine": 133,
+          "endLine": 182,
+          "params": [
+            "recentText"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "MoodLex",
+          "startLine": 19,
+          "endLine": 23,
+          "methods": [],
+          "properties": [
+            "word",
+            "score",
+            "category"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "MoodLex",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "SendRiskAnalyzer_Normalize",
+          "line": 97,
+          "isDefault": false
+        },
+        {
+          "name": "SendRiskAnalyzer_Analyze",
+          "line": 133,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "toLowerVi",
+          "callee": "(wchar_t)",
+          "lineNumber": 74
+        },
+        {
+          "caller": "toLowerVi",
+          "callee": "(wchar_t)",
+          "lineNumber": 78
+        },
+        {
+          "caller": "toLowerVi",
+          "callee": "(wchar_t)",
+          "lineNumber": 92
+        },
+        {
+          "caller": "SendRiskAnalyzer_Normalize",
+          "callee": "reserve",
+          "lineNumber": 99
+        },
+        {
+          "caller": "SendRiskAnalyzer_Normalize",
+          "callee": "size",
+          "lineNumber": 99
+        },
+        {
+          "caller": "SendRiskAnalyzer_Normalize",
+          "callee": "size",
+          "lineNumber": 100
+        },
+        {
+          "caller": "SendRiskAnalyzer_Normalize",
+          "callee": "push_back",
+          "lineNumber": 106
+        },
+        {
+          "caller": "SendRiskAnalyzer_Normalize",
+          "callee": "push_back",
+          "lineNumber": 108
+        },
+        {
+          "caller": "SendRiskAnalyzer_Normalize",
+          "callee": "toLowerVi",
+          "lineNumber": 108
+        },
+        {
+          "caller": "collapseRuns",
+          "callee": "reserve",
+          "lineNumber": 117
+        },
+        {
+          "caller": "collapseRuns",
+          "callee": "size",
+          "lineNumber": 117
+        },
+        {
+          "caller": "collapseRuns",
+          "callee": "size",
+          "lineNumber": 119
+        },
+        {
+          "caller": "collapseRuns",
+          "callee": "size",
+          "lineNumber": 122
+        },
+        {
+          "caller": "collapseRuns",
+          "callee": "append",
+          "lineNumber": 127
+        },
+        {
+          "caller": "SendRiskAnalyzer_Analyze",
+          "callee": "SendRiskAnalyzer_Normalize",
+          "lineNumber": 137
+        },
+        {
+          "caller": "SendRiskAnalyzer_Analyze",
+          "callee": "collapseRuns",
+          "lineNumber": 138
+        },
+        {
+          "caller": "SendRiskAnalyzer_Analyze",
+          "callee": "wstring",
+          "lineNumber": 146
+        },
+        {
+          "caller": "SendRiskAnalyzer_Analyze",
+          "callee": "find",
+          "lineNumber": 147
+        },
+        {
+          "caller": "SendRiskAnalyzer_Analyze",
+          "callee": "std::abs",
+          "lineNumber": 148
+        },
+        {
+          "caller": "SendRiskAnalyzer_Analyze",
+          "callee": "categoryWeight",
+          "lineNumber": 148
+        },
+        {
+          "caller": "SendRiskAnalyzer_Analyze",
+          "callee": "find",
+          "lineNumber": 157
+        },
+        {
+          "caller": "SendRiskAnalyzer_Analyze",
+          "callee": "std::exp",
+          "lineNumber": 168
+        },
+        {
+          "caller": "SendRiskAnalyzer_Analyze",
+          "callee": "begin",
+          "lineNumber": 173
+        },
+        {
+          "caller": "SendRiskAnalyzer_Analyze",
+          "callee": "end",
+          "lineNumber": 174
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 3,
+        "functionCount": 5,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "core/mood/SendRiskAnalyzer.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 51,
+      "nonEmptyLines": 45,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 277,
+      "nonEmptyLines": 253,
+      "functions": [
+        {
+          "name": "msgThread",
+          "startLine": 92,
+          "endLine": 98,
+          "params": [
+            "p"
+          ]
+        },
+        {
+          "name": "showMindfulPrompt",
+          "startLine": 100,
+          "endLine": 108,
+          "params": [
+            "message"
+          ]
+        },
+        {
+          "name": "analyzeOnWorker",
+          "startLine": 110,
+          "endLine": 159,
+          "params": [
+            "word"
+          ]
+        },
+        {
+          "name": "workerLoop",
+          "startLine": 161,
+          "endLine": 180,
+          "params": []
+        },
+        {
+          "name": "MoodWatch_LastSendRisk",
+          "startLine": 182,
+          "endLine": 184,
+          "params": []
+        },
+        {
+          "name": "MoodWatch_DrainSampleAverage",
+          "startLine": 186,
+          "endLine": 195,
+          "params": [
+            "outAvg"
+          ]
+        },
+        {
+          "name": "MoodWatch_OnWord",
+          "startLine": 197,
+          "endLine": 228,
+          "params": [
+            "word"
+          ]
+        },
+        {
+          "name": "MoodWatch_ConfirmEnable",
+          "startLine": 232,
+          "endLine": 247,
+          "params": [
+            "parent"
+          ]
+        },
+        {
+          "name": "MoodWatch_Toggle",
+          "startLine": 249,
+          "endLine": 267,
+          "params": []
+        },
+        {
+          "name": "MoodWatch_Init",
+          "startLine": 269,
+          "endLine": 277,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "MoodWatch_LastSendRisk",
+          "line": 182,
+          "isDefault": false
+        },
+        {
+          "name": "MoodWatch_DrainSampleAverage",
+          "line": 186,
+          "isDefault": false
+        },
+        {
+          "name": "MoodWatch_OnWord",
+          "line": 197,
+          "isDefault": false
+        },
+        {
+          "name": "MoodWatch_ConfirmEnable",
+          "line": 232,
+          "isDefault": false
+        },
+        {
+          "name": "MoodWatch_Toggle",
+          "line": 249,
+          "isDefault": false
+        },
+        {
+          "name": "MoodWatch_Init",
+          "line": 269,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "msgThread",
+          "callee": "MessageBoxW",
+          "lineNumber": 94
+        },
+        {
+          "caller": "msgThread",
+          "callee": "InterlockedExchange",
+          "lineNumber": 96
+        },
+        {
+          "caller": "showMindfulPrompt",
+          "callee": "InterlockedCompareExchange",
+          "lineNumber": 101
+        },
+        {
+          "caller": "showMindfulPrompt",
+          "callee": "CreateThread",
+          "lineNumber": 103
+        },
+        {
+          "caller": "showMindfulPrompt",
+          "callee": "CloseHandle",
+          "lineNumber": 105
+        },
+        {
+          "caller": "showMindfulPrompt",
+          "callee": "InterlockedExchange",
+          "lineNumber": 107
+        },
+        {
+          "caller": "analyzeOnWorker",
+          "callee": "pushWord",
+          "lineNumber": 111
+        },
+        {
+          "caller": "analyzeOnWorker",
+          "callee": "SendRiskAnalyzer_Analyze",
+          "lineNumber": 112
+        },
+        {
+          "caller": "analyzeOnWorker",
+          "callee": "recentText",
+          "lineNumber": 112
+        },
+        {
+          "caller": "analyzeOnWorker",
+          "callee": "EmotionWaveAmplitude",
+          "lineNumber": 131
+        },
+        {
+          "caller": "analyzeOnWorker",
+          "callee": "NudgeCoordinator_RippleThreshold",
+          "lineNumber": 132
+        },
+        {
+          "caller": "analyzeOnWorker",
+          "callee": "SystemTrayHelper::showWaveAlert",
+          "lineNumber": 133
+        },
+        {
+          "caller": "analyzeOnWorker",
+          "callee": "NudgeCoordinator_RippleThreshold",
+          "lineNumber": 140
+        },
+        {
+          "caller": "analyzeOnWorker",
+          "callee": "NudgeCoordinator_TenseStreakTrigger",
+          "lineNumber": 144
+        },
+        {
+          "caller": "analyzeOnWorker",
+          "callee": "Bell_RingForTenseStreak",
+          "lineNumber": 146
+        },
+        {
+          "caller": "analyzeOnWorker",
+          "callee": "GetTickCount",
+          "lineNumber": 152
+        },
+        {
+          "caller": "analyzeOnWorker",
+          "callee": "showMindfulPrompt",
+          "lineNumber": 157
+        },
+        {
+          "caller": "analyzeOnWorker",
+          "callee": "warningForCategory",
+          "lineNumber": 157
+        },
+        {
+          "caller": "analyzeOnWorker",
+          "callee": "clear",
+          "lineNumber": 158
+        },
+        {
+          "caller": "workerLoop",
+          "callee": "wait",
+          "lineNumber": 166
+        },
+        {
+          "caller": "workerLoop",
+          "callee": "empty",
+          "lineNumber": 166
+        },
+        {
+          "caller": "workerLoop",
+          "callee": "clear",
+          "lineNumber": 169
+        },
+        {
+          "caller": "workerLoop",
+          "callee": "empty",
+          "lineNumber": 171
+        },
+        {
+          "caller": "workerLoop",
+          "callee": "front",
+          "lineNumber": 173
+        },
+        {
+          "caller": "workerLoop",
+          "callee": "pop_front",
+          "lineNumber": 174
+        },
+        {
+          "caller": "workerLoop",
+          "callee": "analyzeOnWorker",
+          "lineNumber": 178
+        },
+        {
+          "caller": "MoodWatch_OnWord",
+          "callee": "empty",
+          "lineNumber": 198
+        },
+        {
+          "caller": "MoodWatch_OnWord",
+          "callee": "SecureField_IsActive",
+          "lineNumber": 206
+        },
+        {
+          "caller": "MoodWatch_OnWord",
+          "callee": "clear",
+          "lineNumber": 208
+        },
+        {
+          "caller": "MoodWatch_OnWord",
+          "callee": "notify_one",
+          "lineNumber": 210
+        },
+        {
+          "caller": "MoodWatch_OnWord",
+          "callee": "size",
+          "lineNumber": 218
+        },
+        {
+          "caller": "MoodWatch_OnWord",
+          "callee": "pop_front",
+          "lineNumber": 219
+        },
+        {
+          "caller": "MoodWatch_OnWord",
+          "callee": "push_back",
+          "lineNumber": 225
+        },
+        {
+          "caller": "MoodWatch_OnWord",
+          "callee": "notify_one",
+          "lineNumber": 227
+        },
+        {
+          "caller": "MoodWatch_ConfirmEnable",
+          "callee": "MessageBoxW",
+          "lineNumber": 236
+        },
+        {
+          "caller": "MoodWatch_Toggle",
+          "callee": "MoodWatch_ConfirmEnable",
+          "lineNumber": 250
+        },
+        {
+          "caller": "MoodWatch_Toggle",
+          "callee": "APP_SET_DATA",
+          "lineNumber": 252
+        },
+        {
+          "caller": "MoodWatch_Toggle",
+          "callee": "clear",
+          "lineNumber": 255
+        },
+        {
+          "caller": "MoodWatch_Toggle",
+          "callee": "notify_one",
+          "lineNumber": 257
+        },
+        {
+          "caller": "MoodWatch_Toggle",
+          "callee": "MoodStore_AskConsentIfNeeded",
+          "lineNumber": 265
+        },
+        {
+          "caller": "MoodWatch_Init",
+          "callee": "detach",
+          "lineNumber": 274
+        },
+        {
+          "caller": "MoodWatch_Init",
+          "callee": "thread",
+          "lineNumber": 274
+        }
+      ],
+      "metrics": {
+        "importCount": 10,
+        "exportCount": 6,
+        "functionCount": 10,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/SecureField.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 165,
+      "nonEmptyLines": 143,
+      "functions": [
+        {
+          "name": "IsWin32PasswordControlFocused",
+          "startLine": 29,
+          "endLine": 56,
+          "params": []
+        },
+        {
+          "name": "IsUiaFocusedElementPassword",
+          "startLine": 62,
+          "endLine": 86,
+          "params": []
+        },
+        {
+          "name": "WinEventProc",
+          "startLine": 89,
+          "endLine": 106,
+          "params": [
+            "hook",
+            "event",
+            "hwnd",
+            "idObject",
+            "idChild",
+            "threadId",
+            "eventTime"
+          ]
+        },
+        {
+          "name": "SecureFieldThreadProc",
+          "startLine": 108,
+          "endLine": 146,
+          "params": []
+        },
+        {
+          "name": "SecureField_Init",
+          "startLine": 148,
+          "endLine": 157,
+          "params": []
+        },
+        {
+          "name": "SecureField_IsActive",
+          "startLine": 159,
+          "endLine": 165,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "SecureField_Init",
+          "line": 148,
+          "isDefault": false
+        },
+        {
+          "name": "SecureField_IsActive",
+          "line": 159,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "IsWin32PasswordControlFocused",
+          "callee": "GetForegroundWindow",
+          "lineNumber": 30
+        },
+        {
+          "caller": "IsWin32PasswordControlFocused",
+          "callee": "GetWindowThreadProcessId",
+          "lineNumber": 35
+        },
+        {
+          "caller": "IsWin32PasswordControlFocused",
+          "callee": "GetGUIThreadInfo",
+          "lineNumber": 40
+        },
+        {
+          "caller": "IsWin32PasswordControlFocused",
+          "callee": "GetClassNameW",
+          "lineNumber": 50
+        },
+        {
+          "caller": "IsWin32PasswordControlFocused",
+          "callee": "ARRAYSIZE",
+          "lineNumber": 50
+        },
+        {
+          "caller": "IsWin32PasswordControlFocused",
+          "callee": "_wcsicmp",
+          "lineNumber": 52
+        },
+        {
+          "caller": "IsWin32PasswordControlFocused",
+          "callee": "GetWindowLong",
+          "lineNumber": 55
+        },
+        {
+          "caller": "IsUiaFocusedElementPassword",
+          "callee": "FAILED",
+          "lineNumber": 67
+        },
+        {
+          "caller": "IsUiaFocusedElementPassword",
+          "callee": "GetFocusedElement",
+          "lineNumber": 67
+        },
+        {
+          "caller": "IsUiaFocusedElementPassword",
+          "callee": "VariantInit",
+          "lineNumber": 71
+        },
+        {
+          "caller": "IsUiaFocusedElementPassword",
+          "callee": "GetCurrentPropertyValue",
+          "lineNumber": 72
+        },
+        {
+          "caller": "IsUiaFocusedElementPassword",
+          "callee": "Release",
+          "lineNumber": 73
+        },
+        {
+          "caller": "IsUiaFocusedElementPassword",
+          "callee": "FAILED",
+          "lineNumber": 78
+        },
+        {
+          "caller": "IsUiaFocusedElementPassword",
+          "callee": "VariantClear",
+          "lineNumber": 79
+        },
+        {
+          "caller": "IsUiaFocusedElementPassword",
+          "callee": "VariantClear",
+          "lineNumber": 84
+        },
+        {
+          "caller": "WinEventProc",
+          "callee": "InterlockedExchange",
+          "lineNumber": 96
+        },
+        {
+          "caller": "WinEventProc",
+          "callee": "IsWin32PasswordControlFocused",
+          "lineNumber": 98
+        },
+        {
+          "caller": "WinEventProc",
+          "callee": "IsUiaFocusedElementPassword",
+          "lineNumber": 100
+        },
+        {
+          "caller": "WinEventProc",
+          "callee": "InterlockedExchange",
+          "lineNumber": 105
+        },
+        {
+          "caller": "SecureFieldThreadProc",
+          "callee": "CoInitializeEx",
+          "lineNumber": 111
+        },
+        {
+          "caller": "SecureFieldThreadProc",
+          "callee": "SUCCEEDED",
+          "lineNumber": 112
+        },
+        {
+          "caller": "SecureFieldThreadProc",
+          "callee": "CoCreateInstance",
+          "lineNumber": 113
+        },
+        {
+          "caller": "SecureFieldThreadProc",
+          "callee": "SetWinEventHook",
+          "lineNumber": 124
+        },
+        {
+          "caller": "SecureFieldThreadProc",
+          "callee": "GetMessage",
+          "lineNumber": 132
+        },
+        {
+          "caller": "SecureFieldThreadProc",
+          "callee": "TranslateMessage",
+          "lineNumber": 133
+        },
+        {
+          "caller": "SecureFieldThreadProc",
+          "callee": "DispatchMessage",
+          "lineNumber": 134
+        },
+        {
+          "caller": "SecureFieldThreadProc",
+          "callee": "UnhookWinEvent",
+          "lineNumber": 138
+        },
+        {
+          "caller": "SecureFieldThreadProc",
+          "callee": "Release",
+          "lineNumber": 140
+        },
+        {
+          "caller": "SecureFieldThreadProc",
+          "callee": "SUCCEEDED",
+          "lineNumber": 143
+        },
+        {
+          "caller": "SecureFieldThreadProc",
+          "callee": "CoUninitialize",
+          "lineNumber": 144
+        },
+        {
+          "caller": "SecureField_Init",
+          "callee": "CreateThread",
+          "lineNumber": 149
+        },
+        {
+          "caller": "SecureField_Init",
+          "callee": "CloseHandle",
+          "lineNumber": 151
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 2,
+        "functionCount": 6,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/SecureField.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 34,
+      "nonEmptyLines": 32,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 34,
+      "nonEmptyLines": 29,
+      "classes": [
+        {
+          "name": "SystemTrayHelper",
+          "startLine": 17,
+          "endLine": 33,
+          "methods": [
+            "createFakeWindow",
+            "createPopupMenu",
+            "_createSystemTrayIcon",
+            "createSystemTrayIcon",
+            "updateData",
+            "showWaveAlert",
+            "checkRivalInputMethod",
+            "removeSystemTray"
+          ],
+          "properties": [
+            "CALLBACK"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "createSystemTrayIcon",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "updateData",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "showWaveAlert",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "checkRivalInputMethod",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "removeSystemTray",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "SystemTrayHelper",
+          "line": 17,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 6,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    }
+  ]
+}

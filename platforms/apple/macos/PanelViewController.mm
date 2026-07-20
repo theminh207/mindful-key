@@ -194,6 +194,7 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
     MKFlippedView      *_contentDocumentView;
 
     CGFloat             _lastHeight;   // chiều cao nội dung lần reflow gần nhất
+    dispatch_block_t    _pendingCheckinBlock; // block đếm lùi 45s cho màn check-in
 }
 
 // [MINDFUL] Epic 3 Chặng 1 (F12) — timer check-in trước đây dựng bên trong -loadView, nên CHỈ
@@ -218,11 +219,26 @@ typedef NS_ENUM(NSInteger, MKPanelTab) {
     // vBellInterval, mốc bắt đầu = lúc _panelVC được tạo). Chuông đếm từ mốc khác, nhật ký đếm từ
     // mốc khác nữa → BA đồng hồ trôi lệch nhau, trong khi màn Chuông hứa "Một nhịp, hai vai".
     // Nay khung chấm nhịp LẮNG NGHE nhịp chung do BellMac điểm.
+    __weak __typeof(self) weakSelf = self;
     [[NSNotificationCenter defaultCenter] addObserverForName:kMKMoodBeatNotification
                                                       object:nil
                                                        queue:[NSOperationQueue mainQueue]
                                                   usingBlock:^(NSNotification *note) {
-        [self showCheckinOverlay];   // tự bỏ qua nếu chưa có consent
+        __strong __typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+
+        if (strongSelf->_pendingCheckinBlock) {
+            dispatch_block_cancel(strongSelf->_pendingCheckinBlock);
+            strongSelf->_pendingCheckinBlock = nil;
+        }
+
+        strongSelf->_pendingCheckinBlock = dispatch_block_create((dispatch_block_flags_t)0, ^{
+            [strongSelf showCheckinOverlay];   // tự bỏ qua nếu chưa có consent
+        });
+
+        // [MINDFUL] 2026-07-20 — delay khung chấm nhịp 45s sau tiếng chuông chính,
+        // huỷ block cũ nếu có tiếng chuông mới đè lên trong lúc đang chờ.
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(45.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), strongSelf->_pendingCheckinBlock);
     }];
 
     // Đồng hồ 60 giây VẪN CÒN, nhưng nay chỉ còn ĐÚNG MỘT việc: cập nhật dòng đếm ngược "chuông kế

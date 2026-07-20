@@ -1,0 +1,3560 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 8,
+  "filesSkipped": [],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 8,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 8,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "core/engine/ConvertTool.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 181,
+      "nonEmptyLines": 166,
+      "functions": [
+        {
+          "name": "findKeyCode",
+          "startLine": 29,
+          "endLine": 41,
+          "params": [
+            "charCode",
+            "code",
+            "j",
+            "k"
+          ]
+        },
+        {
+          "name": "getUnicodeCompoundMarkIndex",
+          "startLine": 43,
+          "endLine": 50,
+          "params": [
+            "mark"
+          ]
+        },
+        {
+          "name": "convertUtil",
+          "startLine": 52,
+          "endLine": 180,
+          "params": [
+            "sourceString"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "convertUtil",
+          "line": 52,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "findKeyCode",
+          "callee": "begin",
+          "lineNumber": 31
+        },
+        {
+          "caller": "findKeyCode",
+          "callee": "end",
+          "lineNumber": 31
+        },
+        {
+          "caller": "findKeyCode",
+          "callee": "size",
+          "lineNumber": 32
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "utf8ToWideString",
+          "lineNumber": 53
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "size",
+          "lineNumber": 64
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "size",
+          "lineNumber": 67
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "getUnicodeCompoundMarkIndex",
+          "lineNumber": 75
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "findKeyCode",
+          "lineNumber": 89
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "keyCodeToCharacter",
+          "lineNumber": 100
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "towupper",
+          "lineNumber": 102
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "towlower",
+          "lineNumber": 104
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "push_back",
+          "lineNumber": 109
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "HIBYTE",
+          "lineNumber": 111
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "push_back",
+          "lineNumber": 112
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "push_back",
+          "lineNumber": 113
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "push_back",
+          "lineNumber": 115
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "push_back",
+          "lineNumber": 119
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "push_back",
+          "lineNumber": 120
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "push_back",
+          "lineNumber": 122
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "findKeyCode",
+          "lineNumber": 133
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "keyCodeToCharacter",
+          "lineNumber": 143
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "towupper",
+          "lineNumber": 145
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "towlower",
+          "lineNumber": 147
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "push_back",
+          "lineNumber": 151
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "push_back",
+          "lineNumber": 159
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "towupper",
+          "lineNumber": 159
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "push_back",
+          "lineNumber": 161
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "towlower",
+          "lineNumber": 161
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "push_back",
+          "lineNumber": 163
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "std::find",
+          "lineNumber": 170
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "begin",
+          "lineNumber": 170
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "end",
+          "lineNumber": 170
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "end",
+          "lineNumber": 170
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "push_back",
+          "lineNumber": 177
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "begin",
+          "lineNumber": 178
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "end",
+          "lineNumber": 178
+        },
+        {
+          "caller": "convertUtil",
+          "callee": "wideStringToUtf8",
+          "lineNumber": 179
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 1,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "core/engine/ConvertTool.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 23,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "core/engine/Engine.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 1578,
+      "nonEmptyLines": 1427,
+      "functions": [
+        {
+          "name": "utf8ToWideString",
+          "startLine": 127,
+          "endLine": 129,
+          "params": [
+            "str"
+          ]
+        },
+        {
+          "name": "wideStringToUtf8",
+          "startLine": 131,
+          "endLine": 133,
+          "params": [
+            "str"
+          ]
+        },
+        {
+          "name": "isWordBreak",
+          "startLine": 145,
+          "endLine": 154,
+          "params": [
+            "event",
+            "state",
+            "data"
+          ]
+        },
+        {
+          "name": "isMacroBreakCode",
+          "startLine": 156,
+          "endLine": 163,
+          "params": [
+            "data"
+          ]
+        },
+        {
+          "name": "setKeyData",
+          "startLine": 165,
+          "endLine": 169,
+          "params": [
+            "index",
+            "keyCode",
+            "isCaps"
+          ]
+        },
+        {
+          "name": "checkSpelling",
+          "startLine": 176,
+          "endLine": 288,
+          "params": []
+        },
+        {
+          "name": "checkGrammar",
+          "startLine": 290,
+          "endLine": 347,
+          "params": [
+            "deltaBackSpace"
+          ]
+        },
+        {
+          "name": "insertKey",
+          "startLine": 349,
+          "endLine": 367,
+          "params": [
+            "keyCode",
+            "isCaps"
+          ]
+        },
+        {
+          "name": "insertState",
+          "startLine": 369,
+          "endLine": 379,
+          "params": [
+            "keyCode",
+            "isCaps"
+          ]
+        },
+        {
+          "name": "saveWord",
+          "startLine": 381,
+          "endLine": 416,
+          "params": []
+        },
+        {
+          "name": "saveWord",
+          "startLine": 418,
+          "endLine": 424,
+          "params": [
+            "keyCode",
+            "count"
+          ]
+        },
+        {
+          "name": "saveSpecialChar",
+          "startLine": 426,
+          "endLine": 433,
+          "params": []
+        },
+        {
+          "name": "restoreLastTypingState",
+          "startLine": 435,
+          "endLine": 455,
+          "params": []
+        },
+        {
+          "name": "emitCommittedWord",
+          "startLine": 460,
+          "endLine": 474,
+          "params": []
+        },
+        {
+          "name": "startNewSession",
+          "startLine": 476,
+          "endLine": 486,
+          "params": []
+        },
+        {
+          "name": "checkCorrectVowel",
+          "startLine": 488,
+          "endLine": 519,
+          "params": [
+            "charset",
+            "i",
+            "k",
+            "markKey"
+          ]
+        },
+        {
+          "name": "getCharacterCode",
+          "startLine": 521,
+          "endLine": 578,
+          "params": [
+            "data"
+          ]
+        },
+        {
+          "name": "findAndCalculateVowel",
+          "startLine": 580,
+          "endLine": 605,
+          "params": [
+            "forGrammar"
+          ]
+        },
+        {
+          "name": "removeMark",
+          "startLine": 607,
+          "endLine": 630,
+          "params": []
+        },
+        {
+          "name": "canHasEndConsonant",
+          "startLine": 632,
+          "endLine": 647,
+          "params": []
+        },
+        {
+          "name": "handleModernMark",
+          "startLine": 649,
+          "endLine": 745,
+          "params": []
+        },
+        {
+          "name": "handleOldMark",
+          "startLine": 747,
+          "endLine": 771,
+          "params": []
+        },
+        {
+          "name": "insertMark",
+          "startLine": 773,
+          "endLine": 826,
+          "params": [
+            "markMask",
+            "canModifyFlag"
+          ]
+        },
+        {
+          "name": "insertD",
+          "startLine": 828,
+          "endLine": 851,
+          "params": [
+            "data",
+            "isCaps"
+          ]
+        },
+        {
+          "name": "insertAOE",
+          "startLine": 853,
+          "endLine": 889,
+          "params": [
+            "data",
+            "isCaps"
+          ]
+        },
+        {
+          "name": "insertW",
+          "startLine": 891,
+          "endLine": 1004,
+          "params": [
+            "data",
+            "isCaps"
+          ]
+        },
+        {
+          "name": "reverseLastStandaloneChar",
+          "startLine": 1006,
+          "endLine": 1013,
+          "params": [
+            "keyCode",
+            "isCaps"
+          ]
+        },
+        {
+          "name": "checkForStandaloneChar",
+          "startLine": 1015,
+          "endLine": 1060,
+          "params": [
+            "data",
+            "isCaps",
+            "keyWillReverse"
+          ]
+        },
+        {
+          "name": "upperCaseFirstCharacter",
+          "startLine": 1062,
+          "endLine": 1073,
+          "params": []
+        },
+        {
+          "name": "handleMainKey",
+          "startLine": 1075,
+          "endLine": 1213,
+          "params": [
+            "data",
+            "isCaps"
+          ]
+        },
+        {
+          "name": "handleQuickTelex",
+          "startLine": 1215,
+          "endLine": 1222,
+          "params": [
+            "data",
+            "isCaps"
+          ]
+        },
+        {
+          "name": "checkRestoreIfWrongSpelling",
+          "startLine": 1224,
+          "endLine": 1241,
+          "params": [
+            "handleCode"
+          ]
+        },
+        {
+          "name": "vTempOffSpellChecking",
+          "startLine": 1243,
+          "endLine": 1247,
+          "params": []
+        },
+        {
+          "name": "vSetCheckSpelling",
+          "startLine": 1249,
+          "endLine": 1251,
+          "params": []
+        },
+        {
+          "name": "vTempOffEngine",
+          "startLine": 1253,
+          "endLine": 1255,
+          "params": [
+            "off"
+          ]
+        },
+        {
+          "name": "checkQuickConsonant",
+          "startLine": 1257,
+          "endLine": 1301,
+          "params": []
+        },
+        {
+          "name": "vEnglishMode",
+          "startLine": 1304,
+          "endLine": 1332,
+          "params": [
+            "state",
+            "data",
+            "isCaps",
+            "otherControlKey"
+          ]
+        },
+        {
+          "name": "vKeyHandleEvent",
+          "startLine": 1334,
+          "endLine": 1578,
+          "params": [
+            "event",
+            "state",
+            "data",
+            "capsStatus",
+            "otherControlKey"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "utf8ToWideString",
+          "line": 127,
+          "isDefault": false
+        },
+        {
+          "name": "wideStringToUtf8",
+          "line": 131,
+          "isDefault": false
+        },
+        {
+          "name": "isWordBreak",
+          "line": 145,
+          "isDefault": false
+        },
+        {
+          "name": "isMacroBreakCode",
+          "line": 156,
+          "isDefault": false
+        },
+        {
+          "name": "setKeyData",
+          "line": 165,
+          "isDefault": false
+        },
+        {
+          "name": "checkSpelling",
+          "line": 176,
+          "isDefault": false
+        },
+        {
+          "name": "checkGrammar",
+          "line": 290,
+          "isDefault": false
+        },
+        {
+          "name": "insertKey",
+          "line": 349,
+          "isDefault": false
+        },
+        {
+          "name": "insertState",
+          "line": 369,
+          "isDefault": false
+        },
+        {
+          "name": "saveWord",
+          "line": 381,
+          "isDefault": false
+        },
+        {
+          "name": "saveWord",
+          "line": 418,
+          "isDefault": false
+        },
+        {
+          "name": "saveSpecialChar",
+          "line": 426,
+          "isDefault": false
+        },
+        {
+          "name": "restoreLastTypingState",
+          "line": 435,
+          "isDefault": false
+        },
+        {
+          "name": "startNewSession",
+          "line": 476,
+          "isDefault": false
+        },
+        {
+          "name": "checkCorrectVowel",
+          "line": 488,
+          "isDefault": false
+        },
+        {
+          "name": "getCharacterCode",
+          "line": 521,
+          "isDefault": false
+        },
+        {
+          "name": "findAndCalculateVowel",
+          "line": 580,
+          "isDefault": false
+        },
+        {
+          "name": "removeMark",
+          "line": 607,
+          "isDefault": false
+        },
+        {
+          "name": "canHasEndConsonant",
+          "line": 632,
+          "isDefault": false
+        },
+        {
+          "name": "handleModernMark",
+          "line": 649,
+          "isDefault": false
+        },
+        {
+          "name": "handleOldMark",
+          "line": 747,
+          "isDefault": false
+        },
+        {
+          "name": "insertMark",
+          "line": 773,
+          "isDefault": false
+        },
+        {
+          "name": "insertD",
+          "line": 828,
+          "isDefault": false
+        },
+        {
+          "name": "insertAOE",
+          "line": 853,
+          "isDefault": false
+        },
+        {
+          "name": "insertW",
+          "line": 891,
+          "isDefault": false
+        },
+        {
+          "name": "reverseLastStandaloneChar",
+          "line": 1006,
+          "isDefault": false
+        },
+        {
+          "name": "checkForStandaloneChar",
+          "line": 1015,
+          "isDefault": false
+        },
+        {
+          "name": "upperCaseFirstCharacter",
+          "line": 1062,
+          "isDefault": false
+        },
+        {
+          "name": "handleMainKey",
+          "line": 1075,
+          "isDefault": false
+        },
+        {
+          "name": "handleQuickTelex",
+          "line": 1215,
+          "isDefault": false
+        },
+        {
+          "name": "checkRestoreIfWrongSpelling",
+          "line": 1224,
+          "isDefault": false
+        },
+        {
+          "name": "vTempOffSpellChecking",
+          "line": 1243,
+          "isDefault": false
+        },
+        {
+          "name": "vSetCheckSpelling",
+          "line": 1249,
+          "isDefault": false
+        },
+        {
+          "name": "vTempOffEngine",
+          "line": 1253,
+          "isDefault": false
+        },
+        {
+          "name": "checkQuickConsonant",
+          "line": 1257,
+          "isDefault": false
+        },
+        {
+          "name": "vEnglishMode",
+          "line": 1304,
+          "isDefault": false
+        },
+        {
+          "name": "vKeyHandleEvent",
+          "line": 1334,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "utf8ToWideString",
+          "callee": "from_bytes",
+          "lineNumber": 128
+        },
+        {
+          "caller": "utf8ToWideString",
+          "callee": "c_str",
+          "lineNumber": 128
+        },
+        {
+          "caller": "wideStringToUtf8",
+          "callee": "to_bytes",
+          "lineNumber": 132
+        },
+        {
+          "caller": "wideStringToUtf8",
+          "callee": "c_str",
+          "lineNumber": 132
+        },
+        {
+          "caller": "isWordBreak",
+          "callee": "size",
+          "lineNumber": 148
+        },
+        {
+          "caller": "isMacroBreakCode",
+          "callee": "size",
+          "lineNumber": 157
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "CHR",
+          "lineNumber": 181
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "IS_CONSONANT",
+          "lineNumber": 188
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "CHR",
+          "lineNumber": 188
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "size",
+          "lineNumber": 189
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "size",
+          "lineNumber": 191
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "size",
+          "lineNumber": 193
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "CHR",
+          "lineNumber": 195
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "CHR",
+          "lineNumber": 196
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "CHR",
+          "lineNumber": 216
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "CHR",
+          "lineNumber": 216
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "CHR",
+          "lineNumber": 220
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "CHR",
+          "lineNumber": 220
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "IS_CONSONANT",
+          "lineNumber": 220
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "CHR",
+          "lineNumber": 220
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "IS_CONSONANT",
+          "lineNumber": 224
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "CHR",
+          "lineNumber": 224
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "CHR",
+          "lineNumber": 233
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "size",
+          "lineNumber": 234
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "size",
+          "lineNumber": 236
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "CHR",
+          "lineNumber": 237
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "IS_CONSONANT",
+          "lineNumber": 242
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "CHR",
+          "lineNumber": 242
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "IS_CONSONANT",
+          "lineNumber": 248
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "CHR",
+          "lineNumber": 248
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "size",
+          "lineNumber": 253
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "size",
+          "lineNumber": 256
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "CHR",
+          "lineNumber": 258
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "CHR",
+          "lineNumber": 274
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "CHR",
+          "lineNumber": 274
+        },
+        {
+          "caller": "checkSpelling",
+          "callee": "CHR",
+          "lineNumber": 276
+        },
+        {
+          "caller": "checkGrammar",
+          "callee": "findAndCalculateVowel",
+          "lineNumber": 294
+        },
+        {
+          "caller": "checkGrammar",
+          "callee": "CHR",
+          "lineNumber": 305
+        },
+        {
+          "caller": "checkGrammar",
+          "callee": "CHR",
+          "lineNumber": 305
+        },
+        {
+          "caller": "checkGrammar",
+          "callee": "CHR",
+          "lineNumber": 305
+        },
+        {
+          "caller": "checkGrammar",
+          "callee": "CHR",
+          "lineNumber": 306
+        },
+        {
+          "caller": "checkGrammar",
+          "callee": "CHR",
+          "lineNumber": 306
+        },
+        {
+          "caller": "checkGrammar",
+          "callee": "CHR",
+          "lineNumber": 306
+        },
+        {
+          "caller": "checkGrammar",
+          "callee": "CHR",
+          "lineNumber": 307
+        },
+        {
+          "caller": "checkGrammar",
+          "callee": "CHR",
+          "lineNumber": 307
+        },
+        {
+          "caller": "checkGrammar",
+          "callee": "insertMark",
+          "lineNumber": 325
+        },
+        {
+          "caller": "checkGrammar",
+          "callee": "GET",
+          "lineNumber": 341
+        },
+        {
+          "caller": "insertKey",
+          "callee": "push_back",
+          "lineNumber": 351
+        },
+        {
+          "caller": "insertKey",
+          "callee": "setKeyData",
+          "lineNumber": 356
+        },
+        {
+          "caller": "insertKey",
+          "callee": "setKeyData",
+          "lineNumber": 358
+        },
+        {
+          "caller": "insertKey",
+          "callee": "checkSpelling",
+          "lineNumber": 362
+        },
+        {
+          "caller": "insertKey",
+          "callee": "IS_CONSONANT",
+          "lineNumber": 365
+        },
+        {
+          "caller": "insertKey",
+          "callee": "CHR",
+          "lineNumber": 365
+        },
+        {
+          "caller": "saveWord",
+          "callee": "size",
+          "lineNumber": 385
+        },
+        {
+          "caller": "saveWord",
+          "callee": "clear",
+          "lineNumber": 386
+        },
+        {
+          "caller": "saveWord",
+          "callee": "size",
+          "lineNumber": 387
+        },
+        {
+          "caller": "saveWord",
+          "callee": "push_back",
+          "lineNumber": 389
+        },
+        {
+          "caller": "saveWord",
+          "callee": "clear",
+          "lineNumber": 390
+        },
+        {
+          "caller": "saveWord",
+          "callee": "push_back",
+          "lineNumber": 392
+        },
+        {
+          "caller": "saveWord",
+          "callee": "push_back",
+          "lineNumber": 394
+        },
+        {
+          "caller": "saveWord",
+          "callee": "clear",
+          "lineNumber": 395
+        },
+        {
+          "caller": "saveWord",
+          "callee": "clear",
+          "lineNumber": 399
+        },
+        {
+          "caller": "saveWord",
+          "callee": "push_back",
+          "lineNumber": 401
+        },
+        {
+          "caller": "saveWord",
+          "callee": "push_back",
+          "lineNumber": 403
+        },
+        {
+          "caller": "saveWord",
+          "callee": "clear",
+          "lineNumber": 406
+        },
+        {
+          "caller": "saveWord",
+          "callee": "size",
+          "lineNumber": 407
+        },
+        {
+          "caller": "saveWord",
+          "callee": "push_back",
+          "lineNumber": 409
+        },
+        {
+          "caller": "saveWord",
+          "callee": "clear",
+          "lineNumber": 410
+        },
+        {
+          "caller": "saveWord",
+          "callee": "push_back",
+          "lineNumber": 412
+        },
+        {
+          "caller": "saveWord",
+          "callee": "push_back",
+          "lineNumber": 414
+        },
+        {
+          "caller": "saveWord",
+          "callee": "clear",
+          "lineNumber": 419
+        },
+        {
+          "caller": "saveWord",
+          "callee": "push_back",
+          "lineNumber": 421
+        },
+        {
+          "caller": "saveWord",
+          "callee": "push_back",
+          "lineNumber": 423
+        },
+        {
+          "caller": "saveSpecialChar",
+          "callee": "clear",
+          "lineNumber": 427
+        },
+        {
+          "caller": "saveSpecialChar",
+          "callee": "size",
+          "lineNumber": 428
+        },
+        {
+          "caller": "saveSpecialChar",
+          "callee": "push_back",
+          "lineNumber": 429
+        },
+        {
+          "caller": "saveSpecialChar",
+          "callee": "push_back",
+          "lineNumber": 431
+        },
+        {
+          "caller": "saveSpecialChar",
+          "callee": "clear",
+          "lineNumber": 432
+        },
+        {
+          "caller": "restoreLastTypingState",
+          "callee": "size",
+          "lineNumber": 436
+        },
+        {
+          "caller": "restoreLastTypingState",
+          "callee": "back",
+          "lineNumber": 437
+        },
+        {
+          "caller": "restoreLastTypingState",
+          "callee": "pop_back",
+          "lineNumber": 438
+        },
+        {
+          "caller": "restoreLastTypingState",
+          "callee": "size",
+          "lineNumber": 439
+        },
+        {
+          "caller": "restoreLastTypingState",
+          "callee": "size",
+          "lineNumber": 441
+        },
+        {
+          "caller": "restoreLastTypingState",
+          "callee": "std::find",
+          "lineNumber": 443
+        },
+        {
+          "caller": "restoreLastTypingState",
+          "callee": "begin",
+          "lineNumber": 443
+        },
+        {
+          "caller": "restoreLastTypingState",
+          "callee": "end",
+          "lineNumber": 443
+        },
+        {
+          "caller": "restoreLastTypingState",
+          "callee": "end",
+          "lineNumber": 443
+        },
+        {
+          "caller": "restoreLastTypingState",
+          "callee": "checkSpelling",
+          "lineNumber": 446
+        },
+        {
+          "caller": "restoreLastTypingState",
+          "callee": "size",
+          "lineNumber": 448
+        },
+        {
+          "caller": "restoreLastTypingState",
+          "callee": "size",
+          "lineNumber": 451
+        },
+        {
+          "caller": "emitCommittedWord",
+          "callee": "getCharacterCode",
+          "lineNumber": 465
+        },
+        {
+          "caller": "emitCommittedWord",
+          "callee": "keyCodeToCharacter",
+          "lineNumber": 468
+        },
+        {
+          "caller": "emitCommittedWord",
+          "callee": "push_back",
+          "lineNumber": 470
+        },
+        {
+          "caller": "emitCommittedWord",
+          "callee": "empty",
+          "lineNumber": 472
+        },
+        {
+          "caller": "emitCommittedWord",
+          "callee": "vOnWordCommitted",
+          "lineNumber": 473
+        },
+        {
+          "caller": "startNewSession",
+          "callee": "emitCommittedWord",
+          "lineNumber": 477
+        },
+        {
+          "caller": "startNewSession",
+          "callee": "clear",
+          "lineNumber": 485
+        },
+        {
+          "caller": "checkCorrectVowel",
+          "callee": "CHR",
+          "lineNumber": 490
+        },
+        {
+          "caller": "checkCorrectVowel",
+          "callee": "CHR",
+          "lineNumber": 490
+        },
+        {
+          "caller": "checkCorrectVowel",
+          "callee": "size",
+          "lineNumber": 495
+        },
+        {
+          "caller": "checkCorrectVowel",
+          "callee": "CHR",
+          "lineNumber": 496
+        },
+        {
+          "caller": "checkCorrectVowel",
+          "callee": "size",
+          "lineNumber": 506
+        },
+        {
+          "caller": "checkCorrectVowel",
+          "callee": "IS_KEY_F",
+          "lineNumber": 506
+        },
+        {
+          "caller": "checkCorrectVowel",
+          "callee": "IS_KEY_X",
+          "lineNumber": 506
+        },
+        {
+          "caller": "checkCorrectVowel",
+          "callee": "IS_KEY_R",
+          "lineNumber": 506
+        },
+        {
+          "caller": "checkCorrectVowel",
+          "callee": "size",
+          "lineNumber": 509
+        },
+        {
+          "caller": "checkCorrectVowel",
+          "callee": "CHR",
+          "lineNumber": 515
+        },
+        {
+          "caller": "checkCorrectVowel",
+          "callee": "CHR",
+          "lineNumber": 515
+        },
+        {
+          "caller": "getCharacterCode",
+          "callee": "find",
+          "lineNumber": 560
+        },
+        {
+          "caller": "getCharacterCode",
+          "callee": "end",
+          "lineNumber": 560
+        },
+        {
+          "caller": "getCharacterCode",
+          "callee": "find",
+          "lineNumber": 565
+        },
+        {
+          "caller": "getCharacterCode",
+          "callee": "end",
+          "lineNumber": 565
+        },
+        {
+          "caller": "findAndCalculateVowel",
+          "callee": "IS_CONSONANT",
+          "lineNumber": 584
+        },
+        {
+          "caller": "findAndCalculateVowel",
+          "callee": "CHR",
+          "lineNumber": 584
+        },
+        {
+          "caller": "findAndCalculateVowel",
+          "callee": "CHR",
+          "lineNumber": 591
+        },
+        {
+          "caller": "findAndCalculateVowel",
+          "callee": "CHR",
+          "lineNumber": 591
+        },
+        {
+          "caller": "findAndCalculateVowel",
+          "callee": "CHR",
+          "lineNumber": 592
+        },
+        {
+          "caller": "findAndCalculateVowel",
+          "callee": "CHR",
+          "lineNumber": 592
+        },
+        {
+          "caller": "findAndCalculateVowel",
+          "callee": "CHR",
+          "lineNumber": 601
+        },
+        {
+          "caller": "findAndCalculateVowel",
+          "callee": "CHR",
+          "lineNumber": 601
+        },
+        {
+          "caller": "removeMark",
+          "callee": "findAndCalculateVowel",
+          "lineNumber": 608
+        },
+        {
+          "caller": "removeMark",
+          "callee": "GET",
+          "lineNumber": 624
+        },
+        {
+          "caller": "canHasEndConsonant",
+          "callee": "CHR",
+          "lineNumber": 633
+        },
+        {
+          "caller": "canHasEndConsonant",
+          "callee": "size",
+          "lineNumber": 634
+        },
+        {
+          "caller": "canHasEndConsonant",
+          "callee": "size",
+          "lineNumber": 636
+        },
+        {
+          "caller": "canHasEndConsonant",
+          "callee": "CHR",
+          "lineNumber": 637
+        },
+        {
+          "caller": "canHasEndConsonant",
+          "callee": "size",
+          "lineNumber": 642
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 655
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 655
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 655
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 656
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 656
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 656
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 657
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 657
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 657
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 658
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 658
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 658
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 661
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 661
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 662
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 662
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 663
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 663
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 667
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 667
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 670
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 670
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 673
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 673
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 676
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 676
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 682
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 683
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 684
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 688
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 688
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 689
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 689
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 690
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 690
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 691
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 691
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 692
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 692
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 693
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 693
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 694
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 694
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 708
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 708
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 709
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 709
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 710
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 710
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 711
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 719
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 719
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 720
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 720
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 721
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 721
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 723
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 730
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 730
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 731
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "canHasEndConsonant",
+          "lineNumber": 732
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 740
+        },
+        {
+          "caller": "handleModernMark",
+          "callee": "CHR",
+          "lineNumber": 740
+        },
+        {
+          "caller": "handleOldMark",
+          "callee": "CHR",
+          "lineNumber": 749
+        },
+        {
+          "caller": "handleOldMark",
+          "callee": "IS_CONSONANT",
+          "lineNumber": 756
+        },
+        {
+          "caller": "handleOldMark",
+          "callee": "CHR",
+          "lineNumber": 756
+        },
+        {
+          "caller": "handleOldMark",
+          "callee": "canHasEndConsonant",
+          "lineNumber": 756
+        },
+        {
+          "caller": "handleOldMark",
+          "callee": "CHR",
+          "lineNumber": 763
+        },
+        {
+          "caller": "handleOldMark",
+          "callee": "CHR",
+          "lineNumber": 763
+        },
+        {
+          "caller": "insertMark",
+          "callee": "findAndCalculateVowel",
+          "lineNumber": 780
+        },
+        {
+          "caller": "insertMark",
+          "callee": "handleOldMark",
+          "lineNumber": 789
+        },
+        {
+          "caller": "insertMark",
+          "callee": "handleModernMark",
+          "lineNumber": 791
+        },
+        {
+          "caller": "insertMark",
+          "callee": "GET",
+          "lineNumber": 806
+        },
+        {
+          "caller": "insertMark",
+          "callee": "GET",
+          "lineNumber": 820
+        },
+        {
+          "caller": "insertD",
+          "callee": "CHR",
+          "lineNumber": 833
+        },
+        {
+          "caller": "insertD",
+          "callee": "GET",
+          "lineNumber": 843
+        },
+        {
+          "caller": "insertD",
+          "callee": "GET",
+          "lineNumber": 847
+        },
+        {
+          "caller": "insertAOE",
+          "callee": "findAndCalculateVowel",
+          "lineNumber": 854
+        },
+        {
+          "caller": "insertAOE",
+          "callee": "CHR",
+          "lineNumber": 866
+        },
+        {
+          "caller": "insertAOE",
+          "callee": "IS_KEY_D",
+          "lineNumber": 878
+        },
+        {
+          "caller": "insertAOE",
+          "callee": "GET",
+          "lineNumber": 880
+        },
+        {
+          "caller": "insertAOE",
+          "callee": "GET",
+          "lineNumber": 885
+        },
+        {
+          "caller": "insertW",
+          "callee": "findAndCalculateVowel",
+          "lineNumber": 894
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 906
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 907
+        },
+        {
+          "caller": "insertW",
+          "callee": "GET",
+          "lineNumber": 913
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 920
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 920
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 923
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 932
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 932
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 933
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 933
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 934
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 934
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 935
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 935
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 937
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 937
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 938
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 938
+        },
+        {
+          "caller": "insertW",
+          "callee": "GET",
+          "lineNumber": 948
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 962
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 970
+        },
+        {
+          "caller": "insertW",
+          "callee": "CHR",
+          "lineNumber": 972
+        },
+        {
+          "caller": "insertW",
+          "callee": "GET",
+          "lineNumber": 990
+        },
+        {
+          "caller": "insertW",
+          "callee": "GET",
+          "lineNumber": 995
+        },
+        {
+          "caller": "reverseLastStandaloneChar",
+          "callee": "GET",
+          "lineNumber": 1012
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "CHR",
+          "lineNumber": 1016
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "GET",
+          "lineNumber": 1021
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "CHR",
+          "lineNumber": 1027
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "insertKey",
+          "lineNumber": 1028
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "reverseLastStandaloneChar",
+          "lineNumber": 1029
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "insertKey",
+          "lineNumber": 1034
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "reverseLastStandaloneChar",
+          "lineNumber": 1035
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "size",
+          "lineNumber": 1038
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "CHR",
+          "lineNumber": 1039
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "insertKey",
+          "lineNumber": 1040
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "insertKey",
+          "lineNumber": 1044
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "reverseLastStandaloneChar",
+          "lineNumber": 1045
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "size",
+          "lineNumber": 1048
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "CHR",
+          "lineNumber": 1049
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "CHR",
+          "lineNumber": 1049
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "insertKey",
+          "lineNumber": 1050
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "reverseLastStandaloneChar",
+          "lineNumber": 1051
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "insertKey",
+          "lineNumber": 1055
+        },
+        {
+          "caller": "checkForStandaloneChar",
+          "callee": "insertKey",
+          "lineNumber": 1059
+        },
+        {
+          "caller": "upperCaseFirstCharacter",
+          "callee": "GET",
+          "lineNumber": 1068
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "IS_KEY_Z",
+          "lineNumber": 1077
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "removeMark",
+          "lineNumber": 1078
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "insertKey",
+          "lineNumber": 1080
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "checkForStandaloneChar",
+          "lineNumber": 1086
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "checkForStandaloneChar",
+          "lineNumber": 1091
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "IS_KEY_D",
+          "lineNumber": 1096
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "size",
+          "lineNumber": 1100
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "size",
+          "lineNumber": 1101
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "checkCorrectVowel",
+          "lineNumber": 1104
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "CHR",
+          "lineNumber": 1107
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "IS_CONSONANT",
+          "lineNumber": 1107
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "CHR",
+          "lineNumber": 1107
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "insertD",
+          "lineNumber": 1112
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "insertKey",
+          "lineNumber": 1118
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "IS_MARK_KEY",
+          "lineNumber": 1124
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "size",
+          "lineNumber": 1130
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "size",
+          "lineNumber": 1131
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "checkCorrectVowel",
+          "lineNumber": 1134
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "IS_KEY_S",
+          "lineNumber": 1138
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "insertMark",
+          "lineNumber": 1139
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "IS_KEY_F",
+          "lineNumber": 1140
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "insertMark",
+          "lineNumber": 1141
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "IS_KEY_R",
+          "lineNumber": 1142
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "insertMark",
+          "lineNumber": 1143
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "IS_KEY_X",
+          "lineNumber": 1144
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "insertMark",
+          "lineNumber": 1145
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "IS_KEY_J",
+          "lineNumber": 1146
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "insertMark",
+          "lineNumber": 1147
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "insertKey",
+          "lineNumber": 1158
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "CHR",
+          "lineNumber": 1167
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "CHR",
+          "lineNumber": 1167
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "CHR",
+          "lineNumber": 1167
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "size",
+          "lineNumber": 1179
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "size",
+          "lineNumber": 1180
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "checkCorrectVowel",
+          "lineNumber": 1183
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "IS_KEY_DOUBLE",
+          "lineNumber": 1187
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "insertAOE",
+          "lineNumber": 1188
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "IS_KEY_W",
+          "lineNumber": 1189
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "CHR",
+          "lineNumber": 1192
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "CHR",
+          "lineNumber": 1192
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "CHR",
+          "lineNumber": 1192
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "CHR",
+          "lineNumber": 1192
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "CHR",
+          "lineNumber": 1197
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "CHR",
+          "lineNumber": 1197
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "CHR",
+          "lineNumber": 1197
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "CHR",
+          "lineNumber": 1197
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "insertW",
+          "lineNumber": 1200
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "checkForStandaloneChar",
+          "lineNumber": 1208
+        },
+        {
+          "caller": "handleMainKey",
+          "callee": "insertKey",
+          "lineNumber": 1210
+        },
+        {
+          "caller": "handleQuickTelex",
+          "callee": "insertKey",
+          "lineNumber": 1221
+        },
+        {
+          "caller": "checkRestoreIfWrongSpelling",
+          "callee": "IS_CONSONANT",
+          "lineNumber": 1226
+        },
+        {
+          "caller": "checkRestoreIfWrongSpelling",
+          "callee": "CHR",
+          "lineNumber": 1226
+        },
+        {
+          "caller": "checkQuickConsonant",
+          "callee": "find",
+          "lineNumber": 1261
+        },
+        {
+          "caller": "checkQuickConsonant",
+          "callee": "CHR",
+          "lineNumber": 1261
+        },
+        {
+          "caller": "checkQuickConsonant",
+          "callee": "end",
+          "lineNumber": 1261
+        },
+        {
+          "caller": "checkQuickConsonant",
+          "callee": "CHR",
+          "lineNumber": 1271
+        },
+        {
+          "caller": "checkQuickConsonant",
+          "callee": "CHR",
+          "lineNumber": 1272
+        },
+        {
+          "caller": "checkQuickConsonant",
+          "callee": "IS_CONSONANT",
+          "lineNumber": 1276
+        },
+        {
+          "caller": "checkQuickConsonant",
+          "callee": "CHR",
+          "lineNumber": 1276
+        },
+        {
+          "caller": "checkQuickConsonant",
+          "callee": "find",
+          "lineNumber": 1277
+        },
+        {
+          "caller": "checkQuickConsonant",
+          "callee": "CHR",
+          "lineNumber": 1277
+        },
+        {
+          "caller": "checkQuickConsonant",
+          "callee": "end",
+          "lineNumber": 1277
+        },
+        {
+          "caller": "checkQuickConsonant",
+          "callee": "CHR",
+          "lineNumber": 1287
+        },
+        {
+          "caller": "checkQuickConsonant",
+          "callee": "CHR",
+          "lineNumber": 1288
+        },
+        {
+          "caller": "checkQuickConsonant",
+          "callee": "GET",
+          "lineNumber": 1295
+        },
+        {
+          "caller": "vEnglishMode",
+          "callee": "clear",
+          "lineNumber": 1307
+        },
+        {
+          "caller": "vEnglishMode",
+          "callee": "findMacro",
+          "lineNumber": 1310
+        },
+        {
+          "caller": "vEnglishMode",
+          "callee": "size",
+          "lineNumber": 1312
+        },
+        {
+          "caller": "vEnglishMode",
+          "callee": "clear",
+          "lineNumber": 1314
+        },
+        {
+          "caller": "vEnglishMode",
+          "callee": "size",
+          "lineNumber": 1317
+        },
+        {
+          "caller": "vEnglishMode",
+          "callee": "pop_back",
+          "lineNumber": 1318
+        },
+        {
+          "caller": "vEnglishMode",
+          "callee": "isWordBreak",
+          "lineNumber": 1323
+        },
+        {
+          "caller": "vEnglishMode",
+          "callee": "std::find",
+          "lineNumber": 1324
+        },
+        {
+          "caller": "vEnglishMode",
+          "callee": "begin",
+          "lineNumber": 1324
+        },
+        {
+          "caller": "vEnglishMode",
+          "callee": "end",
+          "lineNumber": 1324
+        },
+        {
+          "caller": "vEnglishMode",
+          "callee": "end",
+          "lineNumber": 1324
+        },
+        {
+          "caller": "vEnglishMode",
+          "callee": "clear",
+          "lineNumber": 1325
+        },
+        {
+          "caller": "vEnglishMode",
+          "callee": "push_back",
+          "lineNumber": 1329
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "IS_NUMBER_KEY",
+          "lineNumber": 1341
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "isWordBreak",
+          "lineNumber": 1342
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "IS_NUMBER_KEY",
+          "lineNumber": 1342
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "isMacroBreakCode",
+          "lineNumber": 1349
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "findMacro",
+          "lineNumber": 1349
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "size",
+          "lineNumber": 1351
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "isMacroBreakCode",
+          "lineNumber": 1353
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "checkQuickConsonant",
+          "lineNumber": 1354
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "isWordBreak",
+          "lineNumber": 1355
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "checkSpelling",
+          "lineNumber": 1357
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "checkRestoreIfWrongSpelling",
+          "lineNumber": 1359
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "std::find",
+          "lineNumber": 1364
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "begin",
+          "lineNumber": 1364
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "end",
+          "lineNumber": 1364
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "end",
+          "lineNumber": 1364
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "clear",
+          "lineNumber": 1366
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "clear",
+          "lineNumber": 1367
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "saveWord",
+          "lineNumber": 1370
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "saveWord",
+          "lineNumber": 1373
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "push_back",
+          "lineNumber": 1375
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "startNewSession",
+          "lineNumber": 1380
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "push_back",
+          "lineNumber": 1390
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "clear",
+          "lineNumber": 1392
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "checkSpelling",
+          "lineNumber": 1406
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "findMacro",
+          "lineNumber": 1408
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "size",
+          "lineNumber": 1410
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "checkQuickConsonant",
+          "lineNumber": 1413
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "checkRestoreIfWrongSpelling",
+          "lineNumber": 1416
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "clear",
+          "lineNumber": 1425
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "size",
+          "lineNumber": 1432
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "saveSpecialChar",
+          "lineNumber": 1433
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "saveWord",
+          "lineNumber": 1435
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "size",
+          "lineNumber": 1443
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "pop_back",
+          "lineNumber": 1444
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "size",
+          "lineNumber": 1445
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "restoreLastTypingState",
+          "lineNumber": 1446
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "restoreLastTypingState",
+          "lineNumber": 1451
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "size",
+          "lineNumber": 1459
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "back",
+          "lineNumber": 1464
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "pop_back",
+          "lineNumber": 1465
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "checkSpelling",
+          "lineNumber": 1469
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "size",
+          "lineNumber": 1471
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "pop_back",
+          "lineNumber": 1472
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "startNewSession",
+          "lineNumber": 1479
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "clear",
+          "lineNumber": 1480
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "restoreLastTypingState",
+          "lineNumber": 1481
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "checkGrammar",
+          "lineNumber": 1483
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "startNewSession",
+          "lineNumber": 1496
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "saveWord",
+          "lineNumber": 1498
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "size",
+          "lineNumber": 1500
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "saveSpecialChar",
+          "lineNumber": 1501
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "insertState",
+          "lineNumber": 1504
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "IS_SPECIALKEY",
+          "lineNumber": 1506
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "IS_QUICK_TELEX_KEY",
+          "lineNumber": 1507
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "handleQuickTelex",
+          "lineNumber": 1508
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "insertKey",
+          "lineNumber": 1515
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "handleMainKey",
+          "lineNumber": 1521
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "IS_KEY_D",
+          "lineNumber": 1524
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "checkGrammar",
+          "lineNumber": 1526
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "checkGrammar",
+          "lineNumber": 1528
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "insertKey",
+          "lineNumber": 1533
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "push_back",
+          "lineNumber": 1540
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "size",
+          "lineNumber": 1543
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "pop_back",
+          "lineNumber": 1544
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "push_back",
+          "lineNumber": 1548
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "upperCaseFirstCharacter",
+          "lineNumber": 1555
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "IS_BRACKET_KEY",
+          "lineNumber": 1561
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "IS_BRACKET_KEY",
+          "lineNumber": 1561
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "saveWord",
+          "lineNumber": 1564
+        },
+        {
+          "caller": "vKeyHandleEvent",
+          "callee": "push_back",
+          "lineNumber": 1570
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 37,
+        "functionCount": 38,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "core/engine/Engine.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 252,
+      "nonEmptyLines": 213,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "core/engine/Macro.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 293,
+      "nonEmptyLines": 265,
+      "functions": [
+        {
+          "name": "convert",
+          "startLine": 29,
+          "endLine": 65,
+          "params": [
+            "str",
+            "outData"
+          ]
+        },
+        {
+          "name": "initMacroMap",
+          "startLine": 80,
+          "endLine": 110,
+          "params": [
+            "pData",
+            "size"
+          ]
+        },
+        {
+          "name": "getMacroSaveData",
+          "startLine": 112,
+          "endLine": 130,
+          "params": [
+            "outData"
+          ]
+        },
+        {
+          "name": "modifyCaseUnicode",
+          "startLine": 132,
+          "endLine": 153,
+          "params": [
+            "code"
+          ]
+        },
+        {
+          "name": "findMacro",
+          "startLine": 155,
+          "endLine": 197,
+          "params": [
+            "key",
+            "macroContentCode"
+          ]
+        },
+        {
+          "name": "hasMacro",
+          "startLine": 199,
+          "endLine": 203,
+          "params": [
+            "macroName"
+          ]
+        },
+        {
+          "name": "getAllMacro",
+          "startLine": 205,
+          "endLine": 214,
+          "params": [
+            "keys",
+            "macroTexts",
+            "macroContents"
+          ]
+        },
+        {
+          "name": "addMacro",
+          "startLine": 216,
+          "endLine": 230,
+          "params": [
+            "macroText",
+            "macroContent"
+          ]
+        },
+        {
+          "name": "deleteMacro",
+          "startLine": 232,
+          "endLine": 240,
+          "params": [
+            "macroText"
+          ]
+        },
+        {
+          "name": "onTableCodeChange",
+          "startLine": 242,
+          "endLine": 246,
+          "params": []
+        },
+        {
+          "name": "saveToFile",
+          "startLine": 248,
+          "endLine": 256,
+          "params": [
+            "path"
+          ]
+        },
+        {
+          "name": "readFromFile",
+          "startLine": 258,
+          "endLine": 293,
+          "params": [
+            "path",
+            "append"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "initMacroMap",
+          "line": 80,
+          "isDefault": false
+        },
+        {
+          "name": "getMacroSaveData",
+          "line": 112,
+          "isDefault": false
+        },
+        {
+          "name": "findMacro",
+          "line": 155,
+          "isDefault": false
+        },
+        {
+          "name": "hasMacro",
+          "line": 199,
+          "isDefault": false
+        },
+        {
+          "name": "getAllMacro",
+          "line": 205,
+          "isDefault": false
+        },
+        {
+          "name": "addMacro",
+          "line": 216,
+          "isDefault": false
+        },
+        {
+          "name": "deleteMacro",
+          "line": 232,
+          "isDefault": false
+        },
+        {
+          "name": "onTableCodeChange",
+          "line": 242,
+          "isDefault": false
+        },
+        {
+          "name": "saveToFile",
+          "line": 248,
+          "isDefault": false
+        },
+        {
+          "name": "readFromFile",
+          "line": 258,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "convert",
+          "callee": "clear",
+          "lineNumber": 30
+        },
+        {
+          "caller": "convert",
+          "callee": "utf8ToWideString",
+          "lineNumber": 31
+        },
+        {
+          "caller": "convert",
+          "callee": "size",
+          "lineNumber": 35
+        },
+        {
+          "caller": "convert",
+          "callee": "find",
+          "lineNumber": 39
+        },
+        {
+          "caller": "convert",
+          "callee": "end",
+          "lineNumber": 39
+        },
+        {
+          "caller": "convert",
+          "callee": "push_back",
+          "lineNumber": 40
+        },
+        {
+          "caller": "convert",
+          "callee": "begin",
+          "lineNumber": 45
+        },
+        {
+          "caller": "convert",
+          "callee": "end",
+          "lineNumber": 45
+        },
+        {
+          "caller": "convert",
+          "callee": "size",
+          "lineNumber": 48
+        },
+        {
+          "caller": "convert",
+          "callee": "push_back",
+          "lineNumber": 51
+        },
+        {
+          "caller": "convert",
+          "callee": "push_back",
+          "lineNumber": 63
+        },
+        {
+          "caller": "initMacroMap",
+          "callee": "clear",
+          "lineNumber": 81
+        },
+        {
+          "caller": "initMacroMap",
+          "callee": "memcpy",
+          "lineNumber": 85
+        },
+        {
+          "caller": "initMacroMap",
+          "callee": "memcpy",
+          "lineNumber": 95
+        },
+        {
+          "caller": "initMacroMap",
+          "callee": "convert",
+          "lineNumber": 105
+        },
+        {
+          "caller": "initMacroMap",
+          "callee": "convert",
+          "lineNumber": 106
+        },
+        {
+          "caller": "getMacroSaveData",
+          "callee": "size",
+          "lineNumber": 113
+        },
+        {
+          "caller": "getMacroSaveData",
+          "callee": "push_back",
+          "lineNumber": 114
+        },
+        {
+          "caller": "getMacroSaveData",
+          "callee": "push_back",
+          "lineNumber": 115
+        },
+        {
+          "caller": "getMacroSaveData",
+          "callee": "(Byte)",
+          "lineNumber": 115
+        },
+        {
+          "caller": "getMacroSaveData",
+          "callee": "begin",
+          "lineNumber": 117
+        },
+        {
+          "caller": "getMacroSaveData",
+          "callee": "end",
+          "lineNumber": 117
+        },
+        {
+          "caller": "getMacroSaveData",
+          "callee": "push_back",
+          "lineNumber": 118
+        },
+        {
+          "caller": "getMacroSaveData",
+          "callee": "size",
+          "lineNumber": 118
+        },
+        {
+          "caller": "getMacroSaveData",
+          "callee": "size",
+          "lineNumber": 119
+        },
+        {
+          "caller": "getMacroSaveData",
+          "callee": "push_back",
+          "lineNumber": 120
+        },
+        {
+          "caller": "getMacroSaveData",
+          "callee": "size",
+          "lineNumber": 123
+        },
+        {
+          "caller": "getMacroSaveData",
+          "callee": "push_back",
+          "lineNumber": 124
+        },
+        {
+          "caller": "getMacroSaveData",
+          "callee": "push_back",
+          "lineNumber": 125
+        },
+        {
+          "caller": "getMacroSaveData",
+          "callee": "push_back",
+          "lineNumber": 127
+        },
+        {
+          "caller": "modifyCaseUnicode",
+          "callee": "begin",
+          "lineNumber": 140
+        },
+        {
+          "caller": "modifyCaseUnicode",
+          "callee": "end",
+          "lineNumber": 140
+        },
+        {
+          "caller": "modifyCaseUnicode",
+          "callee": "size",
+          "lineNumber": 141
+        },
+        {
+          "caller": "findMacro",
+          "callee": "size",
+          "lineNumber": 156
+        },
+        {
+          "caller": "findMacro",
+          "callee": "getCharacterCode",
+          "lineNumber": 157
+        },
+        {
+          "caller": "findMacro",
+          "callee": "find",
+          "lineNumber": 159
+        },
+        {
+          "caller": "findMacro",
+          "callee": "end",
+          "lineNumber": 159
+        },
+        {
+          "caller": "findMacro",
+          "callee": "clear",
+          "lineNumber": 160
+        },
+        {
+          "caller": "findMacro",
+          "callee": "size",
+          "lineNumber": 167
+        },
+        {
+          "caller": "findMacro",
+          "callee": "modifyCaseUnicode",
+          "lineNumber": 167
+        },
+        {
+          "caller": "findMacro",
+          "callee": "size",
+          "lineNumber": 169
+        },
+        {
+          "caller": "findMacro",
+          "callee": "modifyCaseUnicode",
+          "lineNumber": 170
+        },
+        {
+          "caller": "findMacro",
+          "callee": "size",
+          "lineNumber": 174
+        },
+        {
+          "caller": "findMacro",
+          "callee": "modifyCaseUnicode",
+          "lineNumber": 174
+        },
+        {
+          "caller": "findMacro",
+          "callee": "find",
+          "lineNumber": 175
+        },
+        {
+          "caller": "findMacro",
+          "callee": "end",
+          "lineNumber": 175
+        },
+        {
+          "caller": "findMacro",
+          "callee": "clear",
+          "lineNumber": 176
+        },
+        {
+          "caller": "findMacro",
+          "callee": "size",
+          "lineNumber": 179
+        },
+        {
+          "caller": "findMacro",
+          "callee": "keyCodeToCharacter",
+          "lineNumber": 181
+        },
+        {
+          "caller": "findMacro",
+          "callee": "toupper",
+          "lineNumber": 183
+        },
+        {
+          "caller": "findMacro",
+          "callee": "modifyCaseUnicode",
+          "lineNumber": 188
+        },
+        {
+          "caller": "hasMacro",
+          "callee": "convert",
+          "lineNumber": 201
+        },
+        {
+          "caller": "hasMacro",
+          "callee": "find",
+          "lineNumber": 202
+        },
+        {
+          "caller": "hasMacro",
+          "callee": "end",
+          "lineNumber": 202
+        },
+        {
+          "caller": "getAllMacro",
+          "callee": "clear",
+          "lineNumber": 206
+        },
+        {
+          "caller": "getAllMacro",
+          "callee": "clear",
+          "lineNumber": 207
+        },
+        {
+          "caller": "getAllMacro",
+          "callee": "clear",
+          "lineNumber": 208
+        },
+        {
+          "caller": "getAllMacro",
+          "callee": "begin",
+          "lineNumber": 209
+        },
+        {
+          "caller": "getAllMacro",
+          "callee": "end",
+          "lineNumber": 209
+        },
+        {
+          "caller": "getAllMacro",
+          "callee": "push_back",
+          "lineNumber": 210
+        },
+        {
+          "caller": "getAllMacro",
+          "callee": "push_back",
+          "lineNumber": 211
+        },
+        {
+          "caller": "getAllMacro",
+          "callee": "push_back",
+          "lineNumber": 212
+        },
+        {
+          "caller": "addMacro",
+          "callee": "convert",
+          "lineNumber": 218
+        },
+        {
+          "caller": "addMacro",
+          "callee": "find",
+          "lineNumber": 219
+        },
+        {
+          "caller": "addMacro",
+          "callee": "end",
+          "lineNumber": 219
+        },
+        {
+          "caller": "addMacro",
+          "callee": "convert",
+          "lineNumber": 223
+        },
+        {
+          "caller": "addMacro",
+          "callee": "convert",
+          "lineNumber": 227
+        },
+        {
+          "caller": "deleteMacro",
+          "callee": "convert",
+          "lineNumber": 234
+        },
+        {
+          "caller": "deleteMacro",
+          "callee": "find",
+          "lineNumber": 235
+        },
+        {
+          "caller": "deleteMacro",
+          "callee": "end",
+          "lineNumber": 235
+        },
+        {
+          "caller": "deleteMacro",
+          "callee": "erase",
+          "lineNumber": 236
+        },
+        {
+          "caller": "onTableCodeChange",
+          "callee": "begin",
+          "lineNumber": 243
+        },
+        {
+          "caller": "onTableCodeChange",
+          "callee": "end",
+          "lineNumber": 243
+        },
+        {
+          "caller": "onTableCodeChange",
+          "callee": "convert",
+          "lineNumber": 244
+        },
+        {
+          "caller": "saveToFile",
+          "callee": "open",
+          "lineNumber": 250
+        },
+        {
+          "caller": "saveToFile",
+          "callee": "c_str",
+          "lineNumber": 250
+        },
+        {
+          "caller": "saveToFile",
+          "callee": "begin",
+          "lineNumber": 252
+        },
+        {
+          "caller": "saveToFile",
+          "callee": "end",
+          "lineNumber": 252
+        },
+        {
+          "caller": "saveToFile",
+          "callee": "close",
+          "lineNumber": 255
+        },
+        {
+          "caller": "readFromFile",
+          "callee": "c_str",
+          "lineNumber": 259
+        },
+        {
+          "caller": "readFromFile",
+          "callee": "is_open",
+          "lineNumber": 264
+        },
+        {
+          "caller": "readFromFile",
+          "callee": "clear",
+          "lineNumber": 266
+        },
+        {
+          "caller": "readFromFile",
+          "callee": "getline",
+          "lineNumber": 268
+        },
+        {
+          "caller": "readFromFile",
+          "callee": "find",
+          "lineNumber": 271
+        },
+        {
+          "caller": "readFromFile",
+          "callee": "substr",
+          "lineNumber": 273
+        },
+        {
+          "caller": "readFromFile",
+          "callee": "substr",
+          "lineNumber": 274
+        },
+        {
+          "caller": "readFromFile",
+          "callee": "length",
+          "lineNumber": 274
+        },
+        {
+          "caller": "readFromFile",
+          "callee": "compare",
+          "lineNumber": 275
+        },
+        {
+          "caller": "readFromFile",
+          "callee": "compare",
+          "lineNumber": 275
+        },
+        {
+          "caller": "readFromFile",
+          "callee": "find",
+          "lineNumber": 276
+        },
+        {
+          "caller": "readFromFile",
+          "callee": "substr",
+          "lineNumber": 279
+        },
+        {
+          "caller": "readFromFile",
+          "callee": "substr",
+          "lineNumber": 280
+        },
+        {
+          "caller": "readFromFile",
+          "callee": "length",
+          "lineNumber": 280
+        },
+        {
+          "caller": "readFromFile",
+          "callee": "compare",
+          "lineNumber": 286
+        },
+        {
+          "caller": "readFromFile",
+          "callee": "hasMacro",
+          "lineNumber": 286
+        },
+        {
+          "caller": "readFromFile",
+          "callee": "addMacro",
+          "lineNumber": 287
+        },
+        {
+          "caller": "readFromFile",
+          "callee": "close",
+          "lineNumber": 291
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 10,
+        "functionCount": 12,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "core/engine/Macro.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 75,
+      "nonEmptyLines": 60,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "core/engine/Vietnamese.cpp",
+      "language": "cpp",
+      "fileCategory": "code",
+      "totalLines": 576,
+      "nonEmptyLines": 544,
+      "functions": [
+        {
+          "name": "initKeyCodeToChar",
+          "startLine": 561,
+          "endLine": 566,
+          "params": []
+        },
+        {
+          "name": "keyCodeToCharacter",
+          "startLine": 568,
+          "endLine": 576,
+          "params": [
+            "keyCode"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "initKeyCodeToChar",
+          "line": 561,
+          "isDefault": false
+        },
+        {
+          "name": "keyCodeToCharacter",
+          "line": 568,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "initKeyCodeToChar",
+          "callee": "clear",
+          "lineNumber": 562
+        },
+        {
+          "caller": "initKeyCodeToChar",
+          "callee": "begin",
+          "lineNumber": 563
+        },
+        {
+          "caller": "initKeyCodeToChar",
+          "callee": "end",
+          "lineNumber": 563
+        },
+        {
+          "caller": "keyCodeToCharacter",
+          "callee": "size",
+          "lineNumber": 569
+        },
+        {
+          "caller": "keyCodeToCharacter",
+          "callee": "initKeyCodeToChar",
+          "lineNumber": 570
+        },
+        {
+          "caller": "keyCodeToCharacter",
+          "callee": "find",
+          "lineNumber": 572
+        },
+        {
+          "caller": "keyCodeToCharacter",
+          "callee": "end",
+          "lineNumber": 572
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "core/engine/Vietnamese.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 37,
+      "nonEmptyLines": 30,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

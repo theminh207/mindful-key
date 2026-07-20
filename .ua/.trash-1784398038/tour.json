@@ -1,0 +1,134 @@
+[
+  {
+    "order": 1,
+    "title": "Tổng quan dự án",
+    "description": "Bắt đầu với README để nắm định vị cốt lõi của Mindful Keyboard: một bộ gõ tiếng Việt đóng vai 'người gác cổng cảm xúc' — cảm nhận và ghi nhận lúc gõ mà không hiển thị điểm số hay chấm điểm. File này giới thiệu các màn hình chính, cam kết riêng tư on-device, và ghi công nguồn gốc OpenKey (Mai Vũ Tuyên) theo giấy phép GPL v3. Đây là bản đồ định hướng cho toàn bộ tour phía sau, trước khi đi sâu vào từng lớp kiến trúc.",
+    "nodeIds": [
+      "document:README.md"
+    ]
+  },
+  {
+    "order": 2,
+    "title": "Bộ não chung: cửa vào duy nhất của engine",
+    "description": "Engine.cpp là bộ não trung tâm dùng chung cho mọi hệ điều hành — một state machine thuần C++ xử lý từng phím gõ, ghép vần và bỏ dấu tiếng Việt theo Telex/VNI. Toàn bộ vỏ (macOS, iOS, Windows) đều gọi vào đúng MỘT cửa: hàm vKeyHandleEvent khai báo trong Engine.h. Điểm mấu chốt cho tour: mỗi khi một từ gõ xong, hàm emitCommittedWord bắn hook vOnWordCommitted — đây chính là cánh cửa nối engine gõ phím với lớp cảm xúc mà tour sẽ khám phá tiếp theo.",
+    "nodeIds": [
+      "file:core/engine/Engine.cpp",
+      "file:core/engine/Engine.h"
+    ],
+    "languageLesson": "Kỹ thuật 'callback hook' (vOnWordCommitted) cho phép core/engine hoàn toàn không biết gì về lớp cảm xúc phía trên — nó chỉ gọi một con trỏ hàm khi có sự kiện xảy ra. Đây là cách C++ tách một module dùng chung khỏi các module tiêu thụ nó mà không cần import ngược."
+  },
+  {
+    "order": 3,
+    "title": "Dữ liệu tiếng Việt: Telex, VNI và bảng mã",
+    "description": "Nếu Engine.cpp là bộ xử lý, Vietnamese.cpp chính là kho tri thức ngôn ngữ nó dựa vào: bảng nguyên âm, phụ âm, quy tắc Quick Telex, và các bảng chuyển đổi Unicode/TCVN3/VNI. Hàm keyCodeToCharacter cung cấp bước tra cứu cuối cùng để engine biến một phím vật lý thành ký tự tiếng Việt đúng dấu. File này không có logic điều khiển — thuần dữ liệu và quy tắc, giữ engine dễ kiểm chứng và dễ mở rộng thêm kiểu gõ mới.",
+    "nodeIds": [
+      "file:core/engine/Vietnamese.cpp"
+    ],
+    "languageLesson": "Tách dữ liệu ngôn ngữ (bảng tra cứu) khỏi logic điều khiển (state machine) là một pattern kinh điển trong xử lý gõ phím — giúp thêm bảng mã hay quy tắc gõ mới mà không đụng vào state machine đã được test kỹ."
+  },
+  {
+    "order": 4,
+    "title": "Lớp cảm xúc dùng chung: gom từ thành câu",
+    "description": "Bắt đầu layer core-mood — nơi tiếp nhận hook vOnWordCommitted từ Step 2. MoodBuffer là bộ đệm trượt thuần C++, gom các từ vừa gõ xong thành 'câu gần đây' trong một cửa sổ maxWords, không biết gì về việc phân tích cảm xúc hay hiển thị UI. Thiết kế trung lập nền tảng này cho phép cả ba vỏ (macOS, iOS, Windows) tái sử dụng đúng một logic gom câu, tránh mỗi OS tự viết một kiểu khác nhau.",
+    "nodeIds": [
+      "file:core/mood/MoodBuffer.h",
+      "file:core/mood/MoodBuffer.cpp"
+    ]
+  },
+  {
+    "order": 5,
+    "title": "Chấm điểm rủi ro gửi tin",
+    "description": "Câu chữ mà MoodBuffer gom được ở Step 4 đi tiếp vào SendRiskAnalyzer — bộ chấm điểm rủi ro theo lexicon: chuẩn hoá chữ tiếng Việt, dò từ khoá tiêu cực, rồi ép về một con số risk trong khoảng [0,1] bằng hàm bão hoà. Điểm mấu chốt riêng tư: chỉ con số risk rời khỏi hàm này, nội dung câu gốc không bao giờ được truyền đi hay lưu lại nguyên văn. Đây cũng là bản DUY NHẤT của thuật toán — cả ba vỏ OS dùng chung để lexicon không trôi lệch giữa các nền tảng.",
+    "nodeIds": [
+      "file:core/mood/SendRiskAnalyzer.h",
+      "file:core/mood/SendRiskAnalyzer.cpp"
+    ]
+  },
+  {
+    "order": 6,
+    "title": "Từ điểm rủi ro thành sóng và nhịp thở",
+    "description": "Con số risk từ Step 5 không hiển thị thẳng ra UI — nó đi qua hai hợp đồng thuần C++ để trở thành trải nghiệm chánh niệm. EmotionWaveAmplitude quy đổi risk thành biên độ sóng liên tục (có 'ngưỡng chết' 0.3 để mặt hồ được phép phẳng lặng), còn BreathingPause quyết định KHI NÀO nên hiện overlay nhắc dừng lại và hiển thị chữ gì — với cam kết cứng: không bao giờ chặn cứng nút Gửi. Cả hai đều host-testable và không phụ thuộc UIKit/Foundation, đúng tinh thần tách bộ não khỏi UI riêng từng OS.",
+    "nodeIds": [
+      "file:core/mood/EmotionWaveAmplitude.h",
+      "file:core/mood/EmotionWaveAmplitude.cpp",
+      "file:core/mood/BreathingPause.h",
+      "file:core/mood/BreathingPause.cpp"
+    ],
+    "languageLesson": "Ngưỡng chết (dead zone) và hàm smoothstep là kỹ thuật xử lý tín hiệu quen thuộc: tránh phản ứng thái quá với nhiễu nhỏ, chỉ phản hồi khi tín hiệu đủ mạnh — ở đây được mượn để áp dụng cho trải nghiệm cảm xúc thay vì tín hiệu điện tử."
+  },
+  {
+    "order": 7,
+    "title": "Câu chữ quan sát, không phán xét",
+    "description": "MoodPhrasing đóng vai trò 'người viết lời' cho toàn bộ lớp cảm xúc: biến chuỗi mẫu MoodSample (thời điểm + biên độ) trong ngày thành câu tiếng Việt như nhãn buổi, câu 'hình dạng ngày', và câu hỏi phản chiếu cuối ngày. Đây là nơi HIẾN CHƯƠNG của dự án được ép cứng vào code — comment trong header ghi rõ ràng buộc cấm 'cải tiến' câu chữ thành phán xét hay chấm điểm. Header này định nghĩa struct MoodSample và enum MoodDayShape mà UI của cả ba vỏ OS sẽ tiêu thụ.",
+    "nodeIds": [
+      "file:core/mood/MoodPhrasing.h",
+      "file:core/mood/MoodPhrasing.cpp"
+    ]
+  },
+  {
+    "order": 8,
+    "title": "Vỏ macOS: nối engine vào hệ điều hành",
+    "description": "Rời khỏi core dùng chung, tour chuyển sang vỏ macOS — công dân hạng nhất của dự án và là vỏ hoàn thiện nhất (74 file). OpenKeyManager.m dùng CGEventTap của macOS để bắt từng phím gõ ở tầng OS, khởi tạo engine từ Step 2, và chuyển phím qua vKeyHandleEvent. Đây là điểm nối vật lý giữa bộ não C++ dùng chung và một hệ điều hành cụ thể — mọi thứ tour đã học ở core giờ mới thực sự 'sống' trên máy người dùng.",
+    "nodeIds": [
+      "file:platforms/apple/macos/OpenKeyManager.m"
+    ]
+  },
+  {
+    "order": 9,
+    "title": "macOS lắng nghe cảm xúc và điều phối nhắc",
+    "description": "MoodWatchMac nối hook vOnWordCommitted (Step 2) vào một hàng đợi nền: gom câu qua MoodBuffer, chấm risk qua SendRiskAnalyzer (Step 5), rồi đếm chuỗi câu căng liên tiếp để quyết định có nên rung chuông hay không. NudgeCoordinatorMac là bộ điều phối duy nhất cho các lời nhắc thụ động: cooldown 45 giây giữa hai lần nhắc, và ánh xạ mức độ nhạy (1-3) sang ngưỡng cụ thể. Cụm hai file này là nơi các hợp đồng core-mood trừu tượng ở Step 4-7 trở thành hành vi thật chạy nền trên máy Mac.",
+    "nodeIds": [
+      "file:platforms/apple/macos/MoodWatchMac.mm",
+      "file:platforms/apple/macos/NudgeCoordinatorMac.mm"
+    ]
+  },
+  {
+    "order": 10,
+    "title": "Tính năng chốt: người gác cổng gửi tin",
+    "description": "Đây là tính năng đặc trưng nhất của dự án (Feature #1): SendGatekeeperMac bắt phím Enter-không-Shift trong các app chat đã xác minh bundle-id (Zalo, Discord...) khi send-risk vượt ngưỡng, rồi hiện một NSPanel 'nhịp thở' hai lựa chọn — Đợi chút hoặc Vẫn gửi. Cố ý KHÁC với NudgeCoordinatorMac ở Step 9: gatekeeper này không dùng cooldown chung, luôn hiện khi đủ điều kiện, vì đây là lằn ranh an toàn quan trọng nhất chứ không phải một lời nhắc thông thường. docs/BREATHING-PAUSE-CONTRACT.md ghi lại cam kết thiết kế đứng sau tính năng này: không chặn cứng, chỉ tạo một khoảng dừng.",
+    "nodeIds": [
+      "file:platforms/apple/macos/SendGatekeeperMac.h",
+      "file:platforms/apple/macos/SendGatekeeperMac.mm",
+      "document:docs/BREATHING-PAUSE-CONTRACT.md"
+    ]
+  },
+  {
+    "order": 11,
+    "title": "Kho nhật ký cảm xúc mã hoá",
+    "description": "Mọi lượt gác cổng và lấy mẫu cảm xúc ở Step 9-10 đều được ghi vào MoodStoreMac — một kho SQLite được mã hoá AES-256-CBC, khoá lưu trong Keychain thay vì dùng SQLCipher để tránh thêm dependency nặng. File này giữ consent gate (chỉ hỏi một lần lúc khởi động, không hỏi giữa lúc căng thẳng), hỗ trợ auto-purge kèm ghi chú, và cung cấp tóm tắt ngày cho màn 'soi lại' — tiêu thụ đúng câu chữ mà MoodPhrasing ở Step 7 đã tạo ra.",
+    "nodeIds": [
+      "file:platforms/apple/macos/MoodStoreMac.mm"
+    ]
+  },
+  {
+    "order": 12,
+    "title": "Hai vỏ còn lại: iOS sandbox hẹp và Windows đầy đủ",
+    "description": "So sánh hai cách port khác nhau của cùng một kiến trúc. KeyboardBridge là cầu nối DUY NHẤT giữa Custom Keyboard Extension trên iOS và engine dùng chung, nhưng vì sandbox của Apple chặn truy cập xuyên app, MoodBridge trên iOS chỉ có thể ghi nhật ký và nhắc thụ động — không thể làm gatekeeper gửi tin như SendGatekeeperMac ở Step 10. Ngược lại, OpenKeyManager.cpp và MoodWatch.cpp của bản Windows port đầy đủ toàn bộ lớp cảm xúc (kể cả gatekeeper và kho mã hoá bằng DPAPI), vì Windows không có rào cản sandbox như iOS.",
+    "nodeIds": [
+      "file:platforms/apple/ios/KeyboardExtension/KeyboardBridge.h",
+      "file:platforms/apple/ios/KeyboardExtension/MoodBridge.mm",
+      "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp",
+      "file:platforms/windows/win32/OpenKey/OpenKey/MoodWatch.cpp"
+    ],
+    "languageLesson": "Objective-C++ (đuôi .mm) cho phép trộn code Objective-C và C++ thuần trong cùng một file — đây chính là kỹ thuật mà mọi bridge của Apple (KeyboardBridge, MoodBridge, MoodWatchMac...) dùng để gọi thẳng vào core/engine và core/mood C++ mà không cần một lớp C wrapper trung gian."
+  },
+  {
+    "order": 13,
+    "title": "Lưới an toàn: test regression",
+    "description": "test_engine.cpp là harness tự viết (không dùng framework) nạp từng phím Telex qua vKeyHandleEvent (Step 2) và so khớp kết quả — lưới an toàn cho bộ não dùng chung mà mọi thay đổi engine phải chạy qua trước khi được coi là ổn. test_send_risk.cpp làm điều tương tự cho công thức chấm risk ở Step 5. docs/TEST_MATRIX.md là sổ cái nối các hành vi đã thiết kế (gác cổng, nhắc, mã hoá...) với bằng chứng chạy thật tương ứng — phơi rõ chỗ nào 'đã code' nhưng 'chưa chứng minh chạy'.",
+    "nodeIds": [
+      "file:tests/core/test_engine.cpp",
+      "file:tests/core/test_send_risk.cpp",
+      "document:docs/TEST_MATRIX.md"
+    ]
+  },
+  {
+    "order": 14,
+    "title": "Hiến chương và pipeline build",
+    "description": "Khép lại tour bằng hai file điều phối toàn bộ dự án. docs/AGENT-BRIEF.md là bản HIẾN CHƯƠNG đầy đủ — định nghĩa nguyên tắc nhận diện bất khả xâm phạm (sóng ~ trung tính, cấm gamification) mà Step 7 (MoodPhrasing) đã ép cứng vào code, cùng kiến trúc mục tiêu và ràng buộc GPL v3 kế thừa từ OpenKey. Makefile là đầu vào build/test DUY NHẤT với 21 target — gồm test (chạy đúng test_engine.cpp ở Step 13), build/run cho macOS, và brand-lint kiểm nhận diện — nối mọi mảng đã đi qua tour thành một quy trình vận hành thống nhất.",
+    "nodeIds": [
+      "document:docs/AGENT-BRIEF.md",
+      "pipeline:Makefile"
+    ]
+  }
+]

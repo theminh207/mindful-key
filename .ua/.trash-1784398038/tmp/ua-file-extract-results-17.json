@@ -1,0 +1,255 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 15,
+  "filesSkipped": [
+    "platforms/apple/macos/SystemSettingsView.mm",
+    "platforms/apple/macos/ViewController.m",
+    "platforms/apple/macos/main.m",
+    "platforms/apple/shared/AppGroupBridge.mm",
+    "platforms/apple/shared/BellReminderSettingsBridge.mm",
+    "platforms/apple/shared/BellScheduleSettingsBridge.mm",
+    "platforms/apple/shared/EngineKeyMap.mm",
+    "platforms/apple/shared/KeyboardSettingsBridge.mm",
+    "platforms/apple/shared/MacroBridge.mm",
+    "platforms/apple/shared/MoodJournalStore.mm"
+  ],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 15,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 13,
+      "failed": 0,
+      "skipped": 2
+    }
+  },
+  "results": [
+    {
+      "path": "platforms/apple/macos/SystemSettingsView.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 27,
+      "nonEmptyLines": 20,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/ViewController.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 81,
+      "nonEmptyLines": 62,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/project.yml",
+      "language": "yaml",
+      "fileCategory": "config",
+      "totalLines": 201,
+      "nonEmptyLines": 172,
+      "sections": [
+        {
+          "heading": "name",
+          "level": 1,
+          "line": 4
+        },
+        {
+          "heading": "options",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "configs",
+          "level": 1,
+          "line": 11
+        },
+        {
+          "heading": "targets",
+          "level": 1,
+          "line": 15
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 4
+      }
+    },
+    {
+      "path": "platforms/apple/shared/AppGroupBridge.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 53,
+      "nonEmptyLines": 44,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/shared/AppGroupConstants.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 21,
+      "nonEmptyLines": 18,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/shared/BellReminderSettingsBridge.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 56,
+      "nonEmptyLines": 47,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/shared/BellScheduleSettingsBridge.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 91,
+      "nonEmptyLines": 71,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/shared/BrandPalette.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 35,
+      "nonEmptyLines": 31,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/shared/EngineDefaults.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 49,
+      "nonEmptyLines": 45,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/shared/EngineKeyMap.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 18,
+      "nonEmptyLines": 16,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/shared/KeyboardSettingsBridge.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 72,
+      "nonEmptyLines": 60,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/shared/MacroBridge.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 53,
+      "nonEmptyLines": 45,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/shared/MoodJournalStore.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 102,
+      "nonEmptyLines": 85,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/shared/README.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 13,
+      "nonEmptyLines": 9,
+      "sections": [
+        {
+          "heading": "apple/shared",
+          "level": 1,
+          "line": 1
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 1
+      }
+    },
+    {
+      "path": "platforms/apple/shared/ThemeBridge.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 46,
+      "nonEmptyLines": 38,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

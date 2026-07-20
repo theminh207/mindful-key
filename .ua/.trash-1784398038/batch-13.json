@@ -1,0 +1,481 @@
+{
+  "nodes": [
+    {
+      "id": "file:platforms/apple/Resources/MindfulKey.entitlements",
+      "type": "file",
+      "name": "MindfulKey.entitlements",
+      "filePath": "platforms/apple/Resources/MindfulKey.entitlements",
+      "summary": "File entitlements dùng chung của vỏ Apple, hiện là plist rỗng (chưa khai quyền/capability nào) — placeholder chờ bổ sung App Group/Keychain khi ký thật.",
+      "tags": ["entitlements", "apple", "configuration", "capabilities"],
+      "complexity": "simple",
+      "languageNotes": "Property list rỗng (<dict/>) — chưa gắn App Group group.vn.gnh.mindfulkey mà các bridge iOS tham chiếu."
+    },
+    {
+      "id": "file:platforms/apple/Resources/vi-VN.lproj/Main.strings",
+      "type": "file",
+      "name": "Main.strings",
+      "filePath": "platforms/apple/Resources/vi-VN.lproj/Main.strings",
+      "summary": "Bản dịch tiếng Việt cho storyboard macOS (Main.storyboard) — ánh xạ ObjectID của NSMenu/NSMenuItem/NSButtonCell sang nhãn hiển thị, gồm cả việc đổi thương hiệu OpenKey → Mindful Keyboard.",
+      "tags": ["localization", "vietnamese", "macos", "strings", "storyboard"],
+      "complexity": "moderate",
+      "languageNotes": "Định dạng .strings kiểu cặp \"ObjectID.title\" = \"giá trị\"; là tài nguyên macOS lọt vào lô iOS vì cùng cây platforms/apple."
+    },
+    {
+      "id": "file:platforms/apple/ios/App/ActivationViewController.h",
+      "type": "file",
+      "name": "ActivationViewController.h",
+      "filePath": "platforms/apple/ios/App/ActivationViewController.h",
+      "summary": "Header khai báo màn onboarding 01 (Kích hoạt bàn phím) — lộ callback onContinueAnyway để AppDelegate nối lối tiến thủ công khi App Group heartbeat không nhảy.",
+      "tags": ["header", "onboarding", "view-controller", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/App/ActivationViewController.m",
+      "type": "file",
+      "name": "ActivationViewController.m",
+      "filePath": "platforms/apple/ios/App/ActivationViewController.m",
+      "summary": "Màn onboarding 01: hướng dẫn 3 bước thêm Mindful Key trong Cài đặt hệ thống, nút \"Mở Cài đặt\", fallback \"Chưa thấy?\" và lối tiến thủ công chỉ hé khi rời-về Cài đặt mà heartbeat chưa nhảy.",
+      "tags": ["onboarding", "view-controller", "uikit", "ios", "accessibility"],
+      "complexity": "complex",
+      "languageNotes": "Nghe UIApplicationDidBecomeActiveNotification để hé nút vì iOS không gọi lại viewDidAppear: khi app chỉ thức dậy từ nền."
+    },
+    {
+      "id": "file:platforms/apple/ios/App/AppDelegate.h",
+      "type": "file",
+      "name": "AppDelegate.h",
+      "filePath": "platforms/apple/ios/App/AppDelegate.h",
+      "summary": "Header của AppDelegate — khai báo UIResponder<UIApplicationDelegate> giữ UIWindow cho app container iOS.",
+      "tags": ["header", "app-delegate", "entry-point", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/App/AppDelegate.m",
+      "type": "file",
+      "name": "AppDelegate.m",
+      "filePath": "platforms/apple/ios/App/AppDelegate.m",
+      "summary": "Điểm khởi động app container iOS: chọn màn đầu (Kích hoạt vs Home) theo App Group heartbeat, điều phối 3 màn onboarding tuyến tính qua UINavigationController và nối các callback push sang Home/Macro/Settings/Mặt hồ/Chuông/Nền.",
+      "tags": ["app-delegate", "entry-point", "navigation", "ios", "app-group"],
+      "complexity": "moderate",
+      "languageNotes": "nav bar hệ thống bị ẩn toàn app (navigationBarHidden=YES) vì mỗi màn tự vẽ header nhận diện riêng."
+    },
+    {
+      "id": "config:platforms/apple/ios/App/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "type": "config",
+      "name": "Contents.json",
+      "filePath": "platforms/apple/ios/App/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "summary": "Manifest asset catalog cho biểu tượng app iOS — trỏ tới AppIcon-1024.png dạng single-size \"universal\" (kiểu icon đơn iOS 14+).",
+      "tags": ["asset-catalog", "app-icon", "configuration", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:platforms/apple/ios/App/Assets.xcassets/Contents.json",
+      "type": "config",
+      "name": "Contents.json",
+      "filePath": "platforms/apple/ios/App/Assets.xcassets/Contents.json",
+      "summary": "Manifest gốc của asset catalog Assets.xcassets — chỉ chứa metadata author/version do Xcode sinh.",
+      "tags": ["asset-catalog", "configuration", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/App/BellSettingsViewController.h",
+      "type": "file",
+      "name": "BellSettingsViewController.h",
+      "filePath": "platforms/apple/ios/App/BellSettingsViewController.h",
+      "summary": "Header màn \"Chuông tỉnh thức\" — ghi rõ đây chỉ lưu lựa chọn lịch ngân chuông qua App Group, chưa có scheduler thật ở keyboard extension, và ràng buộc hiến chương (không đếm số/chấm điểm/đèn valence).",
+      "tags": ["header", "view-controller", "bell", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/App/BellSettingsViewController.m",
+      "type": "file",
+      "name": "BellSettingsViewController.m",
+      "filePath": "platforms/apple/ios/App/BellSettingsViewController.m",
+      "summary": "Màn cài đặt Chuông tỉnh thức dựng bằng UIKit thuần: chọn tiếng chuông, 4 công tắc lịch ngân + Giờ tĩnh lặng (đọc/ghi qua BellScheduleSettingsBridge), và nút \"Ngân thử\" mở overlay thở toàn màn; kèm 5 lớp view/control phụ trợ tự chứa trong file.",
+      "tags": ["view-controller", "bell", "uikit", "settings", "ios"],
+      "complexity": "complex",
+      "languageNotes": "layer.borderColor là CGColor \"chụp\" tại thời điểm set nên phải nạp lại ở traitCollectionDidChange để bám Light/Dark."
+    },
+    {
+      "id": "file:platforms/apple/ios/App/BrandColorsUIKit.h",
+      "type": "file",
+      "name": "BrandColorsUIKit.h",
+      "filePath": "platforms/apple/ios/App/BrandColorsUIKit.h",
+      "summary": "Header khai báo lớp tiện ích màu thương hiệu cho UIKit (biến thể iOS) — cung cấp các UIColor ngữ nghĩa (surface/ink/teal/orange/divider/moodLevel) động theo Light/Dark.",
+      "tags": ["header", "brand", "colors", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/App/BrandColorsUIKit.m",
+      "type": "file",
+      "name": "BrandColorsUIKit.m",
+      "filePath": "platforms/apple/ios/App/BrandColorsUIKit.m",
+      "summary": "Cung cấp bảng màu thương hiệu dưới dạng UIColor động Light/Dark cho toàn bộ vỏ iOS, lấy màu gốc từ BrandPalette.h dùng chung và khai các sắc phái sinh/dark theo DESIGN.md.",
+      "tags": ["brand", "colors", "theming", "ios", "dark-mode"],
+      "complexity": "moderate",
+      "languageNotes": "Dùng +colorWithDynamicProvider: để trả màu khác nhau theo userInterfaceStyle; màu mood trung tính cố ý KHÔNG đổi theo theme."
+    },
+    {
+      "id": "file:platforms/apple/ios/App/BrandMarkView.h",
+      "type": "file",
+      "name": "BrandMarkView.h",
+      "filePath": "platforms/apple/ios/App/BrandMarkView.h",
+      "summary": "Header khai báo BrandMarkView và enum BrandMarkStyle (Wave/Flat) — con sóng ~ nhận diện vẽ tay, kèm API bật/tắt hoạt cảnh biên độ.",
+      "tags": ["header", "brand", "custom-view", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/App/BrandMarkView.m",
+      "type": "file",
+      "name": "BrandMarkView.m",
+      "filePath": "platforms/apple/ios/App/BrandMarkView.m",
+      "summary": "Custom UIView vẽ con sóng ~ nhận diện bằng CAShapeLayer (đường sin 1.5 chu kỳ), với hoạt cảnh đổi biên độ gợn nhẹ→mạnh và kiểu đường phẳng; tôn trọng Reduce Motion và cập nhật màu theo theme.",
+      "tags": ["brand", "custom-view", "core-animation", "accessibility", "ios"],
+      "complexity": "moderate",
+      "languageNotes": "Animate keyPath \"path\" giữa 2 biên độ (autoreverse) — đúng nhận diện \"con sóng biến hình theo biên độ\", không đèn màu cảm xúc."
+    },
+    {
+      "id": "file:platforms/apple/ios/App/FullAccessViewController.h",
+      "type": "file",
+      "name": "FullAccessViewController.h",
+      "filePath": "platforms/apple/ios/App/FullAccessViewController.h",
+      "summary": "Header màn onboarding 02 (giải thích quyền Truy cập Đầy đủ) — lộ callback onFinish để AppDelegate chuyển sang Home dù người dùng chọn Bật hay Để sau.",
+      "tags": ["header", "onboarding", "view-controller", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/App/FullAccessViewController.m",
+      "type": "file",
+      "name": "FullAccessViewController.m",
+      "filePath": "platforms/apple/ios/App/FullAccessViewController.m",
+      "summary": "Màn onboarding 02 giải thích quyền Full Access theo cặp biên độ \"BẬT LÊN ĐỂ / KHÔNG BAO GIỜ\" (nghĩa nằm ở nhãn chữ, sóng chỉ minh hoạ), trấn an quyền riêng tư, rồi mở Cài đặt và về Home.",
+      "tags": ["onboarding", "view-controller", "privacy", "uikit", "ios"],
+      "complexity": "moderate",
+      "languageNotes": "App không kiểm soát popup Full Access của iOS — chỉ mở Cài đặt qua API công khai UIApplicationOpenSettingsURLString, dù kết quả gì cũng tới Home."
+    },
+    {
+      "id": "file:platforms/apple/ios/App/HomeViewController.h",
+      "type": "file",
+      "name": "HomeViewController.h",
+      "filePath": "platforms/apple/ios/App/HomeViewController.h",
+      "summary": "Header màn Home — khai 6 callback điều hướng (quay lại kích hoạt, mở Gõ tắt/Cài đặt/Mặt hồ/Chuông/Nền) mà AppDelegate nối tới các màn tương ứng.",
+      "tags": ["header", "home", "view-controller", "navigation", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/App/HomeViewController.m",
+      "type": "file",
+      "name": "HomeViewController.m",
+      "filePath": "platforms/apple/ios/App/HomeViewController.m",
+      "summary": "Màn Home sau onboarding: hiển thị trạng thái bàn phím đọc từ App Group heartbeat (giọng mô tả không quở), ô gõ thử, và các nút ghost mở những màn con (Gõ tắt/Cài đặt/Mặt hồ/Chuông/Nền).",
+      "tags": ["home", "view-controller", "app-group", "uikit", "ios"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:platforms/apple/ios/App/Info.plist",
+      "type": "config",
+      "name": "Info.plist",
+      "filePath": "platforms/apple/ios/App/Info.plist",
+      "summary": "Info.plist của app container iOS: tên hiển thị \"Mindful Key\", chỉ hỗ trợ Portrait, dùng UILaunchScreen mặc định và ghi credit bản quyền OpenKey (Mai Vũ Tuyên, GPL v3).",
+      "tags": ["configuration", "info-plist", "ios", "bundle"],
+      "complexity": "simple",
+      "languageNotes": "Đa số giá trị là biến build ($(PRODUCT_NAME)…) do Xcode/build settings điền lúc biên dịch."
+    },
+    {
+      "id": "file:platforms/apple/ios/App/KeyboardBackgroundViewController.h",
+      "type": "file",
+      "name": "KeyboardBackgroundViewController.h",
+      "filePath": "platforms/apple/ios/App/KeyboardBackgroundViewController.h",
+      "summary": "Header màn \"Nền bàn phím\" — khai báo view controller chọn 1 trong các cảnh nền tĩnh cho bàn phím.",
+      "tags": ["header", "view-controller", "background", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/App/KeyboardBackgroundViewController.m",
+      "type": "file",
+      "name": "KeyboardBackgroundViewController.m",
+      "filePath": "platforms/apple/ios/App/KeyboardBackgroundViewController.m",
+      "summary": "Màn chọn Nền bàn phím: lưới 5 cảnh gradient tĩnh + ô placeholder \"Ảnh của bạn\", vẽ gradient bằng CAGradientLayer theo hằng số lấy từ design handoff, đọc/ghi lựa chọn qua ThemeBridge (App Group).",
+      "tags": ["view-controller", "background", "core-animation", "gradient", "ios"],
+      "complexity": "complex",
+      "languageNotes": "5 gradient là màu TRANG TRÍ tách khỏi bảng màu thương hiệu, gom 1 chỗ để brand-lint soát; không mã hoá cảm xúc (hiến chương §2.2/2.3)."
+    },
+    {
+      "id": "file:platforms/apple/ios/App/KeyboardPreviewView.h",
+      "type": "file",
+      "name": "KeyboardPreviewView.h",
+      "filePath": "platforms/apple/ios/App/KeyboardPreviewView.h",
+      "summary": "Header KeyboardPreviewView và enum KeyboardSettingsInputType — khung minh hoạ bàn phím sống, cập nhật theo kiểu gõ (Telex/VNI) và mức chiều cao.",
+      "tags": ["header", "custom-view", "preview", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/App/KeyboardPreviewView.m",
+      "type": "file",
+      "name": "KeyboardPreviewView.m",
+      "filePath": "platforms/apple/ios/App/KeyboardPreviewView.m",
+      "summary": "Khung \"preview sống\" trong màn cài đặt: vẽ 3 hàng phím QWERTY trang trí (không tương tác, không qua engine) và co giãn chiều cao + đổi nhãn kiểu gõ tức thì khi người dùng chỉnh slider/segmented.",
+      "tags": ["custom-view", "preview", "uikit", "accessibility", "ios"],
+      "complexity": "moderate",
+      "languageNotes": "Toàn khung đặt accessibilityElementsHidden=YES vì chỉ là minh hoạ; đổi chiều cao tức thì không animate để hợp Reduce Motion/VoiceOver."
+    },
+    {
+      "id": "file:platforms/apple/ios/App/MacroManagerViewController.h",
+      "type": "file",
+      "name": "MacroManagerViewController.h",
+      "filePath": "platforms/apple/ios/App/MacroManagerViewController.h",
+      "summary": "Header màn Gõ tắt (macro) — khai báo view controller quản lý danh sách từ gõ tắt của app container iOS.",
+      "tags": ["header", "view-controller", "macro", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/apple/ios/App/MacroManagerViewController.m",
+      "type": "file",
+      "name": "MacroManagerViewController.m",
+      "filePath": "platforms/apple/ios/App/MacroManagerViewController.m",
+      "summary": "Màn quản lý Gõ tắt: UITableView liệt kê macro, form thêm/sửa qua UIAlertController với 2 lớp phòng thủ chống bản ghi rỗng/trùng trigger, xoá bằng swipe, mọi thay đổi ghi qua MacroBridge (App Group).",
+      "tags": ["view-controller", "macro", "table-view", "crud", "ios"],
+      "complexity": "complex",
+      "languageNotes": "Trạng thái rỗng + logic upsert (gộp trigger trùng, xoá hàng đang sửa) là phần nghiệp vụ chính; nút xác nhận bật/tắt theo nội dung 2 ô nhập."
+    },
+    {
+      "id": "class:platforms/apple/ios/App/ActivationViewController.m:ActivationViewController",
+      "type": "class",
+      "name": "ActivationViewController",
+      "filePath": "platforms/apple/ios/App/ActivationViewController.m",
+      "lineRange": [21, 223],
+      "summary": "UIViewController màn kích hoạt bàn phím: dựng hướng dẫn 3 bước, xử lý mở Cài đặt, và hé lối tiến thủ công khi quay lại app mà App Group heartbeat chưa báo bàn phím chạy.",
+      "tags": ["view-controller", "onboarding", "uikit", "ios"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/AppDelegate.m:AppDelegate",
+      "type": "class",
+      "name": "AppDelegate",
+      "filePath": "platforms/apple/ios/App/AppDelegate.m",
+      "lineRange": [25, 115],
+      "summary": "App delegate điều phối vòng đời + điều hướng: chọn màn khởi đầu theo heartbeat, tự chuyển Màn 01→02 khi app thức dậy, và dựng/nối callback cho toàn bộ màn con.",
+      "tags": ["app-delegate", "entry-point", "navigation", "ios"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/BellSettingsViewController.m:BellSettingsViewController",
+      "type": "class",
+      "name": "BellSettingsViewController",
+      "filePath": "platforms/apple/ios/App/BellSettingsViewController.m",
+      "lineRange": [493, 719],
+      "summary": "View controller chính của màn Chuông: dựng các section (tiếng chuông, lịch ngân, giờ tĩnh lặng), đồng bộ trạng thái với BellScheduleSettingsBridge, và mở overlay thở khi Ngân thử.",
+      "tags": ["view-controller", "bell", "settings", "app-group", "ios"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/BellSettingsViewController.m:MKBorderedCardView",
+      "type": "class",
+      "name": "MKBorderedCardView",
+      "filePath": "platforms/apple/ios/App/BellSettingsViewController.m",
+      "lineRange": [47, 71],
+      "summary": "Card viền mảnh bo góc (nền surfaceCard + viền divider) dùng cho các khối lịch/yên tĩnh; nạp lại borderColor ở traitCollectionDidChange để bám Light/Dark.",
+      "tags": ["custom-view", "card", "theming", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/BellSettingsViewController.m:MKBellSoundPillControl",
+      "type": "class",
+      "name": "MKBellSoundPillControl",
+      "filePath": "platforms/apple/ios/App/BellSettingsViewController.m",
+      "lineRange": [83, 181],
+      "summary": "UIControl dạng pill chọn tiếng chuông (lớn/nhỏ) với trạng thái chọn đổi viền/nền teal và cập nhật accessibilityTraits Selected.",
+      "tags": ["custom-control", "bell", "accessibility", "ios"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/BellSettingsViewController.m:MKBellScheduleRowView",
+      "type": "class",
+      "name": "MKBellScheduleRowView",
+      "filePath": "platforms/apple/ios/App/BellSettingsViewController.m",
+      "lineRange": [196, 272],
+      "summary": "Một dòng lịch ngân chuông: nhãn + mô tả + UISwitch (tint teal) và dòng cấu hình teal hiện khi bật; setToggleOn: nạp giá trị đã lưu mà không bắn callback onToggle.",
+      "tags": ["custom-view", "bell", "form", "ios"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/BellSettingsViewController.m:MKBreathRingsView",
+      "type": "class",
+      "name": "MKBreathRingsView",
+      "filePath": "platforms/apple/ios/App/BellSettingsViewController.m",
+      "lineRange": [284, 409],
+      "summary": "Hoạt cảnh thở: 2 vòng tròn lan toả (pulse lệch pha) + 1 sóng ngang trôi vẽ bằng CAShapeLayer; startAnimatingIfAllowed bỏ qua mọi animation khi Reduce Motion bật.",
+      "tags": ["custom-view", "core-animation", "accessibility", "ios"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/BellSettingsViewController.m:MKBreathOverlayViewController",
+      "type": "class",
+      "name": "MKBreathOverlayViewController",
+      "filePath": "platforms/apple/ios/App/BellSettingsViewController.m",
+      "lineRange": [418, 479],
+      "summary": "Màn thở toàn màn mở từ \"Ngân thử\": hiển thị MKBreathRingsView + copy quan sát trung tính \"Thở vào… thở ra\" và nút Xong, không phát âm thanh.",
+      "tags": ["view-controller", "bell", "overlay", "ios"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/BrandColorsUIKit.m:BrandColorsUIKit",
+      "type": "class",
+      "name": "BrandColorsUIKit",
+      "filePath": "platforms/apple/ios/App/BrandColorsUIKit.m",
+      "lineRange": [39, 65],
+      "summary": "Lớp tiện ích (class methods) trả về các UIColor thương hiệu động theo Light/Dark cùng thang màu mood trung tính, làm nguồn màu tập trung cho toàn vỏ iOS.",
+      "tags": ["brand", "colors", "theming", "utility", "ios"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/BrandMarkView.m:BrandMarkView",
+      "type": "class",
+      "name": "BrandMarkView",
+      "filePath": "platforms/apple/ios/App/BrandMarkView.m",
+      "lineRange": [18, 103],
+      "summary": "Custom UIView vẽ con sóng ~ nhận diện bằng CAShapeLayer và chạy hoạt cảnh đổi biên độ (gợn nhẹ↔mạnh); có kiểu Flat phẳng và tôn trọng Reduce Motion.",
+      "tags": ["brand", "custom-view", "core-animation", "ios"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/FullAccessViewController.m:FullAccessViewController",
+      "type": "class",
+      "name": "FullAccessViewController",
+      "filePath": "platforms/apple/ios/App/FullAccessViewController.m",
+      "lineRange": [19, 192],
+      "summary": "View controller onboarding 02 giải thích quyền Full Access bằng cặp biên độ BẬT/KHÔNG, trấn an riêng tư, mở Cài đặt và gọi onFinish để về Home.",
+      "tags": ["view-controller", "onboarding", "privacy", "ios"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/HomeViewController.m:HomeViewController",
+      "type": "class",
+      "name": "HomeViewController",
+      "filePath": "platforms/apple/ios/App/HomeViewController.m",
+      "lineRange": [25, 168],
+      "summary": "View controller màn Home: refresh trạng thái bàn phím từ heartbeat, ô gõ thử, và phát các callback điều hướng khi chạm các nút mở màn con.",
+      "tags": ["view-controller", "home", "navigation", "app-group", "ios"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/KeyboardBackgroundViewController.m:KeyboardBackgroundViewController",
+      "type": "class",
+      "name": "KeyboardBackgroundViewController",
+      "filePath": "platforms/apple/ios/App/KeyboardBackgroundViewController.m",
+      "lineRange": [96, 313],
+      "summary": "View controller dựng lưới chọn cảnh nền: tạo các tile gradient, áp trạng thái chọn (viền teal + accessibility) và ghi index cảnh qua ThemeBridge khi người dùng chạm.",
+      "tags": ["view-controller", "background", "grid", "app-group", "ios"],
+      "complexity": "complex"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/KeyboardBackgroundViewController.m:MKBackgroundTile",
+      "type": "class",
+      "name": "MKBackgroundTile",
+      "filePath": "platforms/apple/ios/App/KeyboardBackgroundViewController.m",
+      "lineRange": [65, 89],
+      "summary": "UIControl ô cảnh nền: giữ CAGradientLayer (hoặc viền nét đứt cho ô \"Ảnh của bạn\") và cập nhật frame layer theo bounds thật trong layoutSubviews.",
+      "tags": ["custom-control", "background", "core-animation", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/KeyboardPreviewView.m:KeyboardPreviewView",
+      "type": "class",
+      "name": "KeyboardPreviewView",
+      "filePath": "platforms/apple/ios/App/KeyboardPreviewView.m",
+      "lineRange": [21, 107],
+      "summary": "Custom UIView khung preview bàn phím: vẽ hàng phím QWERTY trang trí và cập nhật nhãn kiểu gõ + chiều cao khung tức thì theo input type và heightLevel.",
+      "tags": ["custom-view", "preview", "uikit", "ios"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/apple/ios/App/MacroManagerViewController.m:MacroManagerViewController",
+      "type": "class",
+      "name": "MacroManagerViewController",
+      "filePath": "platforms/apple/ios/App/MacroManagerViewController.m",
+      "lineRange": [22, 273],
+      "summary": "View controller quản lý macro triển khai UITableViewDataSource/Delegate: hiển thị danh sách, form thêm/sửa với kiểm tra rỗng/trùng, xoá bằng swipe, và đồng bộ qua MacroBridge.",
+      "tags": ["view-controller", "macro", "table-view", "crud", "ios"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:platforms/apple/ios/App/BellSettingsViewController.m:MKBellPillButton",
+      "type": "function",
+      "name": "MKBellPillButton",
+      "filePath": "platforms/apple/ios/App/BellSettingsViewController.m",
+      "lineRange": [23, 37],
+      "summary": "Hàm factory dựng nút pill cam bo tròn (chữ tối trên nền cam theo luật cứng) dùng cho CTA \"Ngân thử\" và nút \"Xong\" của overlay thở.",
+      "tags": ["factory", "ui-helper", "bell", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/ios/App/KeyboardBackgroundViewController.m:mk_gradientPointsForAngleDegrees",
+      "type": "function",
+      "name": "mk_gradientPointsForAngleDegrees",
+      "filePath": "platforms/apple/ios/App/KeyboardBackgroundViewController.m",
+      "lineRange": [47, 54],
+      "summary": "Quy đổi góc theo quy ước CSS linear-gradient sang startPoint/endPoint của CAGradientLayer để tái tạo đúng hướng 5 gradient trong design handoff.",
+      "tags": ["utility", "gradient", "geometry", "ios"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/apple/ios/App/MacroManagerViewController.m:mk_upsertTrigger:content:excludingIndex:",
+      "type": "function",
+      "name": "mk_upsertTrigger:content:excludingIndex:",
+      "filePath": "platforms/apple/ios/App/MacroManagerViewController.m",
+      "lineRange": [238, 271],
+      "summary": "Logic thêm/sửa macro: trim và bỏ bản ghi rỗng, gộp về bản ghi có sẵn khi trigger trùng (xoá hàng đang sửa), rồi ghi toàn bộ qua MacroBridge và refresh bảng.",
+      "tags": ["validation", "macro", "crud", "ios"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    { "source": "file:platforms/apple/ios/App/ActivationViewController.m", "target": "class:platforms/apple/ios/App/ActivationViewController.m:ActivationViewController", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/ActivationViewController.m", "target": "class:platforms/apple/ios/App/ActivationViewController.m:ActivationViewController", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/ios/App/AppDelegate.m", "target": "class:platforms/apple/ios/App/AppDelegate.m:AppDelegate", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/AppDelegate.m", "target": "class:platforms/apple/ios/App/AppDelegate.m:AppDelegate", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/ios/App/BellSettingsViewController.m", "target": "class:platforms/apple/ios/App/BellSettingsViewController.m:BellSettingsViewController", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/BellSettingsViewController.m", "target": "class:platforms/apple/ios/App/BellSettingsViewController.m:BellSettingsViewController", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/ios/App/BellSettingsViewController.m", "target": "class:platforms/apple/ios/App/BellSettingsViewController.m:MKBorderedCardView", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/BellSettingsViewController.m", "target": "class:platforms/apple/ios/App/BellSettingsViewController.m:MKBellSoundPillControl", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/BellSettingsViewController.m", "target": "class:platforms/apple/ios/App/BellSettingsViewController.m:MKBellScheduleRowView", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/BellSettingsViewController.m", "target": "class:platforms/apple/ios/App/BellSettingsViewController.m:MKBreathRingsView", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/BellSettingsViewController.m", "target": "class:platforms/apple/ios/App/BellSettingsViewController.m:MKBreathOverlayViewController", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/BellSettingsViewController.m", "target": "function:platforms/apple/ios/App/BellSettingsViewController.m:MKBellPillButton", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/BrandColorsUIKit.m", "target": "class:platforms/apple/ios/App/BrandColorsUIKit.m:BrandColorsUIKit", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/BrandColorsUIKit.m", "target": "class:platforms/apple/ios/App/BrandColorsUIKit.m:BrandColorsUIKit", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/ios/App/BrandMarkView.m", "target": "class:platforms/apple/ios/App/BrandMarkView.m:BrandMarkView", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/BrandMarkView.m", "target": "class:platforms/apple/ios/App/BrandMarkView.m:BrandMarkView", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/ios/App/FullAccessViewController.m", "target": "class:platforms/apple/ios/App/FullAccessViewController.m:FullAccessViewController", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/FullAccessViewController.m", "target": "class:platforms/apple/ios/App/FullAccessViewController.m:FullAccessViewController", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/ios/App/HomeViewController.m", "target": "class:platforms/apple/ios/App/HomeViewController.m:HomeViewController", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/HomeViewController.m", "target": "class:platforms/apple/ios/App/HomeViewController.m:HomeViewController", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/ios/App/KeyboardBackgroundViewController.m", "target": "class:platforms/apple/ios/App/KeyboardBackgroundViewController.m:KeyboardBackgroundViewController", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/KeyboardBackgroundViewController.m", "target": "class:platforms/apple/ios/App/KeyboardBackgroundViewController.m:KeyboardBackgroundViewController", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/ios/App/KeyboardBackgroundViewController.m", "target": "class:platforms/apple/ios/App/KeyboardBackgroundViewController.m:MKBackgroundTile", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/KeyboardBackgroundViewController.m", "target": "function:platforms/apple/ios/App/KeyboardBackgroundViewController.m:mk_gradientPointsForAngleDegrees", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/KeyboardPreviewView.m", "target": "class:platforms/apple/ios/App/KeyboardPreviewView.m:KeyboardPreviewView", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/KeyboardPreviewView.m", "target": "class:platforms/apple/ios/App/KeyboardPreviewView.m:KeyboardPreviewView", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/ios/App/MacroManagerViewController.m", "target": "class:platforms/apple/ios/App/MacroManagerViewController.m:MacroManagerViewController", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/MacroManagerViewController.m", "target": "class:platforms/apple/ios/App/MacroManagerViewController.m:MacroManagerViewController", "type": "exports", "direction": "forward", "weight": 0.8 },
+    { "source": "file:platforms/apple/ios/App/MacroManagerViewController.m", "target": "function:platforms/apple/ios/App/MacroManagerViewController.m:mk_upsertTrigger:content:excludingIndex:", "type": "contains", "direction": "forward", "weight": 1.0 },
+    { "source": "file:platforms/apple/ios/App/AppDelegate.m", "target": "file:platforms/apple/ios/App/ActivationViewController.m", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/ios/App/AppDelegate.m", "target": "file:platforms/apple/ios/App/FullAccessViewController.m", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/ios/App/AppDelegate.m", "target": "file:platforms/apple/ios/App/HomeViewController.m", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/ios/App/AppDelegate.m", "target": "file:platforms/apple/ios/App/MacroManagerViewController.m", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/ios/App/AppDelegate.m", "target": "file:platforms/apple/ios/App/BellSettingsViewController.m", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/ios/App/AppDelegate.m", "target": "file:platforms/apple/ios/App/KeyboardBackgroundViewController.m", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/ios/App/ActivationViewController.m", "target": "file:platforms/apple/ios/App/BrandColorsUIKit.m", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/ios/App/ActivationViewController.m", "target": "file:platforms/apple/ios/App/BrandMarkView.m", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/ios/App/FullAccessViewController.m", "target": "file:platforms/apple/ios/App/BrandColorsUIKit.m", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/ios/App/FullAccessViewController.m", "target": "file:platforms/apple/ios/App/BrandMarkView.m", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/ios/App/HomeViewController.m", "target": "file:platforms/apple/ios/App/BrandColorsUIKit.m", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/ios/App/HomeViewController.m", "target": "file:platforms/apple/ios/App/BrandMarkView.m", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/ios/App/BrandMarkView.m", "target": "file:platforms/apple/ios/App/BrandColorsUIKit.m", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/ios/App/BellSettingsViewController.m", "target": "file:platforms/apple/ios/App/BrandColorsUIKit.m", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/ios/App/KeyboardBackgroundViewController.m", "target": "file:platforms/apple/ios/App/BrandColorsUIKit.m", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/ios/App/KeyboardPreviewView.m", "target": "file:platforms/apple/ios/App/BrandColorsUIKit.m", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "file:platforms/apple/ios/App/MacroManagerViewController.m", "target": "file:platforms/apple/ios/App/BrandColorsUIKit.m", "type": "depends_on", "direction": "forward", "weight": 0.6 },
+    { "source": "config:platforms/apple/ios/App/Info.plist", "target": "file:platforms/apple/ios/App/AppDelegate.m", "type": "configures", "direction": "forward", "weight": 0.6 },
+    { "source": "config:platforms/apple/ios/App/Assets.xcassets/AppIcon.appiconset/Contents.json", "target": "config:platforms/apple/ios/App/Assets.xcassets/Contents.json", "type": "related", "direction": "forward", "weight": 0.5 }
+  ]
+}

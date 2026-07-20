@@ -1,0 +1,176 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 11,
+  "filesSkipped": [
+    "platforms/apple/macos/BellMac.mm",
+    "platforms/apple/macos/BellSettingsView.mm",
+    "platforms/apple/macos/BrandColors.m",
+    "platforms/apple/macos/BrandControls.m",
+    "platforms/apple/macos/Chuông chùa.wav",
+    "platforms/apple/macos/Chuông gió.wav",
+    "platforms/apple/macos/Chuông reo.wav",
+    "platforms/apple/macos/ConvertToolViewController.mm",
+    "platforms/apple/macos/EmotionRiverView.mm",
+    "platforms/apple/macos/EmotionWaveView.mm",
+    "platforms/apple/macos/GatekeeperCardView.mm",
+    "platforms/apple/macos/InputMethodCardView.mm",
+    "platforms/apple/macos/MJAccessibilityUtils.m",
+    "platforms/apple/macos/MacroViewController.mm"
+  ],
+  "analysisOutcomes": {
+    "structure": {
+      "succeeded": 11,
+      "failed": 0
+    },
+    "callGraph": {
+      "succeeded": 11,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "results": [
+    {
+      "path": "platforms/apple/macos/BellMac.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 116,
+      "nonEmptyLines": 96,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/BellSettingsView.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 44,
+      "nonEmptyLines": 35,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/BrandColors.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 22,
+      "nonEmptyLines": 18,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/BrandControls.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 68,
+      "nonEmptyLines": 58,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/ConvertToolViewController.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 46,
+      "nonEmptyLines": 37,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/EmotionRiverView.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 81,
+      "nonEmptyLines": 69,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/EmotionWaveView.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 40,
+      "nonEmptyLines": 30,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/GatekeeperCardView.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 31,
+      "nonEmptyLines": 24,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/InputMethodCardView.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 34,
+      "nonEmptyLines": 24,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/MJAccessibilityUtils.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 21,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "platforms/apple/macos/MacroViewController.h",
+      "language": "c",
+      "fileCategory": "code",
+      "totalLines": 30,
+      "nonEmptyLines": 23,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

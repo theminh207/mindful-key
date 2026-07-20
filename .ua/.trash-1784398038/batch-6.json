@@ -1,0 +1,388 @@
+{
+  "nodes": [
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "type": "file",
+      "name": "OpenKeyHelper.cpp",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "summary": "Lớp tiện ích Win32 cho vỏ Windows: đọc/ghi cấu hình vào Registry, đăng ký chạy cùng Windows, thao tác clipboard, chuyển đổi nhanh bảng mã và lấy số phiên bản app từ metadata của file thực thi.",
+      "tags": ["utility", "windows", "registry", "clipboard", "serialization"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h",
+      "type": "file",
+      "name": "OpenKeyHelper.h",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h",
+      "summary": "Khai báo lớp tiện ích OpenKeyHelper — tập hợp các hàm static bọc Registry, clipboard, đường dẫn thực thi và phiên bản cho vỏ Windows.",
+      "tags": ["utility", "windows", "type-definition", "registry"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp",
+      "type": "file",
+      "name": "OpenKeyManager.cpp",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp",
+      "summary": "Bộ điều phối vòng đời của vỏ Windows: khởi động/tắt bộ não engine dùng chung (OpenKeyInit/OpenKeyFree), mở trang phát hành và tạo shortcut ngoài desktop.",
+      "tags": ["service", "windows", "lifecycle", "shell-integration"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h",
+      "type": "file",
+      "name": "OpenKeyManager.h",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h",
+      "summary": "Khai báo lớp OpenKeyManager — cầu nối giữa vỏ Windows và bộ não engine C++ dùng chung (init/free engine) cùng vài tác vụ tích hợp hệ điều hành.",
+      "tags": ["service", "windows", "type-definition", "lifecycle"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/resource.h",
+      "type": "file",
+      "name": "resource.h",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/resource.h",
+      "summary": "Header tài nguyên do Visual Studio sinh ra — định nghĩa hằng ID cho menu, hộp thoại, chuỗi, biểu tượng và control của app Windows.",
+      "tags": ["windows", "resource", "generated", "ui"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/stdafx.cpp",
+      "type": "file",
+      "name": "stdafx.cpp",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/stdafx.cpp",
+      "summary": "File nguồn của precompiled header — chỉ include stdafx.h và cấp phát biến đệm log toàn cục cho vỏ Windows.",
+      "tags": ["windows", "build-system", "boilerplate"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+      "type": "file",
+      "name": "stdafx.h",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+      "summary": "Precompiled header của vỏ Windows — gom header hệ thống Windows/CRT, kéo vào bộ não engine dùng chung, khai báo hằng nhận diện cửa sổ và danh sách biến cấu hình toàn cục.",
+      "tags": ["windows", "build-system", "config", "entry-point"],
+      "complexity": "moderate",
+      "languageNotes": "Chứa bản vá [MINDFUL]: đổi APP_CLASS sang \"MindfulKeyVietnameseInputMethod\" khác OpenKey gốc, tránh FindWindow bắt trúng cửa sổ OpenKey gốc rồi tự thoát; giữ RIVAL_OPENKEY_CLASS để nhận diện OpenKey gốc đang chạy."
+    },
+    {
+      "id": "file:platforms/windows/win32/OpenKey/OpenKey/targetver.h",
+      "type": "file",
+      "name": "targetver.h",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/targetver.h",
+      "summary": "Header MSVC chuẩn — include SDKDDKVer.h để nhắm tới phiên bản nền tảng Windows cao nhất hiện có khi biên dịch.",
+      "tags": ["windows", "build-system", "boilerplate", "configuration"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp:getRegInt",
+      "type": "function",
+      "name": "getRegInt",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "lineRange": [57, 66],
+      "summary": "Đọc một giá trị số nguyên từ Registry theo khóa, trả về giá trị mặc định nếu chưa có.",
+      "tags": ["utility", "registry", "windows"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp:getRegString",
+      "type": "function",
+      "name": "getRegString",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "lineRange": [74, 92],
+      "summary": "Đọc chuỗi wide từ Registry, tự cấp phát vùng đệm theo kích thước và cắt ký tự null thừa ở cuối.",
+      "tags": ["utility", "registry", "serialization"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp:registerRunOnStartup",
+      "type": "function",
+      "name": "registerRunOnStartup",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "lineRange": [118, 141],
+      "summary": "Bật/tắt chạy cùng Windows bằng cách ghi hoặc xóa mục trong khóa Run của Registry, có nhánh xử lý riêng cho trường hợp chạy quyền admin.",
+      "tags": ["windows", "registry", "startup"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp:getClipboardText",
+      "type": "function",
+      "name": "getClipboardText",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "lineRange": [199, 227],
+      "summary": "Lấy nội dung văn bản từ clipboard hệ thống theo định dạng chỉ định, chuyển về chuỗi cho engine xử lý.",
+      "tags": ["clipboard", "windows", "utility"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp:quickConvert",
+      "type": "function",
+      "name": "quickConvert",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "lineRange": [239, 290],
+      "summary": "Chuyển đổi nhanh văn bản đang có trong clipboard sang bảng mã khác rồi ghi ngược lại clipboard (xử lý cả dạng ansi lẫn unicode).",
+      "tags": ["clipboard", "conversion", "serialization"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp:getVersionNumber",
+      "type": "function",
+      "name": "getVersionNumber",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "lineRange": [292, 326],
+      "summary": "Đọc số phiên bản (4 thành phần) từ metadata VERSIONINFO của file thực thi hiện tại.",
+      "tags": ["windows", "version", "utility"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp:getVersionString",
+      "type": "function",
+      "name": "getVersionString",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "lineRange": [328, 339],
+      "summary": "Ghép số phiên bản thành chuỗi hiển thị dạng a.b.c.d cho giao diện.",
+      "tags": ["windows", "version", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp:initEngine",
+      "type": "function",
+      "name": "initEngine",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp",
+      "lineRange": [46, 48],
+      "summary": "Khởi động bộ não engine C++ dùng chung của bộ gõ bằng cách gọi OpenKeyInit.",
+      "tags": ["lifecycle", "engine-bridge", "windows"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp:freeEngine",
+      "type": "function",
+      "name": "freeEngine",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp",
+      "lineRange": [50, 52],
+      "summary": "Giải phóng bộ não engine khi thoát app bằng cách gọi OpenKeyFree.",
+      "tags": ["lifecycle", "engine-bridge", "windows"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp:createDesktopShortcut",
+      "type": "function",
+      "name": "createDesktopShortcut",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp",
+      "lineRange": [72, 97],
+      "summary": "Tạo shortcut .lnk ra desktop bằng COM IShellLink, trỏ tới file thực thi hiện tại và gán biểu tượng.",
+      "tags": ["windows", "shell-integration", "com"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h:OpenKeyHelper",
+      "type": "class",
+      "name": "OpenKeyHelper",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h",
+      "lineRange": [21, 52],
+      "summary": "Lớp tiện ích tĩnh gom mọi thao tác đặc thù Windows cho vỏ: Registry, clipboard, đường dẫn thực thi, đăng ký khởi động và phiên bản.",
+      "tags": ["utility", "windows", "registry", "clipboard"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h:OpenKeyManager",
+      "type": "class",
+      "name": "OpenKeyManager",
+      "filePath": "platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h",
+      "lineRange": [17, 30],
+      "summary": "Lớp quản lý vòng đời vỏ Windows — cầu nối tới bộ não engine dùng chung và các tác vụ tích hợp hệ điều hành.",
+      "tags": ["service", "windows", "lifecycle"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "target": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h",
+      "target": "file:platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp",
+      "target": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h",
+      "target": "file:platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/stdafx.cpp",
+      "target": "file:platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+      "target": "file:core/engine/Engine.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+      "target": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+      "target": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+      "target": "file:platforms/windows/win32/OpenKey/OpenKey/SystemTrayHelper.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+      "target": "file:platforms/windows/win32/OpenKey/OpenKey/resource.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/stdafx.h",
+      "target": "file:platforms/windows/win32/OpenKey/OpenKey/targetver.h",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp:getRegInt",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp:getRegString",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp:registerRunOnStartup",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp:getClipboardText",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp:quickConvert",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp:getVersionNumber",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.cpp:getVersionString",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h",
+      "target": "class:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h:OpenKeyHelper",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp:initEngine",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp:freeEngine",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp:createDesktopShortcut",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h",
+      "target": "class:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h:OpenKeyManager",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h",
+      "target": "class:platforms/windows/win32/OpenKey/OpenKey/OpenKeyHelper.h:OpenKeyHelper",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h",
+      "target": "class:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.h:OpenKeyManager",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp:initEngine",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKey.cpp:OpenKeyInit",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKeyManager.cpp:freeEngine",
+      "target": "function:platforms/windows/win32/OpenKey/OpenKey/OpenKey.cpp:OpenKeyFree",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}
