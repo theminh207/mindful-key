@@ -16,7 +16,17 @@ IOS_DD    := build/ios-dd
 IOS_APPID := vn.gnh.mindfulkey.ios
 VERSION   := $(shell . ./version.env >/dev/null 2>&1; grep '^VERSION=' version.env | cut -d= -f2)
 
-.PHONY: help generate brand-platform test test-core test-macos test-ios build install run doctor run-ios universal brand public-brand brand-lint hooks version clean
+# [MINDFUL] 2026-07-20 — Ký bản dev bằng chứng chỉ CỐ ĐỊNH nếu máy có (make dev-cert tạo nó). Ad-hoc
+# ("-") đổi vân tay mỗi build → macOS thu hồi quyền Accessibility/Input Monitoring mỗi lần → gõ chết
+# + phải cấp lại. Cert cố định giữ vân tay → cấp quyền MỘT lần dùng mãi. Không có cert (vd CI) →
+# SIGN_FLAGS rỗng → rơi về ad-hoc như project.yml khai. KHÔNG phải Developer ID (xem scripts/make-dev-cert.sh).
+DEV_CERT_NAME := MindfulKey Dev
+SIGN_FLAGS :=
+ifeq ($(shell security find-identity 2>/dev/null | grep -Fq "$(DEV_CERT_NAME)" && echo yes),yes)
+SIGN_FLAGS := CODE_SIGN_IDENTITY="$(DEV_CERT_NAME)" CODE_SIGN_STYLE=Manual CODE_SIGNING_ALLOWED=YES CODE_SIGNING_REQUIRED=YES
+endif
+
+.PHONY: help generate brand-platform test test-core test-macos test-ios build install run doctor run-ios universal brand public-brand brand-lint hooks version clean dev-cert
 help:
 	@echo "make generate | test | build | install | run | doctor | run-ios | universal | brand | public-brand | brand-lint | hooks | version | clean   (v$(VERSION))"
 	@echo ""
@@ -58,7 +68,7 @@ build: generate  ## Build app macOS (ký ad-hoc) → platforms/apple/build/ (mak
 	# [MINDFUL] 2026-07-19 — bơm MARKETING_VERSION từ version.env (nguồn phiên bản duy nhất). project.yml
 	# kẹt "0.1.0" nên bản dev từng đề nhầm "Mindful Keyboard 0.1.0" ở tiêu đề/About; package_app.sh vốn
 	# đã bơm số đúng, nay make build cũng vậy để bản tại máy khỏi nói dối.
-	xcodebuild -project "$(XCODEPROJ)" -scheme "$(SCHEME)" -configuration "$(CONFIG)" -derivedDataPath "$(DERIVED)" MARKETING_VERSION="$(VERSION)" build
+	xcodebuild -project "$(XCODEPROJ)" -scheme "$(SCHEME)" -configuration "$(CONFIG)" -derivedDataPath "$(DERIVED)" $(SIGN_FLAGS) MARKETING_VERSION="$(VERSION)" build
 
 install: build   ## Thay bản ở /Applications bằng bản vừa build — giữ máy chỉ có ĐÚNG 1 bản
 	@pkill -x MindfulKey 2>/dev/null || true
@@ -134,6 +144,9 @@ brand-lint:      ## Ràng buộc nhận diện NOW BRAND OS (chặn đỏ/xanh c
 hooks:           ## Bật git pre-commit chạy brand-lint (mỗi máy chạy 1 lần)
 	git config core.hooksPath .githooks
 	@echo "✓ đã bật .githooks — pre-commit sẽ chạy brand-lint"
+
+dev-cert:        ## Tạo chứng chỉ tự ký cố định để bản dev giữ quyền qua các lần build (chạy 1 lần/máy)
+	bash scripts/make-dev-cert.sh
 
 version:
 	@echo "$(VERSION)"
