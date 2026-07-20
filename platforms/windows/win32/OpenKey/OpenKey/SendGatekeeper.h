@@ -22,6 +22,12 @@
 #include <windows.h>
 #include <string>
 
+// [MINDFUL] 2026-07-19 (port từ macOS SendGatekeeperMac.h) — công tắc bật/tắt gác cổng gửi tin
+// (Feature #1). MẶC ĐỊNH BẬT (=1). Tắt = ShouldIntercept luôn trả false (không chặn Enter, không
+// hiện màn Nhịp thở), nhưng lớp cảm xúc/nhật ký/sông VẪN chạy độc lập (do vMoodWatch quản). Nạp từ
+// registry "vSendGatekeeper" trong OpenKeyInit, đổi qua menu khay "Gác cổng gửi tin (nhịp thở)".
+extern int vSendGatekeeper;
+
 // Gọi 1 lần lúc khởi động (nạp danh sách app từ registry).
 void SendGatekeeper_Init();
 

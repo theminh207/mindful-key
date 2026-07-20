@@ -43,6 +43,7 @@ static bool g_waveAlert = false;
 #define POPUP_SPELLING 901
 #define POPUP_SMART_SWITCH 902
 #define POPUP_USE_MACRO 903
+#define POPUP_GATEKEEPER_TOGGLE 904   // [MINDFUL] công tắc gác cổng gửi tin (port macOS 2026-07-19)
 #define POPUP_MOODWATCH 905
 #define POPUP_BELL_SETTINGS 906
 #define POPUP_GATEKEEPER_APP 907
@@ -86,6 +87,7 @@ map<UINT, LPCTSTR> menuData = {
 	{POPUP_USE_MACRO, _T("Bật gõ tắt")},
 	{POPUP_MOODWATCH, _T("Bật nhắc tâm (cảm xúc)")},
 	{POPUP_BELL_SETTINGS, _T("Chuông tỉnh thức...")},
+	{POPUP_GATEKEEPER_TOGGLE, _T("Gác cổng gửi tin (nhịp thở)")},
 	{POPUP_GATEKEEPER_APP, _T("Gác cổng gửi tin cho app này")},
 	{POPUP_REFLECT, _T("Soi lại hôm nay...")},
 	{POPUP_MOOD_DELETE, _T("Xóa toàn bộ nhật ký cảm xúc...")},
@@ -243,6 +245,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			case POPUP_BELL_SETTINGS:
 				Bell_ShowSettings(NULL);
 				break;
+			case POPUP_GATEKEEPER_TOGGLE:
+				// [MINDFUL] Bật/tắt gác cổng gửi tin (Feature #1). Lật cờ + lưu registry; dấu tích
+				// menu tự đồng bộ ở updateData() gọi cuối WM_TRAYMESSAGE. KHÔNG đụng vMoodWatch —
+				// nhật ký/sông độc lập với việc chặn Enter (port đúng mạch macOS onGatekeeperToggle).
+				APP_SET_DATA(vSendGatekeeper, !vSendGatekeeper);
+				break;
 			case POPUP_GATEKEEPER_APP:
 				SendGatekeeper_ToggleLastApp();
 				break;
@@ -352,6 +360,7 @@ void SystemTrayHelper::createPopupMenu() {
 	AppendMenu(popupMenu, MF_CHECKED, POPUP_USE_MACRO, menuData[POPUP_USE_MACRO]);
 	AppendMenu(popupMenu, MF_CHECKED, POPUP_MOODWATCH, menuData[POPUP_MOODWATCH]);
 	AppendMenu(popupMenu, MF_STRING, POPUP_BELL_SETTINGS, menuData[POPUP_BELL_SETTINGS]);
+	AppendMenu(popupMenu, MF_CHECKED, POPUP_GATEKEEPER_TOGGLE, menuData[POPUP_GATEKEEPER_TOGGLE]);
 	AppendMenu(popupMenu, MF_UNCHECKED, POPUP_GATEKEEPER_APP, menuData[POPUP_GATEKEEPER_APP]);
 	AppendMenu(popupMenu, MF_STRING, POPUP_REFLECT, menuData[POPUP_REFLECT]);
 	AppendMenu(popupMenu, MF_STRING, POPUP_MOOD_DELETE, menuData[POPUP_MOOD_DELETE]);
@@ -417,6 +426,7 @@ void SystemTrayHelper::updateData() {
 	MODIFY_MENU(popupMenu, POPUP_SMART_SWITCH, vUseSmartSwitchKey);
 	MODIFY_MENU(popupMenu, POPUP_USE_MACRO, vUseMacro);
 	MODIFY_MENU(popupMenu, POPUP_MOODWATCH, vMoodWatch);
+	MODIFY_MENU(popupMenu, POPUP_GATEKEEPER_TOGGLE, vSendGatekeeper);
 	// Dấu tích = app ĐANG DÙNG có đang được gác cổng không. Đọc getLastAppExecuteName() nên
 	// nó là app trước khi bấm vào khay, không phải chính bộ gõ.
 	MODIFY_MENU(popupMenu, POPUP_GATEKEEPER_APP, SendGatekeeper_IsAppWatched(SendGatekeeper_LastAppName()));

@@ -80,7 +80,12 @@ static bool IsFrontmostAppWatched() {
     return false;
 }
 
+// [MINDFUL] 2026-07-19 (port từ macOS) — công tắc gác cổng gửi tin (xem SendGatekeeper.h). Mặc định BẬT.
+int vSendGatekeeper = 1;
+
 bool SendGatekeeper_ShouldIntercept(WPARAM wParam, const KBDLLHOOKSTRUCT* key) {
+    if (!vSendGatekeeper)   // gác cổng tắt — để Enter đi thẳng, không chặn-mềm
+        return false;
     if (wParam != WM_KEYDOWN && wParam != WM_SYSKEYDOWN)
         return false;
     if (key->vkCode != VK_RETURN)

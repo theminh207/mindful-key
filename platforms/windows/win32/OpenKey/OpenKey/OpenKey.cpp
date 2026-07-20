@@ -137,6 +137,7 @@ void OpenKeyInit() {
 	{ extern void MoodWatch_Init(); MoodWatch_Init(); }
 	{ extern void Bell_Init(); Bell_Init(); }
 	{ SendGatekeeper_Init(); }
+	{ extern int vSendGatekeeper; APP_GET_DATA(vSendGatekeeper, 1); }   // BẬT mặc định — Feature #1
 	// KHÔNG hỏi consent ở đây. Chỗ này từng gọi MoodStore_AskConsentIfNeeded() và nó là lỗi CHẶN
 	// KHỞI ĐỘNG (người dùng thật báo 2026-07-17: "cài xong không mở được"):
 	//   OpenKeyInit() chạy ở AppDelegate::run() dòng ~98 — TRƯỚC createSystemTrayIcon() (~101) và
