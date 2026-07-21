@@ -13,7 +13,7 @@ redistribute your new version, it MUST be open source.
 -----------------------------------------------------------*/
 #include "AppDelegate.h"
 
-extern void TrayPopover_Init(HWND parent);
+extern void TrayPopover_Init(HINSTANCE hInstance);
 extern void TrayPopover_Uninit();
 
 static AppDelegate* _instance;
