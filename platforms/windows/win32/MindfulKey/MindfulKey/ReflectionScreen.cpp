@@ -141,32 +141,73 @@ static void DrawRiver(Graphics& g, const RectF& area, const vector<MoodSample>& 
 
     if (xs.empty()) return; // Không có nước (chỉ có trục)
 
+    // Thu thập các phân đoạn liên tục (không bị ngăn cách bởi gap)
+    vector<vector<PointF>> segments;
+    vector<PointF> currentSeg;
+
+    for (size_t i = 0; i < xs.size(); i++) {
+        REAL mx = xs[i] * w;
+        REAL sign = (i % 2 == 0) ? 1.0f : -1.0f;
+        PointF p(area.X + mx, midY - sign * ys[i] * maxWaveH);
+        
+        currentSeg.push_back(p);
+        
+        // Cắt phân đoạn nếu gap > gapXf
+        if (i + 1 < xs.size() && (xs[i + 1] - xs[i] > gapXf)) {
+            segments.push_back(currentSeg);
+            currentSeg.clear();
+        }
+    }
+    if (!currentSeg.empty()) {
+        segments.push_back(currentSeg);
+    }
+
     // Nước: teal đặc, CHỈ ở chỗ có mẫu thật.
     Pen wavePen(Color(MK_ARGB(kBrandPaletteTeal)), kWaveLineW);
     wavePen.SetStartCap(LineCapRound);
     wavePen.SetEndCap(LineCapRound);
     wavePen.SetLineJoin(LineJoinRound);
 
-    vector<PointF> seg;
-    for (REAL x = 0; x <= w; x += kWaveStepX) {
-        REAL amp = 0;
-        if (!AmpAt(x / w, xs, ys, gapXf, &amp)) {
-            if (seg.size() >= 2) g.DrawLines(&wavePen, &seg[0], (INT)seg.size());
-            seg.clear();
-            continue;
+    // Vẽ đường sóng qua các điểm
+    for (size_t s = 0; s < segments.size(); s++) {
+        const auto& pts = segments[s];
+        if (pts.empty()) continue;
+        if (pts.size() == 1) continue; // 1 điểm không vẽ đường được
+        
+        vector<PointF> bezierPts;
+        bezierPts.push_back(pts[0]);
+        
+        for (size_t i = 1; i < pts.size(); i++) {
+            PointF pPrev = pts[i - 1];
+            PointF pCurr = pts[i];
+            
+            // Bezier cong mượt với tiếp tuyến ngang
+            PointF cp1(pPrev.X + (pCurr.X - pPrev.X) * 0.5f, pPrev.Y);
+            PointF cp2(pCurr.X - (pCurr.X - pPrev.X) * 0.5f, pCurr.Y);
+            
+            bezierPts.push_back(cp1);
+            bezierPts.push_back(cp2);
+            bezierPts.push_back(pCurr);
         }
-        seg.push_back(PointF(area.X + x, midY - amp * maxWaveH * (REAL)sin(x * kWaveFreq)));
+        
+        g.DrawBeziers(&wavePen, bezierPts.data(), (INT)bezierPts.size());
     }
-    if (seg.size() >= 2) g.DrawLines(&wavePen, &seg[0], (INT)seg.size());
 
     // Chấm: 1 nhịp = 1 điểm ghi. Tô TEAL ĐẶC.
     SolidBrush dotBrush(Color(MK_ARGB(kBrandPaletteTeal)));
-    for (size_t i = 0; i < xs.size(); i++) {
-        // [MINDFUL] Điểm liveHead (chấm cuối cùng nếu có) ở recentMode không phải checkin, tô đặc.
-        REAL mx = xs[i] * w;
-        REAL my = midY - ys[i] * maxWaveH * (REAL)sin(mx * kWaveFreq);
-        g.FillEllipse(&dotBrush, area.X + mx - kDotDiameter / 2, my - kDotDiameter / 2,
-                      kDotDiameter, kDotDiameter);
+    SolidBrush whiteBrush(Color(255, 255, 255, 255)); // Tô nền cho check-in
+    Pen dotPen(Color(MK_ARGB(kBrandPaletteTeal)), 1.8f);
+
+    for (size_t s = 0; s < segments.size(); s++) {
+        for (size_t i = 0; i < segments[s].size(); i++) {
+            PointF p = segments[s][i];
+            
+            // [MINDFUL] Điểm liveHead (chấm cuối cùng nếu có) ở recentMode không phải checkin, tô đặc.
+            // Vì bản Windows không truyền cờ checkin vào hàm này, mặc định tô đặc hết (như code cũ)
+            // hoặc để sau mở rộng MoodSample. Hiện tại ta tô đặc toàn bộ như cũ.
+            g.FillEllipse(&dotBrush, p.X - kDotDiameter / 2, p.Y - kDotDiameter / 2,
+                          kDotDiameter, kDotDiameter);
+        }
     }
 
     // Nhãn trục ngang

@@ -96,18 +96,10 @@ static inline NSDictionary *MKMakeEntry(CGFloat xf, double value, BOOL isCheckin
     CGFloat w = NSWidth(b);
     CGFloat maxWaveH = NSHeight(b) * 0.42;
 
-    // [MINDFUL] Chặn phòng ngừa (2026-07-16): bounds rộng 0 (vd 1 nhịp layout sớm) làm (x/w) =
-    // 0/0 = NaN. Nguy cơ ép NaN sang NSUInteger đã hết từ khi bỏ lối chỉ-số (2026-07-16, vá trục
-    // thời gian), nhưng giữ chặn ở đây vì rẻ và vẫn đúng gốc: rộng 0 thì không có gì để vẽ.
     if (w <= 0) return;
 
     NSColor *teal = [[Brand teal] colorUsingColorSpace:[NSColorSpace sRGBColorSpace]];
 
-    // [MINDFUL] "Một dòng sông liền mạch": trục thời-gian nét đứt mờ chạy suốt cả ngày để mắt nối
-    // buổi sáng→tối thành MỘT dòng, thay vì mấy khúc sóng rời trôi lơ lửng. Đây là TRỤC (cùng họ
-    // với nhãn Sáng/Trưa/Chiều/Tối) — nét đứt + màu stone mờ, KHÔNG phải mặt nước "phẳng lặng".
-    // Không đụng luật dec.4: nước teal đặc + chấm vẫn CHỈ hiện ở chỗ có mẫu thật; quãng trống chỉ
-    // còn lại trục, tuyệt nhiên không có nước giả.
     NSBezierPath *axis = [NSBezierPath bezierPath];
     axis.lineWidth = 1.0;
     CGFloat axisDash[2] = {2.0, 4.0};
@@ -117,59 +109,82 @@ static inline NSDictionary *MKMakeEntry(CGFloat xf, double value, BOOL isCheckin
     [[[Brand stone] colorWithAlphaComponent:0.5] setStroke];
     [axis stroke];
 
+    // Thu thập các điểm thật để vẽ sóng cong nối tiếp
+    NSMutableArray<NSMutableArray<NSDictionary*>*> *segments = [NSMutableArray array];
+    NSMutableArray<NSDictionary*> *currentSeg = [NSMutableArray array];
+    
+    for (NSUInteger m = 0; m < k; m++) {
+        id e = _entries[m];
+        if (e == [NSNull null]) {
+            if (currentSeg.count > 0) {
+                [segments addObject:currentSeg];
+                currentSeg = [NSMutableArray array];
+            }
+        } else {
+            [currentSeg addObject:e];
+        }
+    }
+    if (currentSeg.count > 0) {
+        [segments addObject:currentSeg];
+    }
+
     NSBezierPath *path = [NSBezierPath bezierPath];
     path.lineWidth = 2.2;
     path.lineCapStyle = NSLineCapStyleRound;
     path.lineJoinStyle = NSLineJoinStyleRound;
 
-    // Sóng lượn dùng CHÍNH x pixel (không phải chỉ số mẫu) nên nhịp gợn không đổi khi mẫu thưa/dày.
-    BOOL lastWasGap = YES;
-    for (CGFloat x = 0; x <= w; x += 3.0) {
-        CGFloat amp = 0;
-        // [MINDFUL] Giữ nguyên bài học vá crash 2026-07-16 ("-[NSNull doubleValue]: unrecognized
-        // selector"): NSNull KHÔNG bao giờ được đọc như số. Nay việc đó khoá hẳn trong ampAt: —
-        // chỗ duy nhất chạm _entries — thay vì rải guard ở vòng lặp vẽ.
-        if (![self ampAt:(x / w) out:&amp]) {
-            lastWasGap = YES;
-            continue;
+    // Vẽ đường sóng qua các điểm
+    for (NSArray<NSDictionary*> *seg in segments) {
+        if (seg.count == 0) continue;
+        
+        // Tính toạ độ các điểm trong segment
+        NSMutableArray<NSValue*> *pts = [NSMutableArray array];
+        for (NSUInteger i = 0; i < seg.count; i++) {
+            NSPoint s = MKEntryPoint(seg[i]);
+            CGFloat mx = s.x * w;
+            CGFloat sign = (i % 2 == 0) ? 1.0 : -1.0;
+            NSPoint p = NSMakePoint(mx, midY - sign * s.y * maxWaveH);
+            [pts addObject:[NSValue valueWithPoint:p]];
         }
-        NSPoint p = NSMakePoint(x, midY - amp * maxWaveH * sin(x * 0.19));
-        if (lastWasGap) {
-            [path moveToPoint:p];
-            lastWasGap = NO;
-        } else {
-            [path lineToPoint:p];
+        
+        NSPoint p0 = [pts[0] pointValue];
+        [path moveToPoint:p0];
+        
+        for (NSUInteger i = 1; i < pts.count; i++) {
+            NSPoint pPrev = [pts[i-1] pointValue];
+            NSPoint pCurr = [pts[i] pointValue];
+            
+            // Bezier cong mượt với tiếp tuyến ngang
+            NSPoint cp1 = NSMakePoint(pPrev.x + (pCurr.x - pPrev.x) * 0.5, pPrev.y);
+            NSPoint cp2 = NSMakePoint(pCurr.x - (pCurr.x - pPrev.x) * 0.5, pCurr.y);
+            
+            [path curveToPoint:pCurr controlPoint1:cp1 controlPoint2:cp2];
         }
     }
     [teal setStroke];
     [path stroke];
 
-    // Chấm đúng vị trí mỗi mẫu (1 nhịp chuông = 1 điểm ghi lên dòng sông). Toạ độ tính THẲNG từ
-    // cùng công thức sóng ở trên — bản cũ phải dò "điểm vẽ gần nhất" rồi bỏ chấm nếu lệch > 5px,
-    // cách đó vừa thừa vừa âm thầm nuốt mất chấm.
-    for (NSUInteger m = 0; m < k; m++) {
-        id e = _entries[m];
-        if (e == [NSNull null]) continue;
-        NSPoint s = MKEntryPoint(e);
-        CGFloat mx = s.x * w;
-        NSPoint closestP = NSMakePoint(mx, midY - s.y * maxWaveH * sin(mx * 0.19));
+    // Vẽ các chấm
+    for (NSArray<NSDictionary*> *seg in segments) {
+        for (NSUInteger i = 0; i < seg.count; i++) {
+            NSDictionary *e = seg[i];
+            NSPoint s = MKEntryPoint(e);
+            CGFloat mx = s.x * w;
+            CGFloat sign = (i % 2 == 0) ? 1.0 : -1.0;
+            NSPoint closestP = NSMakePoint(mx, midY - sign * s.y * maxWaveH);
 
-        // [MINDFUL] Chấm = 1 nhịp chuông ghi 1 điểm. Trước đây tô TRẮNG trên thẻ nền cũng gần
-        // trắng → gần như tàng hình, chỉ còn cái viền mỏng, nên caption hứa "vòng tròn" mà mắt
-        // không thấy. Nay tô teal đặc, to hơn chút → thành cái chấm rõ nằm trên dòng nước.
-        NSRect dot = NSMakeRect(closestP.x - 3.3, closestP.y - 3.3, 6.6, 6.6);
-        NSBezierPath *dotPath = [NSBezierPath bezierPathWithOvalInRect:dot];
-        if (MKEntryIsCheckin(e)) {
-            // [MINDFUL] 2026-07-20 — chấm TỰ THUẬT ("Mặt hồ đang thế nào?" — LogCheckinEvent):
-            // vòng RỖNG viền teal, KHÔNG tô đặc. Tô nền trắng/background để sóng không đâm xuyên qua.
-            dotPath.lineWidth = 1.8;
-            [[NSColor windowBackgroundColor] setFill];
-            [dotPath fill];
-            [teal setStroke];
-            [dotPath stroke];
-        } else {
-            [teal setFill];
-            [dotPath fill];
+            NSRect dot = NSMakeRect(closestP.x - 3.3, closestP.y - 3.3, 6.6, 6.6);
+            NSBezierPath *dotPath = [NSBezierPath bezierPathWithOvalInRect:dot];
+            if (MKEntryIsCheckin(e)) {
+                dotPath.lineWidth = 1.8;
+                [[NSColor windowBackgroundColor] setFill];
+                [dotPath fill];
+                [teal setStroke];
+                [dotPath stroke];
+            } else {
+                [teal setFill];
+                [dotPath fill];
+            }
         }
     }
 }
