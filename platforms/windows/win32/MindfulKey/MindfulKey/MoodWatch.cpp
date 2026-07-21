@@ -89,13 +89,127 @@ static const wchar_t* warningForCategory(const wstring& category) {
 
 // MessageBoxW chặn luồng gọi nó tới khi người dùng bấm OK. Chạy trên worker thì worker đứng im,
 // các từ gõ tiếp dồn hàng đợi -> phải có luồng riêng cho hộp thoại.
+
+#include "BrandControls.h"
+#include "BrandPalette.h"
+
+static const wchar_t* kNudgeClassName = L"MindfulNudgeWindow";
+static HWND g_hwndNudge = NULL;
+
+static LRESULT CALLBACK NudgeWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    if (msg == WM_NCCREATE) {
+        CREATESTRUCT* pCreate = (CREATESTRUCT*)lParam;
+        SetWindowLongPtrW(hwnd, GWLP_USERDATA, (LONG_PTR)pCreate->lpCreateParams);
+        return DefWindowProc(hwnd, msg, wParam, lParam);
+    }
+    else if (msg == WM_PAINT) {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hwnd, &ps);
+
+        RECT clientRc;
+        GetClientRect(hwnd, &clientRc);
+
+        HDC memDC = CreateCompatibleDC(hdc);
+        HBITMAP memBitmap = CreateCompatibleBitmap(hdc, clientRc.right, clientRc.bottom);
+        HBITMAP oldBitmap = (HBITMAP)SelectObject(memDC, memBitmap);
+
+        // Fill background with TealLight
+        BrandControls_FillRect(memDC, clientRc, kBrandPaletteCardWhite);
+        
+        // Draw border
+        HBRUSH borderBr = CreateSolidBrush(MK_COLORREF(kBrandPaletteTealLight));
+        FrameRect(memDC, &clientRc, borderBr);
+        DeleteObject(borderBr);
+
+        // Draw Message
+        const wchar_t* message = (const wchar_t*)GetWindowLongPtrW(hwnd, GWLP_USERDATA);
+        if (message) {
+            RECT textRc = clientRc;
+            textRc.left += 20;
+            textRc.right -= 20;
+            textRc.top += 20;
+            textRc.bottom -= 20;
+
+            SetBkMode(memDC, TRANSPARENT);
+            SetTextColor(memDC, MK_COLORREF(kBrandPaletteCharcoal));
+            HFONT font = BrandControls_Font(BrandFontBody);
+            HFONT oldFont = (HFONT)SelectObject(memDC, font);
+            
+            DrawTextW(memDC, message, -1, &textRc, DT_LEFT | DT_TOP | DT_WORDBREAK);
+            
+            SelectObject(memDC, oldFont);
+        }
+
+        BitBlt(hdc, 0, 0, clientRc.right, clientRc.bottom, memDC, 0, 0, SRCCOPY);
+        SelectObject(memDC, oldBitmap);
+        DeleteObject(memBitmap);
+        DeleteDC(memDC);
+
+        EndPaint(hwnd, &ps);
+        return 0;
+    }
+    else if (msg == WM_TIMER) {
+        if (wParam == 1) { // 10s auto-close timer
+            KillTimer(hwnd, 1);
+            DestroyWindow(hwnd);
+        }
+        return 0;
+    }
+    else if (msg == WM_LBUTTONUP) {
+        DestroyWindow(hwnd);
+        return 0;
+    }
+    else if (msg == WM_DESTROY) {
+        InterlockedExchange(&g_popupShowing, 0);
+        g_hwndNudge = NULL;
+        return 0;
+    }
+    return DefWindowProc(hwnd, msg, wParam, lParam);
+}
+
 static DWORD WINAPI msgThread(LPVOID p) {
-    const wchar_t* msg = (const wchar_t*)p;   // trỏ tới hằng chuỗi, không cần giải phóng
-    MessageBoxW(NULL, msg, L"Nhắc tâm - Mindful Keyboard",
-                MB_OK | MB_ICONINFORMATION | MB_TOPMOST | MB_SETFOREGROUND);
-    InterlockedExchange(&g_popupShowing, 0);
+    const wchar_t* msg = (const wchar_t*)p;
+
+    WNDCLASSW wc = {0};
+    wc.lpfnWndProc = NudgeWndProc;
+    wc.hInstance = GetModuleHandle(NULL);
+    wc.lpszClassName = kNudgeClassName;
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    RegisterClassW(&wc); // Safe to call multiple times, fails gracefully if registered
+
+    int width = 350;
+    int height = 120;
+
+    RECT workArea;
+    SystemParametersInfoW(SPI_GETWORKAREA, 0, &workArea, 0);
+    int x = workArea.right - width - 20;
+    int y = workArea.bottom - height - 20;
+
+    g_hwndNudge = CreateWindowExW(
+        WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_NOACTIVATE,
+        kNudgeClassName, L"Mindful Keyboard",
+        WS_POPUP | WS_BORDER,
+        x, y, width, height,
+        NULL, NULL, GetModuleHandle(NULL), (LPVOID)msg
+    );
+
+    if (g_hwndNudge) {
+        // Show without stealing focus
+        ShowWindow(g_hwndNudge, SW_SHOWNOACTIVATE);
+        SetTimer(g_hwndNudge, 1, 10000, NULL);
+
+        MSG wMsg;
+        while (GetMessage(&wMsg, NULL, 0, 0)) {
+            TranslateMessage(&wMsg);
+            DispatchMessage(&wMsg);
+            if (!g_hwndNudge) break;
+        }
+    } else {
+        InterlockedExchange(&g_popupShowing, 0);
+    }
     return 0;
 }
+
 
 static void showMindfulPrompt(const wchar_t* message) {
     if (InterlockedCompareExchange(&g_popupShowing, 1, 0) != 0)
