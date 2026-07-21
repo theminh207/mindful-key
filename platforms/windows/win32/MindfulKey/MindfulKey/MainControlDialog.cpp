@@ -14,6 +14,7 @@ redistribute your new version, it MUST be open source.
 #include "MainControlDialog.h"
 #include "AppDelegate.h"
 #include "MoodWatch.h"
+#include "Bell.h"
 #include "BrandControls.h"
 #include "ReflectionScreen.h"
 #include "MoodStore.h"

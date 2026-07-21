@@ -3,7 +3,7 @@
 Theo [Keep a Changelog](https://keepachangelog.com/) và [SemVer](https://semver.org/).
 Phiên bản lấy từ `version.env`.
 
-## [0.4.3]
+## [0.4.4]
 
 ### Added
 

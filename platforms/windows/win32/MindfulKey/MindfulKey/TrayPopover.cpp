@@ -28,16 +28,6 @@ static const int kPopoverHeight = 520; // Tăng chiều cao để chứa đủ n
 extern int vMoodWatch;
 extern int vSendGatekeeper;
 extern int vBellInterval;
-extern DWORD vSwitchKeyStatus;
-extern int vLanguage;
-extern int vCheckSpelling;
-extern int vUpperCaseFirstChar;
-
-#ifndef APP_SET_DATA
-#define APP_SET_DATA(key, value) \
-    MindfulKeyHelper::setRegInt(_T(#key), value); \
-    key = value;
-#endif
 
 // Helper vẽ Text đơn giản
 static void DrawLabel(HDC hdc, const wchar_t* text, RECT rc, BrandFontRole role, unsigned colorHex, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
