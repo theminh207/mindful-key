@@ -298,7 +298,6 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             if (clickedInt != -1 && clickedInt != s_bellInterval) {
                 int newMins = (clickedInt == 0) ? 30 : ((clickedInt == 1) ? 60 : 120);
                 APP_SET_DATA(vBellInterval, newMins);
-                extern void Bell_ApplySettings();
                 Bell_ApplySettings();
                 SystemTrayHelper::updateData();
             }

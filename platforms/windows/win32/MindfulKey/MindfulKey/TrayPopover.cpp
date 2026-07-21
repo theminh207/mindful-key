@@ -10,6 +10,7 @@
 #include "SendGatekeeper.h"
 #include <objidl.h>
 #include <gdiplus.h>
+#include "Bell.h"
 
 #pragma comment(lib, "gdiplus.lib")
 
@@ -27,7 +28,6 @@ static const int kPopoverHeight = 520; // Tăng chiều cao để chứa đủ n
 
 extern int vMoodWatch;
 extern int vSendGatekeeper;
-extern int vBellInterval;
 
 // Helper vẽ Text đơn giản
 static void DrawLabel(HDC hdc, const wchar_t* text, RECT rc, BrandFontRole role, unsigned colorHex, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
@@ -113,7 +113,6 @@ static void ProcessTabBell(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     if (clickedInt != -1 && clickedInt != currentInt) {
         int newMins = (clickedInt == 0) ? 30 : ((clickedInt == 1) ? 60 : 120);
         APP_SET_DATA(vBellInterval, newMins);
-        extern void Bell_ApplySettings();
         Bell_ApplySettings();
         SystemTrayHelper::updateData();
         currentInt = clickedInt;
@@ -195,15 +194,15 @@ static void ProcessTabKeyboard(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
 
     int oldLang = vLanguage;
     DrawRowSwitch(0, L"Gõ tiếng Việt", vLanguage);
-    if (oldLang != vLanguage) APP_SET_DATA(vLanguage, vLanguage);
+    if (oldLang != vLanguage) { APP_SET_DATA(vLanguage, vLanguage); }
 
     int oldSpell = vCheckSpelling;
     DrawRowSwitch(1, L"Kiểm tra chính tả", vCheckSpelling);
-    if (oldSpell != vCheckSpelling) APP_SET_DATA(vCheckSpelling, vCheckSpelling);
+    if (oldSpell != vCheckSpelling) { APP_SET_DATA(vCheckSpelling, vCheckSpelling); }
 
     int oldCap = vUpperCaseFirstChar;
     DrawRowSwitch(2, L"Viết hoa đầu câu", vUpperCaseFirstChar);
-    if (oldCap != vUpperCaseFirstChar) APP_SET_DATA(vUpperCaseFirstChar, vUpperCaseFirstChar);
+    if (oldCap != vUpperCaseFirstChar) { APP_SET_DATA(vUpperCaseFirstChar, vUpperCaseFirstChar); }
 
     y += 145;
 }
