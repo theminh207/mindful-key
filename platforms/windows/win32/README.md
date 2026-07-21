@@ -71,7 +71,7 @@ Trải qua nhiều lần cập nhật và phát triển, ngày 31/07/2019, Mindf
 MindfulKey for Windows được phát hành dưới giấy phép GPL, điều này nghĩa là bạn hoàn toàn có thể tự do tải mã nguồn về chỉnh sửa, cải tiến theo mục đích của bạn. Nếu bạn tái phân phối bản cải tiến của bạn, bạn **phải** công bố mã nguồn và credit MindfulKey bản gốc.
 
 ## Một điều nữa
-Đừng quên ủng hộ tác giả bằng cách mua ly cafe cho tác giả tỉnh ngủ nhé: [Gửi cafe](https://paypal.me/tuyenmai)  
+Đừng quên ủng hộ tác giả bằng cách đóng góp cho dự án nhé.
 Hoặc trực tiếp qua ví momo:   
 ![Donate by momo](https://tuyenvm.github.io/images/momo.png "Momo").   
 Cảm ơn các bạn.

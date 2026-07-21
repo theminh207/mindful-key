@@ -20,7 +20,7 @@ redistribute your new version, it MUST be open source.
 
 static BYTE* _regData = 0;
 
-static LPCTSTR sk = TEXT("SOFTWARE\\TuyenMai\\MindfulKey");
+static LPCTSTR sk = TEXT("SOFTWARE\\TheMinh\\MindfulKey");
 static HKEY hKey;
 static LPCTSTR _runOnStartupKeyPath = _T("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
 static TCHAR _executePath[MAX_PATH];
