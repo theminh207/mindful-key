@@ -328,7 +328,7 @@ static INT_PTR CALLBACK ReflectDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARA
         HBRUSH brBtn = CreateSolidBrush(MK_COLORREF(kBrandPaletteOrange));
         FillRect(memDC, &btnRc, brBtn);
         DeleteObject(brBtn);
-        SetTextColor(memDC, MK_COLORREF(kBrandPaletteWhite));
+        SetTextColor(memDC, MK_COLORREF(kBrandPaletteCardWhite));
         SelectObject(memDC, BrandControls_Font(BrandFontBody));
         DrawTextW(memDC, L"Đóng", -1, &btnRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
         SelectObject(memDC, oldFont);

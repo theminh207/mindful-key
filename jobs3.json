@@ -1,0 +1,189 @@
+{
+  "total_count": 2,
+  "jobs": [
+    {
+      "id": 88590900721,
+      "run_id": 29817103484,
+      "workflow_name": "Windows",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/theminh207/mindful-key/actions/runs/29817103484",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTS3d9c8AAAAUoG3d8Q",
+      "head_sha": "c56b815d551b75952b2a8262f2b89ce70e75de97",
+      "url": "https://api.github.com/repos/theminh207/mindful-key/actions/jobs/88590900721",
+      "html_url": "https://github.com/theminh207/mindful-key/actions/runs/29817103484/job/88590900721",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-07-21T09:09:06Z",
+      "started_at": "2026-07-21T09:09:09Z",
+      "completed_at": "2026-07-21T09:10:28Z",
+      "name": "build (Debug)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-07-21T09:09:09Z",
+          "completed_at": "2026-07-21T09:09:10Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-07-21T09:09:10Z",
+          "completed_at": "2026-07-21T09:09:16Z"
+        },
+        {
+          "name": "Add MSBuild to PATH",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-07-21T09:09:16Z",
+          "completed_at": "2026-07-21T09:09:16Z"
+        },
+        {
+          "name": "Regression engine (bộ não dùng chung, MSVC)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-07-21T09:09:16Z",
+          "completed_at": "2026-07-21T09:09:38Z"
+        },
+        {
+          "name": "Build app Windows (Debug x64)",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 5,
+          "started_at": "2026-07-21T09:09:38Z",
+          "completed_at": "2026-07-21T09:10:25Z"
+        },
+        {
+          "name": "Thu .exe build ra",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6,
+          "started_at": "2026-07-21T09:10:25Z",
+          "completed_at": "2026-07-21T09:10:25Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-07-21T09:10:25Z",
+          "completed_at": "2026-07-21T09:10:27Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-07-21T09:10:27Z",
+          "completed_at": "2026-07-21T09:10:27Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/theminh207/mindful-key/check-runs/88590900721",
+      "labels": [
+        "windows-latest"
+      ],
+      "runner_id": 1000000283,
+      "runner_name": "GitHub Actions 1000000283",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 88590900749,
+      "run_id": 29817103484,
+      "workflow_name": "Windows",
+      "head_branch": "main",
+      "run_url": "https://api.github.com/repos/theminh207/mindful-key/actions/runs/29817103484",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTS3d9c8AAAAUoG3eDQ",
+      "head_sha": "c56b815d551b75952b2a8262f2b89ce70e75de97",
+      "url": "https://api.github.com/repos/theminh207/mindful-key/actions/jobs/88590900749",
+      "html_url": "https://github.com/theminh207/mindful-key/actions/runs/29817103484/job/88590900749",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-07-21T09:09:06Z",
+      "started_at": "2026-07-21T09:09:09Z",
+      "completed_at": "2026-07-21T09:10:57Z",
+      "name": "build (Release)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-07-21T09:09:13Z",
+          "completed_at": "2026-07-21T09:09:19Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-07-21T09:09:19Z",
+          "completed_at": "2026-07-21T09:09:28Z"
+        },
+        {
+          "name": "Add MSBuild to PATH",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-07-21T09:09:28Z",
+          "completed_at": "2026-07-21T09:09:29Z"
+        },
+        {
+          "name": "Regression engine (bộ não dùng chung, MSVC)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-07-21T09:09:29Z",
+          "completed_at": "2026-07-21T09:10:03Z"
+        },
+        {
+          "name": "Build app Windows (Release x64)",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 5,
+          "started_at": "2026-07-21T09:10:03Z",
+          "completed_at": "2026-07-21T09:10:53Z"
+        },
+        {
+          "name": "Thu .exe build ra",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 6,
+          "started_at": "2026-07-21T09:10:53Z",
+          "completed_at": "2026-07-21T09:10:53Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-07-21T09:10:53Z",
+          "completed_at": "2026-07-21T09:10:55Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-07-21T09:10:55Z",
+          "completed_at": "2026-07-21T09:10:55Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/theminh207/mindful-key/check-runs/88590900749",
+      "labels": [
+        "windows-latest"
+      ],
+      "runner_id": 1000000284,
+      "runner_name": "GitHub Actions 1000000284",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}

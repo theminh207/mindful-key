@@ -158,7 +158,7 @@ static INT_PTR CALLBACK PauseDialogProc(HWND hDlg, UINT message, WPARAM wParam, 
         HBRUSH brWait = CreateSolidBrush(MK_COLORREF(kBrandPaletteOrange));
         FillRect(memDC, &btnWaitRc, brWait);
         DeleteObject(brWait);
-        SetTextColor(memDC, MK_COLORREF(kBrandPaletteWhite));
+        SetTextColor(memDC, MK_COLORREF(kBrandPaletteCardWhite));
         oldFont = (HFONT)SelectObject(memDC, BrandControls_Font(BrandFontBody));
         DrawTextW(memDC, L"Đợi chút", -1, &btnWaitRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
         

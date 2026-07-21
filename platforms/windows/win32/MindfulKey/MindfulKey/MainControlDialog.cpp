@@ -13,6 +13,9 @@ redistribute your new version, it MUST be open source.
 -----------------------------------------------------------*/
 #include "MainControlDialog.h"
 #include "AppDelegate.h"
+#include <windowsx.h>
+
+#define FLAG_BEEP 0x8000
 #include "MoodWatch.h"
 #include "Bell.h"
 #include "BrandControls.h"
@@ -373,7 +376,7 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             HBRUSH btnBr = CreateSolidBrush(MK_COLORREF(0x1D7C91));
             FillRect(memDC, &btnRc, btnBr);
             DeleteObject(btnBr);
-            DrawLabel(L"Xuất", btnRc, BrandFontBody, kBrandPaletteWhite, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            DrawLabel(L"Xuất", btnRc, BrandFontBody, kBrandPaletteCardWhite, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
         }
 
         
@@ -493,7 +496,7 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             HBRUSH btnBr = CreateSolidBrush(MK_COLORREF(0x1D7C91));
             FillRect(memDC, &btnRc, btnBr);
             DeleteObject(btnBr);
-            DrawLabel(L"Kiểm tra cập nhật", btnRc, BrandFontBody, kBrandPaletteWhite, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            DrawLabel(L"Kiểm tra cập nhật", btnRc, BrandFontBody, kBrandPaletteCardWhite, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
         }
 
         BitBlt(hdc, 0, 0, clientRc.right, clientRc.bottom, memDC, 0, 0, SRCCOPY);
@@ -507,6 +510,8 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
         return 0;
     }
     else if (uMsg == WM_LBUTTONUP) {
+        RECT clientRc;
+        GetClientRect(hDlg, &clientRc);
         int x = GET_X_LPARAM(lParam);
         int y = GET_Y_LPARAM(lParam);
         POINT pt = { x, y };

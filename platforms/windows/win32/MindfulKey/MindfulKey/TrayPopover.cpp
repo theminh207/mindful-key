@@ -3,8 +3,12 @@
 //
 #include "stdafx.h"
 #include "TrayPopover.h"
+#include "AppDelegate.h"
+#include "SystemTrayHelper.h"
 #include "BrandPalette.h"
 #include "BrandControls.h"
+
+#define FLAG_BEEP 0x8000
 #include "ReflectionScreen.h"
 #include "MoodStore.h"
 #include "SendGatekeeper.h"
