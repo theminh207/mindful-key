@@ -182,6 +182,7 @@
     <ClInclude Include="BrandControls.h" />
     <ClInclude Include="MoodStore.h" />
     <ClInclude Include="ReflectionScreen.h" />
+    <ClInclude Include="TrayPopover.h" />
     <ClInclude Include="NudgeCoordinator.h" />
     <ClInclude Include="OpenKeyHelper.h" />
     <ClInclude Include="OpenKeyManager.h" />
@@ -216,6 +217,7 @@
     <ClCompile Include="OpenKey.cpp" />
     <ClCompile Include="MoodStore.cpp" />
     <ClCompile Include="ReflectionScreen.cpp" />
+    <ClCompile Include="TrayPopover.cpp" />
     <ClCompile Include="NudgeCoordinator.cpp" />
     <ClCompile Include="OpenKeyHelper.cpp" />
     <ClCompile Include="OpenKeyManager.cpp" />

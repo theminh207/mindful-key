@@ -44,3 +44,18 @@ void BrandControls_DrawButton(const DRAWITEMSTRUCT* dis, BrandButtonStyle style)
 // Đối ứng buildHeader ở PanelViewController.mm bên macOS. Gọi trong WM_PAINT của cửa sổ không viền.
 // `clientWidth` = bề rộng vùng client (pixel) để căn đường kẻ ngăn cho hết chiều ngang.
 void BrandControls_DrawCardHeader(HDC hdc, int clientWidth, const wchar_t* title);
+
+// ── Thẻ bo tròn (Card) ──
+// Nền trắng (cardWhite), bo góc 11px, viền 1px divider (nếu hasBorder).
+void BrandControls_DrawCard(HDC hdc, const RECT& rc, bool hasBorder);
+
+// ── Pill Switch ──
+// Công tắc bật/tắt (kích thước chuẩn 36x21). Tắt = xám (divider), bật = xanh (teal).
+void BrandControls_DrawPillSwitch(HDC hdc, const RECT& rc, bool isOn);
+
+// ── Segmented Control ──
+// Thanh tab (Hôm nay | Chuông | Bộ gõ). Nền xám nhạt, tab đang chọn là Pill trắng nổi khối hoặc màu nền tuỳ style.
+// [MINDFUL] macOS: tab đang chọn = pill TRẮNG nổi có bóng (ở popover) hoặc pill TEAL (ở six-nav).
+// style: 0 = Popover (chọn TRẮNG), 1 = Settings (chọn TEAL nền + chữ trắng).
+// Hàm vẽ và trả về index của mục được click nếu chuột nằm trong rect (truyền pt = toạ độ chuột lúc WM_LBUTTONUP, truyền pt.x = -1 lúc WM_PAINT).
+int BrandControls_DrawSegmentedControl(HDC hdc, const RECT& rc, const wchar_t** labels, int count, int selectedIndex, POINT clickPt, int style);

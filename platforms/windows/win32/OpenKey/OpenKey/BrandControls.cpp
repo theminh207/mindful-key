@@ -144,3 +144,94 @@ void BrandControls_DrawCardHeader(HDC hdc, int clientWidth, const wchar_t* title
     SelectObject(hdc, oldPen);
     DeleteObject(pen);
 }
+
+// ── Thẻ bo tròn (Card) ──
+void BrandControls_DrawCard(HDC hdc, const RECT& rc, bool hasBorder) {
+    HRGN rgn = CreateRoundRectRgn(rc.left, rc.top, rc.right + 1, rc.bottom + 1, 22, 22); // radius 11px -> width/height of ellipse = 22
+    HBRUSH fillBrush = CreateSolidBrush(MK_COLORREF(kBrandPaletteCardWhite));
+    FillRgn(hdc, rgn, fillBrush);
+    DeleteObject(fillBrush);
+    if (hasBorder) {
+        HBRUSH borderBrush = CreateSolidBrush(MK_COLORREF(kBrandPaletteDivider));
+        FrameRgn(hdc, rgn, borderBrush, 1, 1);
+        DeleteObject(borderBrush);
+    }
+    DeleteObject(rgn);
+}
+
+// ── Pill Switch ──
+void BrandControls_DrawPillSwitch(HDC hdc, const RECT& rc, bool isOn) {
+    // Kích thước mong muốn 36x21, căn giữa trong rc
+    int width = 36;
+    int height = 21;
+    int x = rc.left + (rc.right - rc.left - width) / 2;
+    int y = rc.top + (rc.bottom - rc.top - height) / 2;
+
+    HRGN rgn = CreateRoundRectRgn(x, y, x + width + 1, y + height + 1, height, height);
+    COLORREF bgColor = isOn ? MK_COLORREF(kBrandPaletteTeal) : MK_COLORREF(kBrandPaletteDivider);
+    HBRUSH bgBrush = CreateSolidBrush(bgColor);
+    FillRgn(hdc, rgn, bgBrush);
+    DeleteObject(bgBrush);
+    DeleteObject(rgn);
+
+    // Núm tròn (17x17)
+    int knobSize = 17;
+    int knobY = y + (height - knobSize) / 2;
+    int knobX = isOn ? (x + width - knobSize - 2) : (x + 2);
+
+    HRGN knobRgn = CreateEllipticRgn(knobX, knobY, knobX + knobSize + 1, knobY + knobSize + 1);
+    HBRUSH knobBrush = CreateSolidBrush(RGB(255, 255, 255));
+    FillRgn(hdc, knobRgn, knobBrush);
+    DeleteObject(knobBrush);
+    DeleteObject(knobRgn);
+}
+
+// ── Segmented Control ──
+int BrandControls_DrawSegmentedControl(HDC hdc, const RECT& rc, const wchar_t** labels, int count, int selectedIndex, POINT clickPt, int style) {
+    if (count <= 0) return -1;
+    
+    // Nền thanh tab (màu #EFEFEC) bo góc 8px
+    HRGN bgRgn = CreateRoundRectRgn(rc.left, rc.top, rc.right + 1, rc.bottom + 1, 16, 16);
+    HBRUSH bgBrush = CreateSolidBrush(RGB(0xEF, 0xEF, 0xEC));
+    FillRgn(hdc, bgRgn, bgBrush);
+    DeleteObject(bgBrush);
+    DeleteObject(bgRgn);
+
+    int itemWidth = (rc.right - rc.left) / count;
+    int clickedIndex = -1;
+
+    SetBkMode(hdc, TRANSPARENT);
+    HFONT font = BrandControls_Font(BrandFontButton);
+    HFONT oldFont = (HFONT)SelectObject(hdc, font);
+
+    for (int i = 0; i < count; i++) {
+        RECT itemRc = { rc.left + i * itemWidth, rc.top, rc.left + (i + 1) * itemWidth, rc.bottom };
+        
+        // Kiểm tra click
+        if (clickPt.x != -1 && clickPt.x >= itemRc.left && clickPt.x < itemRc.right && clickPt.y >= itemRc.top && clickPt.y < itemRc.bottom) {
+            clickedIndex = i;
+        }
+
+        // Vẽ ô được chọn
+        if (i == selectedIndex) {
+            // Pill con bo góc ~7px, thụt vào 2px
+            RECT pillRc = { itemRc.left + 2, itemRc.top + 2, itemRc.right - 2, itemRc.bottom - 2 };
+            HRGN pillRgn = CreateRoundRectRgn(pillRc.left, pillRc.top, pillRc.right + 1, pillRc.bottom + 1, 14, 14);
+            
+            COLORREF pillColor = (style == 1) ? MK_COLORREF(kBrandPaletteTeal) : MK_COLORREF(kBrandPaletteCardWhite);
+            HBRUSH pillBrush = CreateSolidBrush(pillColor);
+            FillRgn(hdc, pillRgn, pillBrush);
+            DeleteObject(pillBrush);
+            DeleteObject(pillRgn);
+            
+            SetTextColor(hdc, (style == 1) ? MK_COLORREF(kBrandPaletteCardWhite) : MK_COLORREF(kBrandPaletteCharcoal));
+        } else {
+            SetTextColor(hdc, MK_COLORREF(kBrandPaletteMuted));
+        }
+
+        DrawTextW(hdc, labels[i], -1, &itemRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+    }
+
+    SelectObject(hdc, oldFont);
+    return clickedIndex;
+}

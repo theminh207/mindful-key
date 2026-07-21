@@ -60,11 +60,11 @@ static MoodTodaySummary   g_summary;
 // ── Dòng sông ──
 
 // Vị trí ngang 0..1 của một mẫu = GIỜ THẬT trong ngày. Xem luật 2 ở đầu file.
-static REAL XFractionOf(long long ts, time_t startOfDay) {
-    double secs = (double)(ts - (long long)startOfDay);
+static REAL XFractionOf(long long ts, time_t originSec, double spanSec, REAL maxFrac) {
+    double secs = (double)(ts - (long long)originSec);
     if (secs < 0) secs = 0;
-    if (secs > 86400.0) secs = 86400.0;
-    return (REAL)(secs / 86400.0);
+    if (secs > spanSec) secs = spanSec;
+    return (REAL)((secs / spanSec) * maxFrac);
 }
 
 // Có nước ở vị trí xf không, và biên độ bao nhiêu? false = quãng trống.
@@ -89,26 +89,43 @@ static bool AmpAt(REAL xf, const vector<REAL>& xs, const vector<REAL>& ys, REAL 
     return true;
 }
 
-static void DrawRiver(Graphics& g, const RectF& area) {
-    if (g_samples.empty())
+static void DrawRiver(Graphics& g, const RectF& area, const vector<MoodSample>& samples, bool recentMode, double liveHead) {
+    if (samples.empty() && !recentMode)
         return;   // trống thật — KHÔNG vẽ đường/chấm giả (luật 1)
     if (area.Width <= 0)
         return;
 
     time_t now = time(NULL);
-    struct tm lt;
-    localtime_s(&lt, &now);
-    lt.tm_hour = 0; lt.tm_min = 0; lt.tm_sec = 0;
-    time_t startOfDay = mktime(&lt);
+    time_t originSec;
+    double spanSec;
+    REAL maxFrac;
+    
+    if (recentMode) {
+        spanSec = 3.0 * 3600.0; // 3 giờ quá khứ
+        originSec = now - (time_t)spanSec;
+        maxFrac = 0.75f; // 1/4 còn lại cho tương lai
+    } else {
+        struct tm lt;
+        localtime_s(&lt, &now);
+        lt.tm_hour = 0; lt.tm_min = 0; lt.tm_sec = 0;
+        originSec = mktime(&lt);
+        spanSec = 86400.0;
+        maxFrac = 1.0f;
+    }
 
     vector<REAL> xs, ys;
-    for (size_t i = 0; i < g_samples.size(); i++) {
-        xs.push_back(XFractionOf(g_samples[i].ts, startOfDay));
-        ys.push_back((REAL)g_samples[i].value);
+    for (size_t i = 0; i < samples.size(); i++) {
+        if (recentMode && samples[i].ts < originSec) continue; // Bỏ qua mẫu cũ ngoài cửa sổ
+        xs.push_back(XFractionOf(samples[i].ts, originSec, spanSec, maxFrac));
+        ys.push_back((REAL)samples[i].value);
+    }
+    if (recentMode && liveHead >= 0.0) {
+        xs.push_back(maxFrac);
+        ys.push_back((REAL)liveHead);
     }
 
     int interval = vBellInterval > 0 ? vBellInterval : 60;
-    REAL gapXf = (REAL)((interval * 60.0 * 2.0) / 86400.0);   // 2 nhịp
+    REAL gapXf = (REAL)((interval * 60.0 * 2.0) / spanSec * maxFrac);   // 2 nhịp
 
     REAL midY = area.Y + area.Height / 2.0f;
     REAL maxWaveH = area.Height * kMaxWaveFrac;
@@ -121,6 +138,8 @@ static void DrawRiver(Graphics& g, const RectF& area) {
     REAL dash[2] = { 2.0f, 4.0f };
     axisPen.SetDashPattern(dash, 2);
     g.DrawLine(&axisPen, area.X, midY, area.X + w, midY);
+
+    if (xs.empty()) return; // Không có nước (chỉ có trục)
 
     // Nước: teal đặc, CHỈ ở chỗ có mẫu thật.
     Pen wavePen(Color(MK_ARGB(kBrandPaletteTeal)), kWaveLineW);
@@ -136,38 +155,56 @@ static void DrawRiver(Graphics& g, const RectF& area) {
             seg.clear();
             continue;
         }
-        // GDI+ có trục Y hướng XUỐNG (Cocoa hướng lên) nên công thức này là ảnh gương dọc của bản
-        // macOS. Không sao: sin dao động đối xứng quanh midY, hình con sóng y hệt.
         seg.push_back(PointF(area.X + x, midY - amp * maxWaveH * (REAL)sin(x * kWaveFreq)));
     }
     if (seg.size() >= 2) g.DrawLines(&wavePen, &seg[0], (INT)seg.size());
 
-    // Chấm: 1 nhịp = 1 điểm ghi. Tô TEAL ĐẶC — bản macOS từng tô trắng trên nền thẻ cũng gần
-    // trắng nên gần như tàng hình, caption hứa "vòng tròn" mà mắt không thấy (vá 2026-07-16).
+    // Chấm: 1 nhịp = 1 điểm ghi. Tô TEAL ĐẶC.
     SolidBrush dotBrush(Color(MK_ARGB(kBrandPaletteTeal)));
     for (size_t i = 0; i < xs.size(); i++) {
+        // [MINDFUL] Điểm liveHead (chấm cuối cùng nếu có) ở recentMode không phải checkin, tô đặc.
         REAL mx = xs[i] * w;
         REAL my = midY - ys[i] * maxWaveH * (REAL)sin(mx * kWaveFreq);
         g.FillEllipse(&dotBrush, area.X + mx - kDotDiameter / 2, my - kDotDiameter / 2,
                       kDotDiameter, kDotDiameter);
     }
 
-    // Nhãn buổi — ranh giới LẤY TỪ core/mood/MoodPhrasing (nguồn duy nhất). Tự đặt số ở đây là
-    // trục và câu chữ nói ngược nhau trên cùng màn hình.
+    // Nhãn trục ngang
     FontFamily ff(L"Segoe UI");
     Font font(&ff, 8, FontStyleRegular, UnitPoint);
     SolidBrush textBrush(Color((ARGB)(0xB0000000 | kBrandPaletteMuted)));
     StringFormat fmt;
-    fmt.SetAlignment(StringAlignmentCenter);
-    const int kAxisHour[4] = { 8, 12, 15, 21 };   // giữa mỗi buổi: sáng 5-11 · trưa 11-13 · chiều 13-18 · tối 18-24
-    for (int i = 0; i < 4; i++) {
-        long long ts = (long long)startOfDay + kAxisHour[i] * 3600;
-        wstring label = MoodPhrasingCore_TimeOfDayLabel(ts);
-        if (label.rfind(L"buổi ", 0) == 0) label = label.substr(5);   // "buổi sáng" -> "sáng"
-        REAL cx = area.X + (REAL)(kAxisHour[i] / 24.0) * w;
-        g.DrawString(label.c_str(), -1, &font, PointF(cx, area.Y + area.Height + 2), &fmt, &textBrush);
+    
+    if (recentMode) {
+        fmt.SetAlignment(StringAlignmentNear); // Canh trái mép
+        // 3 nhãn: "3 giờ trước", "2 giờ", "1 giờ", "bây giờ"
+        const wchar_t* labels[] = { L"3 giờ trước", L"2 giờ", L"1 giờ", L"bây giờ" };
+        REAL fracs[] = { 0.0f, maxFrac / 3.0f, maxFrac * 2.0f / 3.0f, maxFrac };
+        for (int i = 0; i < 4; i++) {
+            if (i == 3) fmt.SetAlignment(StringAlignmentFar);
+            else if (i > 0) fmt.SetAlignment(StringAlignmentCenter);
+            REAL cx = area.X + fracs[i] * w;
+            g.DrawString(labels[i], -1, &font, PointF(cx, area.Y + area.Height + 2), &fmt, &textBrush);
+        }
+    } else {
+        fmt.SetAlignment(StringAlignmentCenter);
+        const int kAxisHour[4] = { 8, 12, 15, 21 };
+        for (int i = 0; i < 4; i++) {
+            long long ts = (long long)originSec + kAxisHour[i] * 3600;
+            wstring label = MoodPhrasingCore_TimeOfDayLabel(ts);
+            if (label.rfind(L"buổi ", 0) == 0) label = label.substr(5);
+            REAL cx = area.X + (REAL)(kAxisHour[i] / 24.0) * w;
+            g.DrawString(label.c_str(), -1, &font, PointF(cx, area.Y + area.Height + 2), &fmt, &textBrush);
+        }
     }
 }
+
+void EmotionRiver_Draw(HDC hdc, const RECT& rect, const std::vector<MoodSample>& samples, bool recentMode, double liveHead) {
+    Graphics g(hdc);
+    RectF area((REAL)rect.left, (REAL)rect.top, (REAL)(rect.right - rect.left), (REAL)(rect.bottom - rect.top));
+    DrawRiver(g, area, samples, recentMode, liveHead);
+}
+
 
 // ── Hộp thoại ──
 
@@ -224,7 +261,7 @@ static INT_PTR CALLBACK ReflectDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARA
                    (REAL)(di->rcItem.bottom - di->rcItem.top));
         g.FillRectangle(&bg, full);
         RectF area(full.X, full.Y, full.Width, full.Height - 14);   // chừa chỗ nhãn buổi
-        DrawRiver(g, area);
+        DrawRiver(g, area, g_samples, false, -1.0);
         return TRUE;
     }
     case WM_COMMAND:

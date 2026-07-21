@@ -70,4 +70,7 @@ MoodTodaySummary MoodStore_FetchTodaySummary();
 // ngày, nhãn Sáng/Trưa/Chiều/Tối thành ra nói dối (vá 2026-07-16). Đừng lặp lại.
 std::vector<MoodSample> MoodStore_FetchTodaySamples();
 
+// [MINDFUL] Đọc các mẫu nhịp trong N giây qua. Trả về rỗng nếu tắt nhắc tâm.
+std::vector<MoodSample> MoodStore_FetchRecentSamples(int pastSeconds);
+
 void MoodStore_DeleteAll();       // xoá tệp. Hành động CHỦ ĐỘNG của người dùng, không bao giờ tự động.

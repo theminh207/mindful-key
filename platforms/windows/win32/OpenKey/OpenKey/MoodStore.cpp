@@ -284,6 +284,39 @@ vector<MoodSample> MoodStore_FetchTodaySamples() {
     return out;
 }
 
+vector<MoodSample> MoodStore_FetchRecentSamples(int pastSeconds) {
+    vector<MoodSample> out;
+    if (!MoodStore_HasConsent())
+        return out;
+
+    lock_guard<mutex> lock(g_mutex);
+    wstring all;
+    if (!ReadAll(all))
+        return out;
+
+    time_t now = time(NULL);
+    time_t startOfWindow = now - pastSeconds;
+
+    wistringstream in(all);
+    wstring line;
+    getline(in, line);   // bỏ header
+    while (getline(in, line)) {
+        if (line.empty()) continue;
+        wistringstream f(line);
+        wstring tsStr, type, riskStr;
+        getline(f, tsStr, L'\t');
+        getline(f, type, L'\t');
+        getline(f, riskStr, L'\t');
+        if (tsStr.empty() || type != L"sample" || riskStr.empty()) continue;
+        MoodSample m;
+        m.ts = _wtoi64(tsStr.c_str());
+        if ((time_t)m.ts < startOfWindow) continue;
+        m.value = _wtof(riskStr.c_str());
+        out.push_back(m);
+    }
+    return out;
+}
+
 void MoodStore_DeleteAll() {
     lock_guard<mutex> lock(g_mutex);
     wstring path = StorePath();

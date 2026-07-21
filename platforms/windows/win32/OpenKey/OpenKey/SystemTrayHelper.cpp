@@ -1,4 +1,4 @@
-﻿/*----------------------------------------------------------
+/*----------------------------------------------------------
 OpenKey - The Cross platform Open source Vietnamese Keyboard application.
 
 Copyright (C) 2019 Mai Vu Tuyen
@@ -15,6 +15,7 @@ redistribute your new version, it MUST be open source.
 #include "AppDelegate.h"
 #include "MoodWatch.h"
 #include "SendGatekeeper.h"
+#include "TrayPopover.h"
 #include "MoodStore.h"
 #include "ReflectionScreen.h"
 #include "Bell.h"
@@ -211,8 +212,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			AppDelegate::getInstance()->onControlPanel();
 		}
 		if (lParam == WM_LBUTTONUP) {
-			AppDelegate::getInstance()->onToggleVietnamese();
-			SystemTrayHelper::updateData();
+			TrayPopover_Toggle();
 		} else if (lParam == WM_RBUTTONDOWN) {
 			POINT curPoint;
 			GetCursorPos(&curPoint);
