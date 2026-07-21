@@ -48,155 +48,15 @@ void MainControlDialog::initDialog() {
     wsprintfW(titleBuffer, title, MindfulKeyHelper::getVersionString().c_str());
     SetWindowText(hDlg, titleBuffer);
 
-    //create tab page
-    hTabPage1 = CreateDialogParam(hIns, MAKEINTRESOURCE(IDD_DIALOG_TAB_GENERAL), hDlg, tabPageEventProc, (LPARAM)this);
-    hTabPage2 = CreateDialogParam(hIns, MAKEINTRESOURCE(IDD_DIALOG_TAB_MACRO), hDlg, tabPageEventProc, (LPARAM)this);
-    hTabPage3 = CreateDialogParam(hIns, MAKEINTRESOURCE(IDD_DIALOG_TAB_SYSTEM), hDlg, tabPageEventProc, (LPARAM)this);
-    hTabPage4 = CreateDialogParam(hIns, MAKEINTRESOURCE(IDD_DIALOG_TAB_INFO), hDlg, tabPageEventProc, (LPARAM)this);
-
-    //input type
-    comboBoxInputType = GetDlgItem(hTabPage1, IDC_COMBO_INPUT_TYPE);
-    vector<LPCTSTR>& inputType = MindfulKeyManager::getInputType();
-    for (int i = 0; i < inputType.size(); i++) {
-        SendMessage(comboBoxInputType, CB_ADDSTRING, i, reinterpret_cast<LPARAM>(inputType[i]));
-    }
-    createToolTip(comboBoxInputType, IDS_STRING_INPUT);
-
-    //code table
-    comboBoxTableCode = GetDlgItem(hTabPage1, IDC_COMBO_TABLE_CODE);
-    vector<LPCTSTR>& tableCode = MindfulKeyManager::getTableCode();
-    for (int i = 0; i < tableCode.size(); i++) {
-        SendMessage(comboBoxTableCode, CB_ADDSTRING, i, reinterpret_cast<LPARAM>(tableCode[i]));
-    }
-    createToolTip(comboBoxTableCode, IDS_STRING_CODE);
     // 6-Nav Layout Position
     RECT rc;
     GetClientRect(hDlg, &rc);
     int leftNavWidth = 160;
     rc.left += leftNavWidth;
+
+    // Các thẻ cài đặt (Bộ gõ, Hệ thống, Giới thiệu) giờ đây được vẽ hoàn toàn bằng GDI+
+    // Không còn dùng IDD_DIALOG_TAB_... native nữa.
     
-    SetWindowPos(hTabPage1, 0, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_HIDEWINDOW);
-    SetWindowPos(hTabPage2, 0, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_HIDEWINDOW);
-    SetWindowPos(hTabPage3, 0, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_HIDEWINDOW);
-    SetWindowPos(hTabPage4, 0, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_HIDEWINDOW);
-    
-    // We will redraw current tab inside WM_PAINT using BrandControls, 
-    // and manually show/hide the child dialogs.
-    // onTabIndexChanged();
-
-    checkCtrl = GetDlgItem(hTabPage1, IDC_CHECK_SWITCH_KEY_CTRL);
-    createToolTip(checkCtrl, IDS_STRING_CTRL);
-
-    checkAlt = GetDlgItem(hTabPage1, IDC_CHECK_SWITCH_KEY_ALT);
-    createToolTip(checkAlt, IDS_STRING_ALT);
-
-    checkWin = GetDlgItem(hTabPage1, IDC_CHECK_SWITCH_KEY_WIN);
-    createToolTip(checkWin, IDS_STRING_WIN);
-
-    checkShift = GetDlgItem(hTabPage1, IDC_CHECK_SWITCH_KEY_SHIFT);
-    createToolTip(checkShift, IDS_STRING_SHIFT);
-
-    textSwitchKey = GetDlgItem(hTabPage1, IDC_SWITCH_KEY_KEY);
-    createToolTip(textSwitchKey, IDS_STRING_SWITCH_KEY);
-
-    checkBeep = GetDlgItem(hTabPage1, IDC_CHECK_SWITCH_KEY_BEEP);
-    createToolTip(checkBeep, IDS_STRING_BEEP);
-
-    checkVietnamese = GetDlgItem(hTabPage1, IDC_RADIO_METHOD_VIETNAMESE);
-    createToolTip(checkVietnamese, IDS_STRING_VIET);
-
-    checkEnglish = GetDlgItem(hTabPage1, IDC_RADIO_METHOD_ENGLISH);
-    createToolTip(checkEnglish, IDS_STRING_ENG);
-
-    /*--------end common---------*/
-
-    checkModernOrthorgraphy = GetDlgItem(hTabPage1, IDC_CHECK_MODERN_ORTHORGRAPHY);
-    createToolTip(checkModernOrthorgraphy, IDS_STRING_MORDEN_ORTHORGRAPHY);
-
-    checkFixRecommendBrowser = GetDlgItem(hTabPage1, IDC_CHECK_FIX_RECOMMEND_BROWSER);
-    createToolTip(checkFixRecommendBrowser, IDS_STRING_FIX_BROWSER);
-
-    checkSpelling = GetDlgItem(hTabPage1, IDC_CHECK_SPELLING);
-    createToolTip(checkSpelling, IDS_STRING_SPELLING_CHECK);
-
-    checkRestoreIfWrongSpelling = GetDlgItem(hTabPage1, IDC_CHECK_RESTORE_IF_WRONG_SPELLING);
-    createToolTip(checkRestoreIfWrongSpelling, IDS_STRING_RESTORE_IF_WRONG_SPELLING);
-
-    checkAllowZWJF = GetDlgItem(hTabPage1, IDC_CHECK_ALLOW_ZJWF);
-    createToolTip(checkAllowZWJF, IDS_STRING_ALLOW_ZWFJ);
-
-    checkTempOffSpelling = GetDlgItem(hTabPage1, IDC_CHECK_TEMP_OFF_SPELLING);
-    createToolTip(checkTempOffSpelling, IDS_STRING_TEMP_OFF_SPELLING);
-
-    checkSmartSwitchKey = GetDlgItem(hTabPage1, IDC_CHECK_SMART_SWITCH_KEY);
-    createToolTip(checkSmartSwitchKey, IDS_STRING_SMART_SWITCH_KEY);
-
-    checkCapsFirstChar = GetDlgItem(hTabPage1, IDC_CHECK_CAPS_FIRST_CHAR);
-    createToolTip(checkCapsFirstChar, IDS_STRING_CAPS_FIRST_CHAR);
-
-    checkRememberTableCode = GetDlgItem(hTabPage1, IDC_CHECK_SMART_SWITCH_CODE);
-    createToolTip(checkRememberTableCode, IDS_STRING_REMEMBER_TABLE_CODE);
-
-    checkAllowOtherLanguages = GetDlgItem(hTabPage1, IDC_CHECK_OTHER_LANGUAGES);
-    checkMoodWatch = GetDlgItem(hTabPage1, IDC_CHECK_MOODWATCH);
-    createToolTip(checkAllowOtherLanguages, IDS_STRING_OTHER_LANGUAGES);
-
-    checkTempOffMindfulKey = GetDlgItem(hTabPage1, IDC_CHECK_TEMP_OFF_OPEN_KEY);
-    createToolTip(checkTempOffMindfulKey, IDS_STRING_TEMP_OFF_MINDFULKEY);
-
-    /*------------end tab 1----------------*/
-
-    checkQuickStartConsonant = GetDlgItem(hTabPage2, IDC_CHECK_QUICK_START_CONSONANT);
-    createToolTip(checkQuickStartConsonant, IDS_STRING_START_CONSONANT);
-
-    checkQuickEndConsonant = GetDlgItem(hTabPage2, IDC_CHECK_QUICK_END_CONSONANT);
-    createToolTip(checkQuickEndConsonant, IDS_STRING_END_CONSONANT);
-
-    checkQuickTelex = GetDlgItem(hTabPage2, IDC_CHECK_QUICK_TELEX);
-    createToolTip(checkQuickTelex, IDS_STRING_QUICK_TELEX);
-
-    checkUseMacro = GetDlgItem(hTabPage2, IDC_CHECK_USE_MACRO);
-    createToolTip(checkUseMacro, IDS_STRING_MACRO);
-
-    checkUseMacroInEnglish = GetDlgItem(hTabPage2, IDC_CHECK_USE_MACRO_IN_ENGLISH);
-    createToolTip(checkUseMacroInEnglish, IDS_STRING_MACRO_IN_ENG);
-
-    checkMacroAutoCaps = GetDlgItem(hTabPage2, IDC_CHECK_AUTO_CAPS);
-    createToolTip(checkMacroAutoCaps, IDS_STRING_MACRO_AUTO_CAP);
-
-    hUpdateButton = GetDlgItem(hDlg, IDC_BUTTON_CHECK_UPDATE);
-
-    /*------------end tab 2----------------*/
-
-    checkModernIcon = GetDlgItem(hTabPage3, IDC_CHECK_MODERN_ICON);
-    createToolTip(checkModernIcon, IDS_STRING_MODERN_ICON);
-
-    checkShowOnStartup = GetDlgItem(hTabPage3, IDC_CHECK_SHOW_ON_STARTUP);
-    createToolTip(checkShowOnStartup, IDS_STRING_SHOW_ON_STARTUP);
-
-    checkRunWithWindows = GetDlgItem(hTabPage3, IDC_CHECK_RUN_WITH_WINDOWS);
-    createToolTip(checkRunWithWindows, IDS_STRING_RUN_ON_STARTUP);
-
-    checkCreateDesktopShortcut = GetDlgItem(hTabPage3, IDC_CHECK_CHECK_CREATE_SHORTCUT);
-    createToolTip(checkCreateDesktopShortcut, IDS_STRING_CREATE_DESKTOP);
-
-    checkRunAsAdmin = GetDlgItem(hTabPage3, IDC_CHECK_RUN_AS_ADMIN);
-    createToolTip(checkRunAsAdmin, IDS_STRING_RUN_AS_ADMIN);
-
-    checkCheckNewVersion = GetDlgItem(hTabPage3, IDC_CHECK_CHECK_UPDATE);
-    createToolTip(checkCheckNewVersion, IDS_STRING_CHECK_UPDATE);
-
-    checkSupportMetroApp = GetDlgItem(hTabPage3, IDC_CHECK_SUPPORT_METRO_APP);
-    createToolTip(checkSupportMetroApp, IDS_STRING_SUPPORT_METRO);
-
-    checkUseClipboard = GetDlgItem(hTabPage3, IDC_CHECK_USE_CLIPBOARD);
-    createToolTip(checkUseClipboard, IDS_STRING_USE_CLIPBOARD);
-
-    checkFixChromium = GetDlgItem(hTabPage3, IDC_CHECK_FIX_CHROMIUM);
-    createToolTip(checkFixChromium, IDS_STRING_FIX_CHROMIUM);
-
-    /*------------end tab 3----------------*/
-
     SendDlgItemMessage(hDlg, IDBUTTON_OK, BM_SETIMAGE, IMAGE_ICON, (LPARAM)LoadIcon(hIns, MAKEINTRESOURCEW(IDI_ICON_OK_BUTTON)));
     SendDlgItemMessage(hDlg, ID_BTN_DEFAULT, BM_SETIMAGE, IMAGE_ICON, (LPARAM)LoadIcon(hIns, MAKEINTRESOURCEW(IDI_ICON_DEFAULT_BUTTON)));
     SendDlgItemMessage(hDlg, IDBUTTON_EXIT, BM_SETIMAGE, IMAGE_ICON, (LPARAM)LoadIcon(hIns, MAKEINTRESOURCEW(IDI_ICON_EXIT_BUTTON)));
@@ -479,6 +339,126 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             DrawLabel(L"Xuất", btnRc, BrandFontBody, kBrandPaletteWhite, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
         }
 
+        
+        else if (currentTab == 2) { // Bộ gõ
+            RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
+            int y = 20;
+
+            auto DrawLabel = [&](const wchar_t* text, RECT rc, BrandFontType font, uint32_t color, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
+                SetBkMode(memDC, TRANSPARENT);
+                SetTextColor(memDC, MK_COLORREF(color));
+                HFONT f = BrandControls_Font(font);
+                HFONT old = (HFONT)SelectObject(memDC, f);
+                DrawTextW(memDC, text, -1, &rc, format);
+                SelectObject(memDC, old);
+            };
+
+            // Card 1: Chế độ mặc định
+            RECT card1Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 120 };
+            BrandControls_DrawCard(memDC, card1Rc, true);
+            
+            auto DrawRowSwitch = [&](RECT cardRc, int i, const wchar_t* label, bool state) {
+                int rowY = cardRc.top + 10 + i * 35;
+                RECT labelRc = { cardRc.left + 15, rowY, cardRc.right - 60, rowY + 25 };
+                DrawLabel(label, labelRc, BrandFontBody, kBrandPaletteCharcoal);
+                RECT switchRc = { cardRc.right - 50, rowY + 2, cardRc.right - 14, rowY + 23 };
+                BrandControls_DrawPillSwitch(memDC, switchRc, state);
+            };
+
+            DrawRowSwitch(card1Rc, 0, L"Tiếng Việt (mặc định)", vLanguage == 1);
+            DrawRowSwitch(card1Rc, 1, L"Viết hoa đầu câu", vUpperCaseFirstChar == 1);
+            DrawRowSwitch(card1Rc, 2, L"Tự nhớ bảng mã", vRememberCode == 1);
+            
+            y += 135;
+
+            // Card 2: Tuỳ chọn chính tả
+            RECT card2Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 155 };
+            BrandControls_DrawCard(memDC, card2Rc, true);
+            DrawRowSwitch(card2Rc, 0, L"Kiểm tra chính tả", vCheckSpelling == 1);
+            DrawRowSwitch(card2Rc, 1, L"Khôi phục phím sai", vRestoreIfWrongSpelling == 1);
+            DrawRowSwitch(card2Rc, 2, L"Sửa lỗi gợi ý trình duyệt", vFixRecommendBrowser == 1);
+            DrawRowSwitch(card2Rc, 3, L"Đặt dấu oà, uý", vUseModernOrthography == 1);
+
+            y += 170;
+
+            // Card 3: Phím tắt & Nâng cao
+            RECT card3Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 120 };
+            BrandControls_DrawCard(memDC, card3Rc, true);
+            DrawRowSwitch(card3Rc, 0, L"Sử dụng Macro (Gõ tắt)", vUseMacro == 1);
+            DrawRowSwitch(card3Rc, 1, L"Gõ tắt cả khi tiếng Anh", vUseMacroInEnglishMode == 1);
+            DrawRowSwitch(card3Rc, 2, L"Cho phép phụ âm z, w, j, f", vAllowConsonantZFWJ == 1);
+        }
+        else if (currentTab == 4) { // Hệ thống
+            RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
+            int y = 20;
+
+            auto DrawLabel = [&](const wchar_t* text, RECT rc, BrandFontType font, uint32_t color, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
+                SetBkMode(memDC, TRANSPARENT);
+                SetTextColor(memDC, MK_COLORREF(color));
+                HFONT f = BrandControls_Font(font);
+                HFONT old = (HFONT)SelectObject(memDC, f);
+                DrawTextW(memDC, text, -1, &rc, format);
+                SelectObject(memDC, old);
+            };
+
+            // Card Hệ thống
+            RECT card1Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 155 };
+            BrandControls_DrawCard(memDC, card1Rc, true);
+            
+            auto DrawRowSwitch = [&](RECT cardRc, int i, const wchar_t* label, bool state) {
+                int rowY = cardRc.top + 10 + i * 35;
+                RECT labelRc = { cardRc.left + 15, rowY, cardRc.right - 60, rowY + 25 };
+                DrawLabel(label, labelRc, BrandFontBody, kBrandPaletteCharcoal);
+                RECT switchRc = { cardRc.right - 50, rowY + 2, cardRc.right - 14, rowY + 23 };
+                BrandControls_DrawPillSwitch(memDC, switchRc, state);
+            };
+
+            DrawRowSwitch(card1Rc, 0, L"Khởi động cùng Windows", vRunWithWindows == 1);
+            DrawRowSwitch(card1Rc, 1, L"Hiện hộp thoại lúc khởi động", vShowOnStartUp == 1);
+            DrawRowSwitch(card1Rc, 2, L"Biểu tượng khay xám (Đen/Trắng)", vUseGrayIcon == 1);
+            DrawRowSwitch(card1Rc, 3, L"Chạy quyền Admin", vRunAsAdmin == 1);
+
+            y += 170;
+
+            // Card Nâng cao
+            RECT card2Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 120 };
+            BrandControls_DrawCard(memDC, card2Rc, true);
+            DrawRowSwitch(card2Rc, 0, L"Hỗ trợ ứng dụng Metro (Windows 8+)", vSupportMetroApp == 1);
+            DrawRowSwitch(card2Rc, 1, L"Sử dụng Clipboard gửi phím", vSendKeyStepByStep == 0);
+            DrawRowSwitch(card2Rc, 2, L"Sửa lỗi nháy chữ Chromium", vFixChromiumBrowser == 1);
+        }
+        else if (currentTab == 5) { // Giới thiệu
+            RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
+            int y = 50;
+
+            auto DrawLabel = [&](const wchar_t* text, RECT rc, BrandFontType font, uint32_t color, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
+                SetBkMode(memDC, TRANSPARENT);
+                SetTextColor(memDC, MK_COLORREF(color));
+                HFONT f = BrandControls_Font(font);
+                HFONT old = (HFONT)SelectObject(memDC, f);
+                DrawTextW(memDC, text, -1, &rc, format);
+                SelectObject(memDC, old);
+            };
+
+            RECT logoRc = { contentRc.left + (contentRc.right - contentRc.left)/2 - 50, y, contentRc.left + (contentRc.right - contentRc.left)/2 + 50, y + 100 };
+            // Draw an icon or just title
+            DrawLabel(L"MINDFUL KEYBOARD", logoRc, BrandFontTitle, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            y += 60;
+            
+            RECT verRc = { contentRc.left, y, contentRc.right, y + 30 };
+            wchar_t buffer[256];
+            wsprintfW(buffer, L"Phiên bản %s", MindfulKeyHelper::getVersionString().c_str());
+            DrawLabel(buffer, verRc, BrandFontBody, kBrandPaletteMuted, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            y += 60;
+
+            // Nút Kiểm tra cập nhật
+            RECT btnRc = { contentRc.left + (contentRc.right - contentRc.left)/2 - 80, y, contentRc.left + (contentRc.right - contentRc.left)/2 + 80, y + 40 };
+            HBRUSH btnBr = CreateSolidBrush(MK_COLORREF(0x1D7C91));
+            FillRect(memDC, &btnRc, btnBr);
+            DeleteObject(btnBr);
+            DrawLabel(L"Kiểm tra cập nhật", btnRc, BrandFontBody, kBrandPaletteWhite, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        }
+
         BitBlt(hdc, 0, 0, clientRc.right, clientRc.bottom, memDC, 0, 0, SRCCOPY);
 
         SelectObject(memDC, oldBitmap);
@@ -495,6 +475,86 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
         POINT pt = { x, y };
 
         RECT navRc = { 10, 20, 150, 260 };
+        
+        if (currentTab == 2) {
+            RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
+            int y = 20;
+            RECT card1Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 120 };
+            y += 135;
+            RECT card2Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 155 };
+            y += 170;
+            RECT card3Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 120 };
+
+            auto CheckSwitch = [&](RECT cardRc, int i, POINT p) {
+                int rowY = cardRc.top + 10 + i * 35;
+                RECT switchRc = { cardRc.right - 50, rowY + 2, cardRc.right - 14, rowY + 23 };
+                return PtInRect(&switchRc, p);
+            };
+
+            bool changed = false;
+            if (CheckSwitch(card1Rc, 0, pt)) { APP_SET_DATA(vLanguage, vLanguage ? 0 : 1); changed = true; }
+            if (CheckSwitch(card1Rc, 1, pt)) { APP_SET_DATA(vUpperCaseFirstChar, vUpperCaseFirstChar ? 0 : 1); changed = true; }
+            if (CheckSwitch(card1Rc, 2, pt)) { APP_SET_DATA(vRememberCode, vRememberCode ? 0 : 1); changed = true; }
+
+            if (CheckSwitch(card2Rc, 0, pt)) { APP_SET_DATA(vCheckSpelling, vCheckSpelling ? 0 : 1); changed = true; }
+            if (CheckSwitch(card2Rc, 1, pt)) { APP_SET_DATA(vRestoreIfWrongSpelling, vRestoreIfWrongSpelling ? 0 : 1); changed = true; }
+            if (CheckSwitch(card2Rc, 2, pt)) { APP_SET_DATA(vFixRecommendBrowser, vFixRecommendBrowser ? 0 : 1); changed = true; }
+            if (CheckSwitch(card2Rc, 3, pt)) { APP_SET_DATA(vUseModernOrthography, vUseModernOrthography ? 0 : 1); changed = true; }
+
+            if (CheckSwitch(card3Rc, 0, pt)) { APP_SET_DATA(vUseMacro, vUseMacro ? 0 : 1); changed = true; }
+            if (CheckSwitch(card3Rc, 1, pt)) { APP_SET_DATA(vUseMacroInEnglishMode, vUseMacroInEnglishMode ? 0 : 1); changed = true; }
+            if (CheckSwitch(card3Rc, 2, pt)) { APP_SET_DATA(vAllowConsonantZFWJ, vAllowConsonantZFWJ ? 0 : 1); changed = true; }
+
+            if (changed) {
+                SystemTrayHelper::updateData();
+                InvalidateRect(hDlg, NULL, FALSE);
+            }
+        }
+        else if (currentTab == 4) {
+            RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
+            int y = 20;
+            RECT card1Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 155 };
+            y += 170;
+            RECT card2Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 120 };
+
+            auto CheckSwitch = [&](RECT cardRc, int i, POINT p) {
+                int rowY = cardRc.top + 10 + i * 35;
+                RECT switchRc = { cardRc.right - 50, rowY + 2, cardRc.right - 14, rowY + 23 };
+                return PtInRect(&switchRc, p);
+            };
+
+            bool changed = false;
+            if (CheckSwitch(card1Rc, 0, pt)) {
+                APP_SET_DATA(vRunWithWindows, vRunWithWindows ? 0 : 1);
+                changed = true;
+                MindfulKeyHelper::registerRunOnStartup(vRunWithWindows);
+            }
+            if (CheckSwitch(card1Rc, 1, pt)) { APP_SET_DATA(vShowOnStartUp, vShowOnStartUp ? 0 : 1); changed = true; }
+            if (CheckSwitch(card1Rc, 2, pt)) { APP_SET_DATA(vUseGrayIcon, vUseGrayIcon ? 0 : 1); changed = true; }
+            if (CheckSwitch(card1Rc, 3, pt)) {
+                APP_SET_DATA(vRunAsAdmin, vRunAsAdmin ? 0 : 1);
+                changed = true;
+                requestRestartAsAdmin();
+            }
+
+            if (CheckSwitch(card2Rc, 0, pt)) { APP_SET_DATA(vSupportMetroApp, vSupportMetroApp ? 0 : 1); changed = true; }
+            if (CheckSwitch(card2Rc, 1, pt)) { APP_SET_DATA(vSendKeyStepByStep, vSendKeyStepByStep ? 0 : 1); changed = true; }
+            if (CheckSwitch(card2Rc, 2, pt)) { APP_SET_DATA(vFixChromiumBrowser, vFixChromiumBrowser ? 0 : 1); changed = true; }
+
+            if (changed) {
+                SystemTrayHelper::updateData();
+                InvalidateRect(hDlg, NULL, FALSE);
+            }
+        }
+        else if (currentTab == 5) {
+            RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
+            int y = 50 + 60 + 60;
+            RECT btnRc = { contentRc.left + (contentRc.right - contentRc.left)/2 - 80, y, contentRc.left + (contentRc.right - contentRc.left)/2 + 80, y + 40 };
+            if (PtInRect(&btnRc, pt)) {
+                MindfulKeyManager::openReleasesPage();
+            }
+        }
+
         if (PtInRect(&navRc, pt)) {
             int clickedTab = (pt.y - navRc.top) / 40;
             if (clickedTab >= 0 && clickedTab < 6 && clickedTab != currentTab) {
@@ -798,18 +858,7 @@ void MainControlDialog::setSwitchKeyText(const HWND& hWnd, const UINT16& keyCode
 
 void MainControlDialog::onTabIndexChanged() {
     // 6-Nav: 0: Hôm nay, 1: Chuông, 2: Bộ gõ, 3: Riêng tư, 4: Hệ thống, 5: Giới thiệu
-    // hTabPage1 (Bộ gõ), hTabPage2 (Gõ tắt), hTabPage3 (Hệ thống), hTabPage4 (Thông tin)
-    // Map:
-    // Tab 2 (Bộ gõ) -> Show hTabPage1
-    // Tab 4 (Hệ thống) -> Show hTabPage3
-    // Tab 5 (Giới thiệu) -> Show hTabPage4
-    // Tab 0 (Hôm nay), 1 (Chuông), 3 (Riêng tư) -> GDI+ drawing (hide all)
-    
-    ShowWindow(hTabPage1, (currentTab == 2) ? SW_SHOW : SW_HIDE);
-    ShowWindow(hTabPage2, SW_HIDE); // Gõ tắt đang được ẩn hoặc gộp
-    ShowWindow(hTabPage3, (currentTab == 4) ? SW_SHOW : SW_HIDE);
-    ShowWindow(hTabPage4, (currentTab == 5) ? SW_SHOW : SW_HIDE);
-    
+    // Giờ đây tất cả các tab đều được vẽ bằng GDI+ trong WM_PAINT.
     InvalidateRect(hDlg, NULL, FALSE);
 }
 
