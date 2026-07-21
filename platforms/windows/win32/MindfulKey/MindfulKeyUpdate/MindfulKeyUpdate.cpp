@@ -3,7 +3,7 @@ MindfulKey - The Cross platform Open source Vietnamese Keyboard application.
 
 Copyright (C) 2019 Mai Vu Tuyen
 Contact: maivutuyen.91@gmail.com
-Github: https://github.com/tuyenvm/MindfulKey
+Github: https://github.com/theminh207/mindful-key
 Fanpage: https://www.facebook.com/MindfulKeyVN
 
 This file is belong to the MindfulKey project, Win32 version
@@ -76,7 +76,7 @@ DWORD WINAPI UpdateThreadFunction(LPVOID lpParam) {
 	WCHAR currentDir[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, currentDir);
 	wsprintf(path, TEXT("%s\\_MindfulKey.tempf"), currentDir);
-	HRESULT res = URLDownloadToFile(NULL, L"https://raw.githubusercontent.com/tuyenvm/MindfulKey/master/version.json", path, 0, NULL);
+	HRESULT res = URLDownloadToFile(NULL, L"https://raw.githubusercontent.com/theminh207/mindful-key/master/version.json", path, 0, NULL);
 
 	wstring data;
 	if (res == S_OK) {
@@ -102,7 +102,7 @@ DWORD WINAPI UpdateThreadFunction(LPVOID lpParam) {
 	
 	//download zip file
 	WCHAR updateUrl[MAX_PATH];
-	wsprintf(updateUrl, TEXT("https://github.com/tuyenvm/MindfulKey/releases/download/%s/MindfulKey%s-Windows.zip"),
+	wsprintf(updateUrl, TEXT("https://github.com/theminh207/mindful-key/releases/download/%s/MindfulKey%s-Windows.zip"),
 		versionName.c_str(),
 		versionName.c_str());
 	wsprintf(path, TEXT("%s\\_MindfulKeyUpdate.zip"), currentDir);

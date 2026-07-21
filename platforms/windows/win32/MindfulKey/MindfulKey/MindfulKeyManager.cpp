@@ -3,7 +3,7 @@ MindfulKey - The Cross platform Open source Vietnamese Keyboard application.
 
 Copyright (C) 2019 Mai Vu Tuyen
 Contact: maivutuyen.91@gmail.com
-Github: https://github.com/tuyenvm/MindfulKey
+Github: https://github.com/theminh207/mindful-key
 Fanpage: https://www.facebook.com/MindfulKeyVN
 
 This file is belong to the MindfulKey project, Win32 version
@@ -54,7 +54,7 @@ void MindfulKeyManager::freeEngine() {
 // [MINDFUL] 2026-07-17 — chủ dự án chốt: nút "Kiểm tra bản mới" mở thẳng trang Releases.
 //
 // Bản trước hỏng ở BA tầng, không tầng nào lộ ra lúc build:
-//   1. Nó tải https://raw.githubusercontent.com/tuyenvm/MindfulKey/master/version.json — repo của
+//   1. Nó tải https://raw.githubusercontent.com/theminh207/mindful-key/master/version.json — repo của
 //      MindfulKey GỐC. App của ta đi hỏi phiên bản của người khác, rồi đem so với chính mình.
 //   2. So với cái gì? VERSIONINFO trong .rc ghi 2.0.5.0 — cũng là số của MindfulKey (version.env
 //      của dự án là 0.2.1). Hai số sai đem so nhau.

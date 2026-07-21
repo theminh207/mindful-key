@@ -135,9 +135,36 @@ jobs:
             release-out/MindfulKey-setup.exe
           if-no-files-found: error
 
+
+  sign-windows:
+    runs-on: ubuntu-latest
+    needs: build-windows
+    steps:
+      - name: Sign Code via SignPath
+        id: sign
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
+          organization-id: '${{ secrets.SIGNPATH_ORGANIZATION_ID }}'
+          project-slug: '${{ secrets.SIGNPATH_PROJECT_SLUG }}'
+          signing-policy-slug: '${{ secrets.SIGNPATH_SIGNING_POLICY_SLUG }}'
+          github-artifact-name: 'windows-setup'
+          wait-for-completion: true
+          output-artifact-directory: 'release-out-signed'
+        continue-on-error: true
+
+      - name: Replace unsigned artifacts with signed
+        if: steps.sign.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-setup
+          path: release-out-signed/*
+          overwrite: true
+
   release:
     runs-on: macos-latest
-    needs: build-windows   # bộ cài Windows phải sẵn sàng trước, để đăng CÙNG 1 Release
+    needs: sign-windows   # wait for signing to complete
+
     steps:
       - uses: actions/checkout@v4
         with:
