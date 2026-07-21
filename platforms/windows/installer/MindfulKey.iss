@@ -4,10 +4,10 @@
 ; CI gọi: iscc /DMyAppVersion=$(VERSION) /DSourceExe=<đường dẫn MindfulKey.exe> MindfulKey.iss
 ;
 ; Tên file thật = MindfulKey.exe (chủ dự án chốt 2026-07-17, nới lằn ranh "không đổi tên file"
-; ban đầu). `TargetName` trong OpenKey.vcxproj đặt MindfulKey cho cả 4 cấu hình. Tên PROJECT/
-; SOLUTION/class vẫn giữ nguyên OpenKey — chỉ tên file xuất ra đổi.
+; ban đầu). `TargetName` trong MindfulKey.vcxproj đặt MindfulKey cho cả 4 cấu hình. Tên PROJECT/
+; SOLUTION/class vẫn giữ nguyên MindfulKey — chỉ tên file xuất ra đổi.
 ;
-; GPL v3: kèm LICENSE và giữ credit Mai Vũ Tuyên (OpenKey) trong trang giới thiệu của bộ cài —
+; GPL v3: kèm LICENSE và giữ credit Mai Vũ Tuyên (MindfulKey) trong trang giới thiệu của bộ cài —
 ; đây là nghĩa vụ pháp lý kế thừa, không phải phép lịch sự.
 
 #ifndef MyAppVersion
@@ -25,7 +25,7 @@ AppId={{7C4E2A16-9E3B-4E51-A0D7-3F1B6C2D8E94}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} {#MyAppVersion}
-AppPublisher=The OpenKey Project
+AppPublisher=The MindfulKey Project
 AppPublisherURL=https://github.com/theminh207/mindful-key
 DefaultDirName={autopf}\Mindful Key
 DefaultGroupName={#MyAppName}
@@ -34,7 +34,7 @@ LicenseFile=..\..\..\LICENSE
 OutputDir=..\..\..\release-out
 OutputBaseFilename=MindfulKey_{#MyAppVersion}_x64-setup
 ; Icon đúng nhận diện, sinh từ SVG nguồn qua brand/export-platform.sh (KHÔNG dùng
-; win32/OpenKey/OpenKey/icon.ico — đó vẫn là icon OpenKey gốc, chưa rebrand).
+; win32/MindfulKey/MindfulKey/icon.ico — đó vẫn là icon MindfulKey gốc, chưa rebrand).
 SetupIconFile=..\..\..\brand\platform\windows\AppIcon.ico
 Compression=lzma2/max
 SolidCompression=yes
@@ -70,7 +70,7 @@ SetupMutex=MindfulKeyboardSetupMutex
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Messages]
-english.WelcomeLabel2=Sắp cài [name/ver] vào máy bạn.%n%nMindful Key là bộ gõ tiếng Việt chánh niệm, xây trên engine OpenKey của Mai Vũ Tuyên (GPL v3).%n%nKhuyến nghị đóng các ứng dụng khác trước khi tiếp tục.
+english.WelcomeLabel2=Sắp cài [name/ver] vào máy bạn.%n%nMindful Key là bộ gõ tiếng Việt chánh niệm, xây trên engine MindfulKey của Mai Vũ Tuyên (GPL v3).%n%nKhuyến nghị đóng các ứng dụng khác trước khi tiếp tục.
 
 [Tasks]
 Name: "desktopicon"; Description: "Tạo lối tắt ngoài màn hình"; GroupDescription: "Lối tắt:"
@@ -91,7 +91,7 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyExeName}"; Tasks: deskt
 Filename: "{app}\{#MyExeName}"; Description: "Mở {#MyAppName} ngay"; Flags: nowait postinstall skipifsilent
 
 [UninstallDelete]
-; App tự ghi cài đặt vào registry qua OpenKeyHelper (APP_SET_DATA) — cố ý KHÔNG xoá khi gỡ:
+; App tự ghi cài đặt vào registry qua MindfulKeyHelper (APP_SET_DATA) — cố ý KHÔNG xoá khi gỡ:
 ; người dùng cài lại thì còn nguyên gõ tắt/tuỳ chỉnh. Nhật ký cảm xúc cũng KHÔNG đụng tới ở đây
 ; (riêng tư mặc định: xoá dữ liệu là hành vi người dùng chủ động chọn trong app, không phải
 ; tác dụng phụ của việc gỡ cài đặt).

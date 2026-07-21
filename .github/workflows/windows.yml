@@ -2,7 +2,7 @@
 #
 # Vì sao có file này: máy dev của dự án là macOS — KHÔNG chạy được trình biên dịch
 # của Microsoft. Runner `windows-latest` của GitHub cài sẵn Visual Studio 2022
-# (toolset v143, đúng thứ `OpenKey.vcxproj` đòi), nên nó đóng vai "máy Windows
+# (toolset v143, đúng thứ `MindfulKey.vcxproj` đòi), nên nó đóng vai "máy Windows
 # đi mượn" để build-verify vỏ Windows mà không cần ai phải có PC.
 #
 # Nó KHÔNG thay được người: gõ thử tiếng Việt ra dấu vẫn phải có mắt người nhìn
@@ -57,8 +57,8 @@ jobs:
             core\engine\Macro.cpp core\engine\SmartSwitchKey.cpp core\engine\ConvertTool.cpp || exit /b 1
           test_engine.exe || exit /b 1
 
-      # Chỉ nhắm target `OpenKey` (app chính). Build qua .sln để $(SolutionDir)
-      # resolve đúng, nhưng KHÔNG build `OpenKeyUpdate` (updater gốc OpenKey,
+      # Chỉ nhắm target `MindfulKey` (app chính). Build qua .sln để $(SolutionDir)
+      # resolve đúng, nhưng KHÔNG build `MindfulKeyUpdate` (updater gốc MindfulKey,
       # ngoài phạm vi Mốc 1 — hỏng ở đó không được phép chặn app chính).
       #
       # Lỗi compiler PHẢI đi ra annotation (`::error::`), không chỉ nằm trong log: log của run cần
@@ -88,12 +88,12 @@ jobs:
           echo "MSBuild: $MSBUILD"
 
           # Cờ dùng dấu `-` chứ KHÔNG `/`: Git Bash tự dịch mọi tham số mở đầu bằng `/` thành
-          # đường dẫn Windows, nên `/t:OpenKey` hoá ra một đường dẫn và MSBuild tưởng đó là
+          # đường dẫn Windows, nên `/t:MindfulKey` hoá ra một đường dẫn và MSBuild tưởng đó là
           # project thứ hai -> "error MSB1008: Only one project can be specified". MSBuild nhận
           # cả hai kiểu cờ; `-` thì bash không đụng vào. ĐỪNG đổi lại thành `/` cho "đẹp".
 
-          "$MSBUILD" "platforms/windows/win32/OpenKey/OpenKey.sln" \
-            -t:OpenKey \
+          "$MSBUILD" "platforms/windows/win32/MindfulKey/MindfulKey.sln" \
+            -t:MindfulKey \
             -p:Configuration=${{ matrix.configuration }} \
             -p:Platform=x64 \
             -nologo -verbosity:normal > msbuild.log 2>&1
@@ -134,5 +134,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mindful-key-windows-${{ matrix.configuration }}-x64
-          path: platforms/windows/win32/OpenKey/**/*.exe
+          path: platforms/windows/win32/MindfulKey/**/*.exe
           if-no-files-found: error   # không tìm thấy .exe = thất bại thật, đừng im lặng cho qua

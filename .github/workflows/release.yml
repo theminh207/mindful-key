@@ -24,7 +24,7 @@ permissions:
 
 jobs:
   # Vỏ Windows build ở đây chứ không phải máy chủ dự án: máy dev là macOS, không chạy được MSVC.
-  # Runner windows-latest có sẵn VS 2022 (toolset v143) mà OpenKey.vcxproj đòi. Job này CHỈ đóng
+  # Runner windows-latest có sẵn VS 2022 (toolset v143) mà MindfulKey.vcxproj đòi. Job này CHỈ đóng
   # gói — nó KHÔNG ký Authenticode (chưa có chứng chỉ; xem docs/FRICTION-LOG.md), nên bộ cài tải
   # về sẽ bị SmartScreen cảnh báo "Unknown publisher". Đúng thân phận hiện tại của bản macOS
   # (ad-hoc, chưa notarize) — không giấu.
@@ -47,12 +47,12 @@ jobs:
           fi
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
-      # Chỉ target OpenKey (app chính), KHÔNG build OpenKeyUpdate — updater gốc của OpenKey,
+      # Chỉ target MindfulKey (app chính), KHÔNG build MindfulKeyUpdate — updater gốc của MindfulKey,
       # ngoài phạm vi bản phát hành này.
       - name: Build app Windows (Release x64)
         run: >
-          msbuild platforms\windows\win32\OpenKey\OpenKey.sln
-          /t:OpenKey /p:Configuration=Release /p:Platform=x64 /verbosity:normal
+          msbuild platforms\windows\win32\MindfulKey\MindfulKey.sln
+          /t:MindfulKey /p:Configuration=Release /p:Platform=x64 /verbosity:normal
 
       - name: Tìm .exe vừa build (không đoán đường dẫn OutDir)
         shell: bash

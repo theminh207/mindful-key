@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="engine">
+      <UniqueIdentifier>{cfe37309-a1de-44eb-b4df-ae77f0895ff4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mood">
+      <UniqueIdentifier>{a7c31e42-9b58-4d16-8e07-2f5c9d1b6a30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\platforms">
+      <UniqueIdentifier>{cc7371fe-a039-4fed-b052-980cf185eeda}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\core\engine\ConvertTool.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\core\engine\DataType.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\core\engine\Engine.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\core\engine\Macro.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\core\engine\SmartSwitchKey.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\core\engine\Vietnamese.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="AppDelegate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainControlDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MindfulKeyManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\core\engine\platforms\mac.h">
+      <Filter>engine\platforms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\core\engine\platforms\linux.h">
+      <Filter>engine\platforms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\core\engine\platforms\win32.h">
+      <Filter>engine\platforms</Filter>
+    </ClInclude>
+    <ClInclude Include="MindfulKeyHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemTrayHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AboutDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConvertToolDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MacroDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MoodWatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\core\mood\BreathingPause.h">
+      <Filter>mood</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\core\mood\EmotionWaveAmplitude.h">
+      <Filter>mood</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\core\mood\MoodBuffer.h">
+      <Filter>mood</Filter>
+    </ClInclude>
+    <ClInclude Include="SendGatekeeper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SecureField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NudgeCoordinator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MoodStore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReflectionScreen.h">
+      <Filter>Header Files\Mindful</Filter>
+    </ClInclude>
+    <ClInclude Include="TrayPopover.h">
+      <Filter>Header Files\Mindful</Filter>
+    </ClInclude>
+    <ClInclude Include="BrandPalette.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BrandControls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\core\mood\MoodPhrasing.h">
+      <Filter>mood</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\core\mood\SendRiskAnalyzer.h">
+      <Filter>mood</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\core\engine\ConvertTool.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\core\engine\Engine.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\core\engine\Macro.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\core\engine\SmartSwitchKey.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\core\engine\Vietnamese.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="AppDelegate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainControlDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MindfulKeyManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MindfulKey.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MindfulKeyHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemTrayHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AboutDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConvertToolDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MacroDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MoodWatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\core\mood\BreathingPause.cpp">
+      <Filter>mood</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\core\mood\EmotionWaveAmplitude.cpp">
+      <Filter>mood</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\core\mood\MoodBuffer.cpp">
+      <Filter>mood</Filter>
+    </ClCompile>
+    <ClCompile Include="SendGatekeeper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SecureField.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NudgeCoordinator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MoodStore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ReflectionScreen.cpp">
+      <Filter>Source Files\Mindful</Filter>
+    </ClCompile>
+    <ClCompile Include="TrayPopover.cpp">
+      <Filter>Source Files\Mindful</Filter>
+    </ClCompile>
+    <ClCompile Include="BrandControls.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\core\mood\MoodPhrasing.cpp">
+      <Filter>mood</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\core\mood\SendRiskAnalyzer.cpp">
+      <Filter>mood</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MindfulKey.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\..\..\brand\platform\windows\icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\..\..\brand\platform\windows\StatusViet.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\..\..\brand\platform\windows\StatusEng.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\..\..\brand\platform\windows\StatusViet10.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\..\..\brand\platform\windows\StatusEng10.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\..\..\brand\platform\windows\OKButton.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\..\..\brand\platform\windows\ExitButton.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="DefaultButton.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\..\..\brand\platform\windows\StartConvert.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="DeclareDPIAware.manifest" />
+    <Manifest Include="Style.manifest" />
+  </ItemGroup>
+</Project>
