@@ -388,12 +388,95 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
                 DrawTextW(memDC, L"Nhật ký cảm xúc đang tắt.", -1, &riverRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
             }
         }
-        else if (currentTab == 1 || currentTab == 3) {
+        else if (currentTab == 1) { // Chuông
             RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
-            SetTextColor(memDC, MK_COLORREF(0x9CA3AF));
-            SelectObject(memDC, BrandControls_Font(BrandFontBody));
-            const wchar_t* text = (currentTab == 1) ? L"Giao diện Chuông đang xây dựng..." : L"Giao diện Riêng tư đang xây dựng...";
-            DrawTextW(memDC, text, -1, &contentRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            int y = 20;
+            
+            auto DrawLabel = [&](const wchar_t* text, RECT rc, BrandFontType font, uint32_t color, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
+                SetTextColor(memDC, MK_COLORREF(color));
+                HFONT f = BrandControls_Font(font);
+                HFONT old = (HFONT)SelectObject(memDC, f);
+                DrawTextW(memDC, text, -1, &rc, format);
+                SelectObject(memDC, old);
+            };
+
+            static bool s_bellEnabled = HAS_BEEP(vSwitchKeyStatus);
+            static int s_bellInterval = 1; 
+            static int s_bellSoundIndex = 0;
+            static int s_bellVolume = 50;
+
+            // Card Trạng thái
+            RECT card1Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 60 };
+            BrandControls_DrawCard(memDC, card1Rc, true);
+            RECT lblTrangThaiRc = { card1Rc.left + 15, card1Rc.top + 15, card1Rc.right - 60, card1Rc.bottom - 15 };
+            DrawLabel(L"Phát tiếng gõ", lblTrangThaiRc, BrandFontBody, kBrandPaletteCharcoal);
+            RECT sw1Rc = { card1Rc.right - 50, card1Rc.top + 18, card1Rc.right - 14, card1Rc.top + 39 };
+            if (pt.x != -1 && PtInRect(&sw1Rc, pt)) s_bellEnabled = !s_bellEnabled;
+            BrandControls_DrawPillSwitch(memDC, sw1Rc, s_bellEnabled);
+            y += 75;
+
+            // Card Nhịp
+            RECT card2Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 90 };
+            BrandControls_DrawCard(memDC, card2Rc, true);
+            RECT lblNhipRc = { card2Rc.left + 15, card2Rc.top + 10, card2Rc.right - 15, card2Rc.top + 30 };
+            DrawLabel(L"TỐC ĐỘ NHỊP", lblNhipRc, BrandFontEyebrow, kBrandPaletteStone);
+            
+            RECT seg2Rc = { card2Rc.left + 15, card2Rc.top + 35, card2Rc.right - 15, card2Rc.top + 65 };
+            const wchar_t* nhipTabs[] = { L"Nhanh", L"Vừa", L"Chậm" };
+            s_bellInterval = BrandControls_DrawSegmentedControl(memDC, seg2Rc, nhipTabs, 3, s_bellInterval, pt, 0);
+            y += 105;
+
+            // Card Âm thanh
+            RECT card3Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 110 };
+            BrandControls_DrawCard(memDC, card3Rc, true);
+            RECT lblAmThanhRc = { card3Rc.left + 15, card3Rc.top + 10, card3Rc.right - 15, card3Rc.top + 30 };
+            DrawLabel(L"BỘ TIẾNG", lblAmThanhRc, BrandFontEyebrow, kBrandPaletteStone);
+            
+            RECT iconGrpRc = { card3Rc.left + 15, card3Rc.top + 35, card3Rc.right - 15, card3Rc.top + 75 };
+            int clickedSnd = BrandControls_DrawIconGroup(memDC, iconGrpRc, 4, s_bellSoundIndex, pt);
+            if (clickedSnd != -1) s_bellSoundIndex = clickedSnd;
+            
+            RECT sliderRc = { card3Rc.left + 15, card3Rc.top + 85, card3Rc.right - 15, card3Rc.top + 100 };
+            s_bellVolume = BrandControls_DrawSlider(memDC, sliderRc, s_bellVolume, pt);
+            y += 125;
+        }
+        else if (currentTab == 3) { // Riêng tư
+            RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
+            int y = 20;
+
+            auto DrawLabel = [&](const wchar_t* text, RECT rc, BrandFontType font, uint32_t color, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
+                SetTextColor(memDC, MK_COLORREF(color));
+                HFONT f = BrandControls_Font(font);
+                HFONT old = (HFONT)SelectObject(memDC, f);
+                DrawTextW(memDC, text, -1, &rc, format);
+                SelectObject(memDC, old);
+            };
+
+            static int s_privacyRetention = 1; 
+
+            // Card Lưu trữ
+            RECT card1Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 90 };
+            BrandControls_DrawCard(memDC, card1Rc, true);
+            RECT lblLuuRc = { card1Rc.left + 15, card1Rc.top + 10, card1Rc.right - 15, card1Rc.top + 30 };
+            DrawLabel(L"THỜI GIAN LƯU TRỮ", lblLuuRc, BrandFontEyebrow, kBrandPaletteStone);
+            
+            RECT segRc = { card1Rc.left + 15, card1Rc.top + 35, card1Rc.right - 15, card1Rc.top + 65 };
+            const wchar_t* retTabs[] = { L"1 Tuần", L"1 Tháng", L"3 Tháng" };
+            s_privacyRetention = BrandControls_DrawSegmentedControl(memDC, segRc, retTabs, 3, s_privacyRetention, pt, 0);
+            y += 105;
+
+            // Card Xuất dữ liệu
+            RECT card2Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 60 };
+            BrandControls_DrawCard(memDC, card2Rc, true);
+            RECT lblXuatRc = { card2Rc.left + 15, card2Rc.top + 15, card2Rc.right - 60, card2Rc.bottom - 15 };
+            DrawLabel(L"Xuất dữ liệu cảm xúc (CSV)", lblXuatRc, BrandFontBody, kBrandPaletteCharcoal);
+            
+            // Vẽ nút giả "Xuất"
+            RECT btnRc = { card2Rc.right - 70, card2Rc.top + 15, card2Rc.right - 15, card2Rc.bottom - 15 };
+            HBRUSH btnBr = CreateSolidBrush(MK_COLORREF(0x1D7C91));
+            FillRect(memDC, &btnRc, btnBr);
+            DeleteObject(btnBr);
+            DrawLabel(L"Xuất", btnRc, BrandFontBody, kBrandPaletteWhite, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
         }
 
         BitBlt(hdc, 0, 0, clientRc.right, clientRc.bottom, memDC, 0, 0, SRCCOPY);
