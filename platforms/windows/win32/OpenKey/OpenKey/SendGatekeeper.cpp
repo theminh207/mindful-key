@@ -115,72 +115,94 @@ static wstring g_pauseMessage;
 static INT_PTR CALLBACK PauseDialogProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message) {
     case WM_INITDIALOG:
-        SetDlgItemTextW(hDlg, IDC_STATIC_PAUSE_MSG, g_pauseMessage.c_str());
-        // [MINDFUL] Câu nhắc dùng font brand (Segoe UI cỡ body) thay Segoe 9 mặc định.
-        SendDlgItemMessageW(hDlg, IDC_STATIC_PAUSE_MSG, WM_SETFONT,
-                            (WPARAM)BrandControls_Font(BrandFontBody), TRUE);
         // [MINDFUL] Bo góc thẻ: cửa sổ nay KHÔNG viền (WS_POPUP, bỏ WS_CAPTION/DS_MODALFRAME ở .rc),
-        // cắt vùng thành hình chữ nhật bo tròn radius ~16px. Góc hiện GDI thuần nên hơi gợn (chưa
-        // khử răng cưa) + CHƯA có bóng đổ mềm — hai thứ đó cần cửa sổ layered (UpdateLayeredWindow),
-        // là bước tinh chỉnh SAU khi ảnh Windows thật xác nhận bố cục. Xem docs/WINDOWS-UI-REDESIGN.md.
         {
             RECT wr;
             GetWindowRect(hDlg, &wr);
             HRGN rgn = CreateRoundRectRgn(0, 0, (wr.right - wr.left) + 1, (wr.bottom - wr.top) + 1, 32, 32);
-            SetWindowRgn(hDlg, rgn, TRUE);   // cửa sổ sở hữu rgn sau lệnh này — KHÔNG tự xoá
+            SetWindowRgn(hDlg, rgn, TRUE);
         }
-        // lParam = số mili-giây tự đóng (GỢI Ý từ BreathingPause, KHÔNG phải thời gian khoá:
-        // người dùng bấm được nút bất cứ lúc nào).
         if (lParam > 0)
             SetTimer(hDlg, 1, (UINT)lParam, NULL);
         return TRUE;
+
     case WM_PAINT: {
-        // Nền orangeLight đã do WM_ERASEBKGND tô; ở đây chỉ vẽ header (sóng ~ + tiêu đề + kẻ ngăn).
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hDlg, &ps);
-        RECT rc;
-        GetClientRect(hDlg, &rc);
-        BrandControls_DrawCardHeader(hdc, rc.right, L"Mindful Keyboard");
+        RECT clientRc;
+        GetClientRect(hDlg, &clientRc);
+
+        HDC memDC = CreateCompatibleDC(hdc);
+        HBITMAP memBm = CreateCompatibleBitmap(hdc, clientRc.right, clientRc.bottom);
+        HBITMAP oldBm = (HBITMAP)SelectObject(memDC, memBm);
+
+        // Nền orangeLight
+        BrandControls_FillRect(memDC, clientRc, kBrandPaletteOrangeLight);
+
+        // Header
+        BrandControls_DrawCardHeader(memDC, clientRc.right, L"Mindful Keyboard");
+
+        // Text Message
+        RECT textRc = { 18, 30, clientRc.right - 18, 70 };
+        SetBkMode(memDC, TRANSPARENT);
+        SetTextColor(memDC, MK_COLORREF(kBrandPaletteCharcoal));
+        HFONT oldFont = (HFONT)SelectObject(memDC, BrandControls_Font(BrandFontBody));
+        DrawTextW(memDC, g_pauseMessage.c_str(), -1, &textRc, DT_LEFT | DT_TOP | DT_WORDBREAK);
+        SelectObject(memDC, oldFont);
+
+        // Buttons
+        RECT btnWaitRc = { 18, 74, 18 + 114, 74 + 24 };
+        RECT btnSendRc = { 140, 74, 140 + 114, 74 + 24 };
+
+        // Vẽ nút "Đợi chút" (Accent - Cam)
+        HBRUSH brWait = CreateSolidBrush(MK_COLORREF(kBrandPaletteOrange));
+        FillRect(memDC, &btnWaitRc, brWait);
+        DeleteObject(brWait);
+        SetTextColor(memDC, MK_COLORREF(kBrandPaletteWhite));
+        oldFont = (HFONT)SelectObject(memDC, BrandControls_Font(BrandFontBody));
+        DrawTextW(memDC, L"Đợi chút", -1, &btnWaitRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        
+        // Vẽ nút "Vẫn gửi" (Neutral - Xám/Trắng nền, viền)
+        HBRUSH brSend = CreateSolidBrush(MK_COLORREF(0xE5E7EB)); // Xám nhạt
+        FillRect(memDC, &btnSendRc, brSend);
+        DeleteObject(brSend);
+        SetTextColor(memDC, MK_COLORREF(kBrandPaletteCharcoal));
+        DrawTextW(memDC, L"Vẫn gửi", -1, &btnSendRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        SelectObject(memDC, oldFont);
+
+        BitBlt(hdc, 0, 0, clientRc.right, clientRc.bottom, memDC, 0, 0, SRCCOPY);
+        SelectObject(memDC, oldBm);
+        DeleteObject(memBm);
+        DeleteDC(memDC);
+
         EndPaint(hDlg, &ps);
         return TRUE;
     }
-    // [MINDFUL] Khoảnh khắc nhịp thở = bề mặt "khoảnh khắc người": nền orangeLight thay xám hệ
-    // thống (đối ứng NSPanel orangeLight ở SendGatekeeperMac.mm). Cam ở đây KHÔNG mã hoá cảm xúc —
-    // là ngoại lệ có chủ của hiến chương §2.2 cho khoảnh khắc con người. Xem docs/WINDOWS-UI-REDESIGN.md.
-    case WM_ERASEBKGND: {
-        RECT rc;
-        GetClientRect(hDlg, &rc);
-        BrandControls_FillRect((HDC)wParam, rc, kBrandPaletteOrangeLight);
+
+    case WM_LBUTTONUP: {
+        POINT pt;
+        pt.x = (short)LOWORD(lParam);
+        pt.y = (short)HIWORD(lParam);
+
+        RECT btnWaitRc = { 18, 74, 18 + 114, 74 + 24 };
+        RECT btnSendRc = { 140, 74, 140 + 114, 74 + 24 };
+
+        if (PtInRect(&btnWaitRc, pt)) {
+            EndDialog(hDlg, (INT_PTR)BreathingPauseChoice::Wait);
+        } else if (PtInRect(&btnSendRc, pt)) {
+            EndDialog(hDlg, (INT_PTR)BreathingPauseChoice::SendAnyway);
+        }
         return TRUE;
     }
-    case WM_CTLCOLORSTATIC: {
-        HDC dc = (HDC)wParam;
-        SetBkMode(dc, TRANSPARENT);                       // để nền orangeLight lộ qua chữ
-        SetTextColor(dc, MK_COLORREF(kBrandPaletteCharcoal));
-        return (INT_PTR)GetStockObject(NULL_BRUSH);
-    }
-    case WM_DRAWITEM: {
-        const DRAWITEMSTRUCT* dis = (const DRAWITEMSTRUCT*)lParam;
-        if (dis->CtlID == IDC_BUTTON_PAUSE_WAIT)
-            BrandControls_DrawButton(dis, BrandButtonAccent);   // "Đợi chút" = cam, hành động dịu
-        else if (dis->CtlID == IDC_BUTTON_PAUSE_SEND)
-            BrandControls_DrawButton(dis, BrandButtonNeutral);  // "Vẫn gửi" = trung tính, không nổi bật
-        return TRUE;
-    }
+
     case WM_TIMER:
         KillTimer(hDlg, 1);
-        // Hết giờ mà không chọn = Dismissed. KHÔNG suy thành Send hay Wait (BreathingPause.h).
         EndDialog(hDlg, (INT_PTR)BreathingPauseChoice::Dismissed);
         return TRUE;
+
     case WM_COMMAND:
-        if (LOWORD(wParam) == IDC_BUTTON_PAUSE_SEND) {
-            EndDialog(hDlg, (INT_PTR)BreathingPauseChoice::SendAnyway);
-            return TRUE;
-        }
-        // IDOK = Enter khi không còn nút mặc định (nút nay owner-draw, bỏ DEFPUSHBUTTON). Hướng về
-        // Wait: lựa chọn DỊU là mặc định an toàn — Enter vô tình không đẩy tin đi.
-        if (LOWORD(wParam) == IDC_BUTTON_PAUSE_WAIT || LOWORD(wParam) == IDCANCEL
-            || LOWORD(wParam) == IDOK) {
+        // Enter = IDOK = Wait
+        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL) {
             EndDialog(hDlg, (INT_PTR)BreathingPauseChoice::Wait);
             return TRUE;
         }

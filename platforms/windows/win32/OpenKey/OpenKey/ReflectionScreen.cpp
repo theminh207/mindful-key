@@ -221,49 +221,101 @@ static wstring TodayTitle() {
 
 static INT_PTR CALLBACK ReflectDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
-    case WM_INITDIALOG: {
-        SetWindowTextW(hDlg, TodayTitle().c_str());
+    case WM_INITDIALOG:
+        return TRUE;
 
+    case WM_PAINT: {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hDlg, &ps);
+        RECT clientRc;
+        GetClientRect(hDlg, &clientRc);
+
+        HDC memDC = CreateCompatibleDC(hdc);
+        HBITMAP memBm = CreateCompatibleBitmap(hdc, clientRc.right, clientRc.bottom);
+        HBITMAP oldBm = (HBITMAP)SelectObject(memDC, memBm);
+
+        // Nền trắng
+        BrandControls_FillRect(memDC, clientRc, kBrandPaletteCardWhite);
+
+        // Header
+        BrandControls_DrawCardHeader(memDC, clientRc.right, TodayTitle().c_str());
+
+        // Tính toán các câu văn
         double threshold = NudgeCoordinator_RippleThreshold();
-        SetDlgItemTextW(hDlg, IDC_STATIC_REFLECT_OBSERVE,
-                        MoodPhrasingCore_DayShapeSentence(g_samples, threshold).c_str());
-
-        // CÂU HỎI là trọng tâm màn này; số liệu chỉ là bối cảnh phụ. Cố ý KHÔNG biểu đồ và
-        // KHÔNG gamify — xem HIẾN CHƯƠNG §2.2 cho danh sách cụ thể những gì bị cấm.
-        // (Không liệt kê ra đây: brand-lint bắt chính những từ đó, kể cả trong câu PHỦ ĐỊNH chúng.
-        //  Báo nhầm đã biết — xem docs/FRICTION-LOG.md 2026-07-17.)
-        MoodDayShape shape = MoodPhrasingCore_DayShapeOf(g_summary.peakRisk,
-                                                         g_summary.gatekeeperCount, threshold);
+        wstring observeStr = MoodPhrasingCore_DayShapeSentence(g_samples, threshold);
+        
+        MoodDayShape shape = MoodPhrasingCore_DayShapeOf(g_summary.peakRisk, g_summary.gatekeeperCount, threshold);
         time_t now = time(NULL);
         struct tm lt; localtime_s(&lt, &now);
-        SetDlgItemTextW(hDlg, IDC_STATIC_REFLECT_QUESTION,
-                        MoodPhrasingCore_ReflectionQuestion(shape, lt.tm_yday).c_str());
+        wstring questionStr = MoodPhrasingCore_ReflectionQuestion(shape, lt.tm_yday);
 
-        wstring ctx;
+        wstring contextStr;
         if (g_summary.gatekeeperCount > 0) {
             wchar_t b[128];
             swprintf_s(b, L"Hôm nay có %d lần bạn dừng lại trước khi gửi.", g_summary.gatekeeperCount);
-            ctx = b;
+            contextStr = b;
         } else if (g_summary.sampleCount == 0) {
-            ctx = L"Chưa có nhịp nào được ghi hôm nay.";
+            contextStr = L"Chưa có nhịp nào được ghi hôm nay.";
         }
-        SetDlgItemTextW(hDlg, IDC_STATIC_REFLECT_CONTEXT, ctx.c_str());
-        return TRUE;
-    }
-    case WM_DRAWITEM: {
-        LPDRAWITEMSTRUCT di = (LPDRAWITEMSTRUCT)lParam;
-        if (di->CtlID != IDC_STATIC_REFLECT_RIVER)
-            break;
-        Graphics g(di->hDC);
-        SolidBrush bg(Color(MK_ARGB(kBrandPaletteCardWhite)));
-        RectF full((REAL)di->rcItem.left, (REAL)di->rcItem.top,
-                   (REAL)(di->rcItem.right - di->rcItem.left),
-                   (REAL)(di->rcItem.bottom - di->rcItem.top));
-        g.FillRectangle(&bg, full);
-        RectF area(full.X, full.Y, full.Width, full.Height - 14);   // chừa chỗ nhãn buổi
+
+        // Vẽ Observe
+        RECT obsRc = { 20, 30, clientRc.right - 20, 50 };
+        SetBkMode(memDC, TRANSPARENT);
+        SetTextColor(memDC, MK_COLORREF(kBrandPaletteStone));
+        HFONT oldFont = (HFONT)SelectObject(memDC, BrandControls_Font(BrandFontBody));
+        DrawTextW(memDC, observeStr.c_str(), -1, &obsRc, DT_LEFT | DT_TOP | DT_WORDBREAK);
+
+        // Vẽ River
+        RECT riverRc = { 20, 60, clientRc.right - 20, 140 };
+        Graphics g(memDC);
+        RectF area((REAL)riverRc.left, (REAL)riverRc.top, (REAL)(riverRc.right - riverRc.left), (REAL)(riverRc.bottom - riverRc.top - 14));
         DrawRiver(g, area, g_samples, false, -1.0);
+
+        // Vẽ Context
+        RECT ctxRc = { 20, 150, clientRc.right - 20, 170 };
+        SetTextColor(memDC, MK_COLORREF(kBrandPaletteStone));
+        DrawTextW(memDC, contextStr.c_str(), -1, &ctxRc, DT_LEFT | DT_TOP | DT_WORDBREAK);
+
+        // Vẽ Question
+        RECT qRc = { 20, 175, clientRc.right - 20, 220 };
+        SetTextColor(memDC, MK_COLORREF(kBrandPaletteCharcoal));
+        SelectObject(memDC, BrandControls_Font(BrandFontTitle));
+        DrawTextW(memDC, questionStr.c_str(), -1, &qRc, DT_LEFT | DT_TOP | DT_WORDBREAK);
+
+        // Vẽ Nút Đóng
+        RECT btnRc = { clientRc.right - 100, clientRc.bottom - 40, clientRc.right - 20, clientRc.bottom - 15 };
+        HBRUSH brBtn = CreateSolidBrush(MK_COLORREF(kBrandPaletteOrange));
+        FillRect(memDC, &btnRc, brBtn);
+        DeleteObject(brBtn);
+        SetTextColor(memDC, MK_COLORREF(kBrandPaletteWhite));
+        SelectObject(memDC, BrandControls_Font(BrandFontBody));
+        DrawTextW(memDC, L"Đóng", -1, &btnRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        SelectObject(memDC, oldFont);
+
+        BitBlt(hdc, 0, 0, clientRc.right, clientRc.bottom, memDC, 0, 0, SRCCOPY);
+        SelectObject(memDC, oldBm);
+        DeleteObject(memBm);
+        DeleteDC(memDC);
+
+        EndPaint(hDlg, &ps);
         return TRUE;
     }
+    
+    case WM_LBUTTONUP: {
+        POINT pt;
+        pt.x = (short)LOWORD(lParam);
+        pt.y = (short)HIWORD(lParam);
+
+        RECT clientRc;
+        GetClientRect(hDlg, &clientRc);
+        RECT btnRc = { clientRc.right - 100, clientRc.bottom - 40, clientRc.right - 20, clientRc.bottom - 15 };
+
+        if (PtInRect(&btnRc, pt)) {
+            EndDialog(hDlg, IDOK);
+        }
+        return TRUE;
+    }
+
     case WM_COMMAND:
         if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL) {
             EndDialog(hDlg, LOWORD(wParam));
