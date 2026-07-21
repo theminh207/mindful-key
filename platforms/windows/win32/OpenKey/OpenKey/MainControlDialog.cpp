@@ -14,6 +14,9 @@ redistribute your new version, it MUST be open source.
 #include "MainControlDialog.h"
 #include "AppDelegate.h"
 #include "MoodWatch.h"
+#include "BrandControls.h"
+#include "ReflectionScreen.h"
+#include "MoodStore.h"
 #include <Shlobj.h>
 #include <Uxtheme.h>
 
@@ -331,10 +334,66 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
         }
 
         // Nếu là tab Hôm nay / Chuông / Riêng tư, vẽ nội dung GDI+ ở bên phải
-        if (currentTab == 0 || currentTab == 1 || currentTab == 3) {
+        if (currentTab == 0) {
+            RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
+            int y = 20;
+            
+            // Trạng thái Gác cổng
+            const wchar_t* gkTitle = vMoodWatch ? L"Gác cổng đang canh" : L"Gác cổng đang tạm nghỉ";
+            RECT titleRc = { contentRc.left + 20, y, contentRc.right - 20, y + 25 };
+            SetBkMode(memDC, TRANSPARENT);
+            SetTextColor(memDC, MK_COLORREF(kBrandPaletteCharcoal));
+            HFONT titleFont = BrandControls_Font(BrandFontTitle);
+            HFONT oldFont = (HFONT)SelectObject(memDC, titleFont);
+            DrawTextW(memDC, gkTitle, -1, &titleRc, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+            
+            RECT subRc = { contentRc.left + 20, y + 25, contentRc.right - 20, y + 60 };
+            SetTextColor(memDC, MK_COLORREF(kBrandPaletteMuted));
+            SelectObject(memDC, BrandControls_Font(BrandFontBody));
+            const wchar_t* gkSub = vMoodWatch ? L"Nhịp thở sẽ xuất hiện nếu nhịp phím quá căng." : L"Phím Enter đi thẳng, nhưng nhật ký vẫn ghi.";
+            DrawTextW(memDC, gkSub, -1, &subRc, DT_LEFT | DT_TOP | DT_WORDBREAK);
+            SelectObject(memDC, oldFont);
+
+            y += 70;
+
+            // Card Nhận diện
+            RECT cardRc = { contentRc.left + 20, y, contentRc.right - 20, y + 65 };
+            BrandControls_DrawCard(memDC, cardRc, true);
+            
+            SetTextColor(memDC, MK_COLORREF(kBrandPaletteStone));
+            HFONT eyeFont = BrandControls_Font(BrandFontEyebrow);
+            oldFont = (HFONT)SelectObject(memDC, eyeFont);
+            RECT cardTitleRc = { cardRc.left + 15, cardRc.top + 15, cardRc.left + 100, cardRc.top + 35 };
+            DrawTextW(memDC, L"ĐỘ NHẠY", -1, &cardTitleRc, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+            SelectObject(memDC, oldFont);
+
+            RECT segRc = { cardRc.left + 100, cardRc.top + 15, cardRc.right - 15, cardRc.top + 45 };
+            const wchar_t* sensTabs[] = { L"Ít nhạy", L"Vừa", L"Nhạy" };
+            // Lấy giá trị g_sensitivity tạm từ đâu đó, ở đây ta dùng 1
+            BrandControls_DrawSegmentedControl(memDC, segRc, sensTabs, 3, 1, pt, 0);
+
+            y += 80;
+
+            // Biểu đồ cảm xúc
+            RECT riverRc = { contentRc.left + 20, y, contentRc.right - 20, y + 150 };
+            BrandControls_DrawCard(memDC, riverRc, true);
+            if (vMoodWatch) {
+                std::vector<MoodSample> samples = MoodStore_FetchRecentSamples(3 * 3600);
+                double liveHead = -1.0; 
+                RECT chartRc = { riverRc.left + 5, riverRc.top + 5, riverRc.right - 5, riverRc.bottom - 20 };
+                EmotionRiver_Draw(memDC, chartRc, samples, true, liveHead);
+            } else {
+                SetTextColor(memDC, MK_COLORREF(kBrandPaletteMuted));
+                SelectObject(memDC, BrandControls_Font(BrandFontBody));
+                DrawTextW(memDC, L"Nhật ký cảm xúc đang tắt.", -1, &riverRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            }
+        }
+        else if (currentTab == 1 || currentTab == 3) {
             RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
             SetTextColor(memDC, MK_COLORREF(0x9CA3AF));
-            DrawTextW(memDC, L"Nội dung đang xây dựng...", -1, &contentRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            SelectObject(memDC, BrandControls_Font(BrandFontBody));
+            const wchar_t* text = (currentTab == 1) ? L"Giao diện Chuông đang xây dựng..." : L"Giao diện Riêng tư đang xây dựng...";
+            DrawTextW(memDC, text, -1, &contentRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
         }
 
         BitBlt(hdc, 0, 0, clientRc.right, clientRc.bottom, memDC, 0, 0, SRCCOPY);
