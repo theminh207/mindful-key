@@ -81,3 +81,8 @@
   **friction-log** phơi *chỗ nào AI phải đoán* — hai góc mù khác nhau.
 - Khi một dòng chuyển sang `đã chốt`, ghi rõ luật/quyết định nằm ở đâu (vd: "đã cập
   nhật `docs/AGENT-BRIEF.md §3.2`" hoặc "changelog CLAUDE.md ngày …").
+
+## [2026-07-21] Phase 4.5: Xoá mờ hộp thoại Windows native cho Nhịp thở và Soi lại
+- **Vấn đề:** Màn hình `SendGatekeeper.cpp` và `ReflectionScreen.cpp` dù mang danh "Giao diện phụ" nhưng lại là linh hồn của Mindful Keyboard. Nếu tiếp tục dùng Native Dialog với màu xám hệ thống, trải nghiệm sẽ bị đứt gãy so với Popover và Settings 6-Nav.
+- **Giải pháp:** Xóa bỏ toàn bộ các `LTEXT` tĩnh trong `OpenKey.rc`. Tự bắt `WM_PAINT` để render nền (trắng/cam), văn bản, Sông cảm xúc và Nút bấm bằng GDI+ thông qua Double Buffering. Bắt `WM_LBUTTONUP` thay vì `WM_COMMAND` cho các nút bấm tự vẽ.
+- **Kết quả:** Đồng nhất ngôn ngữ thiết kế (Brand Palette) trên 100% diện tích các bề mặt hiển thị của ứng dụng. Không còn bóng dáng của Win32 xám xịt.
