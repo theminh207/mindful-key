@@ -59,3 +59,16 @@ void BrandControls_DrawPillSwitch(HDC hdc, const RECT& rc, bool isOn);
 // style: 0 = Popover (chọn TRẮNG), 1 = Settings (chọn TEAL nền + chữ trắng).
 // Hàm vẽ và trả về index của mục được click nếu chuột nằm trong rect (truyền pt = toạ độ chuột lúc WM_LBUTTONUP, truyền pt.x = -1 lúc WM_PAINT).
 int BrandControls_DrawSegmentedControl(HDC hdc, const RECT& rc, const wchar_t** labels, int count, int selectedIndex, POINT clickPt, int style);
+
+// ── Slider (Volume) ──
+// Thanh trượt ngang. thumbPos từ 0.0 -> 1.0. 
+// Trả về giá trị thumbPos mới nếu pt nằm trong thanh trượt (kéo chuột). Truyền pt.x = -1 để chỉ vẽ.
+float BrandControls_DrawSlider(HDC hdc, const RECT& rc, float thumbPos, POINT clickPt);
+
+// ── Icon Group Selector (Bộ tiếng) ──
+// Nhóm 4 nút icon (Chuông chùa, Chuông báo, Chuông gió, Nhạc). Indicator là chấm teal dưới icon.
+int BrandControls_DrawIconGroup(HDC hdc, const RECT& rc, int count, int selectedIndex, POINT clickPt);
+
+// ── Text Input / ComboBox Styling ──
+// Vẽ viền xám nhạt, nền trắng, bo góc. Thường gọi trong WM_CTLCOLOR hoặc đè WM_NCPAINT của edit native.
+void BrandControls_DrawTextBoxFrame(HDC hdc, const RECT& rc);

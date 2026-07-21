@@ -235,3 +235,105 @@ int BrandControls_DrawSegmentedControl(HDC hdc, const RECT& rc, const wchar_t** 
     SelectObject(hdc, oldFont);
     return clickedIndex;
 }
+
+float BrandControls_DrawSlider(HDC hdc, const RECT& rc, float thumbPos, POINT clickPt) {
+    // Kéo thả slider
+    if (clickPt.x != -1 && clickPt.x >= rc.left && clickPt.x <= rc.right && clickPt.y >= rc.top && clickPt.y <= rc.bottom) {
+        thumbPos = (float)(clickPt.x - rc.left) / (rc.right - rc.left);
+        if (thumbPos < 0) thumbPos = 0;
+        if (thumbPos > 1) thumbPos = 1;
+    }
+
+    // Vẽ track nền (divider)
+    int trackHeight = 4;
+    int trackY = rc.top + (rc.bottom - rc.top) / 2 - trackHeight / 2;
+    RECT trackRc = { rc.left, trackY, rc.right, trackY + trackHeight };
+    HRGN trackRgn = CreateRoundRectRgn(trackRc.left, trackRc.top, trackRc.right + 1, trackRc.bottom + 1, 4, 4);
+    HBRUSH trackBrush = CreateSolidBrush(MK_COLORREF(kBrandPaletteDivider));
+    FillRgn(hdc, trackRgn, trackBrush);
+    DeleteObject(trackBrush);
+    DeleteObject(trackRgn);
+
+    // Vẽ phần đã chạy (teal)
+    int fillWidth = (int)((rc.right - rc.left) * thumbPos);
+    if (fillWidth > 0) {
+        RECT fillRc = { rc.left, trackY, rc.left + fillWidth, trackY + trackHeight };
+        HRGN fillRgn = CreateRoundRectRgn(fillRc.left, fillRc.top, fillRc.right + 1, fillRc.bottom + 1, 4, 4);
+        HBRUSH fillBrush = CreateSolidBrush(MK_COLORREF(kBrandPaletteTeal));
+        FillRgn(hdc, fillRgn, fillBrush);
+        DeleteObject(fillBrush);
+        DeleteObject(fillRgn);
+    }
+
+    // Vẽ thumb
+    int thumbSize = 16;
+    int thumbX = rc.left + fillWidth - thumbSize / 2;
+    int thumbY = rc.top + (rc.bottom - rc.top) / 2 - thumbSize / 2;
+    // Đảm bảo thumb không lọt ra ngoài rc
+    if (thumbX < rc.left) thumbX = rc.left;
+    if (thumbX + thumbSize > rc.right) thumbX = rc.right - thumbSize;
+
+    Gdiplus::Graphics g(hdc);
+    g.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+    Gdiplus::SolidBrush thumbBrush(Gdiplus::Color(255, 255, 255, 255)); // Trắng
+    Gdiplus::Pen thumbPen(Gdiplus::Color(255, (kBrandPaletteDivider >> 16) & 0xFF, (kBrandPaletteDivider >> 8) & 0xFF, kBrandPaletteDivider & 0xFF), 1);
+    g.FillEllipse(&thumbBrush, thumbX, thumbY, thumbSize, thumbSize);
+    g.DrawEllipse(&thumbPen, thumbX, thumbY, thumbSize, thumbSize);
+
+    return thumbPos;
+}
+
+int BrandControls_DrawIconGroup(HDC hdc, const RECT& rc, int count, int selectedIndex, POINT clickPt) {
+    if (count <= 0) return -1;
+    int itemWidth = (rc.right - rc.left) / count;
+    int clickedIndex = -1;
+
+    for (int i = 0; i < count; i++) {
+        RECT itemRc = { rc.left + i * itemWidth, rc.top, rc.left + (i + 1) * itemWidth, rc.bottom };
+        
+        if (clickPt.x != -1 && clickPt.x >= itemRc.left && clickPt.x < itemRc.right && clickPt.y >= itemRc.top && clickPt.y < itemRc.bottom) {
+            clickedIndex = i;
+        }
+
+        // Tạm vẽ ký tự giả lập icon nếu chưa tải được resource GDI+ image
+        // (Sẽ bổ sung logic vẽ PNG từ .rc sau)
+        HFONT font = BrandControls_Font(BrandFontTitle);
+        HFONT oldFont = (HFONT)SelectObject(hdc, font);
+        SetBkMode(hdc, TRANSPARENT);
+        SetTextColor(hdc, MK_COLORREF((i == selectedIndex) ? kBrandPaletteTeal : kBrandPaletteStone));
+        
+        const wchar_t* fallbackIcons[] = { L"A", L"B", L"C", L"D", L"E" };
+        DrawTextW(hdc, i < 5 ? fallbackIcons[i] : L"?", -1, &itemRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        SelectObject(hdc, oldFont);
+
+        // Vẽ indicator (chấm teal) dưới icon được chọn
+        if (i == selectedIndex) {
+            Gdiplus::Graphics g(hdc);
+            g.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+            Gdiplus::SolidBrush dotBrush(Gdiplus::Color(255, (kBrandPaletteTeal >> 16) & 0xFF, (kBrandPaletteTeal >> 8) & 0xFF, kBrandPaletteTeal & 0xFF));
+            int dotSize = 6;
+            int dotX = itemRc.left + (itemRc.right - itemRc.left) / 2 - dotSize / 2;
+            int dotY = itemRc.bottom - dotSize - 2;
+            g.FillEllipse(&dotBrush, dotX, dotY, dotSize, dotSize);
+        }
+    }
+    return clickedIndex;
+}
+
+void BrandControls_DrawTextBoxFrame(HDC hdc, const RECT& rc) {
+    HRGN rgn = CreateRoundRectRgn(rc.left, rc.top, rc.right + 1, rc.bottom + 1, 8, 8);
+    HBRUSH bgBrush = CreateSolidBrush(RGB(255, 255, 255));
+    FillRgn(hdc, rgn, bgBrush);
+    
+    Gdiplus::Graphics g(hdc);
+    g.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+    Gdiplus::Pen borderPen(Gdiplus::Color(255, (kBrandPaletteDivider >> 16) & 0xFF, (kBrandPaletteDivider >> 8) & 0xFF, kBrandPaletteDivider & 0xFF), 1);
+    g.DrawPath(&borderPen, NULL); // TODO: Replace with proper RoundRect path or just rely on FrameRgn
+    
+    HBRUSH borderBrush = CreateSolidBrush(MK_COLORREF(kBrandPaletteDivider));
+    FrameRgn(hdc, rgn, borderBrush, 1, 1);
+    
+    DeleteObject(bgBrush);
+    DeleteObject(borderBrush);
+    DeleteObject(rgn);
+}

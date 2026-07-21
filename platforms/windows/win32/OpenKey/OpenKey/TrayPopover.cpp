@@ -20,11 +20,156 @@ static HWND g_hwndPopover = NULL;
 static int g_currentTab = 0; // 0: Hôm nay, 1: Chuông, 2: Bộ gõ
 static ULONG_PTR g_gdiplusTokenPopover = 0;
 
+// State Variables
+static int g_sensitivity = 1;
+static bool g_bellEnabled = true;
+static int g_bellInterval = 0;
+static float g_bellVolume = 0.5f;
+static int g_bellSoundIndex = 0;
+static bool g_focusSync = false;
+static bool g_optVietnamese = true;
+static bool g_optSpellCheck = true;
+static bool g_optAutoCap = true;
+
 static const int kPopoverWidth = 338;
-static const int kPopoverHeight = 420;
+static const int kPopoverHeight = 520; // Tăng chiều cao để chứa đủ nội dung
 
 extern int vMoodWatch;
 extern int vSendGatekeeper;
+
+// Helper vẽ Text đơn giản
+static void DrawLabel(HDC hdc, const wchar_t* text, RECT rc, BrandFontRole role, unsigned colorHex, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
+    SetBkMode(hdc, TRANSPARENT);
+    SetTextColor(hdc, MK_COLORREF(colorHex));
+    HFONT font = BrandControls_Font(role);
+    HFONT oldFont = (HFONT)SelectObject(hdc, font);
+    DrawTextW(hdc, text, -1, &rc, format);
+    SelectObject(hdc, oldFont);
+}
+
+// Draw/Click Logic
+static void ProcessTabToday(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
+    // Trạng thái Gác cổng
+    const wchar_t* gkTitle = vSendGatekeeper ? L"Gác cổng đang canh" : L"Gác cổng đang tạm nghỉ";
+    RECT titleRc = { 18, y, clientRc.right - 18, y + 25 };
+    DrawLabel(hdc, gkTitle, titleRc, BrandFontTitle, kBrandPaletteCharcoal);
+    
+    RECT subRc = { 18, y + 25, clientRc.right - 18, y + 60 };
+    const wchar_t* gkSub = vSendGatekeeper ? L"Nhịp thở sẽ xuất hiện nếu nhịp phím quá căng." : L"Phím Enter đi thẳng, nhưng nhật ký vẫn ghi.";
+    DrawLabel(hdc, gkSub, subRc, BrandFontBody, kBrandPaletteMuted, DT_LEFT | DT_TOP | DT_WORDBREAK);
+
+    y += 70;
+
+    // Card "Nhận diện" (Độ nhạy)
+    RECT cardRc = { 18, y, clientRc.right - 18, y + 65 };
+    BrandControls_DrawCard(hdc, cardRc, true);
+    RECT cardTitleRc = { cardRc.left + 15, cardRc.top + 15, cardRc.left + 100, cardRc.top + 35 };
+    DrawLabel(hdc, L"ĐỘ NHẠY", cardTitleRc, BrandFontEyebrow, kBrandPaletteStone);
+    
+    RECT segRc = { cardRc.left + 100, cardRc.top + 15, cardRc.right - 15, cardRc.top + 45 };
+    const wchar_t* sensTabs[] = { L"Ít nhạy", L"Vừa", L"Nhạy" };
+    int clickedSens = BrandControls_DrawSegmentedControl(hdc, segRc, sensTabs, 3, g_sensitivity, clickPt, 0);
+    if (clickedSens != -1) g_sensitivity = clickedSens;
+
+    y += 80;
+
+    // Biểu đồ cảm xúc
+    RECT riverRc = { 18, y, clientRc.right - 18, y + 150 };
+    BrandControls_DrawCard(hdc, riverRc, true);
+    if (vMoodWatch) {
+        std::vector<MoodSample> samples = MoodStore_FetchRecentSamples(3 * 3600);
+        double liveHead = -1.0; 
+        RECT chartRc = { riverRc.left + 5, riverRc.top + 5, riverRc.right - 5, riverRc.bottom - 20 };
+        EmotionRiver_Draw(hdc, chartRc, samples, true, liveHead);
+    } else {
+        DrawLabel(hdc, L"Nhật ký cảm xúc đang tắt.", riverRc, BrandFontBody, kBrandPaletteMuted, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+    }
+}
+
+static void ProcessTabBell(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
+    // Trạng thái chuông
+    RECT card1Rc = { 18, y, clientRc.right - 18, y + 50 };
+    BrandControls_DrawCard(hdc, card1Rc, true);
+    RECT label1Rc = { card1Rc.left + 15, card1Rc.top, card1Rc.right - 60, card1Rc.bottom };
+    DrawLabel(hdc, L"Bật chuông tỉnh thức", label1Rc, BrandFontBody, kBrandPaletteCharcoal);
+    RECT switch1Rc = { card1Rc.right - 50, card1Rc.top + 14, card1Rc.right - 14, card1Rc.top + 35 };
+    if (clickPt.x != -1 && PtInRect(&switch1Rc, clickPt)) g_bellEnabled = !g_bellEnabled;
+    BrandControls_DrawPillSwitch(hdc, switch1Rc, g_bellEnabled);
+    y += 65;
+
+    // Nhịp
+    RECT card2Rc = { 18, y, clientRc.right - 18, y + 110 };
+    BrandControls_DrawCard(hdc, card2Rc, true);
+    RECT label2Rc = { card2Rc.left + 15, card2Rc.top + 10, card2Rc.right - 15, card2Rc.top + 30 };
+    DrawLabel(hdc, L"NHỊP", label2Rc, BrandFontEyebrow, kBrandPaletteStone);
+    
+    RECT seg2Rc = { card2Rc.left + 15, card2Rc.top + 35, card2Rc.right - 15, card2Rc.top + 65 };
+    const wchar_t* intervalTabs[] = { L"30 phút", L"60 phút", L"Tùy chỉnh" };
+    int clickedInt = BrandControls_DrawSegmentedControl(hdc, seg2Rc, intervalTabs, 3, g_bellInterval, clickPt, 0);
+    if (clickedInt != -1) g_bellInterval = clickedInt;
+    
+    if (g_bellInterval == 2) {
+        RECT editRc = { card2Rc.left + 15, card2Rc.top + 75, card2Rc.left + 80, card2Rc.top + 95 };
+        BrandControls_DrawTextBoxFrame(hdc, editRc);
+        DrawLabel(hdc, L"25", editRc, BrandFontBody, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        RECT labelPhutRc = { editRc.right + 10, editRc.top, editRc.right + 50, editRc.bottom };
+        DrawLabel(hdc, L"phút", labelPhutRc, BrandFontBody, kBrandPaletteCharcoal);
+    }
+    y += 125;
+
+    // Âm thanh
+    RECT card3Rc = { 18, y, clientRc.right - 18, y + 110 };
+    BrandControls_DrawCard(hdc, card3Rc, true);
+    RECT label3Rc = { card3Rc.left + 15, card3Rc.top + 10, card3Rc.right - 15, card3Rc.top + 30 };
+    DrawLabel(hdc, L"BỘ TIẾNG", label3Rc, BrandFontEyebrow, kBrandPaletteStone);
+    
+    RECT iconGrpRc = { card3Rc.left + 15, card3Rc.top + 35, card3Rc.right - 15, card3Rc.top + 75 };
+    int clickedSnd = BrandControls_DrawIconGroup(hdc, iconGrpRc, 4, g_bellSoundIndex, clickPt);
+    if (clickedSnd != -1) g_bellSoundIndex = clickedSnd;
+    
+    RECT sliderRc = { card3Rc.left + 15, card3Rc.top + 85, card3Rc.right - 15, card3Rc.top + 100 };
+    g_bellVolume = BrandControls_DrawSlider(hdc, sliderRc, g_bellVolume, clickPt);
+    y += 125;
+}
+
+static void ProcessTabKeyboard(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
+    // Kiểu gõ
+    RECT card1Rc = { 18, y, clientRc.right - 18, y + 90 };
+    BrandControls_DrawCard(hdc, card1Rc, true);
+    
+    RECT labelKieuGoRc = { card1Rc.left + 15, card1Rc.top + 15, card1Rc.left + 100, card1Rc.top + 35 };
+    DrawLabel(hdc, L"Kiểu gõ", labelKieuGoRc, BrandFontBody, kBrandPaletteCharcoal);
+    RECT comboKieuGoRc = { card1Rc.right - 120, card1Rc.top + 10, card1Rc.right - 15, card1Rc.top + 40 };
+    BrandControls_DrawTextBoxFrame(hdc, comboKieuGoRc);
+    DrawLabel(hdc, L"Telex", comboKieuGoRc, BrandFontBody, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+    RECT labelBangMaRc = { card1Rc.left + 15, card1Rc.top + 55, card1Rc.left + 100, card1Rc.top + 75 };
+    DrawLabel(hdc, L"Bảng mã", labelBangMaRc, BrandFontBody, kBrandPaletteCharcoal);
+    RECT comboBangMaRc = { card1Rc.right - 120, card1Rc.top + 50, card1Rc.right - 15, card1Rc.top + 80 };
+    BrandControls_DrawTextBoxFrame(hdc, comboBangMaRc);
+    DrawLabel(hdc, L"Unicode", comboBangMaRc, BrandFontBody, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+    y += 105;
+
+    // Tuỳ chọn
+    RECT card2Rc = { 18, y, clientRc.right - 18, y + 130 };
+    BrandControls_DrawCard(hdc, card2Rc, true);
+
+    auto DrawRowSwitch = [&](int i, const wchar_t* label, bool& state) {
+        int rowY = card2Rc.top + 10 + i * 35;
+        RECT labelRc = { card2Rc.left + 15, rowY, card2Rc.right - 60, rowY + 25 };
+        DrawLabel(hdc, label, labelRc, BrandFontBody, kBrandPaletteCharcoal);
+        RECT switchRc = { card2Rc.right - 50, rowY + 2, card2Rc.right - 14, rowY + 23 };
+        if (clickPt.x != -1 && PtInRect(&switchRc, clickPt)) state = !state;
+        BrandControls_DrawPillSwitch(hdc, switchRc, state);
+    };
+
+    DrawRowSwitch(0, L"Gõ tiếng Việt", g_optVietnamese);
+    DrawRowSwitch(1, L"Kiểm tra chính tả", g_optSpellCheck);
+    DrawRowSwitch(2, L"Viết hoa đầu câu", g_optAutoCap);
+
+    y += 145;
+}
 
 static void PaintPopover(HWND hwnd) {
     PAINTSTRUCT ps;
@@ -33,7 +178,6 @@ static void PaintPopover(HWND hwnd) {
     RECT clientRc;
     GetClientRect(hwnd, &clientRc);
 
-    // Dùng Double Buffering để tránh chớp
     HDC memDC = CreateCompatibleDC(hdc);
     HBITMAP memBitmap = CreateCompatibleBitmap(hdc, clientRc.right, clientRc.bottom);
     HBITMAP oldBitmap = (HBITMAP)SelectObject(memDC, memBitmap);
@@ -44,77 +188,20 @@ static void PaintPopover(HWND hwnd) {
     // Vẽ Header
     BrandControls_DrawCardHeader(memDC, clientRc.right, L"Mindful Keyboard");
 
-    // Đoạn dưới Header
     int y = 45; // Dưới đường kẻ ngăn
 
     // Thanh Tab (Segmented)
     RECT segRc = { 18, y + 10, clientRc.right - 18, y + 42 };
     const wchar_t* tabs[] = { L"Hôm nay", L"Chuông", L"Bộ gõ" };
-    // Truyền clickPt = (-1, -1) vì ta chỉ vẽ
     POINT pt = { -1, -1 };
     BrandControls_DrawSegmentedControl(memDC, segRc, tabs, 3, g_currentTab, pt, 0);
 
     y += 50;
 
-    if (g_currentTab == 0) {
-        // Tab Hôm nay
-        
-        // Trạng thái Gác cổng
-        SetBkMode(memDC, TRANSPARENT);
-        SetTextColor(memDC, MK_COLORREF(kBrandPaletteCharcoal));
-        HFONT titleFont = BrandControls_Font(BrandFontTitle);
-        HFONT oldFont = (HFONT)SelectObject(memDC, titleFont);
-        
-        const wchar_t* gkTitle = vSendGatekeeper ? L"Gác cổng đang canh" : L"Gác cổng đang tạm nghỉ";
-        RECT titleRc = { 18, y, clientRc.right - 18, y + 25 };
-        DrawTextW(memDC, gkTitle, -1, &titleRc, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+    if (g_currentTab == 0) ProcessTabToday(memDC, y, clientRc, pt);
+    else if (g_currentTab == 1) ProcessTabBell(memDC, y, clientRc, pt);
+    else ProcessTabKeyboard(memDC, y, clientRc, pt);
 
-        SelectObject(memDC, BrandControls_Font(BrandFontBody));
-        SetTextColor(memDC, MK_COLORREF(kBrandPaletteMuted));
-        RECT subRc = { 18, y + 25, clientRc.right - 18, y + 60 };
-        const wchar_t* gkSub = vSendGatekeeper ? L"Nhịp thở sẽ xuất hiện nếu nhịp phím quá căng." : L"Phím Enter đi thẳng, nhưng nhật ký vẫn ghi.";
-        DrawTextW(memDC, gkSub, -1, &subRc, DT_LEFT | DT_TOP | DT_WORDBREAK);
-        SelectObject(memDC, oldFont);
-
-        // Biểu đồ cảm xúc (Sông)
-        y += 70;
-        RECT riverRc = { 18, y, clientRc.right - 18, y + 150 };
-        // Background card cho biểu đồ
-        BrandControls_DrawCard(memDC, riverRc, true);
-
-        // Gọi GDI+ để vẽ dòng sông
-        if (vMoodWatch) {
-            std::vector<MoodSample> samples = MoodStore_FetchRecentSamples(3 * 3600); // 3h quá khứ
-            double liveHead = -1.0; // Todo: call MoodWatch_LiveAmplitude
-            RECT chartRc = { riverRc.left + 5, riverRc.top + 5, riverRc.right - 5, riverRc.bottom - 20 };
-            EmotionRiver_Draw(memDC, chartRc, samples, true, liveHead);
-        } else {
-            // Hiển thị thông báo khi nhắc tâm tắt
-            SelectObject(memDC, BrandControls_Font(BrandFontBody));
-            SetTextColor(memDC, MK_COLORREF(kBrandPaletteMuted));
-            DrawTextW(memDC, L"Nhật ký cảm xúc đang tắt.", -1, &riverRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-        }
-    } else if (g_currentTab == 1) {
-        // Tab Chuông
-        SetBkMode(memDC, TRANSPARENT);
-        SetTextColor(memDC, MK_COLORREF(kBrandPaletteMuted));
-        HFONT font = BrandControls_Font(BrandFontBody);
-        HFONT oldFont = (HFONT)SelectObject(memDC, font);
-        RECT rc = { 18, y, clientRc.right - 18, clientRc.bottom };
-        DrawTextW(memDC, L"Nội dung Chuông... (Phase 3)", -1, &rc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-        SelectObject(memDC, oldFont);
-    } else {
-        // Tab Bộ gõ
-        SetBkMode(memDC, TRANSPARENT);
-        SetTextColor(memDC, MK_COLORREF(kBrandPaletteMuted));
-        HFONT font = BrandControls_Font(BrandFontBody);
-        HFONT oldFont = (HFONT)SelectObject(memDC, font);
-        RECT rc = { 18, y, clientRc.right - 18, clientRc.bottom };
-        DrawTextW(memDC, L"Nội dung Bộ gõ... (Phase 3)", -1, &rc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-        SelectObject(memDC, oldFont);
-    }
-
-    // Blit to screen
     BitBlt(hdc, 0, 0, clientRc.right, clientRc.bottom, memDC, 0, 0, SRCCOPY);
 
     SelectObject(memDC, oldBitmap);
@@ -130,29 +217,44 @@ static LRESULT CALLBACK PopoverWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
         PaintPopover(hwnd);
         return 0;
 
-    case WM_LBUTTONUP: {
+    case WM_LBUTTONDOWN:
+    case WM_LBUTTONUP:
+    case WM_MOUSEMOVE: {
         int x = GET_X_LPARAM(lParam);
         int y = GET_Y_LPARAM(lParam);
         POINT pt = { x, y };
+        
+        // Hạn chế drag update quá nhiều, chỉ xử lý LBUTTONUP và LBUTTONDOWN để drag slider
+        if (msg == WM_MOUSEMOVE && !(wParam & MK_LBUTTON)) break;
 
-        // Kiểm tra click vào thanh tab
         RECT clientRc;
         GetClientRect(hwnd, &clientRc);
-        RECT segRc = { 18, 55, clientRc.right - 18, 87 };
-        const wchar_t* tabs[] = { L"Hôm nay", L"Chuông", L"Bộ gõ" };
         HDC hdc = GetDC(hwnd);
-        int clicked = BrandControls_DrawSegmentedControl(hdc, segRc, tabs, 3, g_currentTab, pt, 0);
-        ReleaseDC(hwnd, hdc);
-
-        if (clicked != -1 && clicked != g_currentTab) {
-            g_currentTab = clicked;
-            InvalidateRect(hwnd, NULL, FALSE);
+        
+        if (msg == WM_LBUTTONUP) {
+            RECT segRc = { 18, 55, clientRc.right - 18, 87 };
+            const wchar_t* tabs[] = { L"Hôm nay", L"Chuông", L"Bộ gõ" };
+            int clicked = BrandControls_DrawSegmentedControl(hdc, segRc, tabs, 3, g_currentTab, pt, 0);
+            if (clicked != -1 && clicked != g_currentTab) {
+                g_currentTab = clicked;
+                InvalidateRect(hwnd, NULL, FALSE);
+                ReleaseDC(hwnd, hdc);
+                return 0;
+            }
         }
+
+        // Process clicks/drags in current tab
+        int drawY = 95;
+        if (g_currentTab == 0) ProcessTabToday(hdc, drawY, clientRc, pt);
+        else if (g_currentTab == 1) ProcessTabBell(hdc, drawY, clientRc, pt);
+        else ProcessTabKeyboard(hdc, drawY, clientRc, pt);
+
+        ReleaseDC(hwnd, hdc);
+        InvalidateRect(hwnd, NULL, FALSE); // Redraw sau khi update state
         return 0;
     }
 
     case WM_ACTIVATE:
-        // Đóng popover khi mất focus (click ra ngoài)
         if (LOWORD(wParam) == WA_INACTIVE) {
             ShowWindow(hwnd, SW_HIDE);
         }
