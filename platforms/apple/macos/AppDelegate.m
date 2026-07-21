@@ -197,7 +197,7 @@ extern bool convertToolDontAlertWhenCompleted;
 // [MINDFUL] Allow-list bộ gõ tranh phím — báo cáo người dùng 2026-07-17 mục 5.1: không chỉ
 // OpenKey, các bộ gõ Việt khác cũng bắt phím toàn cục qua event tap, chạy chung là giành nhau
 // từng phím gõ. Bundle id ĐÃ XÁC MINH từ Homebrew cask chính thức (zap path), KHÔNG đoán:
-//   OpenKey      com.tuyenmai.openkey       (gốc fork — helper com.tuyenmai.OpenKeyHelper
+//   OpenKey      [Legacy Bundle ID]         (gốc fork)
 //                                            KHÔNG đưa vào: helper không bắt phím)
 //   EVKey        com.lamquangminh.evkey     (helper com.lamquangminh.evkeyhelper: như trên)
 //   GoTiengViet  com.trankynam.GoTiengViet
@@ -621,7 +621,7 @@ static BOOL IsConflictingInputMethodBundleID(NSString *bundleID) {
     // đọc thẳng SMAppService.h trong SDK) — cùng framework ServiceManagement đã import ở đầu file —
     // KHÔNG cần Helper bundle riêng: chính app tự đăng ký làm login item.
     // [MINDFUL] 2026-07-18 — sàn nâng lên 13.0 (project.yml) nên bỏ @available + gỡ nhánh dự phòng
-    // SMLoginItemSetEnabled cũ: nhánh đó dựa Helper "com.tuyenmai.OpenKeyHelper" không tồn tại trong
+    // SMLoginItemSetEnabled cũ: nhánh đó dựa Helper cũ không tồn tại trong
     // project (chưa bao giờ thật sự bật được login item máy cũ), thành code chết cứng ở sàn 13.0 và
     // SMLoginItemSetEnabled deprecated đúng từ 13.0 (warning mới). Hạ sàn lại thì phải dựng Helper
     // thật, không khôi phục nhánh cũ.

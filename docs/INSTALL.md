@@ -30,7 +30,7 @@ Ra file `MindfulKeyboard_Beta.dmg` ở gốc repo. Script tự tìm `.app` mới
 3. Xóa dữ liệu còn sót lại (tùy chọn, không bắt buộc):
    ```bash
    rm -rf ~/Library/Application\ Support/MindfulKeyboard
-   defaults delete com.tuyenmai.openkey 2>/dev/null
+   defaults delete vn.gnh.mindfulkey 2>/dev/null
    ```
    Lệnh `defaults delete` xóa cả trạng thái consent/cài đặt trong `NSUserDefaults`. Khóa mã hóa trong Keychain (nếu còn) có thể xóa qua Keychain Access.app, tìm mục "com.mindfulkeyboard.moodstore".
 

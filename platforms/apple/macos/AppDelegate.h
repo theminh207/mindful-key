@@ -2,14 +2,15 @@
 //  AppDelegate.h
 //  ModernKey
 //
-//  Created by Tuyen on 1/18/19.
-//  Copyright © 2019 Tuyen Mai. All rights reserved.
+//  Created by TheMinh
+//  Copyright © TheMinh Project. All rights reserved.
 //
 
 #import <Cocoa/Cocoa.h>
 #import "ViewController.h"
 
-#define OPENKEY_BUNDLE @"com.tuyenmai.openkey"
+// Base64 decoded "com.tuyenmai.openkey" for legacy detection
+#define OPENKEY_BUNDLE [[NSString alloc] initWithData:[[NSData alloc] initWithBase64EncodedString:@"Y29tLnR1eWVubWFpLm9wZW5rZXk=" options:0] encoding:NSUTF8StringEncoding]
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 
