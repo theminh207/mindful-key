@@ -229,8 +229,12 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
 
             RECT segRc = { cardRc.left + 100, cardRc.top + 15, cardRc.right - 15, cardRc.top + 45 };
             const wchar_t* sensTabs[] = { L"Ít nhạy", L"Vừa", L"Nhạy" };
-            // Lấy giá trị g_sensitivity tạm từ đâu đó, ở đây ta dùng 1
-            BrandControls_DrawSegmentedControl(memDC, segRc, sensTabs, 3, 1, pt, 0);
+            int currentSens = MindfulKeyHelper::getRegInt(_T("vBellSensitivity"), 0);
+            int clickedSens = BrandControls_DrawSegmentedControl(memDC, segRc, sensTabs, 3, currentSens, pt, 0);
+            if (clickedSens != -1 && clickedSens != currentSens) {
+                MindfulKeyHelper::setRegInt(_T("vBellSensitivity"), clickedSens);
+                SystemTrayHelper::updateData();
+            }
 
             y += 80;
 
@@ -260,10 +264,10 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
                 SelectObject(memDC, old);
             };
 
-            static bool s_bellEnabled = HAS_BEEP(vSwitchKeyStatus);
-            static int s_bellInterval = 1; 
-            static int s_bellSoundIndex = 0;
-            static int s_bellVolume = 50;
+            bool s_bellEnabled = HAS_BEEP(vSwitchKeyStatus);
+            int s_bellInterval = (vBellInterval <= 30) ? 0 : ((vBellInterval <= 60) ? 1 : 2);
+            int s_bellSoundIndex = MindfulKeyHelper::getRegInt(_T("vBellSoundIndex"), 0);
+            int s_bellVolume = MindfulKeyHelper::getRegInt(_T("vVolume"), 50);
 
             // Card Trạng thái
             RECT card1Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 60 };
@@ -271,7 +275,13 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             RECT lblTrangThaiRc = { card1Rc.left + 15, card1Rc.top + 15, card1Rc.right - 60, card1Rc.bottom - 15 };
             DrawLabel(L"Phát tiếng gõ", lblTrangThaiRc, BrandFontBody, kBrandPaletteCharcoal);
             RECT sw1Rc = { card1Rc.right - 50, card1Rc.top + 18, card1Rc.right - 14, card1Rc.top + 39 };
-            if (pt.x != -1 && PtInRect(&sw1Rc, pt)) s_bellEnabled = !s_bellEnabled;
+            if (pt.x != -1 && PtInRect(&sw1Rc, pt)) {
+                if (s_bellEnabled) vSwitchKeyStatus &= ~FLAG_BEEP;
+                else vSwitchKeyStatus |= FLAG_BEEP;
+                APP_SET_DATA(vSwitchKeyStatus, vSwitchKeyStatus);
+                SystemTrayHelper::updateData();
+                s_bellEnabled = HAS_BEEP(vSwitchKeyStatus);
+            }
             BrandControls_DrawPillSwitch(memDC, sw1Rc, s_bellEnabled);
             y += 75;
 
@@ -283,7 +293,14 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             
             RECT seg2Rc = { card2Rc.left + 15, card2Rc.top + 35, card2Rc.right - 15, card2Rc.top + 65 };
             const wchar_t* nhipTabs[] = { L"Nhanh", L"Vừa", L"Chậm" };
-            s_bellInterval = BrandControls_DrawSegmentedControl(memDC, seg2Rc, nhipTabs, 3, s_bellInterval, pt, 0);
+            int clickedInt = BrandControls_DrawSegmentedControl(memDC, seg2Rc, nhipTabs, 3, s_bellInterval, pt, 0);
+            if (clickedInt != -1 && clickedInt != s_bellInterval) {
+                int newMins = (clickedInt == 0) ? 30 : ((clickedInt == 1) ? 60 : 120);
+                APP_SET_DATA(vBellInterval, newMins);
+                extern void Bell_ApplySettings();
+                Bell_ApplySettings();
+                SystemTrayHelper::updateData();
+            }
             y += 105;
 
             // Card Âm thanh
@@ -294,10 +311,17 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             
             RECT iconGrpRc = { card3Rc.left + 15, card3Rc.top + 35, card3Rc.right - 15, card3Rc.top + 75 };
             int clickedSnd = BrandControls_DrawIconGroup(memDC, iconGrpRc, 4, s_bellSoundIndex, pt);
-            if (clickedSnd != -1) s_bellSoundIndex = clickedSnd;
+            if (clickedSnd != -1 && clickedSnd != s_bellSoundIndex) {
+                MindfulKeyHelper::setRegInt(_T("vBellSoundIndex"), clickedSnd);
+                SystemTrayHelper::updateData();
+            }
             
             RECT sliderRc = { card3Rc.left + 15, card3Rc.top + 85, card3Rc.right - 15, card3Rc.top + 100 };
-            s_bellVolume = BrandControls_DrawSlider(memDC, sliderRc, s_bellVolume, pt);
+            int clickedVol = BrandControls_DrawSlider(memDC, sliderRc, s_bellVolume, pt);
+            if (clickedVol != s_bellVolume) {
+                MindfulKeyHelper::setRegInt(_T("vVolume"), clickedVol);
+                SystemTrayHelper::updateData();
+            }
             y += 125;
         }
         else if (currentTab == 3) { // Riêng tư

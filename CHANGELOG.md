@@ -3,9 +3,12 @@
 Theo [Keep a Changelog](https://keepachangelog.com/) và [SemVer](https://semver.org/).
 Phiên bản lấy từ `version.env`.
 
-## [Unreleased]
+## [0.4.2]
 
 ### Added
+
+- **Windows: Giao diện Nudge tuỳ chỉnh (GDI+)** — hộp thoại nhắc tâm thay thế `MessageBox` gốc của Windows. Hộp thoại có nền bo góc mềm mại, hiển thị trực tiếp bên trên con trỏ văn bản, không tranh giành tiêu điểm (focus) gây gián đoạn.
+- **Windows: Trải nghiệm đồng nhất** — Giao diện Cài đặt (Settings) và Khay hệ thống (Tray Popover) được đại tu hoàn toàn bằng GDI+, với font chữ riêng và ngôn ngữ thiết kế chung với bản macOS.
 
 - **macOS: gác cổng gửi tin (màn Nhịp thở) nay bật/tắt riêng được** — công tắc "Gác cổng gửi tin
   (nhịp thở)" trong menu khay, mặc định BẬT. Tắt thì vẫn giữ nhật ký + con sóng (đó là phần "Nhắc
@@ -13,6 +16,8 @@ Phiên bản lấy từ `version.env`.
   nghỉ" khi tắt — nói thật, không giấu.
 
 ### Changed
+
+- **Windows: Đồng bộ cấu hình Core và UI** — Các tham số như Nhịp (vBellInterval), Độ nhạy (vBellSensitivity) và Trạng thái Chuông nay được đồng bộ theo thời gian thực hai chiều, giúp hiển thị Dòng sông chính xác với nhịp độ gõ của người dùng.
 
 - **macOS: biểu đồ cảm xúc "Ngay bây giờ" sống động và thành thật hơn:**
   - Đầu sóng "bây giờ" nay làm mượt vài câu gần nhất và **tự lặng dần về phẳng lặng** sau vài phút

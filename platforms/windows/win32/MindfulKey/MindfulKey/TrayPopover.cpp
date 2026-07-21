@@ -20,22 +20,24 @@ static HWND g_hwndPopover = NULL;
 static int g_currentTab = 0; // 0: Hôm nay, 1: Chuông, 2: Bộ gõ
 static ULONG_PTR g_gdiplusTokenPopover = 0;
 
-// State Variables
-static int g_sensitivity = 1;
-static bool g_bellEnabled = true;
-static int g_bellInterval = 0;
-static float g_bellVolume = 0.5f;
-static int g_bellSoundIndex = 0;
-static bool g_focusSync = false;
-static bool g_optVietnamese = true;
-static bool g_optSpellCheck = true;
-static bool g_optAutoCap = true;
+// Removed virtual state variables to map directly to real global variables.
 
 static const int kPopoverWidth = 338;
 static const int kPopoverHeight = 520; // Tăng chiều cao để chứa đủ nội dung
 
 extern int vMoodWatch;
 extern int vSendGatekeeper;
+extern int vBellInterval;
+extern DWORD vSwitchKeyStatus;
+extern int vLanguage;
+extern int vCheckSpelling;
+extern int vUpperCaseFirstChar;
+
+#ifndef APP_SET_DATA
+#define APP_SET_DATA(key, value) \
+    MindfulKeyHelper::setRegInt(_T(#key), value); \
+    key = value;
+#endif
 
 // Helper vẽ Text đơn giản
 static void DrawLabel(HDC hdc, const wchar_t* text, RECT rc, BrandFontRole role, unsigned colorHex, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
@@ -68,8 +70,12 @@ static void ProcessTabToday(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     
     RECT segRc = { cardRc.left + 100, cardRc.top + 15, cardRc.right - 15, cardRc.top + 45 };
     const wchar_t* sensTabs[] = { L"Ít nhạy", L"Vừa", L"Nhạy" };
-    int clickedSens = BrandControls_DrawSegmentedControl(hdc, segRc, sensTabs, 3, g_sensitivity, clickPt, 0);
-    if (clickedSens != -1) g_sensitivity = clickedSens;
+    int currentSens = MindfulKeyHelper::getRegInt(_T("vBellSensitivity"), 0);
+    int clickedSens = BrandControls_DrawSegmentedControl(hdc, segRc, sensTabs, 3, currentSens, clickPt, 0);
+    if (clickedSens != -1 && clickedSens != currentSens) {
+        MindfulKeyHelper::setRegInt(_T("vBellSensitivity"), clickedSens);
+        SystemTrayHelper::updateData();
+    }
 
     y += 80;
 
@@ -93,8 +99,15 @@ static void ProcessTabBell(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     RECT label1Rc = { card1Rc.left + 15, card1Rc.top, card1Rc.right - 60, card1Rc.bottom };
     DrawLabel(hdc, L"Bật chuông tỉnh thức", label1Rc, BrandFontBody, kBrandPaletteCharcoal);
     RECT switch1Rc = { card1Rc.right - 50, card1Rc.top + 14, card1Rc.right - 14, card1Rc.top + 35 };
-    if (clickPt.x != -1 && PtInRect(&switch1Rc, clickPt)) g_bellEnabled = !g_bellEnabled;
-    BrandControls_DrawPillSwitch(hdc, switch1Rc, g_bellEnabled);
+    bool isBellEnabled = HAS_BEEP(vSwitchKeyStatus);
+    if (clickPt.x != -1 && PtInRect(&switch1Rc, clickPt)) {
+        if (isBellEnabled) vSwitchKeyStatus &= ~FLAG_BEEP;
+        else vSwitchKeyStatus |= FLAG_BEEP;
+        APP_SET_DATA(vSwitchKeyStatus, vSwitchKeyStatus);
+        SystemTrayHelper::updateData();
+        isBellEnabled = HAS_BEEP(vSwitchKeyStatus);
+    }
+    BrandControls_DrawPillSwitch(hdc, switch1Rc, isBellEnabled);
     y += 65;
 
     // Nhịp
@@ -105,13 +118,23 @@ static void ProcessTabBell(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     
     RECT seg2Rc = { card2Rc.left + 15, card2Rc.top + 35, card2Rc.right - 15, card2Rc.top + 65 };
     const wchar_t* intervalTabs[] = { L"30 phút", L"60 phút", L"Tùy chỉnh" };
-    int clickedInt = BrandControls_DrawSegmentedControl(hdc, seg2Rc, intervalTabs, 3, g_bellInterval, clickPt, 0);
-    if (clickedInt != -1) g_bellInterval = clickedInt;
+    int currentInt = (vBellInterval <= 30) ? 0 : ((vBellInterval <= 60) ? 1 : 2);
+    int clickedInt = BrandControls_DrawSegmentedControl(hdc, seg2Rc, intervalTabs, 3, currentInt, clickPt, 0);
+    if (clickedInt != -1 && clickedInt != currentInt) {
+        int newMins = (clickedInt == 0) ? 30 : ((clickedInt == 1) ? 60 : 120);
+        APP_SET_DATA(vBellInterval, newMins);
+        extern void Bell_ApplySettings();
+        Bell_ApplySettings();
+        SystemTrayHelper::updateData();
+        currentInt = clickedInt;
+    }
     
-    if (g_bellInterval == 2) {
+    if (currentInt == 2) {
         RECT editRc = { card2Rc.left + 15, card2Rc.top + 75, card2Rc.left + 80, card2Rc.top + 95 };
         BrandControls_DrawTextBoxFrame(hdc, editRc);
-        DrawLabel(hdc, L"25", editRc, BrandFontBody, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        wchar_t buf[32];
+        wsprintfW(buf, L"%d", vBellInterval);
+        DrawLabel(hdc, buf, editRc, BrandFontBody, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
         RECT labelPhutRc = { editRc.right + 10, editRc.top, editRc.right + 50, editRc.bottom };
         DrawLabel(hdc, L"phút", labelPhutRc, BrandFontBody, kBrandPaletteCharcoal);
     }
@@ -124,11 +147,20 @@ static void ProcessTabBell(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     DrawLabel(hdc, L"BỘ TIẾNG", label3Rc, BrandFontEyebrow, kBrandPaletteStone);
     
     RECT iconGrpRc = { card3Rc.left + 15, card3Rc.top + 35, card3Rc.right - 15, card3Rc.top + 75 };
-    int clickedSnd = BrandControls_DrawIconGroup(hdc, iconGrpRc, 4, g_bellSoundIndex, clickPt);
-    if (clickedSnd != -1) g_bellSoundIndex = clickedSnd;
+    int currentSnd = MindfulKeyHelper::getRegInt(_T("vBellSoundIndex"), 0);
+    int clickedSnd = BrandControls_DrawIconGroup(hdc, iconGrpRc, 4, currentSnd, clickPt);
+    if (clickedSnd != -1 && clickedSnd != currentSnd) {
+        MindfulKeyHelper::setRegInt(_T("vBellSoundIndex"), clickedSnd);
+        SystemTrayHelper::updateData();
+    }
     
     RECT sliderRc = { card3Rc.left + 15, card3Rc.top + 85, card3Rc.right - 15, card3Rc.top + 100 };
-    g_bellVolume = BrandControls_DrawSlider(hdc, sliderRc, g_bellVolume, clickPt);
+    int currentVol = MindfulKeyHelper::getRegInt(_T("vVolume"), 50);
+    int clickedVol = BrandControls_DrawSlider(hdc, sliderRc, currentVol, clickPt);
+    if (clickedVol != currentVol) {
+        MindfulKeyHelper::setRegInt(_T("vVolume"), clickedVol);
+        SystemTrayHelper::updateData();
+    }
     y += 125;
 }
 
@@ -155,18 +187,33 @@ static void ProcessTabKeyboard(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     RECT card2Rc = { 18, y, clientRc.right - 18, y + 130 };
     BrandControls_DrawCard(hdc, card2Rc, true);
 
-    auto DrawRowSwitch = [&](int i, const wchar_t* label, bool& state) {
+    auto DrawRowSwitch = [&](int i, const wchar_t* label, int& stateFlag) {
         int rowY = card2Rc.top + 10 + i * 35;
         RECT labelRc = { card2Rc.left + 15, rowY, card2Rc.right - 60, rowY + 25 };
         DrawLabel(hdc, label, labelRc, BrandFontBody, kBrandPaletteCharcoal);
         RECT switchRc = { card2Rc.right - 50, rowY + 2, card2Rc.right - 14, rowY + 23 };
-        if (clickPt.x != -1 && PtInRect(&switchRc, clickPt)) state = !state;
+        bool state = (stateFlag == 1);
+        if (clickPt.x != -1 && PtInRect(&switchRc, clickPt)) {
+            stateFlag = state ? 0 : 1;
+            // The global variables are just externs here, but we need to APP_SET_DATA to save them.
+            // Since we can't do macro easily without the string name, we will handle it explicitly below.
+            state = (stateFlag == 1);
+            SystemTrayHelper::updateData();
+        }
         BrandControls_DrawPillSwitch(hdc, switchRc, state);
     };
 
-    DrawRowSwitch(0, L"Gõ tiếng Việt", g_optVietnamese);
-    DrawRowSwitch(1, L"Kiểm tra chính tả", g_optSpellCheck);
-    DrawRowSwitch(2, L"Viết hoa đầu câu", g_optAutoCap);
+    int oldLang = vLanguage;
+    DrawRowSwitch(0, L"Gõ tiếng Việt", vLanguage);
+    if (oldLang != vLanguage) APP_SET_DATA(vLanguage, vLanguage);
+
+    int oldSpell = vCheckSpelling;
+    DrawRowSwitch(1, L"Kiểm tra chính tả", vCheckSpelling);
+    if (oldSpell != vCheckSpelling) APP_SET_DATA(vCheckSpelling, vCheckSpelling);
+
+    int oldCap = vUpperCaseFirstChar;
+    DrawRowSwitch(2, L"Viết hoa đầu câu", vUpperCaseFirstChar);
+    if (oldCap != vUpperCaseFirstChar) APP_SET_DATA(vUpperCaseFirstChar, vUpperCaseFirstChar);
 
     y += 145;
 }
