@@ -1,4 +1,4 @@
-﻿/*----------------------------------------------------------
+/*----------------------------------------------------------
 OpenKey - The Cross platform Open source Vietnamese Keyboard application.
 
 Copyright (C) 2019 Mai Vu Tuyen
@@ -45,8 +45,14 @@ void MainControlDialog::initDialog() {
     wsprintfW(titleBuffer, title, OpenKeyHelper::getVersionString().c_str());
     SetWindowText(hDlg, titleBuffer);
 
+    //create tab page
+    hTabPage1 = CreateDialogParam(hIns, MAKEINTRESOURCE(IDD_DIALOG_TAB_GENERAL), hDlg, tabPageEventProc, (LPARAM)this);
+    hTabPage2 = CreateDialogParam(hIns, MAKEINTRESOURCE(IDD_DIALOG_TAB_MACRO), hDlg, tabPageEventProc, (LPARAM)this);
+    hTabPage3 = CreateDialogParam(hIns, MAKEINTRESOURCE(IDD_DIALOG_TAB_SYSTEM), hDlg, tabPageEventProc, (LPARAM)this);
+    hTabPage4 = CreateDialogParam(hIns, MAKEINTRESOURCE(IDD_DIALOG_TAB_INFO), hDlg, tabPageEventProc, (LPARAM)this);
+
     //input type
-    comboBoxInputType = GetDlgItem(hDlg, IDC_COMBO_INPUT_TYPE);
+    comboBoxInputType = GetDlgItem(hTabPage1, IDC_COMBO_INPUT_TYPE);
     vector<LPCTSTR>& inputType = OpenKeyManager::getInputType();
     for (int i = 0; i < inputType.size(); i++) {
         SendMessage(comboBoxInputType, CB_ADDSTRING, i, reinterpret_cast<LPARAM>(inputType[i]));
@@ -54,95 +60,49 @@ void MainControlDialog::initDialog() {
     createToolTip(comboBoxInputType, IDS_STRING_INPUT);
 
     //code table
-    comboBoxTableCode = GetDlgItem(hDlg, IDC_COMBO_TABLE_CODE);
+    comboBoxTableCode = GetDlgItem(hTabPage1, IDC_COMBO_TABLE_CODE);
     vector<LPCTSTR>& tableCode = OpenKeyManager::getTableCode();
     for (int i = 0; i < tableCode.size(); i++) {
         SendMessage(comboBoxTableCode, CB_ADDSTRING, i, reinterpret_cast<LPARAM>(tableCode[i]));
     }
     createToolTip(comboBoxTableCode, IDS_STRING_CODE);
+    // 6-Nav Layout Position
+    RECT rc;
+    GetClientRect(hDlg, &rc);
+    int leftNavWidth = 160;
+    rc.left += leftNavWidth;
+    
+    SetWindowPos(hTabPage1, 0, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_HIDEWINDOW);
+    SetWindowPos(hTabPage2, 0, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_HIDEWINDOW);
+    SetWindowPos(hTabPage3, 0, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_HIDEWINDOW);
+    SetWindowPos(hTabPage4, 0, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_HIDEWINDOW);
+    
+    // We will redraw current tab inside WM_PAINT using BrandControls, 
+    // and manually show/hide the child dialogs.
+    // onTabIndexChanged();
 
-    //init tabview
-    hTab = GetDlgItem(hDlg, IDC_TAB_CONTROL);
-    TCITEM tci = { 0 };
-    tci.mask = TCIF_TEXT;
-    // [MINDFUL] GĐ6 — icon tab lấy từ brand (con sóng ~ trong khung, teal #1D7C91). Brand vẽ sẵn
-    // đúng 4 tab này và đúng thứ tự này từ lâu; trước đó tab chỉ có chữ trơ, không mang nhận diện.
-    //
-    // Cỡ theo DPI: 16px chuẩn, nhân theo DPI màn hình. Nhồi icon 16px cứng vào máy 200% là icon
-    // mờ nhoè — và mờ nhoè thì mắt đọc ra "app cẩu thả", không đọc ra "chánh niệm".
-    // LoadImage tự chọn cỡ khớp nhất TRONG .ico đa cỡ (ta sinh 16/24/32/48), nên không nội suy bừa.
-    UINT dpi = GetDpiForSystem();
-    int  iconPx = MulDiv(16, dpi ? dpi : 96, 96);
-    if (hTabImages == NULL) {
-        hTabImages = ImageList_Create(iconPx, iconPx, ILC_COLOR32 | ILC_MASK, 4, 0);
-        const int tabIcons[4] = { IDI_TAB_BOGO, IDI_TAB_GOTAT, IDI_TAB_HETHONG, IDI_TAB_THONGTIN };
-        for (int i = 0; i < 4; i++) {
-            HICON ico = (HICON)LoadImage(hIns, MAKEINTRESOURCE(tabIcons[i]), IMAGE_ICON,
-                                         iconPx, iconPx, LR_DEFAULTCOLOR);
-            if (ico) {
-                ImageList_AddIcon(hTabImages, ico);
-                DestroyIcon(ico);   // ImageList giữ bản sao riêng
-            }
-        }
-        TabCtrl_SetImageList(hTab, hTabImages);
-    }
-
-    tci.mask = TCIF_TEXT | TCIF_IMAGE;
-    tci.pszText = (LPWSTR)_T("Bộ gõ");
-    tci.iImage = 0;
-    TabCtrl_InsertItem(hTab, 0, &tci);
-    tci.pszText = (LPWSTR)_T("Gõ tắt");
-    tci.iImage = 1;
-    TabCtrl_InsertItem(hTab, 1, &tci);
-    tci.pszText = (LPWSTR)_T("Hệ thống");
-    tci.iImage = 2;
-    TabCtrl_InsertItem(hTab, 2, &tci);
-    tci.pszText = (LPWSTR)_T("Thông tin");
-    tci.iImage = 3;
-    TabCtrl_InsertItem(hTab, 3, &tci);
-    RECT r;
-    TabCtrl_GetItemRect(hTab, 0, &r);
-    TabCtrl_SetItemSize(hTab, r.right - r.left, (r.bottom - r.top) * 1.428f);
-
-    //create tab page
-    hTabPage1 = CreateDialogParam(hIns, MAKEINTRESOURCE(IDD_DIALOG_TAB_GENERAL), hDlg, tabPageEventProc, (LPARAM)this);
-    hTabPage2 = CreateDialogParam(hIns, MAKEINTRESOURCE(IDD_DIALOG_TAB_MACRO), hDlg, tabPageEventProc, (LPARAM)this);
-    hTabPage3 = CreateDialogParam(hIns, MAKEINTRESOURCE(IDD_DIALOG_TAB_SYSTEM), hDlg, tabPageEventProc, (LPARAM)this);
-    hTabPage4 = CreateDialogParam(hIns, MAKEINTRESOURCE(IDD_DIALOG_TAB_INFO), hDlg, tabPageEventProc, (LPARAM)this);
-    RECT rc;//find tab control's rectangle
-    GetWindowRect(hTab, &rc);
-    POINT offset = { 0 };
-    ScreenToClient(hDlg, &offset);
-    OffsetRect(&rc, offset.x, offset.y); //convert to client coordinates
-    rc.top += (LONG)((r.bottom - r.top) * 1.428f);
-    SetWindowPos(hTabPage1, 0, rc.left + 1, rc.top + 3, rc.right - rc.left - 5, rc.bottom - rc.top - 5, SWP_HIDEWINDOW);
-    SetWindowPos(hTabPage2, 0, rc.left + 1, rc.top + 3, rc.right - rc.left - 5, rc.bottom - rc.top - 6, SWP_HIDEWINDOW);
-    SetWindowPos(hTabPage3, 0, rc.left + 1, rc.top + 3, rc.right - rc.left - 5, rc.bottom - rc.top - 6, SWP_HIDEWINDOW);
-    SetWindowPos(hTabPage4, 0, rc.left + 1, rc.top + 3, rc.right - rc.left - 5, rc.bottom - rc.top - 6, SWP_HIDEWINDOW);
-    onTabIndexChanged();
-
-    checkCtrl = GetDlgItem(hDlg, IDC_CHECK_SWITCH_KEY_CTRL);
+    checkCtrl = GetDlgItem(hTabPage1, IDC_CHECK_SWITCH_KEY_CTRL);
     createToolTip(checkCtrl, IDS_STRING_CTRL);
 
-    checkAlt = GetDlgItem(hDlg, IDC_CHECK_SWITCH_KEY_ALT);
+    checkAlt = GetDlgItem(hTabPage1, IDC_CHECK_SWITCH_KEY_ALT);
     createToolTip(checkAlt, IDS_STRING_ALT);
 
-    checkWin = GetDlgItem(hDlg, IDC_CHECK_SWITCH_KEY_WIN);
+    checkWin = GetDlgItem(hTabPage1, IDC_CHECK_SWITCH_KEY_WIN);
     createToolTip(checkWin, IDS_STRING_WIN);
 
-    checkShift = GetDlgItem(hDlg, IDC_CHECK_SWITCH_KEY_SHIFT);
+    checkShift = GetDlgItem(hTabPage1, IDC_CHECK_SWITCH_KEY_SHIFT);
     createToolTip(checkShift, IDS_STRING_SHIFT);
 
-    textSwitchKey = GetDlgItem(hDlg, IDC_SWITCH_KEY_KEY);
+    textSwitchKey = GetDlgItem(hTabPage1, IDC_SWITCH_KEY_KEY);
     createToolTip(textSwitchKey, IDS_STRING_SWITCH_KEY);
 
-    checkBeep = GetDlgItem(hDlg, IDC_CHECK_SWITCH_KEY_BEEP);
+    checkBeep = GetDlgItem(hTabPage1, IDC_CHECK_SWITCH_KEY_BEEP);
     createToolTip(checkBeep, IDS_STRING_BEEP);
 
-    checkVietnamese = GetDlgItem(hDlg, IDC_RADIO_METHOD_VIETNAMESE);
+    checkVietnamese = GetDlgItem(hTabPage1, IDC_RADIO_METHOD_VIETNAMESE);
     createToolTip(checkVietnamese, IDS_STRING_VIET);
 
-    checkEnglish = GetDlgItem(hDlg, IDC_RADIO_METHOD_ENGLISH);
+    checkEnglish = GetDlgItem(hTabPage1, IDC_RADIO_METHOD_ENGLISH);
     createToolTip(checkEnglish, IDS_STRING_ENG);
 
     /*--------end common---------*/
@@ -339,11 +299,68 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
         HDC hdc = BeginPaint(hDlg, &ps);
 
         // All painting occurs here, between BeginPaint and EndPaint.
-        FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+        RECT clientRc;
+        GetClientRect(hDlg, &clientRc);
+        
+        // Double buffering
+        HDC memDC = CreateCompatibleDC(hdc);
+        HBITMAP memBitmap = CreateCompatibleBitmap(hdc, clientRc.right, clientRc.bottom);
+        HBITMAP oldBitmap = (HBITMAP)SelectObject(memDC, memBitmap);
+
+        // Nền trắng/xám
+        FillRect(memDC, &clientRc, (HBRUSH)(COLOR_WINDOW + 1));
+
+        // Vẽ 6-Nav (Cột trái)
+        RECT navRc = { 10, 20, 150, 260 };
+        const wchar_t* tabs[] = { L"Hôm nay", L"Chuông", L"Bộ gõ", L"Riêng tư", L"Hệ thống", L"Giới thiệu" };
+        POINT pt = { -1, -1 };
+        // Giả lập Segmented Control dọc hoặc vẽ thẳng
+        // Tạm thời gọi hàm DrawSegmentedControl (cần thêm cờ hoặc vẽ tuỳ chỉnh dọc)
+        // Thay vì thế, ta vẽ nhanh thủ công ở đây:
+        for (int i = 0; i < 6; i++) {
+            RECT itemRc = { navRc.left, navRc.top + i * 40, navRc.right, navRc.top + i * 40 + 35 };
+            if (i == currentTab) {
+                // Background tealLight
+                HBRUSH br = CreateSolidBrush(MK_COLORREF(0xDEF0F2)); // tealLight
+                FillRect(memDC, &itemRc, br);
+                DeleteObject(br);
+            }
+            SetBkMode(memDC, TRANSPARENT);
+            SetTextColor(memDC, MK_COLORREF(i == currentTab ? 0x1D7C91 : 0x4B5563)); // teal vs charcoal
+            DrawTextW(memDC, tabs[i], -1, &itemRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        }
+
+        // Nếu là tab Hôm nay / Chuông / Riêng tư, vẽ nội dung GDI+ ở bên phải
+        if (currentTab == 0 || currentTab == 1 || currentTab == 3) {
+            RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
+            SetTextColor(memDC, MK_COLORREF(0x9CA3AF));
+            DrawTextW(memDC, L"Nội dung đang xây dựng...", -1, &contentRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        }
+
+        BitBlt(hdc, 0, 0, clientRc.right, clientRc.bottom, memDC, 0, 0, SRCCOPY);
+
+        SelectObject(memDC, oldBitmap);
+        DeleteObject(memBitmap);
+        DeleteDC(memDC);
 
         EndPaint(hDlg, &ps);
 
         return 0;
+    }
+    else if (uMsg == WM_LBUTTONUP) {
+        int x = GET_X_LPARAM(lParam);
+        int y = GET_Y_LPARAM(lParam);
+        POINT pt = { x, y };
+
+        RECT navRc = { 10, 20, 150, 260 };
+        if (PtInRect(&navRc, pt)) {
+            int clickedTab = (pt.y - navRc.top) / 40;
+            if (clickedTab >= 0 && clickedTab < 6 && clickedTab != currentTab) {
+                currentTab = clickedTab;
+                onTabIndexChanged(); // cập nhật Show/Hide child dialogs
+                InvalidateRect(hDlg, NULL, FALSE);
+            }
+        }
     }
 
 #ifdef _WIN64
@@ -638,11 +655,20 @@ void MainControlDialog::setSwitchKeyText(const HWND& hWnd, const UINT16& keyCode
 }
 
 void MainControlDialog::onTabIndexChanged() {
-    int index = TabCtrl_GetCurSel(hTab);
-    ShowWindow(hTabPage1, (index == 0) ? SW_SHOW : SW_HIDE);
-    ShowWindow(hTabPage2, (index == 1) ? SW_SHOW : SW_HIDE);
-    ShowWindow(hTabPage3, (index == 2) ? SW_SHOW : SW_HIDE);
-    ShowWindow(hTabPage4, (index == 3) ? SW_SHOW : SW_HIDE);
+    // 6-Nav: 0: Hôm nay, 1: Chuông, 2: Bộ gõ, 3: Riêng tư, 4: Hệ thống, 5: Giới thiệu
+    // hTabPage1 (Bộ gõ), hTabPage2 (Gõ tắt), hTabPage3 (Hệ thống), hTabPage4 (Thông tin)
+    // Map:
+    // Tab 2 (Bộ gõ) -> Show hTabPage1
+    // Tab 4 (Hệ thống) -> Show hTabPage3
+    // Tab 5 (Giới thiệu) -> Show hTabPage4
+    // Tab 0 (Hôm nay), 1 (Chuông), 3 (Riêng tư) -> GDI+ drawing (hide all)
+    
+    ShowWindow(hTabPage1, (currentTab == 2) ? SW_SHOW : SW_HIDE);
+    ShowWindow(hTabPage2, SW_HIDE); // Gõ tắt đang được ẩn hoặc gộp
+    ShowWindow(hTabPage3, (currentTab == 4) ? SW_SHOW : SW_HIDE);
+    ShowWindow(hTabPage4, (currentTab == 5) ? SW_SHOW : SW_HIDE);
+    
+    InvalidateRect(hDlg, NULL, FALSE);
 }
 
 void MainControlDialog::onUpdateButton() {

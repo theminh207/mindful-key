@@ -16,6 +16,7 @@ redistribute your new version, it MUST be open source.
 
 class MainControlDialog : public BaseDialog {
 private:
+    int currentTab = 0; // Thêm currentTab để quản lý 6-Nav
 	HWND hTab, hTabPage1, hTabPage2, hTabPage3, hTabPage4;
 	// [MINDFUL] GĐ6 — icon 4 tab lấy từ brand. Giữ ở đây vì ImageList phải sống bằng tuổi thọ
 	// của tab control: huỷ sớm là tab mất icon (tab KHÔNG giữ bản sao, nó chỉ trỏ vào list).
