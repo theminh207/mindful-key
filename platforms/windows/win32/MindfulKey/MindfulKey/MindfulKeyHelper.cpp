@@ -39,9 +39,24 @@ int CF_HTML = RegisterClipboardFormat(_T("HTML Format"));
 int CF_MINDFULKEY = RegisterClipboardFormat(_T("MindfulKey Format"));
 
 void MindfulKeyHelper::openKey() {
-	LONG nError = RegMindfulKeyEx(HKEY_CURRENT_USER, sk, NULL, KEY_ALL_ACCESS, &hKey);
+	LONG nError = RegOpenKeyEx(HKEY_CURRENT_USER, sk, 0, KEY_ALL_ACCESS, &hKey);
 	if (nError == ERROR_FILE_NOT_FOUND) 	{
-		nError = RegCreateKeyEx(HKEY_CURRENT_USER, sk, NULL, NULL, REG_OPTION_NON_VOLATILE, KEY_CREATE_SUB_KEY, NULL, &hKey, NULL);
+		// [MINDFUL] Migrate settings from OpenKey on first run
+		HMODULE hShlwapi = LoadLibraryW(L"shlwapi.dll");
+		if (hShlwapi) {
+			typedef LSTATUS (WINAPI *PSHCOPYKEYW)(HKEY, LPCWSTR, HKEY, LPCWSTR, DWORD);
+			PSHCOPYKEYW pSHCopyKeyW = (PSHCOPYKEYW)GetProcAddress(hShlwapi, "SHCopyKeyW");
+			if (pSHCopyKeyW) {
+				pSHCopyKeyW(HKEY_CURRENT_USER, L"SOFTWARE\\TuyenMai\\OpenKey", HKEY_CURRENT_USER, sk, 0);
+			}
+			FreeLibrary(hShlwapi);
+		}
+		
+		// Try opening again
+		nError = RegOpenKeyEx(HKEY_CURRENT_USER, sk, 0, KEY_ALL_ACCESS, &hKey);
+		if (nError == ERROR_FILE_NOT_FOUND) {
+			nError = RegCreateKeyEx(HKEY_CURRENT_USER, sk, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_CREATE_SUB_KEY, NULL, &hKey, NULL);
+		}
 	}
 	if (nError) {
 		LOG(L"result %d\n", nError);
@@ -123,7 +138,7 @@ void MindfulKeyHelper::registerRunOnStartup(const int& val) {
 			sprintf_s(buff, "schtasks /create /sc onlogon /tn MindfulKey /rl highest /tr \"%s\" /f", path.c_str());
 			WinExec(buff, SW_HIDE);
 		} else {
-			RegMindfulKeyEx(HKEY_CURRENT_USER, _runOnStartupKeyPath, NULL, KEY_ALL_ACCESS, &hKey);
+			RegOpenKeyEx(HKEY_CURRENT_USER, _runOnStartupKeyPath, NULL, KEY_ALL_ACCESS, &hKey);
 			wstring path = getFullPath();
 			// (BYTE*) chứ không (byte*): `byte` viết thường vốn KHÔNG do file này khai báo — nó lọt vào
 			// nhờ <Urlmon.h> tình cờ kéo theo rpcndr.h. Gỡ Urlmon (code mạng duy nhất của app,
@@ -133,7 +148,7 @@ void MindfulKeyHelper::registerRunOnStartup(const int& val) {
 			RegCloseKey(hKey);
 		}
 	} else {
-		RegMindfulKeyEx(HKEY_CURRENT_USER, _runOnStartupKeyPath, NULL, KEY_ALL_ACCESS, &hKey);
+		RegOpenKeyEx(HKEY_CURRENT_USER, _runOnStartupKeyPath, NULL, KEY_ALL_ACCESS, &hKey);
 		RegDeleteValue(hKey, _T("MindfulKey"));
 		RegCloseKey(hKey);
 		WinExec("schtasks /delete  /tn MindfulKey /f", SW_HIDE);

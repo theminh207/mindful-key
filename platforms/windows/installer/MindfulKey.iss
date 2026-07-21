@@ -96,3 +96,25 @@ Filename: "{app}\{#MyExeName}"; Description: "Mở {#MyAppName} ngay"; Flags: no
 ; (riêng tư mặc định: xoá dữ liệu là hành vi người dùng chủ động chọn trong app, không phải
 ; tác dụng phụ của việc gỡ cài đặt).
 Type: dirifempty; Name: "{app}"
+
+[Code]
+// [MINDFUL] Tự động dò tìm và gỡ cài đặt phiên bản cũ (OpenKey) trước khi cài bản mới
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  ResultCode: Integer;
+  UninstallStr: String;
+begin
+  if CurStep = ssInstall then
+  begin
+    // AppId của bản cũ và bản mới đều giống nhau: {7C4E2A16-9E3B-4E51-A0D7-3F1B6C2D8E94}
+    // Ưu tiên tìm ở HKLM (All Users) hoặc HKCU (Current User)
+    if RegQueryStringValue(HKLM, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{7C4E2A16-9E3B-4E51-A0D7-3F1B6C2D8E94}_is1', 'UninstallString', UninstallStr) or
+       RegQueryStringValue(HKCU, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{7C4E2A16-9E3B-4E51-A0D7-3F1B6C2D8E94}_is1', 'UninstallString', UninstallStr) then
+    begin
+      // Xoá dấu ngoặc kép bọc chuỗi (nếu có)
+      UninstallStr := RemoveQuotes(UninstallStr);
+      // Gọi trình gỡ cài đặt trong im lặng tuyệt đối, ngắt tiến trình đang chạy của bản cũ
+      Exec(UninstallStr, '/VERYSILENT /SUPPRESSMSGBOXES /NORESTART', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    end;
+  end;
+end;
