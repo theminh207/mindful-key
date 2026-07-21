@@ -341,7 +341,7 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
             int y = 20;
 
-            auto DrawLabel = [&](const wchar_t* text, RECT rc, BrandFontType font, uint32_t color, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
+            auto DrawLabel = [&](const wchar_t* text, RECT rc, BrandFontRole font, uint32_t color, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
                 SetTextColor(memDC, MK_COLORREF(color));
                 HFONT f = BrandControls_Font(font);
                 HFONT old = (HFONT)SelectObject(memDC, f);
@@ -381,7 +381,7 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
             int y = 20;
 
-            auto DrawLabel = [&](const wchar_t* text, RECT rc, BrandFontType font, uint32_t color, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
+            auto DrawLabel = [&](const wchar_t* text, RECT rc, BrandFontRole font, uint32_t color, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
                 SetBkMode(memDC, TRANSPARENT);
                 SetTextColor(memDC, MK_COLORREF(color));
                 HFONT f = BrandControls_Font(font);
@@ -429,7 +429,7 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
             int y = 20;
 
-            auto DrawLabel = [&](const wchar_t* text, RECT rc, BrandFontType font, uint32_t color, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
+            auto DrawLabel = [&](const wchar_t* text, RECT rc, BrandFontRole font, uint32_t color, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
                 SetBkMode(memDC, TRANSPARENT);
                 SetTextColor(memDC, MK_COLORREF(color));
                 HFONT f = BrandControls_Font(font);
@@ -468,7 +468,7 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
             int y = 50;
 
-            auto DrawLabel = [&](const wchar_t* text, RECT rc, BrandFontType font, uint32_t color, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
+            auto DrawLabel = [&](const wchar_t* text, RECT rc, BrandFontRole font, uint32_t color, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
                 SetBkMode(memDC, TRANSPARENT);
                 SetTextColor(memDC, MK_COLORREF(color));
                 HFONT f = BrandControls_Font(font);
