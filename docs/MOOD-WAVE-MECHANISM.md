@@ -136,7 +136,27 @@ tính risk, không đổi hợp đồng `câu → risk [0,1]`, nên không cản
 Trình tự đề nghị: **#0 → #1 → #2 → #3** (mỗi bước một commit, có ca test riêng trong
 `tests/macos/mood_pipeline` + bản đối chiếu iOS), PhoBERT giữ nguyên là đích dài hạn.
 
-## 8. Khi nào cập nhật tài liệu này
+## 8. Hướng dẫn đọc đồ thị dòng sông (Dành cho người dùng)
+
+Dòng sông cảm xúc là một công cụ phản chiếu (gương soi tâm trí), không phải là công cụ chấm điểm. Dưới đây là cách đọc các tín hiệu trên dòng sông:
+
+### Phân biệt loại dữ liệu qua Hình dạng (Không đổi màu)
+Toàn bộ dòng sông luôn giữ nguyên màu Teal trung tính. Ứng dụng không dùng màu Đỏ (nguy hiểm) hay Xanh (an toàn) để tránh việc phán xét cảm xúc của bạn là "tốt" hay "xấu".
+- **Chấm ĐẶC (Tô kín):** Là những nhịp lấy mẫu **tự động** của hệ thống trong lúc bạn đang gõ phím.
+- **Vòng RỖNG (Khoảng trắng ở giữa):** Là những lần **bạn tự đánh giá** (Tự thuật) qua khung "Mặt hồ đang thế nào?" xuất hiện 45 giây sau mỗi tiếng chuông. 
+- *Mục đích:* Giúp bạn đối chiếu giữa những gì cơ thể/bàn phím đang thể hiện (chấm đặc) với những gì bạn thực sự nhận thức được về bản thân (vòng rỗng).
+
+### Ý nghĩa của Cơn sóng (Biên độ)
+Trục dọc của đồ thị đại diện cho **Biên độ dao động** (sự xáo động của mặt nước):
+- **Phẳng lặng (Nằm sát trục giữa):** Bạn đang gõ phím thư giãn, từ tốn, dùng từ ngữ ôn hòa, hoặc bạn vừa tự đánh giá mình đang "Phẳng lặng" (Biên độ ~0.12).
+- **Gợn nhẹ:** Tâm trí bắt đầu có sự xáo động nhẹ (Biên độ ~0.45).
+- **Gợn sóng / Dậy sóng (Nằm cách xa trục giữa nhất):** Bạn đang gõ phím rất mạnh, nhanh, dùng phím xóa liên tục hoặc sử dụng các từ ngữ mang cảm xúc mạnh, tiêu cực. Sóng lúc này sẽ vút lên cao (hoặc chìm xuống sâu) tạo thành một cơn sóng lớn (Biên độ ~0.80).
+
+**Lưu ý quan trọng:** Cơn sóng lượn lên đỉnh hay lượn xuống đáy chỉ là nét vẽ hình sin theo thời gian. Điều bạn cần quan tâm là **khoảng cách từ điểm đó tới đường đứt nét ở giữa**. Càng xa trung tâm nghĩa là mặt hồ càng xáo động.
+
+---
+
+## 9. Khi nào cập nhật tài liệu này
 
 Đổi công thức/ngưỡng/kho câu → sửa mục tương ứng TẠI ĐÂY cùng commit, và cập nhật dòng liên
 quan trong `TEST_MATRIX.md`. Tài liệu này mô tả *hiện tại* — lịch sử quyết định vẫn nằm ở
