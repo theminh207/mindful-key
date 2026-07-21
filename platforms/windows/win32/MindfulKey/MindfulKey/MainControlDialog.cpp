@@ -16,6 +16,7 @@ redistribute your new version, it MUST be open source.
 #include "MoodWatch.h"
 #include "Bell.h"
 #include "BrandControls.h"
+#include "BrandPalette.h"
 #include "ReflectionScreen.h"
 #include "MoodStore.h"
 #include <Shlobj.h>
@@ -143,22 +144,34 @@ INT_PTR MainControlDialog::eventProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 }
 
 INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    MainControlDialog* pThis = nullptr;
     if (uMsg == WM_INITDIALOG) {
 #ifdef _WIN64
         SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
 #else
         SetWindowLong(hDlg, GWL_USERDATA, lParam);
 #endif
+        pThis = (MainControlDialog*)lParam;
+        return TRUE;
+    } else {
+#ifdef _WIN64
+        pThis = (MainControlDialog*)GetWindowLongPtr(hDlg, GWLP_USERDATA);
+#else
+        pThis = (MainControlDialog*)GetWindowLong(hDlg, GWL_USERDATA);
+#endif
+    }
+    if (!pThis) return FALSE;
+
+    int& currentTab = pThis->currentTab;
+
+    if (uMsg == WM_ERASEBKGND) {
         return TRUE;
     }
-    else if (uMsg == WM_ERASEBKGND) {
-        return TRUE;
-    }
-    else if ((uMsg == WM_CTLCOLORSTATIC || uMsg == WM_CTLCOLORBTN) && IsThemeActive()) {
+    if ((uMsg == WM_CTLCOLORSTATIC || uMsg == WM_CTLCOLORBTN) && IsThemeActive()) {
         SetBkMode((HDC)wParam, TRANSPARENT);
         return (LRESULT)GetStockObject(COLOR_WINDOW + 1);
     }
-    else if (uMsg == WM_PAINT && IsThemeActive()) {
+    if (uMsg == WM_PAINT && IsThemeActive()) {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hDlg, &ps);
 

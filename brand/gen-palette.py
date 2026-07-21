@@ -150,7 +150,7 @@ def targets():
     colors, mood, notes = load()
     out = {
         os.path.join(ROOT, "platforms/apple/shared/BrandPalette.h"): apple_header(colors, mood, notes),
-        os.path.join(ROOT, "platforms/windows/win32/OpenKey/OpenKey/BrandPalette.h"): windows_header(colors, mood, notes),
+        os.path.join(ROOT, "platforms/windows/win32/MindfulKey/MindfulKey/BrandPalette.h"): windows_header(colors, mood, notes),
     }
     for key, name in COLORSET_NAMES.items():
         p = os.path.join(ROOT, "platforms/apple/Resources/Assets.xcassets", f"{name}.colorset", "Contents.json")
