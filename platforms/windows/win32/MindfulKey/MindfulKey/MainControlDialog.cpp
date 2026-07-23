@@ -48,6 +48,9 @@ MainControlDialog::~MainControlDialog() {
 
 void MainControlDialog::initDialog() {
     HINSTANCE hIns = GetModuleHandleW(NULL);
+    // [MINDFUL] CP5 — chạy dọn dẹp tự động (giữ N ngày gần nhất) mỗi lần mở cửa Cài đặt. Idempotent +
+    // rẻ (chỉ ghi lại nếu thật sự có dòng quá hạn). Mirror macOS gọi lúc pane Riêng tư init.
+    MoodStore_RunAutoPurgeIfNeeded();
     //dialog icon
     SET_DIALOG_ICON(IDI_APP_ICON);
 
@@ -428,16 +431,70 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             y += 120;
         }
         else if (currentTab == 3) { // Riêng tư
-            // [MINDFUL] A4 — ĐÃ GỠ 2 control giả khỏi tab này (rule "không để nút giả"):
-            // (1) segmented "THỜI GIAN LƯU TRỮ" — không có bất kỳ hàm purge/retention nào trong
-            //     MoodStore.cpp/.h (chỉ có MoodStore_DeleteAll — xoá sạch, không phải xoá theo N
-            //     ngày); biến giữ nó (s_privacyRetention) không lưu registry, và còn bị chính
-            //     WM_PAINT (pt={-1,-1}) ghi đè về -1 mỗi lần vẽ trước khi gỡ.
-            // (2) nút "Xuất" — code cũ tự ghi "Vẽ nút giả", không gọi hàm nào cả; MoodStore.cpp
-            //     không có hàm xuất CSV nào để gọi.
-            // macOS ĐÃ có đủ 2 tính năng này thật (MoodStoreMac_ExportCSVToURL +
-            // MoodStoreMac_RunAutoPurgeIfNeeded, popup 30/60/90/Không) — Windows chưa port.
-            // Xem docs/FRICTION-LOG.md 2026-07-23 "A4 — Riêng tư Windows thiếu export+purge".
+            // [MINDFUL] CP5 — 4 nhóm THẬT (backend đã thêm: consent/DeleteAll có sẵn + ExportCSV +
+            // purge mới). A4 (2026-07-23) từng gỡ 2 nút giả vì thiếu backend — nay đã đủ, không còn giả.
+            RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
+            int y = 20;
+            auto DrawLabel = [&](const wchar_t* text, RECT rc, BrandFontRole font, uint32_t color, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
+                SetBkMode(memDC, TRANSPARENT);
+                SetTextColor(memDC, MK_COLORREF(color));
+                HFONT f = BrandControls_Font(font);
+                HFONT old = (HFONT)SelectObject(memDC, f);
+                DrawTextW(memDC, text, -1, &rc, format);
+                SelectObject(memDC, old);
+            };
+
+            // Card 1 — Nhật ký cảm xúc (consent)
+            RECT p1Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 78 };
+            BrandControls_DrawCard(memDC, p1Rc, true);
+            RECT p1Eb = { p1Rc.left + 15, p1Rc.top + 10, p1Rc.left + 220, p1Rc.top + 28 };
+            DrawLabel(L"NHẬT KÝ CẢM XÚC", p1Eb, BrandFontEyebrow, kBrandPaletteStone);
+            RECT p1Lbl = { p1Rc.left + 15, p1Rc.top + 30, p1Rc.right - 60, p1Rc.top + 52 };
+            DrawLabel(L"Lưu điểm gợn cục bộ", p1Lbl, BrandFontBody, kBrandPaletteCharcoal);
+            RECT p1Sw = { p1Rc.right - 50, p1Rc.top + 32, p1Rc.right - 14, p1Rc.top + 53 };
+            BrandControls_DrawPillSwitch(memDC, p1Sw, MoodStore_HasConsent());
+            RECT p1Note = { p1Rc.left + 15, p1Rc.top + 54, p1Rc.right - 15, p1Rc.top + 74 };
+            DrawLabel(L"Tắt sẽ xóa sạch mọi dữ liệu đã lưu.", p1Note, BrandFontBody, kBrandPaletteMuted);
+            y += 93;
+
+            // Card 2 — Cầm trịch dữ liệu (Xuất CSV)
+            RECT p2Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 72 };
+            BrandControls_DrawCard(memDC, p2Rc, true);
+            RECT p2Eb = { p2Rc.left + 15, p2Rc.top + 10, p2Rc.left + 220, p2Rc.top + 28 };
+            DrawLabel(L"CẦM TRỊCH DỮ LIỆU", p2Eb, BrandFontEyebrow, kBrandPaletteStone);
+            RECT btnCsvRc = { p2Rc.left + 15, p2Rc.top + 34, p2Rc.left + 155, p2Rc.top + 60 };
+            HBRUSH brCsv = CreateSolidBrush(MK_COLORREF(kBrandPaletteTealLight));
+            FillRect(memDC, &btnCsvRc, brCsv);
+            DeleteObject(brCsv);
+            DrawLabel(L"Xuất CSV…", btnCsvRc, BrandFontButton, kBrandPaletteTeal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            RECT p2Note = { p2Rc.left + 165, p2Rc.top + 34, p2Rc.right - 15, p2Rc.top + 60 };
+            DrawLabel(L"Bản sao gọn, không chứa chữ gõ.", p2Note, BrandFontBody, kBrandPaletteMuted, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+            y += 87;
+
+            // Card 3 — Tự động dọn dẹp (retention)
+            RECT p3Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 92 };
+            BrandControls_DrawCard(memDC, p3Rc, true);
+            RECT p3Eb = { p3Rc.left + 15, p3Rc.top + 10, p3Rc.left + 220, p3Rc.top + 28 };
+            DrawLabel(L"TỰ ĐỘNG DỌN DẸP", p3Eb, BrandFontEyebrow, kBrandPaletteStone);
+            RECT p3Lbl = { p3Rc.left + 15, p3Rc.top + 32, p3Rc.right - 15, p3Rc.top + 50 };
+            DrawLabel(L"Tự xóa nhật ký cũ hơn:", p3Lbl, BrandFontBody, kBrandPaletteCharcoal);
+            RECT segPurgeRc = { p3Rc.left + 15, p3Rc.top + 56, p3Rc.right - 15, p3Rc.top + 84 };
+            const wchar_t* purgeTabs[] = { L"30 ngày", L"60 ngày", L"90 ngày", L"Không" };
+            int pd = MoodStore_GetPurgeDays();
+            int purgeIdx = (pd == 30) ? 0 : ((pd == 60) ? 1 : ((pd == 90) ? 2 : 3));
+            BrandControls_DrawSegmentedControl(memDC, segPurgeRc, purgeTabs, 4, purgeIdx, pt, 0);
+            y += 107;
+
+            // Card 4 — Xóa bỏ
+            RECT p4Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 72 };
+            BrandControls_DrawCard(memDC, p4Rc, true);
+            RECT p4Eb = { p4Rc.left + 15, p4Rc.top + 10, p4Rc.left + 220, p4Rc.top + 28 };
+            DrawLabel(L"XÓA BỎ", p4Eb, BrandFontEyebrow, kBrandPaletteStone);
+            RECT btnDelRc = { p4Rc.left + 15, p4Rc.top + 34, p4Rc.left + 185, p4Rc.top + 60 };
+            HBRUSH brDel = CreateSolidBrush(MK_COLORREF(kBrandPaletteTealLight));
+            FillRect(memDC, &btnDelRc, brDel);
+            DeleteObject(brDel);
+            DrawLabel(L"Xóa toàn bộ nhật ký", btnDelRc, BrandFontButton, kBrandPaletteTeal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
         }
 
         
@@ -796,6 +853,75 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             if (PtInRect(&macroLinkRc, pt)) AppDelegate::getInstance()->onMacroTable();
             else if (PtInRect(&convLinkRc, pt)) AppDelegate::getInstance()->onConvertTool();
 
+            if (changed) {
+                SystemTrayHelper::updateData();
+                InvalidateRect(hDlg, NULL, FALSE);
+            }
+        }
+        else if (currentTab == 3) {
+            // [MINDFUL] CP5 — hit-test tab Riêng tư (khối này TRƯỚC ĐÂY THIẾU HẲN). RECT dựng lại Y HỆT
+            // khối vẽ. 4 nhóm: consent toggle, Xuất CSV, retention segmented, Xóa toàn bộ.
+            RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
+            int y = 20;
+            RECT p1Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 78 };
+            RECT p1Sw = { p1Rc.right - 50, p1Rc.top + 32, p1Rc.right - 14, p1Rc.top + 53 };
+            y += 93;
+            RECT p2Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 72 };
+            RECT btnCsvRc = { p2Rc.left + 15, p2Rc.top + 34, p2Rc.left + 155, p2Rc.top + 60 };
+            y += 87;
+            RECT p3Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 92 };
+            RECT segPurgeRc = { p3Rc.left + 15, p3Rc.top + 56, p3Rc.right - 15, p3Rc.top + 84 };
+            y += 107;
+            RECT p4Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 72 };
+            RECT btnDelRc = { p4Rc.left + 15, p4Rc.top + 34, p4Rc.left + 185, p4Rc.top + 60 };
+
+            bool changed = false;
+            // Consent: tắt = MoodStore_SetConsent(false) TỰ XÓA SẠCH → hỏi lại trước khi tắt.
+            if (PtInRect(&p1Sw, pt)) {
+                bool turnOn = !MoodStore_HasConsent();
+                if (!turnOn) {
+                    if (MessageBoxW(hDlg, L"Tắt nhật ký sẽ XÓA SẠCH mọi dữ liệu cảm xúc đã lưu. Tiếp tục?",
+                            L"Mindful Keyboard", MB_YESNO | MB_ICONQUESTION) != IDYES)
+                        turnOn = true;   // huỷ -> giữ nguyên đang bật
+                }
+                MoodStore_SetConsent(turnOn);
+                changed = true;
+            }
+            // Xuất CSV (GetSaveFileName → MoodStore_ExportCSV).
+            if (PtInRect(&btnCsvRc, pt)) {
+                if (!MoodStore_HasConsent()) {
+                    MessageBoxW(hDlg, L"Chưa có nhật ký để xuất (nhật ký đang tắt).", L"Mindful Keyboard", MB_OK);
+                } else {
+                    TCHAR file[MAX_PATH] = _T("mindful-mood.csv");
+                    OPENFILENAME ofn = { 0 };
+                    ofn.lStructSize = sizeof(ofn);
+                    ofn.hwndOwner = hDlg;
+                    ofn.lpstrFilter = _T("Tệp CSV (*.csv)\0*.csv\0");
+                    ofn.lpstrFile = file;
+                    ofn.nMaxFile = MAX_PATH;
+                    ofn.lpstrDefExt = _T("csv");
+                    ofn.Flags = OFN_OVERWRITEPROMPT | OFN_PATHMUSTEXIST;
+                    if (GetSaveFileName(&ofn)) {
+                        MessageBoxW(hDlg, MoodStore_ExportCSV(file) ? L"Đã xuất nhật ký ra file CSV." : L"Xuất CSV không thành công.",
+                            L"Mindful Keyboard", MB_OK);
+                    }
+                }
+            }
+            // Retention: 30/60/90/Không.
+            int ps = BrandControls_HitSegmented(segPurgeRc, 4, pt);
+            if (ps != -1) {
+                int days = (ps == 0) ? 30 : ((ps == 1) ? 60 : ((ps == 2) ? 90 : 0));
+                MoodStore_SetPurgeDays(days);
+                changed = true;
+            }
+            // Xóa toàn bộ.
+            if (PtInRect(&btnDelRc, pt)) {
+                if (MessageBoxW(hDlg, L"Xóa toàn bộ nhật ký cảm xúc trên máy này?\nKhông thể lấy lại.",
+                        L"Mindful Keyboard", MB_YESNO | MB_ICONQUESTION) == IDYES) {
+                    MoodStore_DeleteAll();
+                    changed = true;
+                }
+            }
             if (changed) {
                 SystemTrayHelper::updateData();
                 InvalidateRect(hDlg, NULL, FALSE);

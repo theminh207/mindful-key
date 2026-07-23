@@ -76,6 +76,13 @@ std::vector<MoodSample> MoodStore_FetchRecentSamples(int pastSeconds);
 
 void MoodStore_DeleteAll();       // xoá tệp. Hành động CHỦ ĐỘNG của người dùng, không bao giờ tự động.
 
+// [MINDFUL] CP5 — tab Riêng tư (mirror macOS). Xuất CSV hẹp (bỏ app+choice, PRIVACY-NOTE §24) +
+// tự động dọn dẹp theo N ngày (0 = giữ tất cả, mặc định 90).
+bool MoodStore_ExportCSV(const std::wstring& path);
+int  MoodStore_GetPurgeDays();
+void MoodStore_SetPurgeDays(int days);
+void MoodStore_RunAutoPurgeIfNeeded();
+
 // [MINDFUL] P8 — tiện ích DEV, CHỈ bản _DEBUG (không lọt vào bản Release người dùng).
 #ifdef _DEBUG
 void MoodStore_DevSeed();              // seed dữ liệu mẫu (sample 24h + vài checkin) để test sóng/nhật ký

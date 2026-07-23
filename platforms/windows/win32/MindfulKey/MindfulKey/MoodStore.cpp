@@ -360,6 +360,92 @@ void MoodStore_DeleteAll() {
     DeleteFile((path + _T(".tmp")).c_str());   // dọn cả tệp tạm nếu lần ghi trước chết giữa chừng
 }
 
+// [MINDFUL] CP5 — XUẤT CSV HẸP (PRIVACY-NOTE §24: chỉ điểm rủi ro + thời điểm + trạng thái cảm xúc;
+// BỎ app_bundle_id + choice). Mirror MoodStoreMac_ExportCSVToURL: cột ts,event_type,send_risk,
+// mood_label,intensity. Ghi UTF-8 + BOM để Excel đọc đúng tiếng Việt. Các trường đều là số/nhãn ASCII,
+// không có dấu phẩy nên không cần escape CSV.
+bool MoodStore_ExportCSV(const std::wstring& path) {
+    if (!MoodStore_HasConsent())
+        return false;
+    lock_guard<mutex> lock(g_mutex);
+    wstring all;
+    if (!ReadAll(all))
+        return false;
+
+    wstring csv = L"ts,event_type,send_risk,mood_label,intensity\r\n";
+    wistringstream in(all);
+    wstring line;
+    getline(in, line);   // bỏ header nội bộ
+    while (getline(in, line)) {
+        if (line.empty()) continue;
+        // cột nội bộ: ts, event_type, send_risk, app, choice, mood_label, intensity
+        wistringstream f(line);
+        wstring ts, type, risk, app, choice, label, intensity;
+        getline(f, ts, L'\t');
+        getline(f, type, L'\t');
+        getline(f, risk, L'\t');
+        getline(f, app, L'\t');
+        getline(f, choice, L'\t');
+        getline(f, label, L'\t');
+        getline(f, intensity, L'\t');
+        if (ts.empty() || type == L"note") continue;   // BỎ app+choice khi ghép: đúng PRIVACY-NOTE
+        csv += ts + L"," + type + L"," + risk + L"," + label + L"," + intensity + L"\r\n";
+    }
+
+    int u8len = WideCharToMultiByte(CP_UTF8, 0, csv.c_str(), (int)csv.size(), NULL, 0, NULL, NULL);
+    std::string u8((size_t)u8len, '\0');
+    WideCharToMultiByte(CP_UTF8, 0, csv.c_str(), (int)csv.size(), &u8[0], u8len, NULL, NULL);
+
+    HANDLE h = CreateFileW(path.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (h == INVALID_HANDLE_VALUE)
+        return false;
+    DWORD written = 0;
+    const unsigned char bom[3] = { 0xEF, 0xBB, 0xBF };
+    WriteFile(h, bom, 3, &written, NULL);
+    WriteFile(h, u8.data(), (DWORD)u8.size(), &written, NULL);
+    CloseHandle(h);
+    return true;
+}
+
+// [MINDFUL] CP5 — tự động dọn dẹp: giữ nhật ký trong N ngày gần nhất (mirror MoodStoreMac auto-purge).
+// 0 = giữ tất cả. Mặc định 90 ngày.
+static LPCTSTR kRegPurgeDays = _T("vMoodPurgeDays");
+
+int MoodStore_GetPurgeDays() {
+    return MindfulKeyHelper::getRegInt(kRegPurgeDays, 90);
+}
+
+void MoodStore_RunAutoPurgeIfNeeded() {
+    int days = MoodStore_GetPurgeDays();
+    if (days <= 0 || !MoodStore_HasConsent())
+        return;
+    lock_guard<mutex> lock(g_mutex);
+    wstring all;
+    if (!ReadAll(all))
+        return;
+    time_t cutoff = time(NULL) - (time_t)days * 86400;
+    wistringstream in(all);
+    wstring line;
+    wostringstream kept;
+    getline(in, line);   // header
+    kept << (line.empty() ? wstring(kFileHeader) : line) << L"\n";
+    bool trimmed = false;
+    while (getline(in, line)) {
+        if (line.empty()) continue;
+        size_t tab = line.find(L'\t');   // ts là cột đầu
+        if (tab == wstring::npos) continue;
+        long long ts = _wtoi64(line.substr(0, tab).c_str());
+        if ((time_t)ts >= cutoff) kept << line << L"\n";
+        else trimmed = true;
+    }
+    if (trimmed) WriteAll(kept.str());   // chỉ ghi lại nếu THẬT SỰ có dòng bị bỏ (tránh ghi thừa)
+}
+
+void MoodStore_SetPurgeDays(int days) {
+    MindfulKeyHelper::setRegInt(kRegPurgeDays, days);
+    MoodStore_RunAutoPurgeIfNeeded();   // áp ngay khi đổi
+}
+
 // [MINDFUL] P8 — TIỆN ÍCH DEV, chỉ bản _DEBUG. Seed dữ liệu mẫu (sample backdate 24h + vài checkin)
 // để test khung sóng/nhật ký NGAY, không phải chờ gõ hàng giờ. KHÔNG lọt vào bản Release người dùng
 // (bọc #ifdef _DEBUG cả .h lẫn .cpp lẫn mục menu). KHÔNG sửa đường ghi/đọc thật — chỉ thêm hàm mới.
