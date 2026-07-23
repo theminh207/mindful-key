@@ -44,8 +44,25 @@ static inline NSDictionary *MKMakeEntry(CGFloat xf, double value, BOOL isCheckin
     return @{@"pt": [NSValue valueWithPoint:NSMakePoint(xf, value)], @"checkin": @(isCheckin)};
 }
 
+// [MINDFUL] 2026-07-23 (chủ dự án chốt) — VẪN 1 trục biên độ (KHÔNG thêm nghĩa tích cực/tiêu cực,
+// xem decision-log 2026-07-20 "giữ 1 trục biên độ, không thêm trục +/-"), chỉ đổi CÁCH VẼ: điểm
+// dao động lên/xuống quanh trục cho ra dáng sóng thật, cùng idiom sin() của icon "~" trên khay
+// (EmotionWaveView.mm drawRect). Chiều lên/xuống CHỈ trang trí — tính từ timestamp/slot TUYỆT ĐỐI
+// của CHÍNH điểm đó, KHÔNG dựa vào thứ tự trong mảng hay có bao nhiêu điểm lân cận (lặp lại bài học
+// v0.4.11: dựa vào index/số lượng lân cận là tự tạo lại đúng bug "sóng nhảy mỗi lần refresh" đã vá).
+// Biên độ (khoảng lệch trục) vẫn = ĐÚNG risk thật, KHÔNG co lại theo pha — câu càng căng vẫn luôn
+// lệch trục rõ, chỉ khác chiều lệch.
+static const double kWaveCyclePeriodSeconds = 3 * 3600.0;  // mốc theo THỜI GIAN THẬT (Hôm nay/Ngay bây giờ)
+static const double kWaveCycleSlots         = 3.0;         // mốc theo SLOT ngày (Tuần/Tháng, không có ts thật)
+
+static inline CGFloat MKWaveSide(double x, double period) {
+    if (period <= 0) return 1.0;
+    return (sin(2.0 * M_PI * (x / period)) >= 0.0) ? 1.0 : -1.0;
+}
+
 @interface MKRiverCanvas : NSView
-/// Dict {@"pt": NSValue(NSPoint{x = vị trí 0..1 trên bề ngang, y = biên độ 0..1}), @"checkin":
+/// Dict {@"pt": NSValue(NSPoint{x = vị trí 0..1 trên bề ngang, y = biên độ CÓ DẤU [-1,1] — độ
+/// lớn |y| = risk thật, dấu chỉ quyết định lệch lên/xuống trang trí (MKWaveSide), KHÔNG valence}), @"checkin":
 /// NSNumber BOOL}, hoặc NSNull = NGẮT nước giữa 2 mẫu kề nó (quãng không gõ). Rỗng/nil = chưa có
 /// mẫu → KHÔNG vẽ gì (dec.4). checkin=YES vẽ vòng RỖNG (tự thuật), NO vẽ chấm ĐẶC (tự đoán).
 @property (nonatomic, copy, nullable) NSArray *entries;
@@ -133,12 +150,13 @@ static inline NSDictionary *MKMakeEntry(CGFloat xf, double value, BOOL isCheckin
     path.lineCapStyle = NSLineCapStyleRound;
     path.lineJoinStyle = NSLineJoinStyleRound;
 
-    // [MINDFUL] 2026-07-23 (chủ dự án chốt "sửa cách vẽ sóng") — độ cao mỗi điểm = ĐÚNG biên độ
-    // của nó (midY + value * maxWaveH), luôn NHÔ LÊN từ đường trục. Trước đây điểm chẵn nhô, điểm
-    // lẻ chìm theo THỨ TỰ trong mảng → thêm/bớt một điểm là đảo nhô-chìm của mọi điểm sau nó, mỗi
-    // lần refresh sông "nhảy" một kiểu (đúng cái chập chờn chủ dự án thấy). Nay vị trí đứng của một
-    // điểm chỉ phụ thuộc GIÁ TRỊ + thời điểm thật của chính nó → thêm điểm mới không dịch điểm cũ.
-    // Đường trục nét đứt = mặt hồ phẳng lặng; câu êm (risk≈0) → chấm sát trục; câu gắt → gợn nhô cao.
+    // [MINDFUL] 2026-07-23 — độ LỆCH TRỤC mỗi điểm = ĐÚNG biên độ của nó (midY + value * maxWaveH;
+    // value đã mang dấu từ nơi gọi qua MKWaveSide — xem khối [MINDFUL] cạnh MKMakeEntry phía trên).
+    // Trước đây (bug đã vá) điểm chẵn nhô, điểm lẻ chìm theo THỨ TỰ trong mảng → thêm/bớt một điểm
+    // là đảo nhô-chìm của mọi điểm sau nó, mỗi lần refresh sông "nhảy" một kiểu. Nay vị trí đứng của
+    // một điểm chỉ phụ thuộc GIÁ TRỊ + thời điểm thật của chính nó → thêm điểm mới không dịch điểm
+    // cũ. Chiều lên/xuống thuần trang trí (không valence); đường trục nét đứt = mặt hồ phẳng lặng;
+    // câu êm (risk≈0) → chấm sát trục; câu gắt → gợn lệch xa trục (lên hoặc xuống).
     for (NSArray<NSDictionary*> *seg in segments) {
         if (seg.count == 0) continue;
 
@@ -310,7 +328,8 @@ static const CGFloat kAxisHourEvening    = 21.0;   // giữa buổi tối   (18-
         CGFloat xf = (k > 1) ? (CGFloat)m / (CGFloat)(k - 1) : 0.5;
         // checkin luôn NO ở đây: Tuần/Tháng là TRUNG BÌNH theo ngày (1 chấm = 1 ngày, đã gộp mọi
         // nhịp trong ngày đó lại) — "chấm này tự thuật hay tự đoán" không còn ý nghĩa ở mức 1 ngày.
-        [entries addObject:MKMakeEntry(xf, [val doubleValue], NO)];
+        CGFloat side = MKWaveSide((double)m, kWaveCycleSlots);   // trang trí — xem [MINDFUL] cạnh MKMakeEntry
+        [entries addObject:MKMakeEntry(xf, side * [val doubleValue], NO)];
     }
     [self applyEntries:entries validCount:validCount];
 }
@@ -355,7 +374,8 @@ static const CGFloat kAxisHourEvening    = 21.0;   // giữa buổi tối   (18-
         xf = MAX(0.0, MIN(1.0, xf));
         // "checkin" vắng mặt (caller cũ chưa cập nhật) -> boolValue trên nil = NO an toàn, không crash.
         BOOL isCheckin = [samples[m][@"checkin"] boolValue];
-        [entries addObject:MKMakeEntry(xf, [samples[m][@"value"] doubleValue], isCheckin)];
+        CGFloat side = MKWaveSide((double)ts, kWaveCyclePeriodSeconds);   // trang trí — xem [MINDFUL] cạnh MKMakeEntry
+        [entries addObject:MKMakeEntry(xf, side * [samples[m][@"value"] doubleValue], isCheckin)];
     }
     [self applyEntries:entries validCount:validCount];
 }
@@ -410,7 +430,8 @@ static const CGFloat kAxisHourEvening    = 21.0;   // giữa buổi tối   (18-
         // Nén quá khứ vào [0, kNowFrac] (thay vì [0,1]) để chừa chỗ cho tương lai bên phải.
         CGFloat xf = (CGFloat)(((double)ts - originSec) / windowSeconds) * kNowFrac;
         BOOL isCheckin = [s[@"checkin"] boolValue];
-        [entries addObject:MKMakeEntry(MAX(0.0, MIN(kNowFrac, xf)), [s[@"value"] doubleValue], isCheckin)];
+        CGFloat side = MKWaveSide((double)ts, kWaveCyclePeriodSeconds);   // trang trí — xem [MINDFUL] cạnh MKMakeEntry
+        [entries addObject:MKMakeEntry(MAX(0.0, MIN(kNowFrac, xf)), side * [s[@"value"] doubleValue], isCheckin)];
     }
 
     // Đầu sóng "bây giờ" = mốc kNowFrac (KHÔNG phải mép phải). liveHead < 0 (đã im/chưa gõ) thì
@@ -422,7 +443,8 @@ static const CGFloat kAxisHourEvening    = 21.0;   // giữa buổi tối   (18-
         }
         validCount++;
         // liveHead luôn tự-đoán (MoodWatchMac_LiveAmplitude) — không phải câu tự thuật.
-        [entries addObject:MKMakeEntry(kNowFrac, liveHead, NO)];
+        CGFloat side = MKWaveSide(now, kWaveCyclePeriodSeconds);   // trang trí — xem [MINDFUL] cạnh MKMakeEntry
+        [entries addObject:MKMakeEntry(kNowFrac, side * liveHead, NO)];
     }
 
     [self applyEntries:entries validCount:validCount];
