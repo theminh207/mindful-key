@@ -4,6 +4,8 @@
 //
 #pragma once
 #include <string>
+#include <vector>
+#include "../../../../../core/mood/MoodPhrasing.h"   // MoodSample {ts, value}
 
 // Cờ bật/tắt nhận diện cảm xúc (lưu vào registry, đổi qua menu khay). 1=bật, 0=tắt.
 extern int vMoodWatch;
@@ -30,3 +32,12 @@ double MoodWatch_LastSendRisk();
 // qua. true = có mẫu. Mô hình lấy mẫu (SYNC-emotion-mechanism-v2.md §A): để ý liên tục trong RAM,
 // ghi 1 số trung bình mỗi nhịp; quãng KHÔNG gõ để TRỐNG (không bịa nước giả lên dòng sông).
 bool MoodWatch_DrainSampleAverage(double* outAvg);
+
+// [MINDFUL] B1/B2 — "sông sống": đầu sóng "bây giờ" (biên độ đã làm mượt + phai theo thời gian im).
+// Đối ứng MoodWatchMac_LiveAmplitude(). Trả -1.0 khi chưa gõ / đã im ≥5 phút -> KHÔNG vẽ đầu sóng
+// (hợp đồng dec.4: idle = mặt hồ lặng, không bịa nước). Ngược lại 0..1.
+double MoodWatch_LiveAmplitude();
+
+// Vệt điểm dày trong `windowSeconds` gần nhất cho sông "Ngay bây giờ": trộn vệt RAM (dày, phiên này)
+// với mẫu đã lưu (thưa, quá khứ). Đối ứng MoodWatchMac_FetchLiveTrace(). Rỗng nếu tắt nhắc tâm.
+std::vector<MoodSample> MoodWatch_FetchLiveTrace(int windowSeconds);

@@ -208,8 +208,8 @@ giờ đạt. Chọn 1 chuẩn (đề xuất: theo macOS — xem `NudgeCoordinat
 
 | ID | Trạng thái | Việc |
 |---|---|---|
-| **B1** | ⬜ | State sóng sống + cập nhật trong worker (`MoodWatch.cpp`). Chi tiết ↓ |
-| **B2** | ⬜ | `MoodWatch_LiveAmplitude()` + `MoodWatch_FetchLiveTrace()`. Chi tiết ↓ |
+| **B1** | ✅ | State sóng sống + cập nhật trong worker (`MoodWatch.cpp`). Chi tiết ↓ |
+| **B2** | ✅ | `MoodWatch_LiveAmplitude()` + `MoodWatch_FetchLiveTrace()`. Chi tiết ↓ |
 | **B3** | ⬜ | Nối `liveHead` thật + vệt dày vào 3 chỗ vẽ → sóng+nhật ký "chạy". Chi tiết ↓ |
 | **B4** | ⬜ | **Nút "Nghe thử" trên UI chuông** (popover + settings) → chuông test được NGAY. Chi tiết ↓ |
 | **B5** | ⬜ | Dòng "Dự kiến reo lúc HH:mm" trên popover. Chi tiết ↓ |

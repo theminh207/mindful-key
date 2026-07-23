@@ -34,6 +34,8 @@
 #include <mutex>
 #include <condition_variable>
 #include <deque>
+#include <vector>       // [MINDFUL] B1 — g_liveTrace
+#include <algorithm>    // [MINDFUL] B2 — std::sort trong MoodWatch_FetchLiveTrace
 
 using namespace std;
 
@@ -54,6 +56,15 @@ int vMoodWatch = 0;
 static const double kSendRiskThreshold = 0.5;
 static const DWORD  kWarnCooldownMs    = 15000;
 
+// [MINDFUL] B1 — "sông sống": đầu sóng "bây giờ" mượt + phai, vệt điểm dày. Hằng số LẤY NGUYÊN từ
+// MoodWatchMac.mm:65-71 (chuẩn hành vi), KHÔNG tự chế.
+static const double kLiveEmaAlpha      = 0.4;        // trọng số câu mới trong EMA
+static const double kLiveFadeSeconds   = 5 * 60.0;   // phai hết về phẳng lặng sau 5 phút im
+static const double kLiveSampleSeconds = 30.0;       // tối đa 1 điểm/30s
+static const double kLiveTraceMaxAge   = 4 * 3600.0; // giữ vệt 4h
+static double MKClamp01(double v)   { return v < 0 ? 0 : (v > 1 ? 1 : v); }
+static double MKSmoothstep(double t) { return t * t * (3.0 - 2.0 * t); }
+
 // CHỈ luồng worker được chạm g_buffer -> không cần khoá cho nó.
 static MoodBuffer g_buffer(15);
 static double     g_lastSendRisk = -1.0;
@@ -64,6 +75,15 @@ static double     g_sampleSum = 0.0;
 static int        g_sampleCount = 0;
 static DWORD      g_lastWarn = 0;
 static volatile LONG g_popupShowing = 0;
+
+// [MINDFUL] B1 — state sông sống. Worker GHI, luồng giao diện ĐỌC (LiveAmplitude/FetchLiveTrace) ->
+// phải khoá. g_liveTrace lưu thẳng MoodSample{ts,value} để trộn với MoodStore_FetchRecentSamples
+// (cùng kiểu) mà không cần chuyển đổi. KHÔNG persist xuống đĩa (chỉ RAM, ≤4h).
+static mutex                   g_liveMutex;
+static double                  g_liveEma = 0.0;      // EMA rủi ro các câu gần đây (làm mượt đầu sóng)
+static long long               g_lastWordTs = 0;     // epoch giây của từ cuối — dùng để phai
+static long long               g_liveTraceLastTs = 0;// chặn dày: tối đa 1 điểm/30s
+static std::vector<MoodSample> g_liveTrace;          // cũ->mới
 
 // Hàng đợi từ hook -> worker.
 static mutex              g_mutex;
@@ -226,6 +246,30 @@ static void analyzeOnWorker(const wstring& word) {
     SendRiskResult scored = SendRiskAnalyzer_Analyze(g_buffer.recentText());
     g_lastSendRisk = scored.risk;
 
+    // [MINDFUL] B1 — cập nhật lớp "sông sống" (mirror MoodWatchMac.mm:149-173). Khoá vì luồng giao
+    // diện đọc ở LiveAmplitude/FetchLiveTrace. EMA làm mượt đầu sóng; vệt điểm dày tối đa 1/30s.
+    long long nowTs = (long long)time(NULL);
+    {
+        lock_guard<mutex> lock(g_liveMutex);
+        // Re-check vMoodWatch TRONG khoá: nếu người dùng vừa tắt Nhắc tâm (SetEnabled xoá sạch state
+        // dưới cùng khoá này) ngay sau check ở đầu luồng, đừng ghi "dư âm" câu cũ vào state vừa xoá
+        // — giữ lời hứa "bật lại là mặt hồ phẳng lặng".
+        if (vMoodWatch) {
+            g_liveEma = kLiveEmaAlpha * scored.risk + (1.0 - kLiveEmaAlpha) * g_liveEma;
+            g_lastWordTs = nowTs;
+            if (g_liveTraceLastTs == 0 || (nowTs - g_liveTraceLastTs) >= (long long)kLiveSampleSeconds) {
+                MoodSample s; s.ts = nowTs; s.value = g_liveEma;
+                g_liveTrace.push_back(s);
+                g_liveTraceLastTs = nowTs;
+                // Trim điểm cũ hơn 4h (vệt theo thứ tự thời gian nên cắt từ đầu).
+                long long cutoff = nowTs - (long long)kLiveTraceMaxAge;
+                size_t drop = 0;
+                while (drop < g_liveTrace.size() && g_liveTrace[drop].ts < cutoff) drop++;
+                if (drop > 0) g_liveTrace.erase(g_liveTrace.begin(), g_liveTrace.begin() + drop);
+            }
+        }
+    }
+
     {
         lock_guard<mutex> lock(g_sampleMutex);
         g_sampleSum += scored.risk;
@@ -297,6 +341,51 @@ double MoodWatch_LastSendRisk() {
     return g_lastSendRisk;
 }
 
+// [MINDFUL] B2 — mirror MoodWatchMac_LiveAmplitude (MoodWatchMac.mm:215-227).
+double MoodWatch_LiveAmplitude() {
+    long long nowTs = (long long)time(NULL);
+    double ema;
+    long long lastTs;
+    {
+        lock_guard<mutex> lock(g_liveMutex);
+        ema = g_liveEma;
+        lastTs = g_lastWordTs;
+    }
+    if (lastTs == 0) return -1.0;                    // chưa gõ gì -> không có đầu sóng
+    double idle = (double)(nowTs - lastTs);
+    if (idle >= kLiveFadeSeconds) return -1.0;       // im đủ lâu -> phai hết, mặt hồ lặng (không vẽ)
+    double fade = MKSmoothstep(1.0 - idle / kLiveFadeSeconds);   // 1 (vừa gõ) -> 0 (sắp im hẳn)
+    return MKClamp01(ema * fade);
+}
+
+// [MINDFUL] B2 — mirror MoodWatchMac_FetchLiveTrace (MoodWatchMac.mm:231-258): trộn vệt RAM dày (phần
+// đầu vệt trở đi) với mẫu persisted thưa (phần TRƯỚC vệt RAM), tránh 2 lớp chấm chồng cùng 1 quãng.
+std::vector<MoodSample> MoodWatch_FetchLiveTrace(int windowSeconds) {
+    long long nowTs = (long long)time(NULL);
+    long long origin = nowTs - (long long)windowSeconds;
+
+    std::vector<MoodSample> live;
+    long long firstLiveTs = 0;
+    {
+        lock_guard<mutex> lock(g_liveMutex);
+        live = g_liveTrace;   // copy dưới khoá
+    }
+    if (!live.empty()) firstLiveTs = live.front().ts;
+
+    std::vector<MoodSample> persisted = MoodStore_FetchRecentSamples(windowSeconds);
+    std::vector<MoodSample> out;
+    for (const MoodSample& p : persisted) {
+        if (p.ts < origin) continue;
+        if (!live.empty() && p.ts >= firstLiveTs) continue;   // vệt RAM đã phủ quãng này
+        out.push_back(p);
+    }
+    for (const MoodSample& l : live) {
+        if (l.ts >= origin) out.push_back(l);
+    }
+    std::sort(out.begin(), out.end(), [](const MoodSample& a, const MoodSample& b) { return a.ts < b.ts; });
+    return out;
+}
+
 bool MoodWatch_DrainSampleAverage(double* outAvg) {
     lock_guard<mutex> lock(g_sampleMutex);
     if (g_sampleCount <= 0)
@@ -365,10 +454,20 @@ void MoodWatch_Toggle() {
         return;   // muốn bật nhưng đọc xong đổi ý -> giữ nguyên tắt
     APP_SET_DATA(vMoodWatch, !vMoodWatch);   // đảo + lưu registry
     if (!vMoodWatch) {
-        lock_guard<mutex> lock(g_mutex);
-        g_queue.clear();
-        g_clearRequested = true;             // để worker tự dọn MoodBuffer (chỉ nó được chạm)
-        g_cv.notify_one();
+        {
+            lock_guard<mutex> lock(g_mutex);
+            g_queue.clear();
+            g_clearRequested = true;         // để worker tự dọn MoodBuffer (chỉ nó được chạm)
+            g_cv.notify_one();
+        }
+        // [MINDFUL] B1 — xoá sạch state sông sống khi TẮT (mirror MoodWatchMac.mm:319-320): bật lại
+        // là mặt hồ PHẲNG LẶNG, không còn dư âm câu cũ. Chỉ làm ở đây (tắt thật), KHÔNG ở nhánh
+        // g_clearRequested chung của worker — nhánh đó cũng dùng cho ô mật khẩu, không nên xoá vệt.
+        lock_guard<mutex> liveLock(g_liveMutex);
+        g_liveEma = 0.0;
+        g_lastWordTs = 0;
+        g_liveTraceLastTs = 0;
+        g_liveTrace.clear();
     } else {
         // Hỏi ghi nhật ký NGAY SAU khi người dùng bật lớp cảm xúc — đây là chỗ câu hỏi mới có
         // nghĩa: từ giây này mới có thứ để ghi. Trước 2026-07-17 nó nằm trong MindfulKeyInit() và
