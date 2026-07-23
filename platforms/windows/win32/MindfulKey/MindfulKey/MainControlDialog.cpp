@@ -25,6 +25,8 @@ redistribute your new version, it MUST be open source.
 #include "MoodStore.h"
 #include <Shlobj.h>
 #include <Uxtheme.h>
+#include <commdlg.h>   // [MINDFUL] B6 — GetOpenFileName/OPENFILENAME (chọn .wav riêng). stdafx bật
+                       // WIN32_LEAN_AND_MEAN nên windows.h KHÔNG tự kéo commdlg — phải khai rõ.
 
 // [MINDFUL] GĐ6 — ImageList_* (icon tab) là HÀM THẬT trong comctl32, phải link. File này lẫn
 // stdafx.h đã include <Commctrl.h> từ đời MindfulKey nhưng chưa bao giờ cần lib: TabCtrl_*/ListView_*
@@ -359,6 +361,52 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             RECT sliderRc = { card3Rc.left + 15, card3Rc.top + 85, card3Rc.right - 15, card3Rc.top + 100 };
             BrandControls_DrawSlider(memDC, sliderRc, (float)s_bellVolume / 100.0f, pt);
             y += 125;
+
+            // [MINDFUL] B6 — Card Giờ yên lặng + tiếng .wav riêng + tạm hoãn (port từ hộp chuông cũ
+            // IDD_DIALOG_BELL để chuẩn bị bỏ nó ở B8). Bell.cpp CÓ SẴN logic (isInBellRange /
+            // Bell_InstallCustomSound / Bell_Snooze) — đây chỉ là đường vào UI owner-draw. vBellFrom/
+            // vBellTo là GLOBAL (Bell.h), đọc thẳng; APP_SET_DATA ghi đúng khóa Bell.cpp đọc lại.
+            RECT card4Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 105 };
+            BrandControls_DrawCard(memDC, card4Rc, true);
+            RECT lblYenLangRc = { card4Rc.left + 15, card4Rc.top + 10, card4Rc.right - 15, card4Rc.top + 30 };
+            DrawLabel(L"GIỜ YÊN LẶNG", lblYenLangRc, BrandFontEyebrow, kBrandPaletteStone);
+
+            int ry = card4Rc.top + 36;
+            RECT lblFromRc = { card4Rc.left + 15, ry, card4Rc.left + 98, ry + 26 };
+            DrawLabel(L"Không reo từ", lblFromRc, BrandFontBody, kBrandPaletteCharcoal);
+            RECT fromBox = { card4Rc.left + 100, ry, card4Rc.left + 168, ry + 26 };
+            RECT lblDenRc = { card4Rc.left + 174, ry, card4Rc.left + 202, ry + 26 };
+            DrawLabel(L"đến", lblDenRc, BrandFontBody, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            RECT toBox = { card4Rc.left + 205, ry, card4Rc.left + 273, ry + 26 };
+            // Stepper "− HH giờ +" — không dùng ô nhập native (tab này vẽ tay hết), bấm −/+ đổi giờ.
+            auto DrawHourStepper = [&](RECT box, int hourVal) {
+                HBRUSH bg = CreateSolidBrush(MK_COLORREF(kBrandPaletteTealLight));
+                FillRect(memDC, &box, bg);
+                DeleteObject(bg);
+                RECT decRc = { box.left, box.top, box.left + 22, box.bottom };
+                RECT valRc = { box.left + 22, box.top, box.right - 22, box.bottom };
+                RECT incRc = { box.right - 22, box.top, box.right, box.bottom };
+                DrawLabel(L"-", decRc, BrandFontButton, kBrandPaletteTeal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+                DrawLabel(L"+", incRc, BrandFontButton, kBrandPaletteTeal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+                wchar_t hh[16];
+                wsprintfW(hh, L"%d giờ", hourVal);
+                DrawLabel(hh, valRc, BrandFontBody, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            };
+            DrawHourStepper(fromBox, vBellFrom);
+            DrawHourStepper(toBox, vBellTo);
+
+            int by = card4Rc.top + 72;
+            RECT btnCustomRc = { card4Rc.left + 15, by, card4Rc.left + 205, by + 26 };
+            HBRUSH brCustom = CreateSolidBrush(MK_COLORREF(kBrandPaletteTealLight));
+            FillRect(memDC, &btnCustomRc, brCustom);
+            DeleteObject(brCustom);
+            DrawLabel(L"Chọn tiếng .wav của bạn…", btnCustomRc, BrandFontButton, kBrandPaletteTeal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            RECT btnSnoozeRc = { card4Rc.right - 130, by, card4Rc.right - 15, by + 26 };
+            HBRUSH brSnooze = CreateSolidBrush(MK_COLORREF(kBrandPaletteTealLight));
+            FillRect(memDC, &btnSnoozeRc, brSnooze);
+            DeleteObject(brSnooze);
+            DrawLabel(L"Tạm hoãn 1 giờ", btnSnoozeRc, BrandFontButton, kBrandPaletteTeal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            y += 120;
         }
         else if (currentTab == 3) { // Riêng tư
             // [MINDFUL] A4 — ĐÃ GỠ 2 control giả khỏi tab này (rule "không để nút giả"):
@@ -598,6 +646,53 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             if (BrandControls_HitSlider(sliderRc, pt, &vp)) {
                 MindfulKeyHelper::setRegInt(_T("vBellVolume"), (int)(vp * 100));
                 changed = true;
+            }
+
+            // [MINDFUL] B6 — card Giờ yên lặng: RECT dựng lại Y HỆT nhánh WM_PAINT (y sau card3 = +125).
+            y += 125;
+            RECT card4Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 105 };
+            int ry = card4Rc.top + 36;
+            RECT fromBox = { card4Rc.left + 100, ry, card4Rc.left + 168, ry + 26 };
+            RECT toBox = { card4Rc.left + 205, ry, card4Rc.left + 273, ry + 26 };
+            int by = card4Rc.top + 72;
+            RECT btnCustomRc = { card4Rc.left + 15, by, card4Rc.left + 205, by + 26 };
+            RECT btnSnoozeRc = { card4Rc.right - 130, by, card4Rc.right - 15, by + 26 };
+            // Stepper: bấm − lùi 1 giờ, + tiến 1 giờ (vòng 0-23). Trả về giờ mới, -1 nếu không trúng.
+            auto HitStepper = [&](RECT box, int cur) -> int {
+                RECT decRc = { box.left, box.top, box.left + 22, box.bottom };
+                RECT incRc = { box.right - 22, box.top, box.right, box.bottom };
+                if (PtInRect(&decRc, pt)) return (cur + 23) % 24;
+                if (PtInRect(&incRc, pt)) return (cur + 1) % 24;
+                return -1;
+            };
+            int nf = HitStepper(fromBox, vBellFrom);
+            if (nf != -1) { APP_SET_DATA(vBellFrom, nf); Bell_ApplySettings(); changed = true; }
+            int nt = HitStepper(toBox, vBellTo);
+            if (nt != -1) { APP_SET_DATA(vBellTo, nt); Bell_ApplySettings(); changed = true; }
+
+            if (PtInRect(&btnCustomRc, pt)) {
+                TCHAR file[MAX_PATH] = { 0 };
+                OPENFILENAME ofn = { 0 };
+                ofn.lStructSize = sizeof(ofn);
+                ofn.hwndOwner = hDlg;
+                ofn.lpstrFilter = _T("Tệp âm thanh (*.wav)\0*.wav\0");
+                ofn.lpstrFile = file;
+                ofn.nMaxFile = MAX_PATH;
+                ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
+                if (GetOpenFileName(&ofn)) {
+                    std::wstring err;
+                    if (Bell_InstallCustomSound(file, &err)) {
+                        // Chọn luôn bộ tiếng "custom" (như hộp cũ chọn mục thứ 4 trong danh sách) + nghe ngay.
+                        MindfulKeyHelper::setRegString(_T("vBellSoundName"), _T("custom"));
+                        Bell_PreviewSound();
+                        changed = true;
+                    } else {
+                        MessageBoxW(hDlg, err.c_str(), L"Mindful Keyboard", MB_OK);
+                    }
+                }
+            }
+            if (PtInRect(&btnSnoozeRc, pt)) {
+                Bell_Snooze(60);
             }
 
             if (changed) {
