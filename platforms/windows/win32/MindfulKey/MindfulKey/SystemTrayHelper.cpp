@@ -258,7 +258,8 @@ void SystemTrayHelper::showContextMenu() {
 		MoodWatch_Toggle();
 		break;
 	case POPUP_BELL_SETTINGS:
-		Bell_ShowSettings(NULL);
+		// [MINDFUL] B8 — mở tab Chuông của cửa Cài đặt thay hộp thoại chuông cũ (đã bỏ).
+		AppDelegate::getInstance()->onBellSettings();
 		break;
 	case POPUP_GATEKEEPER_TOGGLE:
 		// [MINDFUL] Bật/tắt gác cổng gửi tin (Feature #1). Lật cờ + lưu registry; dấu tích

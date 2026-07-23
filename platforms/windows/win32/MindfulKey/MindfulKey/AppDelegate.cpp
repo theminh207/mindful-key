@@ -307,6 +307,12 @@ void AppDelegate::onControlPanel() {
 	createMainDialog();
 }
 
+void AppDelegate::onBellSettings() {
+	// [MINDFUL] B8 — thay hộp thoại chuông cũ (IDD_DIALOG_BELL) bằng tab Chuông của cửa Cài đặt.
+	createMainDialog();
+	if (mainDialog) mainDialog->selectTab(1);   // 1 = tab "Chuông"
+}
+
 void AppDelegate::onMindfulKeyAbout() {
 	if (aboutDialog == NULL) {
 		aboutDialog = new AboutDialog(hInstance, IDD_ABOUTBOX);

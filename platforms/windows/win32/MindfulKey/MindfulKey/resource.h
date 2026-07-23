@@ -62,7 +62,6 @@
 #define IDD_DIALOG_TAB_SYSTEM           147
 #define IDD_DIALOG_OLD                  148
 #define IDD_DIALOG_TAB_INFO             149
-#define IDD_DIALOG_BELL                 250
 #define IDD_DIALOG_PAUSE                251
 #define IDD_DIALOG_REFLECT              252
 #define IDC_STATIC_REFLECT_OBSERVE      1120
@@ -72,14 +71,6 @@
 #define IDC_STATIC_PAUSE_MSG            1110
 #define IDC_BUTTON_PAUSE_WAIT           1111
 #define IDC_BUTTON_PAUSE_SEND           1112
-#define IDC_CHECK_BELL                  1100
-#define IDC_EDIT_BELL_INTERVAL          1101
-#define IDC_EDIT_BELL_FROM              1102
-#define IDC_EDIT_BELL_TO                1103
-#define IDC_EDIT_BELL_VOLUME            1104
-#define IDC_COMBO_BELL_SOUND            1105
-#define IDC_BUTTON_BELL_PREVIEW         1106
-#define IDC_BUTTON_BELL_PICK            1107
 #define IDI_ICON_STATUS_ALERT           259
 #define IDI_TAB_BOGO                    260
 #define IDI_TAB_GOTAT                   261

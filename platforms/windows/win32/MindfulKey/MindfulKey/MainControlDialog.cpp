@@ -27,6 +27,7 @@ redistribute your new version, it MUST be open source.
 #include <Uxtheme.h>
 #include <commdlg.h>   // [MINDFUL] B6 — GetOpenFileName/OPENFILENAME (chọn .wav riêng). stdafx bật
                        // WIN32_LEAN_AND_MEAN nên windows.h KHÔNG tự kéo commdlg — phải khai rõ.
+#pragma comment(lib, "comdlg32.lib")   // B8 — chuyển từ Bell.cpp sang (chọn .wav nay ở tab Chuông đây)
 
 // [MINDFUL] GĐ6 — ImageList_* (icon tab) là HÀM THẬT trong comctl32, phải link. File này lẫn
 // stdafx.h đã include <Commctrl.h> từ đời MindfulKey nhưng chưa bao giờ cần lib: TabCtrl_*/ListView_*
@@ -795,6 +796,12 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
     // would recurse forever (eventProc re-delegates it straight back here). WM_COMMAND/WM_NOTIFY
     // already reach eventProc directly since that is the dialog's real proc.
     return FALSE;
+}
+
+void MainControlDialog::selectTab(int tab) {
+    currentTab = tab;
+    HWND h = getHwnd();
+    if (h) InvalidateRect(h, NULL, FALSE);   // tab vẽ tay (owner-draw) — invalidate là repaint đúng tab
 }
 
 void MainControlDialog::fillData() {

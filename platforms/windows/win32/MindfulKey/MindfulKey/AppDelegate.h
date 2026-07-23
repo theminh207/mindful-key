@@ -49,6 +49,7 @@ public: //event
 	void onTableCode(const int& code);
 
 	void onControlPanel();
+	void onBellSettings();   // [MINDFUL] B8 — mở Cài đặt ở tab Chuông (thay hộp chuông cũ đã bỏ)
 	void onMindfulKeyAbout();
 	void onMindfulKeyExit();
 };

@@ -49,6 +49,9 @@ public:
 	virtual ~MainControlDialog();
 	virtual void fillData() override;
 	void setSwitchKey(const unsigned short& code);
+	// [MINDFUL] B8 — nhảy thẳng tới 1 tab (0=Hôm nay,1=Chuông,...). Dùng khi menu khay "Chuông tỉnh
+	// thức..." mở cửa Cài đặt đúng tab Chuông thay cho hộp thoại chuông cũ đã bỏ.
+	void selectTab(int tab);
 
 	friend INT_PTR CALLBACK tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 };

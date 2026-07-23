@@ -26,10 +26,10 @@
 #include <string>
 #include <shlobj.h>
 #include <mmsystem.h>   // PlaySound + SND_* — stdafx.h có WIN32_LEAN_AND_MEAN nên windows.h KHÔNG kéo theo
-#include <commdlg.h>    // OPENFILENAME + GetOpenFileName — cùng lý do
+// [MINDFUL] B8 — commdlg.h/comdlg32.lib đã rời sang MainControlDialog.cpp (nơi chọn .wav ở tab Chuông
+// nay sống); hộp thoại chuông cũ dùng GetOpenFileName đã bỏ nên Bell.cpp không cần nữa.
 
 #pragma comment(lib, "winmm.lib")
-#pragma comment(lib, "comdlg32.lib")
 
 using namespace std;
 
@@ -336,114 +336,4 @@ void Bell_Init() {
     if (vBellFrom < 0 || vBellFrom > 23) vBellFrom = 8;
     if (vBellTo < 0 || vBellTo > 23) vBellTo = 22;
     Bell_ApplySettings();
-}
-
-// ── Hộp cài đặt ──
-
-// Thứ tự PHẢI khớp mảng ids trong IDOK bên dưới.
-static const int kSoundComboCount = 5;
-
-static INT_PTR CALLBACK BellDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
-    switch (msg) {
-    case WM_INITDIALOG: {
-        CheckDlgButton(hDlg, IDC_CHECK_BELL, vBell ? BST_CHECKED : BST_UNCHECKED);
-        SetDlgItemInt(hDlg, IDC_EDIT_BELL_INTERVAL, vBellInterval, FALSE);
-        SetDlgItemInt(hDlg, IDC_EDIT_BELL_FROM, vBellFrom, FALSE);
-        SetDlgItemInt(hDlg, IDC_EDIT_BELL_TO, vBellTo, FALSE);
-        SetDlgItemInt(hDlg, IDC_EDIT_BELL_VOLUME, MindfulKeyHelper::getRegInt(kRegVolume, 60), FALSE);
-
-        // Tên `hCombo` chứ không đặt trần: brand-lint cấm từ chỉ chuỗi-điểm-thưởng (§2.2) và
-        // regex của nó bắt trúng tên biến trần — dù ở Win32 đó là tên CONTROL, không phải
-        // gamification. Đây là báo NHẦM đã biết; GĐ6 (nhiều control loại này) sẽ gặp lại.
-        // Xem docs/FRICTION-LOG.md 2026-07-17.
-        HWND hCombo = GetDlgItem(hDlg, IDC_COMBO_BELL_SOUND);
-        // Nhãn tiếng Việt cho người dùng; id tiếng Anh lưu xuống registry.
-        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)_T("Chuông chùa"));
-        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)_T("Chuông gió"));
-        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)_T("Chuông reo"));
-        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)_T("Tiếng của tôi..."));
-        SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)_T("Im"));
-
-        wstring sid = SoundIdFromStored(MindfulKeyHelper::getRegString(kRegSoundName, _T("")));
-        int sel = 0;
-        if (sid == kSoundIdChime) sel = 1;
-        else if (sid == kSoundIdWind) sel = 2;
-        else if (sid == kSoundIdCustom) sel = 3;
-        else if (sid == kSoundMute) sel = 4;
-        SendMessage(hCombo, CB_SETCURSEL, sel, 0);
-        return TRUE;
-    }
-    case WM_COMMAND:
-        if (LOWORD(wParam) == IDC_BUTTON_BELL_PREVIEW) {
-            Bell_PreviewSound();
-            return TRUE;
-        }
-        else if (LOWORD(wParam) == IDC_BUTTON_BELL_PICK) {
-            TCHAR file[MAX_PATH] = { 0 };
-            OPENFILENAME ofn = { 0 };
-            ofn.lStructSize = sizeof(ofn);
-            ofn.hwndOwner = hDlg;
-            // Chỉ .wav: PlaySound không mở nổi mp3/m4a. Bản macOS nhận thêm mp3/aiff/m4a — khác
-            // biệt CÓ CHỦ ĐÍCH giữa 2 vỏ, đã ghi ở docs/FRICTION-LOG.md.
-            ofn.lpstrFilter = _T("Tệp âm thanh (*.wav)\0*.wav\0");
-            ofn.lpstrFile = file;
-            ofn.nMaxFile = MAX_PATH;
-            ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
-            if (GetOpenFileName(&ofn)) {
-                wstring err;
-                if (Bell_InstallCustomSound(file, &err)) {
-                    SendMessage(GetDlgItem(hDlg, IDC_COMBO_BELL_SOUND), CB_SETCURSEL, 3, 0);
-                    Bell_PreviewSound();   // nghe ngay cái vừa chọn — không bắt người dùng đoán
-                } else {
-                    MessageBoxW(hDlg, err.c_str(), L"Mindful Keyboard", MB_OK);
-                }
-            }
-            return TRUE;
-        }
-        else if (LOWORD(wParam) == IDOK) {
-            int en = (IsDlgButtonChecked(hDlg, IDC_CHECK_BELL) == BST_CHECKED) ? 1 : 0;
-            BOOL ok;
-            int iv = (int)GetDlgItemInt(hDlg, IDC_EDIT_BELL_INTERVAL, &ok, FALSE);
-            if (!ok) iv = 60;
-            // Kẹp Ở ĐÂY chứ không chỉ trong Bell_ApplySettings: gõ 5 rồi mở lại phải thấy 15, chứ
-            // thấy 5 là UI nói dối về thứ đang thật sự chạy. Sàn 15 = quyết định riêng tư 2026-07-15.
-            if (iv < 15) iv = 15;
-            if (iv > 240) iv = 240;
-            int fr = (int)GetDlgItemInt(hDlg, IDC_EDIT_BELL_FROM, &ok, FALSE);
-            if (!ok || fr < 0 || fr > 23) fr = 8;
-            int to = (int)GetDlgItemInt(hDlg, IDC_EDIT_BELL_TO, &ok, FALSE);
-            if (!ok || to < 0 || to > 23) to = 22;
-            int vol = (int)GetDlgItemInt(hDlg, IDC_EDIT_BELL_VOLUME, &ok, FALSE);
-            if (!ok) vol = 60;
-            if (vol < 0) vol = 0;
-            if (vol > 100) vol = 100;
-
-            APP_SET_DATA(vBell, en);
-            APP_SET_DATA(vBellInterval, iv);
-            APP_SET_DATA(vBellFrom, fr);
-            APP_SET_DATA(vBellTo, to);
-            MindfulKeyHelper::setRegInt(kRegVolume, vol);
-
-            LPCTSTR ids[kSoundComboCount] = { kSoundIdTemple, kSoundIdChime, kSoundIdWind,
-                                              kSoundIdCustom, kSoundMute };
-            int sel = (int)SendMessage(GetDlgItem(hDlg, IDC_COMBO_BELL_SOUND), CB_GETCURSEL, 0, 0);
-            if (sel >= 0 && sel < kSoundComboCount)
-                MindfulKeyHelper::setRegString(kRegSoundName, ids[sel]);
-            g_cacheKey.clear();   // tiếng/âm lượng có thể vừa đổi -> đệm cũ hết đúng
-
-            Bell_ApplySettings();
-            EndDialog(hDlg, IDOK);
-            return TRUE;
-        }
-        else if (LOWORD(wParam) == IDCANCEL) {
-            EndDialog(hDlg, IDCANCEL);
-            return TRUE;
-        }
-        break;
-    }
-    return FALSE;
-}
-
-void Bell_ShowSettings(HWND parent) {
-    DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG_BELL), parent, BellDlgProc, 0);
 }
