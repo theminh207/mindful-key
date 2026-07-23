@@ -3,6 +3,33 @@
 Theo [Keep a Changelog](https://keepachangelog.com/) và [SemVer](https://semver.org/).
 Phiên bản lấy từ `version.env`.
 
+## [0.4.15]
+
+Đợt "trọn vẹn tính năng chuông + cơn sóng sống" (GĐ-B, `docs/WINDOWS-PARITY-TASKS.md`) — sau nghiệm
+thu tay v0.4.14, hoàn thiện 9 việc B1–B9 để vỏ Windows bắt kịp macOS về chuông, nhật ký, cơn sóng
+và bỏ nốt giao diện cũ. Mỗi việc 1 commit riêng.
+
+### Added
+
+- **Windows: cơn sóng + nhật ký "chạy" theo thời gian thực** — lớp cảm xúc giờ giữ trạng thái sóng
+  sống (EMA làm mượt + phai dần 5 phút) cập nhật mỗi câu, y như macOS: popover và cửa Cài đặt vẽ
+  đầu sóng "bây giờ" cùng vệt điểm dày theo lịch sử gõ, thay vì đường phẳng chết (B1–B3).
+- **Windows: nút "Nghe thử" tiếng chuông** ngay trên popover lẫn cửa Cài đặt — bấm là nghe liền,
+  bỏ qua mọi cổng chặn (B4).
+- **Windows: dòng "Dự kiến reo lúc HH:mm (còn N phút)"** trên popover, tự ẩn khi tắt chuông hoặc
+  đang tạm hoãn (B5).
+- **Windows: giờ yên lặng + chọn tiếng .wav của riêng bạn + tạm hoãn 1 giờ** trong tab Chuông của
+  cửa Cài đặt — đưa nốt những gì trước đây chỉ hộp thoại chuông cũ mới có (B6).
+- **Windows: icon 4 bộ tiếng chuông thật** (chuông chùa / chuông báo / chuông gió / nhạc) thay 4
+  chữ tạm A/B/C/D, xuất từ SVG thương hiệu (B7).
+- **Windows: header popover có "VN" + nút "⋯"** như macOS — "VN" báo bộ gõ Việt bật/tắt (chỉ báo
+  ngôn ngữ, không bao giờ báo cảm xúc), "⋯" mở đúng menu khay (B9).
+
+### Changed
+
+- **Windows: bỏ hẳn hộp thoại chuông native cũ (xám xịt)** — mọi cài đặt chuông nay nằm gọn trong
+  tab "Chuông" của cửa Cài đặt; menu khay "Chuông tỉnh thức…" mở thẳng đúng tab đó (B8).
+
 ## [0.4.14]
 
 Đợt "nối lại dây điện" (GĐ-A, `docs/WINDOWS-PARITY-TASKS.md`) — sau nghiệm thu tay v0.4.12 lộ ra

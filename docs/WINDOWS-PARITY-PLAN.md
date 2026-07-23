@@ -56,11 +56,12 @@ Trạng thái: ✅ ngang macOS · 🎨 chỉ-vỏ (vẽ được, chưa bấm/ch
 > khung 4 giai đoạn + lý do; đi làm thì mở bảng thi công.
 >
 > **Trạng thái tổng (cập nhật 2026-07-23):** GĐ-A `✅ XONG` (9 việc, v0.4.14 released, chờ mắt
-> người) · GĐ-B `🔄 đang làm` (MỞ RỘNG lên 9 việc B1–B9 sau nghiệm thu v0.4.14: sóng sống + nút
-> Nghe-thử + giờ-yên-lặng + icon thật + bỏ hộp chuông cũ + header popover) · GĐ-C `⬜` (còn cửa sổ
-> resize/DPI/check-in — phần bell/icon đã kéo sang B) · GĐ-D `⬜`. Chi tiết thi công: TASKS.
+> người) · GĐ-B `✅ XONG` (9 việc B1–B9, v0.4.15 staged, chờ mắt người: sóng sống + nút Nghe-thử +
+> dòng "dự kiến reo" + giờ-yên-lặng/.wav-riêng + icon thật + bỏ hộp chuông cũ + header popover VN/⋯;
+> mingw sweep 21 file + windres + brand-lint đều xanh) · GĐ-C `⬜` (còn cửa sổ resize/DPI/check-in —
+> phần bell/icon đã kéo sang B) · GĐ-D `⬜`. Chi tiết thi công: TASKS.
 > **Nghiệm thu v0.4.14 (mắt người):** chuông chạy nhưng chưa test được (thiếu Nghe-thử), sóng+nhật
-> ký chưa nhích (thiếu sóng sống), còn hộp thoại chuông native cũ song song.
+> ký chưa nhích (thiếu sóng sống), còn hộp thoại chuông native cũ song song → tất cả đã xử ở GĐ-B.
 
 Nguyên tắc: giai đoạn trước là móng của giai đoạn sau; mỗi giai đoạn có cổng nghiệm thu riêng
 (máy + mắt người, bám `QA-WINDOWS.md` §7 Definition of Done). KHÔNG gộp — mỗi GĐ 1 đợt
