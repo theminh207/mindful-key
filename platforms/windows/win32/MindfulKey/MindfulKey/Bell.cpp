@@ -53,6 +53,11 @@ static LPCTSTR kRegCustomPath = _T("vBellCustomSoundPath");
 
 static UINT_PTR g_bellTimer = 0;
 static DWORD    g_snoozeUntil = 0;   // GetTickCount lúc hết hoãn; 0 = không hoãn
+// [MINDFUL] B5 — mốc arm timer + chu kỳ (ms) để tính "còn bao lâu tới nhịp kế". macOS đọc thẳng
+// NSTimer.fireDate; Win32 SetTimer KHÔNG phơi giờ tick kế nên phải tự tính lại theo chu kỳ từ mốc
+// arm (khác biệt nền tảng đã ghi docs/FRICTION-LOG.md).
+static DWORD    g_bellArmedAtTick = 0;
+static DWORD    g_bellIntervalMs = 0;
 
 // ── Nạp + phát tiếng ──
 
@@ -325,6 +330,21 @@ void Bell_ApplySettings() {
     // CỐ Ý không `if (!vBell) return;`: đồng hồ này là NHỊP chung của app, không phải đồng hồ riêng
     // của tiếng chuông (xem Bell_TimerProc).
     g_bellTimer = SetTimer(NULL, 0, (UINT)mins * 60000, Bell_TimerProc);
+    // [MINDFUL] B5 — ghi mốc để Bell_MinutesUntilNextRing tính ngược. Đặt NGAY sau khi arm để mốc
+    // khớp lần tick đầu (SetTimer reo lần đầu sau đúng `mins` phút rồi lặp).
+    g_bellArmedAtTick = GetTickCount();
+    g_bellIntervalMs = (DWORD)mins * 60000;
+}
+
+// [MINDFUL] B5 — số phút tới nhịp kế (mirror BellMac_MinutesUntilNextRing). Trả -1 khi tắt/hoãn để
+// popover ẩn dòng "Dự kiến reo". Làm tròn LÊN phút (khớp macOS +59s: còn <1 phút vẫn hiện "1 phút").
+int Bell_MinutesUntilNextRing() {
+    if (!vBell || isSnoozed() || g_bellTimer == 0 || g_bellIntervalMs == 0)
+        return -1;
+    DWORD elapsed = GetTickCount() - g_bellArmedAtTick;   // trừ unsigned -> an toàn khi tick wrap
+    DWORD into = elapsed % g_bellIntervalMs;
+    DWORD remainMs = g_bellIntervalMs - into;             // 1..intervalMs (đúng lúc vừa tick -> cả chu kỳ)
+    return (int)((remainMs + 59999) / 60000);
 }
 
 void Bell_Init() {

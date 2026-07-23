@@ -125,6 +125,22 @@ static void ProcessTabBell(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     BrandControls_DrawPillSwitch(hdc, switch1Rc, isBellEnabled);
     y += 65;
 
+    // [MINDFUL] B5 — "Dự kiến reo lúc HH:mm (còn N phút)" ngay dưới card trạng thái; ẩn khi -1 (chuông
+    // tắt/đang hoãn). Đối ứng dòng "Dự kiến reo" macOS. y động — ProcessTabBell là 1 hàm dùng cho cả
+    // vẽ lẫn hit-test nên layout luôn tự khớp, không lệch vùng bấm.
+    int nextMin = Bell_MinutesUntilNextRing();
+    if (nextMin >= 0) {
+        SYSTEMTIME st;
+        GetLocalTime(&st);
+        int total = st.wHour * 60 + st.wMinute + nextMin;
+        int hh = (total / 60) % 24, mm = total % 60;
+        wchar_t line[96];
+        wsprintfW(line, L"Dự kiến reo lúc %02d:%02d (còn %d phút)", hh, mm, nextMin);
+        RECT nextRc = { 33, y, clientRc.right - 33, y + 20 };
+        DrawLabel(hdc, line, nextRc, BrandFontBody, kBrandPaletteMuted, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+        y += 26;
+    }
+
     // Nhịp
     RECT card2Rc = { 18, y, clientRc.right - 18, y + 110 };
     BrandControls_DrawCard(hdc, card2Rc, true);

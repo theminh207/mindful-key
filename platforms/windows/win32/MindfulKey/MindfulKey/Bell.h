@@ -13,6 +13,7 @@ extern int vBellTo;        // giờ kết thúc (0-23)
 
 void Bell_Init();                     // nạp cài đặt + bật timer (gọi lúc app khởi động)
 void Bell_ApplySettings();            // áp dụng lại timer sau khi đổi cài đặt
+int  Bell_MinutesUntilNextRing();     // [MINDFUL] B5 — số phút tới nhịp kế; -1 khi tắt/hoãn (ẩn dòng)
 // [MINDFUL] B8 — Bell_ShowSettings (hộp thoại chuông native cũ IDD_DIALOG_BELL) đã bỏ; cài đặt chuông
 // nay nằm ở tab "Chuông" của cửa Cài đặt (mở qua AppDelegate::onBellSettings).
 
