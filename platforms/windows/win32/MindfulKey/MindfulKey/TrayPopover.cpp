@@ -7,8 +7,6 @@
 #include "SystemTrayHelper.h"
 #include "BrandPalette.h"
 #include "BrandControls.h"
-
-#define FLAG_BEEP 0x8000
 #include "ReflectionScreen.h"
 #include "MoodStore.h"
 #include "SendGatekeeper.h"
@@ -93,14 +91,14 @@ static void ProcessTabBell(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     BrandControls_DrawCard(hdc, card1Rc, true);
     RECT label1Rc = { card1Rc.left + 15, card1Rc.top, card1Rc.right - 60, card1Rc.bottom };
     DrawLabel(hdc, L"Bật chuông tỉnh thức", label1Rc, BrandFontBody, kBrandPaletteCharcoal);
+    // [MINDFUL] A6 — nối ĐÚNG vBell (không phải FLAG_BEEP của OpenKey, tiếng bíp đổi Việt/Anh).
     RECT switch1Rc = { card1Rc.right - 50, card1Rc.top + 14, card1Rc.right - 14, card1Rc.top + 35 };
-    bool isBellEnabled = HAS_BEEP(vSwitchKeyStatus);
+    bool isBellEnabled = (vBell != 0);
     if (clickPt.x != -1 && PtInRect(&switch1Rc, clickPt)) {
-        if (isBellEnabled) vSwitchKeyStatus &= ~FLAG_BEEP;
-        else vSwitchKeyStatus |= FLAG_BEEP;
-        APP_SET_DATA(vSwitchKeyStatus, vSwitchKeyStatus);
+        APP_SET_DATA(vBell, vBell ? 0 : 1);
+        Bell_ApplySettings();   // BẬT/tắt đồng hồ chuông thật
         SystemTrayHelper::updateData();
-        isBellEnabled = HAS_BEEP(vSwitchKeyStatus);
+        isBellEnabled = (vBell != 0);
     }
     BrandControls_DrawPillSwitch(hdc, switch1Rc, isBellEnabled);
     y += 65;
@@ -140,19 +138,28 @@ static void ProcessTabBell(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     RECT label3Rc = { card3Rc.left + 15, card3Rc.top + 10, card3Rc.right - 15, card3Rc.top + 30 };
     DrawLabel(hdc, L"BỘ TIẾNG", label3Rc, BrandFontEyebrow, kBrandPaletteStone);
     
+    // [MINDFUL] A6 — ghi ĐÚNG chuỗi id mà Bell.cpp SoundIdFromStored chấp nhận (không phải
+    // vBellSoundIndex — khoá đó không ai đọc, giống bug A2 ở tab Chuông cửa Cài đặt).
     RECT iconGrpRc = { card3Rc.left + 15, card3Rc.top + 35, card3Rc.right - 15, card3Rc.top + 75 };
-    int currentSnd = MindfulKeyHelper::getRegInt(_T("vBellSoundIndex"), 0);
+    std::wstring currentSndName = MindfulKeyHelper::getRegString(_T("vBellSoundName"), _T("temple"));
+    int currentSnd = (currentSndName == L"chime") ? 1 : (currentSndName == L"wind") ? 2 : (currentSndName == L"custom") ? 3 : 0;
     int clickedSnd = BrandControls_DrawIconGroup(hdc, iconGrpRc, 4, currentSnd, clickPt);
     if (clickedSnd != -1 && clickedSnd != currentSnd) {
-        MindfulKeyHelper::setRegInt(_T("vBellSoundIndex"), clickedSnd);
+        static const wchar_t* kBellSoundIds[] = { L"temple", L"chime", L"wind", L"custom" };
+        MindfulKeyHelper::setRegString(_T("vBellSoundName"), kBellSoundIds[clickedSnd]);
         SystemTrayHelper::updateData();
     }
-    
+
+    // [MINDFUL] A6 — ghi ĐÚNG vBellVolume (không vVolume — khoá chết). Cũng vá lỗi kiểu dữ liệu có
+    // sẵn: BrandControls_DrawSlider nhận/trả thumbPos THANG 0..1 (float), nhưng code cũ gán thẳng
+    // vào biến int — ép kiểu cắt cụt 0..1 xuống int gần như LUÔN ra 0, nên trước đây bấm vào
+    // slider gần như luôn đặt âm lượng về 0 bất kể bấm chỗ nào.
     RECT sliderRc = { card3Rc.left + 15, card3Rc.top + 85, card3Rc.right - 15, card3Rc.top + 100 };
-    int currentVol = MindfulKeyHelper::getRegInt(_T("vVolume"), 50);
-    int clickedVol = BrandControls_DrawSlider(hdc, sliderRc, currentVol, clickPt);
-    if (clickedVol != currentVol) {
-        MindfulKeyHelper::setRegInt(_T("vVolume"), clickedVol);
+    int currentVol = MindfulKeyHelper::getRegInt(_T("vBellVolume"), 60);
+    float clickedVolPos = BrandControls_DrawSlider(hdc, sliderRc, (float)currentVol / 100.0f, clickPt);
+    int newVol = (int)(clickedVolPos * 100.0f);
+    if (newVol != currentVol) {
+        MindfulKeyHelper::setRegInt(_T("vBellVolume"), newVol);
         SystemTrayHelper::updateData();
     }
     y += 125;
