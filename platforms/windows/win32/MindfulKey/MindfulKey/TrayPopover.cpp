@@ -64,10 +64,14 @@ static void ProcessTabToday(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     
     RECT segRc = { cardRc.left + 100, cardRc.top + 15, cardRc.right - 15, cardRc.top + 45 };
     const wchar_t* sensTabs[] = { L"Ít nhạy", L"Vừa", L"Nhạy" };
-    int currentSens = MindfulKeyHelper::getRegInt(_T("vBellSensitivity"), 0);
-    int clickedSens = BrandControls_DrawSegmentedControl(hdc, segRc, sensTabs, 3, currentSens, clickPt, 0);
-    if (clickedSens != -1 && clickedSens != currentSens) {
-        MindfulKeyHelper::setRegInt(_T("vBellSensitivity"), clickedSens);
+    // [MINDFUL] A8 — vBellSensitivity lưu theo thang NudgeCoordinator.h (1=ít·2=vừa·3=nhạy, chưa
+    // lưu=vừa), KHÁC chỉ số 0-based mà segmented control dùng để vẽ/trả về. Đổi 2 chiều: đọc trừ 1
+    // trước khi vẽ, ghi cộng 1 trước khi lưu.
+    int storedSens = MindfulKeyHelper::getRegInt(_T("vBellSensitivity"), 2);
+    int currentSensIdx = (storedSens >= 1 && storedSens <= 3) ? (storedSens - 1) : 1;
+    int clickedSens = BrandControls_DrawSegmentedControl(hdc, segRc, sensTabs, 3, currentSensIdx, clickPt, 0);
+    if (clickedSens != -1 && clickedSens != currentSensIdx) {
+        MindfulKeyHelper::setRegInt(_T("vBellSensitivity"), clickedSens + 1);
         SystemTrayHelper::updateData();
     }
 

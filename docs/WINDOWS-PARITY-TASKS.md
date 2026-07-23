@@ -54,7 +54,7 @@ dự án nhìn app thật) · `⛔ Chặn (chờ quyết định)`
 | **A5** | ✅ | **Popover hết đảo kép** (pill chỉ xử `WM_LBUTTONUP`). Chi tiết ↓ |
 | **A6** | ✅ | **Popover nối đúng dây chuông** (vBell + vBellSoundName + vBellVolume). Chi tiết ↓ |
 | **A7** | ✅ | **Nút "Bật nhật ký" tại chỗ** trên popover (chỗ hiện "đang tắt"). Chi tiết ↓ |
-| **A8** | ⬜ | **Khớp index Độ nhạy** UI(0/1/2) ↔ NudgeCoordinator(1/2/3). Chi tiết ↓ |
+| **A8** | ✅ | **Khớp index Độ nhạy** UI(0/1/2) ↔ NudgeCoordinator(1/2/3). Chi tiết ↓ |
 
 ### A0 — Helper hit-test (BrandControls.h + .cpp)
 

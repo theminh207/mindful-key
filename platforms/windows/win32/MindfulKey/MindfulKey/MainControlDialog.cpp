@@ -258,7 +258,10 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             // lúc WM_PAINT nên khối if cũ không bao giờ khớp — tab Hôm nay tê liệt cùng nguyên nhân).
             RECT segRc = { cardRc.left + 100, cardRc.top + 15, cardRc.right - 15, cardRc.top + 45 };
             const wchar_t* sensTabs[] = { L"Ít nhạy", L"Vừa", L"Nhạy" };
-            int currentSens = MindfulKeyHelper::getRegInt(_T("vBellSensitivity"), 0);
+            // [MINDFUL] A8 — vBellSensitivity lưu theo thang NudgeCoordinator.h (1=ít·2=vừa·3=nhạy,
+            // chưa lưu=vừa), KHÁC chỉ số 0-based mà segmented control cần để vẽ selectedIndex.
+            int storedSens = MindfulKeyHelper::getRegInt(_T("vBellSensitivity"), 2);
+            int currentSens = (storedSens >= 1 && storedSens <= 3) ? (storedSens - 1) : 1;
             BrandControls_DrawSegmentedControl(memDC, segRc, sensTabs, 3, currentSens, pt, 0);
 
             y += 80;
@@ -508,11 +511,11 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             RECT cardRc = { contentRc.left + 20, y, contentRc.right - 20, y + 65 };
             RECT segRc = { cardRc.left + 100, cardRc.top + 15, cardRc.right - 15, cardRc.top + 45 };
 
-            // Độ nhạy — thang 0/1/2 khớp giá trị đang lưu hiện tại (TrayPopover.cpp dùng cùng thang).
-            // Việc khớp thang với NudgeCoordinator (1/2/3) là A8, không lấn ở đây.
+            // [MINDFUL] A8 — ghi ĐÚNG thang NudgeCoordinator.h đọc (1=ít·2=vừa·3=nhạy). `cs` là chỉ
+            // số 0-based của segmented control (0/1/2) — cộng 1 trước khi lưu registry.
             int cs = BrandControls_HitSegmented(segRc, 3, pt);
             if (cs != -1) {
-                MindfulKeyHelper::setRegInt(_T("vBellSensitivity"), cs);
+                MindfulKeyHelper::setRegInt(_T("vBellSensitivity"), cs + 1);
                 SystemTrayHelper::updateData();
                 InvalidateRect(hDlg, NULL, FALSE);
             }
