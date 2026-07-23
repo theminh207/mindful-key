@@ -214,104 +214,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		if (lParam == WM_LBUTTONUP) {
 			TrayPopover_Toggle();
 		} else if (lParam == WM_RBUTTONDOWN) {
-			POINT curPoint;
-			GetCursorPos(&curPoint);
-			SetForegroundWindow(hWnd);
-			UINT commandId = TrackPopupMenu(
-				popupMenu,
-				TPM_RETURNCMD | TPM_NONOTIFY,
-				curPoint.x,
-				curPoint.y,
-				0,
-				hWnd,
-				NULL
-			);
-			switch (commandId) {
-			case POPUP_VIET_ON_OFF:
-				AppDelegate::getInstance()->onToggleVietnamese();
-				break;
-			case POPUP_SPELLING:
-				AppDelegate::getInstance()->onToggleCheckSpelling();
-				break;
-			case POPUP_SMART_SWITCH:
-				AppDelegate::getInstance()->onToggleUseSmartSwitchKey();
-				break;
-			case POPUP_USE_MACRO:
-				AppDelegate::getInstance()->onToggleUseMacro();
-				break;
-			case POPUP_MOODWATCH:
-				MoodWatch_Toggle();
-				break;
-			case POPUP_BELL_SETTINGS:
-				Bell_ShowSettings(NULL);
-				break;
-			case POPUP_GATEKEEPER_TOGGLE:
-				// [MINDFUL] Bật/tắt gác cổng gửi tin (Feature #1). Lật cờ + lưu registry; dấu tích
-				// menu tự đồng bộ ở updateData() gọi cuối WM_TRAYMESSAGE. KHÔNG đụng vMoodWatch —
-				// nhật ký/sông độc lập với việc chặn Enter (port đúng mạch macOS onGatekeeperToggle).
-				APP_SET_DATA(vSendGatekeeper, !vSendGatekeeper);
-				break;
-			case POPUP_GATEKEEPER_APP:
-				SendGatekeeper_ToggleLastApp();
-				break;
-			case POPUP_REFLECT:
-				ReflectionScreen_Show(NULL);
-				break;
-			case POPUP_MOOD_DELETE:
-				// Hỏi lại trước khi xoá: đây là dữ liệu KHÔNG lấy lại được, và không có bản sao ở
-				// đâu cả (không đồng bộ, không đám mây — đó là điểm của sản phẩm).
-				if (MessageBoxW(NULL,
-						L"Xóa toàn bộ nhật ký cảm xúc trên máy này?\n\n"
-						L"Không thể lấy lại — nhật ký chỉ nằm ở đây, không có bản sao nào khác.",
-						L"Mindful Keyboard", MB_YESNO | MB_ICONQUESTION) == IDYES) {
-					MoodStore_DeleteAll();
-					MessageBoxW(NULL, L"Đã xóa sạch nhật ký cảm xúc.", L"Mindful Keyboard", MB_OK);
-				}
-				break;
-			case POPUP_MACRO_TABLE:
-				AppDelegate::getInstance()->onMacroTable();
-				break;
-			case POPUP_CONVERT_TOOL:
-				AppDelegate::getInstance()->onConvertTool();
-				break;
-			case POPUP_QUICK_CONVERT:
-				AppDelegate::getInstance()->onQuickConvert();
-				break;
-			case POPUP_TELEX:
-				AppDelegate::getInstance()->onInputType(0);
-				break;
-			case POPUP_VNI:
-				AppDelegate::getInstance()->onInputType(1);
-				break;
-			case POPUP_SIMPLE_TELEX:
-				AppDelegate::getInstance()->onInputType(2);
-				break;
-			case POPUP_UNICODE:
-				AppDelegate::getInstance()->onTableCode(0);
-				break;
-			case POPUP_TCVN3:
-				AppDelegate::getInstance()->onTableCode(1);
-				break;
-			case POPUP_VNI_WINDOWS:
-				AppDelegate::getInstance()->onTableCode(2);
-				break;
-			case POPUP_UNICODE_COMPOUND:
-				AppDelegate::getInstance()->onTableCode(3);
-				break;
-			case POPUP_VN_LOCALE_1258:
-				AppDelegate::getInstance()->onTableCode(4);
-				break;
-			case POPUP_CONTROL_PANEL:
-				AppDelegate::getInstance()->onControlPanel();
-				break;
-			case POPUP_ABOUT_MINDFULKEY:
-				AppDelegate::getInstance()->onMindfulKeyAbout();
-				break;
-			case POPUP_MINDFULKEY_EXIT:
-				AppDelegate::getInstance()->onMindfulKeyExit();
-				break;
-			}
-			SystemTrayHelper::updateData();
+			SystemTrayHelper::showContextMenu();
 		}
 	}
 	break;
@@ -323,6 +226,107 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
+}
+
+void SystemTrayHelper::showContextMenu() {
+	POINT curPoint;
+	GetCursorPos(&curPoint);
+	SetForegroundWindow(nid.hWnd);
+	UINT commandId = TrackPopupMenu(
+		popupMenu,
+		TPM_RETURNCMD | TPM_NONOTIFY,
+		curPoint.x,
+		curPoint.y,
+		0,
+		nid.hWnd,
+		NULL
+	);
+	switch (commandId) {
+	case POPUP_VIET_ON_OFF:
+		AppDelegate::getInstance()->onToggleVietnamese();
+		break;
+	case POPUP_SPELLING:
+		AppDelegate::getInstance()->onToggleCheckSpelling();
+		break;
+	case POPUP_SMART_SWITCH:
+		AppDelegate::getInstance()->onToggleUseSmartSwitchKey();
+		break;
+	case POPUP_USE_MACRO:
+		AppDelegate::getInstance()->onToggleUseMacro();
+		break;
+	case POPUP_MOODWATCH:
+		MoodWatch_Toggle();
+		break;
+	case POPUP_BELL_SETTINGS:
+		Bell_ShowSettings(NULL);
+		break;
+	case POPUP_GATEKEEPER_TOGGLE:
+		// [MINDFUL] Bật/tắt gác cổng gửi tin (Feature #1). Lật cờ + lưu registry; dấu tích
+		// menu tự đồng bộ ở updateData() gọi cuối WM_TRAYMESSAGE. KHÔNG đụng vMoodWatch —
+		// nhật ký/sông độc lập với việc chặn Enter (port đúng mạch macOS onGatekeeperToggle).
+		APP_SET_DATA(vSendGatekeeper, !vSendGatekeeper);
+		break;
+	case POPUP_GATEKEEPER_APP:
+		SendGatekeeper_ToggleLastApp();
+		break;
+	case POPUP_REFLECT:
+		ReflectionScreen_Show(NULL);
+		break;
+	case POPUP_MOOD_DELETE:
+		// Hỏi lại trước khi xoá: đây là dữ liệu KHÔNG lấy lại được, và không có bản sao ở
+		// đâu cả (không đồng bộ, không đám mây — đó là điểm của sản phẩm).
+		if (MessageBoxW(NULL,
+				L"Xóa toàn bộ nhật ký cảm xúc trên máy này?\n\n"
+				L"Không thể lấy lại — nhật ký chỉ nằm ở đây, không có bản sao nào khác.",
+				L"Mindful Keyboard", MB_YESNO | MB_ICONQUESTION) == IDYES) {
+			MoodStore_DeleteAll();
+			MessageBoxW(NULL, L"Đã xóa sạch nhật ký cảm xúc.", L"Mindful Keyboard", MB_OK);
+		}
+		break;
+	case POPUP_MACRO_TABLE:
+		AppDelegate::getInstance()->onMacroTable();
+		break;
+	case POPUP_CONVERT_TOOL:
+		AppDelegate::getInstance()->onConvertTool();
+		break;
+	case POPUP_QUICK_CONVERT:
+		AppDelegate::getInstance()->onQuickConvert();
+		break;
+	case POPUP_TELEX:
+		AppDelegate::getInstance()->onInputType(0);
+		break;
+	case POPUP_VNI:
+		AppDelegate::getInstance()->onInputType(1);
+		break;
+	case POPUP_SIMPLE_TELEX:
+		AppDelegate::getInstance()->onInputType(2);
+		break;
+	case POPUP_UNICODE:
+		AppDelegate::getInstance()->onTableCode(0);
+		break;
+	case POPUP_TCVN3:
+		AppDelegate::getInstance()->onTableCode(1);
+		break;
+	case POPUP_VNI_WINDOWS:
+		AppDelegate::getInstance()->onTableCode(2);
+		break;
+	case POPUP_UNICODE_COMPOUND:
+		AppDelegate::getInstance()->onTableCode(3);
+		break;
+	case POPUP_VN_LOCALE_1258:
+		AppDelegate::getInstance()->onTableCode(4);
+		break;
+	case POPUP_CONTROL_PANEL:
+		AppDelegate::getInstance()->onControlPanel();
+		break;
+	case POPUP_ABOUT_MINDFULKEY:
+		AppDelegate::getInstance()->onMindfulKeyAbout();
+		break;
+	case POPUP_MINDFULKEY_EXIT:
+		AppDelegate::getInstance()->onMindfulKeyExit();
+		break;
+	}
+	SystemTrayHelper::updateData();
 }
 
 HWND SystemTrayHelper::createFakeWindow(const HINSTANCE & hIns) {

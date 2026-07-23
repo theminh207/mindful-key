@@ -254,6 +254,50 @@ static void ProcessTabKeyboard(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     y += 145;
 }
 
+// [MINDFUL] B9 — overlay phần phải header: pill "VN" + nút "⋯" (đối ứng macOS PanelViewController).
+// Pill "VN" là NHỊ PHÂN bộ gõ Việt bật/tắt — CHỈ báo ngôn ngữ, KHÔNG BAO GIỜ báo cảm xúc (HIẾN
+// CHƯƠNG). "⋯" mở đúng menu khay (SystemTrayHelper::showContextMenu). KHÔNG nhét vào DrawCardHeader
+// vì hàm đó dùng chung 4 nơi (Reflection/Gatekeeper cũng gọi). clickPt.x==-1 => chỉ vẽ.
+static void ProcessHeaderExtras(HDC hdc, const RECT& clientRc, POINT clickPt) {
+    RECT dotsRc = { clientRc.right - 18 - 22, 9, clientRc.right - 18, 31 };
+    RECT pillRc = { dotsRc.left - 8 - 34, 11, dotsRc.left - 8, 29 };
+
+    // Hit-test trước — đổi state rồi vẽ theo state mới (giống các control khác trong file).
+    if (clickPt.x != -1) {
+        if (PtInRect(&pillRc, clickPt)) {
+            APP_SET_DATA(vLanguage, vLanguage ? 0 : 1);
+        } else if (PtInRect(&dotsRc, clickPt)) {
+            SystemTrayHelper::showContextMenu();
+            return;  // menu modal đã chạy; popover có thể đã ẩn do mất focus
+        }
+    }
+
+    // Pill "VN": teal khi bộ gõ Việt bật, xám divider khi tắt.
+    bool vnOn = (vLanguage == 1);
+    int pillR = pillRc.bottom - pillRc.top;
+    HRGN pillRgn = CreateRoundRectRgn(pillRc.left, pillRc.top, pillRc.right + 1, pillRc.bottom + 1, pillR, pillR);
+    HBRUSH pillBr = CreateSolidBrush(MK_COLORREF(vnOn ? kBrandPaletteTeal : kBrandPaletteDivider));
+    FillRgn(hdc, pillRgn, pillBr);
+    DeleteObject(pillBr);
+    DeleteObject(pillRgn);
+    DrawLabel(hdc, L"VN", pillRc, BrandFontEyebrow, vnOn ? kBrandPaletteCardWhite : kBrandPaletteStone,
+              DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+    // "⋯" = 3 chấm stone (không dùng glyph font — vẽ tay cho chắc, khớp lối "vẽ mù" của file).
+    int cy = (dotsRc.top + dotsRc.bottom) / 2;
+    int cx = (dotsRc.left + dotsRc.right) / 2;
+    HBRUSH dotBr = CreateSolidBrush(MK_COLORREF(kBrandPaletteStone));
+    HBRUSH oldBr = (HBRUSH)SelectObject(hdc, dotBr);
+    HPEN oldPen = (HPEN)SelectObject(hdc, (HPEN)GetStockObject(NULL_PEN));
+    for (int i = -1; i <= 1; i++) {
+        int dx = cx + i * 6;
+        Ellipse(hdc, dx - 2, cy - 2, dx + 2, cy + 2);
+    }
+    SelectObject(hdc, oldPen);
+    SelectObject(hdc, oldBr);
+    DeleteObject(dotBr);
+}
+
 static void PaintPopover(HWND hwnd) {
     PAINTSTRUCT ps;
     HDC hdc = BeginPaint(hwnd, &ps);
@@ -270,6 +314,8 @@ static void PaintPopover(HWND hwnd) {
 
     // Vẽ Header
     BrandControls_DrawCardHeader(memDC, clientRc.right, L"Mindful Keyboard");
+    POINT noHit = { -1, -1 };
+    ProcessHeaderExtras(memDC, clientRc, noHit);
 
     int y = 45; // Dưới đường kẻ ngăn
 
@@ -315,6 +361,9 @@ static LRESULT CALLBACK PopoverWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
         HDC hdc = GetDC(hwnd);
         
         if (msg == WM_LBUTTONUP) {
+            // Header extras (pill VN + ⋯) — nằm trên đường kẻ ngăn (y<40), không đè segmented/tab.
+            ProcessHeaderExtras(hdc, clientRc, pt);
+
             RECT segRc = { 18, 55, clientRc.right - 18, 87 };
             const wchar_t* tabs[] = { L"Hôm nay", L"Chuông", L"Bộ gõ" };
             int clicked = BrandControls_DrawSegmentedControl(hdc, segRc, tabs, 3, g_currentTab, pt, 0);
