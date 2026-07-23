@@ -310,7 +310,9 @@ void AppDelegate::onControlPanel() {
 void AppDelegate::onBellSettings() {
 	// [MINDFUL] B8 — thay hộp thoại chuông cũ (IDD_DIALOG_BELL) bằng tab Chuông của cửa Cài đặt.
 	createMainDialog();
-	if (mainDialog) mainDialog->selectTab(1);   // 1 = tab "Chuông"
+	// mainDialog khai kiểu BaseDialog* (lớp cha) nên phải ép về MainControlDialog* để gọi selectTab.
+	// An toàn: createMainDialog LUÔN tạo new MainControlDialog, không có nhánh nào tạo lớp khác.
+	if (mainDialog) static_cast<MainControlDialog*>(mainDialog)->selectTab(1);   // 1 = tab "Chuông"
 }
 
 void AppDelegate::onMindfulKeyAbout() {
