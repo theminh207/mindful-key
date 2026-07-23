@@ -3,6 +3,45 @@
 Theo [Keep a Changelog](https://keepachangelog.com/) và [SemVer](https://semver.org/).
 Phiên bản lấy từ `version.env`.
 
+## [0.4.14]
+
+Đợt "nối lại dây điện" (GĐ-A, `docs/WINDOWS-PARITY-TASKS.md`) — sau nghiệm thu tay v0.4.12 lộ ra
+UI Windows đã vẽ đúng nhưng nhiều control chưa nối dây thật hoặc nối nhầm dây. 9 việc A0–A8, mỗi
+việc 1 commit riêng.
+
+### Fixed
+
+- **Windows: chuông giờ reo được từ cả popover lẫn cửa sổ Cài đặt** — nút "Phát tiếng gõ"/"Bật
+  chuông tỉnh thức" trước đây lật nhầm `FLAG_BEEP` (tiếng bíp đổi Việt/Anh của OpenKey) thay vì
+  `vBell` (biến thật `Bell.cpp` đọc lúc reo); tiếng chuông ghi khoá `vBellSoundIndex` (không ai
+  đọc) thay vì `vBellSoundName`; âm lượng ghi `vVolume`/`vVolume` (khoá chết) thay vì `vBellVolume`.
+  Vá kèm 1 lỗi kiểu dữ liệu: `BrandControls_DrawSlider` nhận/trả thang 0..1 (float) nhưng bị gán
+  thẳng vào biến `int` — cắt cụt khiến bấm vào đâu trên thanh trượt cũng gần như luôn đặt âm lượng
+  về 0. Cả popover lẫn cửa sổ Cài đặt đều vá.
+- **Windows: 3 tab cửa sổ Cài đặt hết tê liệt** ("Hôm nay"/"Chuông"/"Riêng tư") — vùng dò-click nằm
+  trong nhánh `WM_PAINT` (toạ độ chuột giả `{-1,-1}` lúc vẽ) nên không bao giờ khớp. Nay có khối
+  `WM_LBUTTONUP` riêng, dựng lại đúng toạ độ vùng vẽ.
+- **Windows: popover hết "bấm như không ăn"** — công tắc gạt (pill) trước đây xử lý cả lúc nhấn
+  xuống LẪN lúc thả chuột, nên mỗi cú bấm đảo trạng thái 2 lần (về đúng chỗ cũ). Nay chỉ xử lúc thả
+  chuột. Đánh đổi: thanh trượt âm lượng thành "bấm để đặt" thay vì kéo-mượt theo chuột.
+- **Windows: nút "Bật nhật ký" ngay tại chỗ** — trước đây thấy chữ "Nhật ký cảm xúc đang tắt." mà
+  không có cách bật tại chỗ, phải tự tìm menu khay chuột phải. Thêm ở cả popover và cửa sổ Cài đặt.
+- **Windows: Độ nhạy chọn "Nhạy" giờ mới thật sự nhạy** — UI ghi thang 0/1/2 nhưng bộ điều phối
+  nhắc tâm (`NudgeCoordinator`) đọc thang 1/2/3, nên chọn "Nhạy" (ghi 2) bị hiểu thành "Vừa", và
+  mức "Nhạy" thật (3) không bao giờ đạt tới được. Đồng bộ cả 2 chiều đọc/ghi ở 3 nơi (popover +
+  paint + click của cửa sổ Cài đặt).
+- **Windows: credit GPL hết ghi sai** — cú đổi tên hàng loạt OpenKey→MindfulKey từng nuốt luôn tên
+  gốc trong dòng ghi công, hộp Giới thiệu từng ghi "Dựa trên MindfulKey — Mai Vũ Tuyên" (ghi công
+  vòng tròn, sai). Trả lại "Dựa trên OpenKey", link Fanpage/GitHub OpenKeyVN/tuyenvm-OpenKey đúng
+  dự án gốc, ở cả header 23 file lẫn hộp Giới thiệu.
+
+### Known limitation
+
+- **Windows: tab "Riêng tư" tạm trống** — 2 control cũ (chọn thời gian lưu trữ, xuất CSV) chưa
+  từng có hàm hậu trường nào cả (không phải chỉ sai tên khoá) nên đã gỡ khỏi UI thay vì để nút giả.
+  macOS đã có đủ 2 tính năng này thật; port sang Windows là việc riêng, chờ chủ dự án chốt — xem
+  `docs/FRICTION-LOG.md` 2026-07-23 "A4".
+
 ## [0.4.13]
 
 ### Added
