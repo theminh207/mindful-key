@@ -192,18 +192,31 @@ giờ đạt. Chọn 1 chuẩn (đề xuất: theo macOS — xem `NudgeCoordinat
 
 ---
 
-## GĐ-B — Sóng sống (port thật, có luồng — KHÔNG thuần chép-dán)
+## GĐ-B — Sóng sống + chuông thật + bỏ giao diện cũ (MỞ RỘNG theo nghiệm thu v0.4.14)
 
-> Ra bản **v0.4.15**. Cổng người: gõ câu căng → đầu sóng nhích trong vài giây; ngừng 5' → tự lặng
-> về phẳng. ⚠️ **Hợp đồng dec.4 (bất khả xâm phạm):** idle = KHÔNG vẽ đầu sóng, KHÔNG bịa nước nối
-> quãng đứt. Trục dọc = CƯỜNG ĐỘ, không valence, không đỏ/xanh.
+> Ra bản **v0.4.15**. ⚠️ **Hợp đồng dec.4 (bất khả xâm phạm):** idle = KHÔNG vẽ đầu sóng, KHÔNG bịa
+> nước nối quãng đứt. Trục dọc = CƯỜNG ĐỘ, không valence, không đỏ/xanh.
+>
+> **[2026-07-23 — mở rộng từ feedback mắt người v0.4.14]** Chủ dự án test v0.4.14, 3 phát hiện:
+> (1) popover "chuông không hoạt động" — thật ra chuông CHẠY (PlaySound thật) nhưng timer reo mỗi
+> 15+ phút + UI mới THIẾU nút "Nghe thử" → không test nhanh được; (2) "nhật ký + sóng không hoạt
+> động" — đúng phần sóng sống chưa làm (B1-B3); (3) "chưa có icon + thiếu tính năng macOS + bỏ giao
+> diện cũ". Nên gom vào GĐ-B: nút Nghe thử (B4), giờ yên lặng + .wav riêng (B6, kéo từ C4), icon
+> chuông thật (B7, kéo từ C3), BỎ hộp thoại chuông native cũ (B8) + header popover (B9, kéo từ C3).
+> Thứ tự bắt buộc: B6+B7 xong (UI mới đủ tính năng) MỚI được B8 (bỏ hộp cũ) — kẻo mất giờ-yên-lặng/
+> nghe-thử/.wav-riêng vốn CHỈ hộp cũ có.
 
 | ID | Trạng thái | Việc |
 |---|---|---|
-| **B1** | ⬜ | State sóng sống + cập nhật trong worker. Chi tiết ↓ |
+| **B1** | ⬜ | State sóng sống + cập nhật trong worker (`MoodWatch.cpp`). Chi tiết ↓ |
 | **B2** | ⬜ | `MoodWatch_LiveAmplitude()` + `MoodWatch_FetchLiveTrace()`. Chi tiết ↓ |
-| **B3** | ⬜ | Nối `liveHead` thật + vệt dày vào 3 chỗ vẽ. Chi tiết ↓ |
-| **B4** | ⬜ | Dòng "Chuông kế tiếp: lúc HH:mm" trên popover. Chi tiết ↓ |
+| **B3** | ⬜ | Nối `liveHead` thật + vệt dày vào 3 chỗ vẽ → sóng+nhật ký "chạy". Chi tiết ↓ |
+| **B4** | ⬜ | **Nút "Nghe thử" trên UI chuông** (popover + settings) → chuông test được NGAY. Chi tiết ↓ |
+| **B5** | ⬜ | Dòng "Dự kiến reo lúc HH:mm" trên popover. Chi tiết ↓ |
+| **B6** | ⬜ | Giờ yên lặng + chọn .wav riêng trong UI chuông mới (kéo từ C4). Chi tiết ↓ |
+| **B7** | ⬜ | Icon chuông thật thay chữ A/B/C/D (xuất SVG→ICO + wire, kéo từ C3). Chi tiết ↓ |
+| **B8** | ⬜ | BỎ hộp thoại chuông native cũ (`IDD_DIALOG_BELL`) — SAU B4/B6/B7. Chi tiết ↓ |
+| **B9** | ⬜ | Header popover: pill "VN" + nút "⋯" như macOS (kéo từ C3). Chi tiết ↓ |
 
 ### B1 — State sóng sống + cập nhật trong worker (`MoodWatch.cpp`)
 
@@ -257,13 +270,70 @@ Thêm khai báo ở `MoodWatch.h`, định nghĩa ở `MoodWatch.cpp`, **mirror 
 - **Nghiệm thu máy:** mingw 3 file sạch. **Mắt người:** bật nhật ký, gõ câu căng → đầu sóng nhích
   trong vài giây; ngừng 5' → lặng về phẳng (idle không vẽ đầu sóng).
 
-### B4 — "Chuông kế tiếp: lúc HH:mm"
+### B4 — Nút "Nghe thử" trên UI chuông (đây là fix "chuông không hoạt động")
 
-Mirror `PanelViewController.mm:547-571`. Cần Bell phơi giờ reo kế: `grep -n "NextRing\|MinutesUntil\|
-fireDate\|nextFire" Bell.cpp Bell.h`. Nếu chưa có → thêm `int Bell_MinutesUntilNextRing()` đọc từ
-timer/`vBellInterval` (mirror `BellMac.mm:284-296`, trả `-1` khi tắt/hoãn). Vẽ dòng dưới card Hôm
-nay popover, ẩn khi `-1`.
-- **Nghiệm thu:** mắt người: bật chuông nhịp 30' → thấy "Chuông kế tiếp: lúc HH:mm".
+`Bell_PreviewSound()` ĐÃ CÓ (`Bell.cpp:222`, `Bell.h:23`) — phát ngay tiếng+âm lượng đang chọn, bỏ
+qua mọi cổng (snooze/giờ/cooldown). Chỉ hộp thoại cũ mới có nút này. Thêm nút "Nghe thử" vào card BỘ
+TIẾNG của: (1) popover `ProcessTabBell` (`TrayPopover.cpp`), (2) tab Chuông settings
+(`MainControlDialog.cpp` currentTab==1). Mẫu nút: `FillRect`+`DrawTextW` vẽ, `PtInRect` dò (như
+`SendGatekeeper.cpp` btnWait/btnSend). Bấm → `Bell_PreviewSound()`.
+- **Nghiệm thu:** mắt người: bấm "Nghe thử" → nghe tiếng NGAY, không chờ 15 phút.
+
+### B5 — Dòng "Dự kiến reo lúc HH:mm"
+
+Mirror `PanelViewController.mm:547-571`. `grep -n "NextRing\|MinutesUntil\|fireDate\|nextFire"
+Bell.cpp Bell.h`. Chưa có → thêm `int Bell_MinutesUntilNextRing()` (mirror `BellMac.mm:284-296`,
+trả `-1` khi tắt/hoãn/ngoài giờ). Vẽ dưới pill "Bật chuông" trong `ProcessTabBell` popover, ẩn khi
+`-1`. (macOS đặt ở card Trạng thái: "Dự kiến reo lúc 16:14 (còn 4 phút)".)
+- **Nghiệm thu:** mắt người: bật chuông nhịp 30' → thấy "Dự kiến reo lúc HH:mm (còn N phút)".
+
+### B6 — Giờ yên lặng + chọn .wav riêng trong UI chuông mới (kéo từ C4)
+
+Hộp thoại cũ CÓ: giờ yên lặng (`vBellFrom`/`vBellTo`, `isInBellRange`), tiếng tùy chỉnh
+(`Bell_InstallCustomSound`, `Bell.cpp:191`). UI mới THIẾU. Thêm vào tab Chuông settings (chỗ rộng
+hơn popover) — mirror `BellSettingsView.mm`: 2 ô số "Giờ yên lặng: từ __ đến __" (ghi
+`vBellFrom`/`vBellTo` qua `APP_SET_DATA`; ô số vẽ tay + bắt phím, hoặc dùng cách macOS), nút "Chọn
+tiếng .wav của tôi..." → `GetOpenFileName` (.wav) → `Bell_InstallCustomSound(path, &msg)`.
+- **⛔ Verify:** chữ ký `Bell_InstallCustomSound` + cách hộp cũ gọi `GetOpenFileName` (`Bell.cpp`
+  ~380-400) để chép đúng.
+- **Nghiệm thu:** mắt người: đặt giờ yên lặng → trong khoảng đó không reo (test bằng Nghe-thử vẫn
+  reo vì bỏ cổng); chọn .wav lạ → Nghe thử phát đúng tiếng đó.
+
+### B7 — Icon chuông thật thay chữ A/B/C/D (kéo từ C3)
+
+SVG nguồn CÓ SẴN: `brand/svg/bell_temple.svg`, `bell_chime.svg`, `bell_wind.svg`, `bell-custom.svg`
+— nhưng CHƯA xuất sang Windows (`brand/platform/windows/` không có). `BrandControls_DrawIconGroup`
+(`BrandControls.cpp:301-309`) fallback chữ A/B/C/D, comment tự ghi "sẽ bổ sung".
+1. Thêm 4 icon vào `brand/export-platform.sh` (xuất `.ico` vào `brand/platform/windows/`) — xem
+   `docs/BRAND-ASSETS.md` + cách 8 icon khác đang xuất. Chạy `make brand-platform` (cần rsvg —
+   verify có trên máy; KHÔNG có → ⛔ báo chủ dự án).
+2. Khai 4 `IDI_ICON_BELL_*` trong `MindfulKey.rc` (trỏ `../../../../../brand/platform/windows/*.ico`,
+   như `IDI_TAB_*`) + `resource.h`.
+3. `BrandControls_DrawIconGroup`: nhận thêm mảng icon-id, `LoadImage`/`DrawIconEx` thay `DrawTextW`
+   chữ giả. Giữ chấm teal chỉ báo đang chọn.
+- **⛔ Verify:** rsvg có trên máy không (`which rsvg-convert`); FRICTION-LOG 2026-07-17 ghi 3 icon
+  chuông "sống ngoài dây chuyền export" — đây là lúc kéo vào.
+- **Nghiệm thu:** mắt người: BỘ TIẾNG hiện 4 icon chuông thật (chùa/chime/gió/nốt-nhạc), không chữ.
+
+### B8 — BỎ hộp thoại chuông native cũ (SAU B4/B6/B7)
+
+Chỉ làm khi B4+B6+B7 đã đưa ĐỦ tính năng của hộp cũ sang UI mới (nghe thử, giờ yên lặng, .wav riêng,
+icon). Rồi: xoá `IDD_DIALOG_BELL` (`.rc`) + `BellDlgProc`/`Bell_ShowSettings` (`Bell.cpp`); menu khay
+"Chuông tỉnh thức..." (`SystemTrayHelper.cpp:245-246`, POPUP_BELL_SETTINGS) đổi thành mở **cửa sổ
+Cài đặt tab Chuông** (như macOS menu "Cài đặt Chuông..." mở settings ▸ Chuông — tìm hàm mở
+MainControlDialog + chọn tab 1). Dọn resource/hàm mồ côi.
+- **⛔ Verify:** grep MỌI nơi gọi `Bell_ShowSettings`/`IDD_DIALOG_BELL`/`BellDlgProc` trước khi xoá.
+  Nếu hộp cũ có tính năng nào B6 CHƯA phủ → DỪNG, không xoá phần đó.
+- **Nghiệm thu:** mắt người: menu khay "Chuông..." → mở cửa sổ Cài đặt mới (không còn hộp xám cũ);
+  mọi thứ hộp cũ làm được giờ làm được ở UI mới.
+
+### B9 — Header popover: pill "VN" + nút "⋯" (kéo từ C3)
+
+macOS popover header (`PanelViewController.mm:481-511`): pill "VN" (nhị phân teal — CHỈ báo bộ gõ
+Việt bật/tắt, KHÔNG BAO GIỜ báo cảm xúc — HIẾN CHƯƠNG) + nút "⋯" mở menu khay cũ. Windows popover
+(`TrayPopover.cpp` `PaintPopover`, header ~230) chỉ có tiêu đề. Thêm pill "VN" (đọc `vLanguage`,
+bấm → toggle) + "⋯" (bấm → hiện menu khay `SystemTrayHelper` popup).
+- **Nghiệm thu:** mắt người: popover có pill VN đổi teal/xám theo bộ gõ; bấm ⋯ ra menu đầy đủ.
 
 ---
 

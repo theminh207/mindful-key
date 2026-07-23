@@ -55,10 +55,12 @@ Trạng thái: ✅ ngang macOS · 🎨 chỉ-vỏ (vẽ được, chưa bấm/ch
 > thu) cho model thực thi:** [WINDOWS-PARITY-TASKS.md](WINDOWS-PARITY-TASKS.md). Bản dưới đây chỉ nêu
 > khung 4 giai đoạn + lý do; đi làm thì mở bảng thi công.
 >
-> **Trạng thái tổng (cập nhật 2026-07-23):** GĐ-A `⬜ chưa khởi công` (9 việc A0–A8) · GĐ-B `⬜`
-> (4 việc) · GĐ-C `⬜` (6 việc, 2 điểm ⛔ chờ chốt) · GĐ-D `⬜` (4 việc). **Cả 4 GĐ đã chi tiết tới
-> mức thi công** trong bảng TASKS. Việc gần nhất = **A0 (helper hit-test)** rồi **A1 (credit GPL)**.
-> 3 điểm ⛔ Sonnet phải DỪNG hỏi: C1 (cỡ cửa sổ), C3 (icon tiếng chuông), D4 (chờ SignPath).
+> **Trạng thái tổng (cập nhật 2026-07-23):** GĐ-A `✅ XONG` (9 việc, v0.4.14 released, chờ mắt
+> người) · GĐ-B `🔄 đang làm` (MỞ RỘNG lên 9 việc B1–B9 sau nghiệm thu v0.4.14: sóng sống + nút
+> Nghe-thử + giờ-yên-lặng + icon thật + bỏ hộp chuông cũ + header popover) · GĐ-C `⬜` (còn cửa sổ
+> resize/DPI/check-in — phần bell/icon đã kéo sang B) · GĐ-D `⬜`. Chi tiết thi công: TASKS.
+> **Nghiệm thu v0.4.14 (mắt người):** chuông chạy nhưng chưa test được (thiếu Nghe-thử), sóng+nhật
+> ký chưa nhích (thiếu sóng sống), còn hộp thoại chuông native cũ song song.
 
 Nguyên tắc: giai đoạn trước là móng của giai đoạn sau; mỗi giai đoạn có cổng nghiệm thu riêng
 (máy + mắt người, bám `QA-WINDOWS.md` §7 Definition of Done). KHÔNG gộp — mỗi GĐ 1 đợt
