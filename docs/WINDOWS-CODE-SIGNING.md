@@ -21,16 +21,17 @@ làm cảnh báo biến mất, mà làm cho danh tính kiểm chứng được.
 | Mã nguồn mở, repo công khai | github.com/theminh207/mindful-key (public) | ✅ |
 | Giấy phép OSS được công nhận | GPL v3 (`LICENSE.txt`) | ✅ |
 | Chức năng được mô tả ở trang tải/README | `README.md` + trang Releases | ✅ (kiểm lại nội dung release notes) |
-| **Đã phát hành ở đúng dạng cần ký** | Bộ cài hiện tại CHƯA mở được (bug khởi động vừa vá, chưa CI-verify) | ❌ **CHẶN** |
+| **Đã phát hành ở đúng dạng cần ký** | v0.4.10 đã publish + CI Windows xanh (Debug+Release build sạch trên MSVC), `.exe` + bộ cài ra thật | ✅ (2026-07-23) |
 
 Cột cuối là lý do SignPath là **bước 2**: họ không ký một bản chưa chạy, mà ký cũng vô nghĩa.
 
 ## Thứ tự đúng (không đảo được)
 
-**Bước 0 — có bản chạy được** *(việc của chủ dự án + CI, đang dở)*
-Push bản vá khởi động (`e68f101`) → CI dựng `.exe` + bộ cài → chủ dự án cầm máy Windows xác nhận:
-mở được, gõ Telex ra dấu (QA `T1`), chuông kêu (`B0`). Chưa qua bước này thì mọi bước sau là xây
-nhà trên cát.
+**Bước 0 — có bản chạy được** *(CI ✅ 2026-07-23; mắt người trên Windows thật vẫn nên làm)*
+✅ v0.4.10: vòng lặp lỗi compile Windows đã phá (7 lỗi vá 1 lượt nhờ mingw check local — xem
+[[windows-shell-local-syntax-check]]), CI Windows xanh Debug+Release, release publish đủ `.exe`/bộ cài.
+**Còn lại (không chặn SignPath):** chủ dự án cầm máy Windows thật xác nhận mở được, gõ Telex ra dấu
+(QA `T1`), chuông kêu (`B0`) trước khi tin bản ký chạy tốt.
 
 **Bước 1 — nộp đơn SignPath** *(việc của chủ dự án, CHẠY SONG SONG được ngay hôm nay)*
 Duyệt mất **vài ngày–vài tuần**, nên bắt đầu sớm là khôn. Vào https://signpath.org/ →
@@ -47,6 +48,12 @@ Duyệt mất **vài ngày–vài tuần**, nên bắt đầu sớm là khôn. V
 Sau khi duyệt, SignPath cấp cho chủ dự án 3 mảnh **cấu hình** (không phải bí mật) + 1 **token bí mật**:
 - Organization ID, Project slug, Signing-policy slug → tôi cắm vào `release.yml`.
 - API token → chủ dự án lưu vào GitHub secret `SIGNPATH_API_TOKEN` (Settings → Secrets).
+
+> ⚠️ **Bug cấu hình đã phát hiện (2026-07-23) — vá cùng lúc nối 4 mảnh:** job `sign-windows` trong
+> `release.yml` (dòng ~151) đang dùng input `github-artifact-name: 'windows-setup'` mà action
+> `signpath/github-action-submit-signing-request@v1` KHÔNG nhận (CI log: *"Unexpected input(s)
+> 'github-artifact-name'"*). Đúng phải là `github-artifact-id` (lấy từ output bước `upload-artifact`)
+> + thêm `github-token`. Kể cả đã có `SIGNPATH_API_TOKEN`, bước ký vẫn hỏng tới khi sửa 2 chỗ này.
 
 Chưa có 4 mảnh này thì **tôi KHÔNG viết YAML trước** — viết bằng slug tự chế là bịa cấu hình, đúng
 thứ kỷ luật dự án cấm. Khi có, tôi nối một bước giữa "build .exe" và "đóng bộ cài": gửi `.exe` cho
