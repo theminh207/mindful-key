@@ -272,9 +272,21 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
                 RECT chartRc = { riverRc.left + 5, riverRc.top + 5, riverRc.right - 5, riverRc.bottom - 20 };
                 EmotionRiver_Draw(memDC, chartRc, samples, true, liveHead);
             } else {
+                // [MINDFUL] A7 — nút "Bật nhật ký" tại chỗ. Click thật xử ở WM_LBUTTONUP
+                // (currentTab==0, đã có sẵn từ A3) — nhánh vẽ dưới đây CHỈ vẽ.
+                RECT msgRc = { riverRc.left + 10, riverRc.top + 15, riverRc.right - 10, riverRc.top + 65 };
                 SetTextColor(memDC, MK_COLORREF(kBrandPaletteMuted));
                 SelectObject(memDC, BrandControls_Font(BrandFontBody));
-                DrawTextW(memDC, L"Nhật ký cảm xúc đang tắt.", -1, &riverRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+                DrawTextW(memDC, L"Nhật ký cảm xúc đang tắt.", -1, &msgRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+                RECT btnEnableRc = { riverRc.left + (riverRc.right - riverRc.left) / 2 - 70, riverRc.top + 95,
+                                      riverRc.left + (riverRc.right - riverRc.left) / 2 + 70, riverRc.top + 123 };
+                HBRUSH btnBr = CreateSolidBrush(MK_COLORREF(kBrandPaletteTeal));
+                FillRect(memDC, &btnEnableRc, btnBr);
+                DeleteObject(btnBr);
+                SetTextColor(memDC, MK_COLORREF(kBrandPaletteCardWhite));
+                SelectObject(memDC, BrandControls_Font(BrandFontBody));
+                DrawTextW(memDC, L"Bật nhật ký", -1, &btnEnableRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
             }
         }
         else if (currentTab == 1) { // Chuông
@@ -503,6 +515,18 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
                 MindfulKeyHelper::setRegInt(_T("vBellSensitivity"), cs);
                 SystemTrayHelper::updateData();
                 InvalidateRect(hDlg, NULL, FALSE);
+            }
+
+            // [MINDFUL] A7 — nút "Bật nhật ký" (chỉ hiện/bấm được khi đang tắt — RECT khớp nhánh vẽ).
+            if (!vMoodWatch) {
+                y += 80;
+                RECT riverRc = { contentRc.left + 20, y, contentRc.right - 20, y + 150 };
+                RECT btnEnableRc = { riverRc.left + (riverRc.right - riverRc.left) / 2 - 70, riverRc.top + 95,
+                                      riverRc.left + (riverRc.right - riverRc.left) / 2 + 70, riverRc.top + 123 };
+                if (PtInRect(&btnEnableRc, pt)) {
+                    MoodWatch_Toggle();
+                    InvalidateRect(hDlg, NULL, FALSE);
+                }
             }
         }
 

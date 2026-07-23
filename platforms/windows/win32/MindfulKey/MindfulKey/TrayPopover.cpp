@@ -31,6 +31,7 @@ static const int kPopoverHeight = 520; // Tăng chiều cao để chứa đủ n
 
 extern int vMoodWatch;
 extern int vSendGatekeeper;
+extern void MoodWatch_Toggle();   // [MINDFUL] A7 — nút "Bật nhật ký" ở ProcessTabToday
 
 // Helper vẽ Text đơn giản
 static void DrawLabel(HDC hdc, const wchar_t* text, RECT rc, BrandFontRole role, unsigned colorHex, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
@@ -81,7 +82,21 @@ static void ProcessTabToday(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
         RECT chartRc = { riverRc.left + 5, riverRc.top + 5, riverRc.right - 5, riverRc.bottom - 20 };
         EmotionRiver_Draw(hdc, chartRc, samples, true, liveHead);
     } else {
-        DrawLabel(hdc, L"Nhật ký cảm xúc đang tắt.", riverRc, BrandFontBody, kBrandPaletteMuted, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        // [MINDFUL] A7 — nút "Bật nhật ký" tại chỗ, thay vì bắt người dùng tự tìm menu khay chuột
+        // phải. MoodWatch_Toggle() tự lo cả 2 lớp consent (đọc sóng + ghi nhật ký) — không cần thêm
+        // gì ở đây. InvalidateRect đã có sẵn ở PopoverWndProc sau mọi dispatch, không gọi lại.
+        RECT msgRc = { riverRc.left + 10, riverRc.top + 15, riverRc.right - 10, riverRc.top + 65 };
+        DrawLabel(hdc, L"Nhật ký cảm xúc đang tắt.", msgRc, BrandFontBody, kBrandPaletteMuted, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+        RECT btnEnableRc = { riverRc.left + (riverRc.right - riverRc.left) / 2 - 70, riverRc.top + 95,
+                              riverRc.left + (riverRc.right - riverRc.left) / 2 + 70, riverRc.top + 123 };
+        if (clickPt.x != -1 && PtInRect(&btnEnableRc, clickPt)) {
+            MoodWatch_Toggle();
+        }
+        HBRUSH btnBr = CreateSolidBrush(MK_COLORREF(kBrandPaletteTeal));
+        FillRect(hdc, &btnEnableRc, btnBr);
+        DeleteObject(btnBr);
+        DrawLabel(hdc, L"Bật nhật ký", btnEnableRc, BrandFontBody, kBrandPaletteCardWhite, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
     }
 }
 
