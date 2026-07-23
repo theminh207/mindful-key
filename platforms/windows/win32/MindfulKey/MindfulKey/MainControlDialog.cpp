@@ -543,7 +543,6 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
         }
         else if (currentTab == 5) { // Giới thiệu
             RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
-            int y = 50;
 
             auto DrawLabel = [&](const wchar_t* text, RECT rc, BrandFontRole font, uint32_t color, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
                 SetBkMode(memDC, TRANSPARENT);
@@ -554,23 +553,41 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
                 SelectObject(memDC, old);
             };
 
-            RECT logoRc = { contentRc.left + (contentRc.right - contentRc.left)/2 - 50, y, contentRc.left + (contentRc.right - contentRc.left)/2 + 50, y + 100 };
-            // Draw an icon or just title
-            DrawLabel(L"MINDFUL KEYBOARD", logoRc, BrandFontTitle, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-            y += 60;
-            
-            RECT verRc = { contentRc.left, y, contentRc.right, y + 30 };
-            wchar_t buffer[256];
-            wsprintfW(buffer, L"Phiên bản %s", MindfulKeyHelper::getVersionString().c_str());
-            DrawLabel(buffer, verRc, BrandFontBody, kBrandPaletteMuted, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-            y += 60;
+            // [MINDFUL] CP6 — đồng bộ About với macOS: icon + tên (đúng hoa/thường) + tagline GNH +
+            // version+ngày + credit OpenKey (GPL) + trang chủ + nút cam "Kiểm tra bản mới" + copyright GNH.
+            int cx = contentRc.left + (contentRc.right - contentRc.left) / 2;
 
-            // Nút Kiểm tra cập nhật
-            RECT btnRc = { contentRc.left + (contentRc.right - contentRc.left)/2 - 80, y, contentRc.left + (contentRc.right - contentRc.left)/2 + 80, y + 40 };
-            HBRUSH btnBr = CreateSolidBrush(MK_COLORREF(0x1D7C91));
+            HICON hIcon = (HICON)LoadImageW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(IDI_APP_ICON), IMAGE_ICON, 48, 48, LR_DEFAULTCOLOR);
+            if (hIcon) {
+                DrawIconEx(memDC, cx - 24, 26, hIcon, 48, 48, 0, NULL, DI_NORMAL);
+                DestroyIcon(hIcon);
+            }
+
+            RECT titleRc = { contentRc.left, 82, contentRc.right, 110 };
+            DrawLabel(L"Mindful Keyboard", titleRc, BrandFontTitle, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+            RECT taglineRc = { contentRc.left, 112, contentRc.right, 132 };
+            DrawLabel(L"Bộ gõ Tiếng Việt chánh niệm • Một sản phẩm GNH", taglineRc, BrandFontBody, kBrandPaletteMuted, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+            wchar_t verBuf[256];
+            wsprintfW(verBuf, L"Phiên bản %s — Ngày cập nhật %s", MindfulKeyHelper::getVersionString().c_str(), _T(__DATE__));
+            RECT verRc = { contentRc.left, 134, contentRc.right, 152 };
+            DrawLabel(verBuf, verRc, BrandFontBody, kBrandPaletteMuted, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+            RECT creditRc = { contentRc.left, 156, contentRc.right, 174 };
+            DrawLabel(L"Dựa trên OpenKey — Mai Vũ Tuyên (GPL v3)", creditRc, BrandFontBody, kBrandPaletteMuted, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+            RECT homeRc = { cx - 110, 182, cx + 110, 202 };
+            DrawLabel(L"Trang chủ: key.bketech.xyz", homeRc, BrandFontBody, kBrandPaletteTeal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+            RECT btnRc = { cx - 90, 214, cx + 90, 250 };
+            HBRUSH btnBr = CreateSolidBrush(MK_COLORREF(kBrandPaletteOrange));
             FillRect(memDC, &btnRc, btnBr);
             DeleteObject(btnBr);
-            DrawLabel(L"Kiểm tra cập nhật", btnRc, BrandFontBody, kBrandPaletteCardWhite, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            DrawLabel(L"Kiểm tra bản mới...", btnRc, BrandFontButton, kBrandPaletteCardWhite, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+            RECT copyRc = { contentRc.left, 266, contentRc.right, 286 };
+            DrawLabel(L"© 2026 GNH — Lan tỏa điều tử tế", copyRc, BrandFontBody, kBrandPaletteMuted, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
         }
 
         BitBlt(hdc, 0, 0, clientRc.right, clientRc.bottom, memDC, 0, 0, SRCCOPY);
@@ -821,11 +838,15 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             }
         }
         else if (currentTab == 5) {
+            // [MINDFUL] CP6 — RECT dựng lại Y HỆT khối vẽ (toạ độ tuyệt đối). Trang chủ + nút cập nhật.
             RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
-            int y = 50 + 60 + 60;
-            RECT btnRc = { contentRc.left + (contentRc.right - contentRc.left)/2 - 80, y, contentRc.left + (contentRc.right - contentRc.left)/2 + 80, y + 40 };
-            if (PtInRect(&btnRc, pt)) {
-                MindfulKeyManager::openReleasesPage();
+            int cx = contentRc.left + (contentRc.right - contentRc.left) / 2;
+            RECT homeRc = { cx - 110, 182, cx + 110, 202 };
+            RECT btnRc = { cx - 90, 214, cx + 90, 250 };
+            if (PtInRect(&homeRc, pt)) {
+                ShellExecute(NULL, _T("open"), _T("https://key.bketech.xyz"), NULL, NULL, SW_SHOWNORMAL);
+            } else if (PtInRect(&btnRc, pt)) {
+                pThis->onUpdateButton();   // tự kiểm + tự tải + tự mở bộ cài (UpdateChecker)
             }
         }
 
