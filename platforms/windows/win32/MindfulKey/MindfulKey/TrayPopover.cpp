@@ -26,6 +26,7 @@ static HWND g_hwndPopover = NULL;
 static int g_currentTab = 0; // 0: Hôm nay, 1: Chuông, 2: Bộ gõ
 static bool g_checkinMode = false;  // [MINDFUL] C5 — true: popover phủ khung "Mặt hồ đang thế nào?"
 static int g_bellIntervalDraft = 0; // [MINDFUL] P1 — số nháp của stepper nhịp tùy chỉnh (0=chưa init)
+static int g_riverViewMode = 0;     // [MINDFUL] P5 — 0=Ngay bây giờ (3h sống), 1=Hôm nay (24h)
 static ULONG_PTR g_gdiplusTokenPopover = 0;
 
 // Removed virtual state variables to map directly to real global variables.
@@ -80,17 +81,33 @@ static void ProcessTabToday(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
 
     y += 80;
 
+    // [MINDFUL] P5 — toggle chế độ xem sóng: "Ngay bây giờ" (3h sống) / "Hôm nay" (24h sáng/trưa/
+    // chiều/tối). Mirror macOS nhiều cửa sổ thời gian, nhưng popover hẹp nên 1 khung + toggle thay vì
+    // xếp chồng. Từ vựng mirror macOS ("Ngay bây giờ / Hôm nay") cho 3 vỏ đồng giọng.
+    RECT viewSegRc = { 18, y, clientRc.right - 18, y + 30 };
+    const wchar_t* viewTabs[] = { L"Ngay bây giờ", L"Hôm nay" };
+    int clickedView = BrandControls_DrawSegmentedControl(hdc, viewSegRc, viewTabs, 2, g_riverViewMode, clickPt, 0);
+    if (clickedView != -1 && clickedView != g_riverViewMode) {
+        g_riverViewMode = clickedView;
+    }
+    y += 38;
+
     // Biểu đồ cảm xúc
     RECT riverRc = { 18, y, clientRc.right - 18, y + 150 };
     BrandControls_DrawCard(hdc, riverRc, true);
     if (vMoodWatch) {
-        // [MINDFUL] B3 — vệt DÀY (trộn RAM + persisted) + đầu sóng SỐNG thật (nhích khi gõ, phai khi
-        // im). Trước đây samples chỉ lấy mẫu thưa persisted (≥15') + liveHead=-1 (không đầu sóng) nên
-        // gõ xong không thấy gì — đúng "sóng chưa hoạt động" chủ dự án báo.
-        std::vector<MoodSample> samples = MoodWatch_FetchLiveTrace(3 * 3600);
-        double liveHead = MoodWatch_LiveAmplitude();
         RECT chartRc = { riverRc.left + 5, riverRc.top + 5, riverRc.right - 5, riverRc.bottom - 20 };
-        EmotionRiver_Draw(hdc, chartRc, samples, true, liveHead);
+        if (g_riverViewMode == 1) {
+            // Hôm nay (24h): mẫu cả ngày, trục Sáng/trưa/chiều/tối (recentMode=false), không đầu sóng sống.
+            std::vector<MoodSample> samples = MoodStore_FetchTodaySamples();
+            EmotionRiver_Draw(hdc, chartRc, samples, false, -1.0);
+        } else {
+            // [MINDFUL] B3 — Ngay bây giờ (3h): vệt DÀY (trộn RAM + persisted) + đầu sóng SỐNG thật (nhích
+            // khi gõ, phai khi im).
+            std::vector<MoodSample> samples = MoodWatch_FetchLiveTrace(3 * 3600);
+            double liveHead = MoodWatch_LiveAmplitude();
+            EmotionRiver_Draw(hdc, chartRc, samples, true, liveHead);
+        }
     } else {
         // [MINDFUL] A7 — nút "Bật nhật ký" tại chỗ, thay vì bắt người dùng tự tìm menu khay chuột
         // phải. MoodWatch_Toggle() tự lo cả 2 lớp consent (đọc sóng + ghi nhật ký) — không cần thêm
@@ -107,6 +124,17 @@ static void ProcessTabToday(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
         FillRect(hdc, &btnEnableRc, btnBr);
         DeleteObject(btnBr);
         DrawLabel(hdc, L"Bật nhật ký", btnEnableRc, BrandFontBody, kBrandPaletteCardWhite, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+    }
+
+    // [MINDFUL] P6 — link "Soi lại hôm nay →" mở màn Soi lại (chỉ khi đang canh, mirror macOS chỉ hiện
+    // link ở trạng thái bật). Cam = lớp CTA/khoảnh-khắc-người, brand ghi rõ "KHÔNG mã hoá cảm xúc".
+    if (vMoodWatch) {
+        y += 158;
+        RECT reflectRc = { 18, y, clientRc.right - 18, y + 24 };
+        DrawLabel(hdc, L"Soi lại hôm nay →", reflectRc, BrandFontBody, kBrandPaletteOrange, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        if (clickPt.x != -1 && PtInRect(&reflectRc, clickPt)) {
+            ReflectionScreen_Show(NULL);
+        }
     }
 }
 
@@ -323,16 +351,16 @@ static void ProcessTabKeyboard(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     RECT card2Rc = { 18, y, clientRc.right - 18, y + 130 };
     BrandControls_DrawCard(hdc, card2Rc, true);
 
-    auto DrawRowSwitch = [&](int i, const wchar_t* label, int& stateFlag) {
-        int rowY = card2Rc.top + 10 + i * 35;
-        RECT labelRc = { card2Rc.left + 15, rowY, card2Rc.right - 60, rowY + 25 };
+    // [MINDFUL] P7 — tổng quát hoá theo card để dùng lại cho thẻ Gõ tắt (card3) bên dưới.
+    auto DrawRowSwitch = [&](const RECT& card, int i, const wchar_t* label, int& stateFlag) {
+        int rowY = card.top + 10 + i * 35;
+        RECT labelRc = { card.left + 15, rowY, card.right - 60, rowY + 25 };
         DrawLabel(hdc, label, labelRc, BrandFontBody, kBrandPaletteCharcoal);
-        RECT switchRc = { card2Rc.right - 50, rowY + 2, card2Rc.right - 14, rowY + 23 };
+        RECT switchRc = { card.right - 50, rowY + 2, card.right - 14, rowY + 23 };
         bool state = (stateFlag == 1);
         if (clickPt.x != -1 && PtInRect(&switchRc, clickPt)) {
             stateFlag = state ? 0 : 1;
             // The global variables are just externs here, but we need to APP_SET_DATA to save them.
-            // Since we can't do macro easily without the string name, we will handle it explicitly below.
             state = (stateFlag == 1);
             SystemTrayHelper::updateData();
         }
@@ -340,18 +368,40 @@ static void ProcessTabKeyboard(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     };
 
     int oldLang = vLanguage;
-    DrawRowSwitch(0, L"Gõ tiếng Việt", vLanguage);
+    DrawRowSwitch(card2Rc, 0, L"Gõ tiếng Việt", vLanguage);
     if (oldLang != vLanguage) { APP_SET_DATA(vLanguage, vLanguage); }
 
     int oldSpell = vCheckSpelling;
-    DrawRowSwitch(1, L"Kiểm tra chính tả", vCheckSpelling);
+    DrawRowSwitch(card2Rc, 1, L"Kiểm tra chính tả", vCheckSpelling);
     if (oldSpell != vCheckSpelling) { APP_SET_DATA(vCheckSpelling, vCheckSpelling); }
 
     int oldCap = vUpperCaseFirstChar;
-    DrawRowSwitch(2, L"Viết hoa đầu câu", vUpperCaseFirstChar);
+    DrawRowSwitch(card2Rc, 2, L"Viết hoa đầu câu", vUpperCaseFirstChar);
     if (oldCap != vUpperCaseFirstChar) { APP_SET_DATA(vUpperCaseFirstChar, vUpperCaseFirstChar); }
 
     y += 145;
+
+    // [MINDFUL] P7 — thẻ "GÕ TẮT": bật macro + chuyển chế độ thông minh + link mở bảng gõ tắt. Trước
+    // đây popover thiếu hẳn (chỉ tab Bộ gõ đầy đủ cửa Cài đặt mới có). Setting bộ gõ trung tính.
+    RECT card3Rc = { 18, y, clientRc.right - 18, y + 135 };
+    BrandControls_DrawCard(hdc, card3Rc, true);
+    RECT lblGoTatRc = { card3Rc.left + 15, card3Rc.top + 8, card3Rc.right - 15, card3Rc.top + 26 };
+    DrawLabel(hdc, L"GÕ TẮT", lblGoTatRc, BrandFontEyebrow, kBrandPaletteStone);
+
+    int oldMacro = vUseMacro;
+    DrawRowSwitch(card3Rc, 1, L"Sử dụng Macro (Gõ tắt)", vUseMacro);
+    if (oldMacro != vUseMacro) { APP_SET_DATA(vUseMacro, vUseMacro); }
+
+    int oldSmart = vUseSmartSwitchKey;
+    DrawRowSwitch(card3Rc, 2, L"Chuyển chế độ thông minh", vUseSmartSwitchKey);
+    if (oldSmart != vUseSmartSwitchKey) { APP_SET_DATA(vUseSmartSwitchKey, vUseSmartSwitchKey); }
+
+    RECT cfgRc = { card3Rc.left + 15, card3Rc.top + 108, card3Rc.right - 15, card3Rc.top + 128 };
+    DrawLabel(hdc, L"Cấu hình gõ tắt ▸", cfgRc, BrandFontBody, kBrandPaletteTeal, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+    if (clickPt.x != -1 && PtInRect(&cfgRc, clickPt)) {
+        AppDelegate::getInstance()->onMacroTable();
+    }
+    y += 150;
 }
 
 // [MINDFUL] B9 — overlay phần phải header: pill "VN" + nút "⋯" (đối ứng macOS PanelViewController).
