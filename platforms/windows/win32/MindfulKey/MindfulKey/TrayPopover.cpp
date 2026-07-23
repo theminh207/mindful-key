@@ -23,6 +23,7 @@ using namespace std;
 static const wchar_t* kPopoverClassName = L"MK_TrayPopover";
 static HWND g_hwndPopover = NULL;
 static int g_currentTab = 0; // 0: Hôm nay, 1: Chuông, 2: Bộ gõ
+static bool g_checkinMode = false;  // [MINDFUL] C5 — true: popover phủ khung "Mặt hồ đang thế nào?"
 static ULONG_PTR g_gdiplusTokenPopover = 0;
 
 // Removed virtual state variables to map directly to real global variables.
@@ -314,6 +315,37 @@ static void ProcessHeaderExtras(HDC hdc, const RECT& clientRc, POINT clickPt) {
     DeleteObject(dotBr);
 }
 
+// [MINDFUL] C5 — khung tự thuật "Mặt hồ đang thế nào?" phủ toàn popover (mirror macOS check-in).
+// 3 mức KHÔNG mã hoá màu (hiến chương: không đèn xanh/đỏ cảm xúc) — cùng sắc trung tính teal-light,
+// chỉ khác CHỮ. Trả 1/2/3 = mức chọn, 0 = bỏ qua, -1 = chưa bấm. clickPt.x==-1 => chỉ vẽ.
+static int ProcessCheckin(HDC hdc, RECT clientRc, POINT clickPt) {
+    BrandControls_FillRect(hdc, clientRc, kBrandPaletteCardWhite);
+
+    RECT titleRc = { 20, 90, clientRc.right - 20, 118 };
+    DrawLabel(hdc, L"Mặt hồ đang thế nào?", titleRc, BrandFontTitle, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+    RECT hintRc = { 20, 122, clientRc.right - 20, 146 };
+    DrawLabel(hdc, L"Chạm để tự ghi nhận — không chấm điểm.", hintRc, BrandFontBody, kBrandPaletteMuted, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+    const wchar_t* labels[3] = { L"Phẳng lặng", L"Gợn nhẹ", L"Gợn sóng" };
+    int clicked = -1;
+    for (int i = 0; i < 3; i++) {
+        RECT b = { 24, 165 + i * 48, clientRc.right - 24, 165 + i * 48 + 40 };
+        HRGN rgn = CreateRoundRectRgn(b.left, b.top, b.right + 1, b.bottom + 1, 12, 12);
+        HBRUSH br = CreateSolidBrush(MK_COLORREF(kBrandPaletteTealLight));
+        FillRgn(hdc, rgn, br);
+        DeleteObject(br);
+        DeleteObject(rgn);
+        DrawLabel(hdc, labels[i], b, BrandFontBody, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        if (clickPt.x != -1 && PtInRect(&b, clickPt)) clicked = i + 1;   // 1/2/3
+    }
+
+    RECT skipRc = { 24, 165 + 3 * 48 + 10, clientRc.right - 24, 165 + 3 * 48 + 34 };
+    DrawLabel(hdc, L"Bỏ qua", skipRc, BrandFontBody, kBrandPaletteMuted, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+    if (clickPt.x != -1 && clicked == -1 && PtInRect(&skipRc, clickPt)) clicked = 0;
+
+    return clicked;
+}
+
 static void PaintPopover(HWND hwnd) {
     PAINTSTRUCT ps;
     HDC hdc = BeginPaint(hwnd, &ps);
@@ -324,6 +356,18 @@ static void PaintPopover(HWND hwnd) {
     HDC memDC = CreateCompatibleDC(hdc);
     HBITMAP memBitmap = CreateCompatibleBitmap(hdc, clientRc.right, clientRc.bottom);
     HBITMAP oldBitmap = (HBITMAP)SelectObject(memDC, memBitmap);
+
+    // [MINDFUL] C5 — chế độ check-in phủ toàn popover: vẽ khung tự thuật rồi thoát sớm, bỏ header+tab.
+    if (g_checkinMode) {
+        POINT noHit = { -1, -1 };
+        ProcessCheckin(memDC, clientRc, noHit);
+        BitBlt(hdc, 0, 0, clientRc.right, clientRc.bottom, memDC, 0, 0, SRCCOPY);
+        SelectObject(memDC, oldBitmap);
+        DeleteObject(memBitmap);
+        DeleteDC(memDC);
+        EndPaint(hwnd, &ps);
+        return;
+    }
 
     // Tô nền cardWhite
     BrandControls_FillRect(memDC, clientRc, kBrandPaletteCardWhite);
@@ -375,7 +419,21 @@ static LRESULT CALLBACK PopoverWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
         RECT clientRc;
         GetClientRect(hwnd, &clientRc);
         HDC hdc = GetDC(hwnd);
-        
+
+        // [MINDFUL] C5 — đang ở khung check-in: chỉ xử 3 nút mức + "Bỏ qua", KHÔNG rơi xuống tab.
+        if (msg == WM_LBUTTONUP && g_checkinMode) {
+            int r = ProcessCheckin(hdc, clientRc, pt);
+            if (r >= 0) {                              // 1/2/3 = mức, 0 = bỏ qua
+                if (r >= 1) MoodStore_LogCheckinEvent(r);
+                g_checkinMode = false;
+                ReleaseDC(hwnd, hdc);
+                ShowWindow(hwnd, SW_HIDE);
+                return 0;
+            }
+            ReleaseDC(hwnd, hdc);                      // bấm chỗ trống trong khung: bỏ qua
+            return 0;
+        }
+
         if (msg == WM_LBUTTONUP) {
             // Header extras (pill VN + ⋯) — nằm trên đường kẻ ngăn (y<40), không đè segmented/tab.
             ProcessHeaderExtras(hdc, clientRc, pt);
@@ -412,6 +470,7 @@ static LRESULT CALLBACK PopoverWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
 
     case WM_ACTIVATE:
         if (LOWORD(wParam) == WA_INACTIVE) {
+            g_checkinMode = false;   // [MINDFUL] C5 — bấm ra ngoài = bỏ qua; lần mở sau hiện tab thường
             ShowWindow(hwnd, SW_HIDE);
         }
         return 0;
@@ -467,45 +526,58 @@ void TrayPopover_Uninit() {
     }
 }
 
+// [MINDFUL] C5 — tách phần "định vị gần khay + hiện" để cả Toggle lẫn ShowCheckin dùng chung.
+static void ShowPopoverNearCursor() {
+    // Lấy vị trí Taskbar để hiển thị gần Tray Icon
+    APPBARDATA abd = { sizeof(APPBARDATA) };
+    SHAppBarMessage(ABM_GETTASKBARPOS, &abd);
+
+    POINT pt;
+    GetCursorPos(&pt); // Tạm lấy vị trí chuột làm mốc
+
+    int x = pt.x - kPopoverWidth / 2;
+    int y = pt.y - kPopoverHeight - 10;
+
+    // Nếu taskbar ở trên/trái/phải thì chỉnh lại
+    if (abd.uEdge == ABE_TOP) {
+        y = pt.y + 10;
+    } else if (abd.uEdge == ABE_LEFT) {
+        x = pt.x + 10;
+    } else if (abd.uEdge == ABE_RIGHT) {
+        x = pt.x - kPopoverWidth - 10;
+    }
+
+    // Tránh tràn màn hình
+    int screenW = GetSystemMetrics(SM_CXSCREEN);
+    int screenH = GetSystemMetrics(SM_CYSCREEN);
+    if (x < 0) x = 10;
+    if (x + kPopoverWidth > screenW) x = screenW - kPopoverWidth - 10;
+    if (y < 0) y = 10;
+    if (y + kPopoverHeight > screenH) y = screenH - kPopoverHeight - 10;
+
+    SetWindowPos(g_hwndPopover, HWND_TOPMOST, x, y, 0, 0, SWP_NOSIZE);
+    ShowWindow(g_hwndPopover, SW_SHOW);
+    SetForegroundWindow(g_hwndPopover); // Để bắt WM_ACTIVATE
+    InvalidateRect(g_hwndPopover, NULL, FALSE);
+}
+
 void TrayPopover_Toggle() {
     if (!g_hwndPopover) return;
 
     if (IsWindowVisible(g_hwndPopover)) {
         ShowWindow(g_hwndPopover, SW_HIDE);
     } else {
-        // Lấy vị trí Taskbar để hiển thị gần Tray Icon
-        APPBARDATA abd = { sizeof(APPBARDATA) };
-        SHAppBarMessage(ABM_GETTASKBARPOS, &abd);
-        
-        POINT pt;
-        GetCursorPos(&pt); // Tạm lấy vị trí chuột lúc click làm mốc
-        
-        int x = pt.x - kPopoverWidth / 2;
-        int y = pt.y - kPopoverHeight - 10;
-        
-        // Nếu taskbar ở trên/trái/phải thì chỉnh lại
-        if (abd.uEdge == ABE_TOP) {
-            y = pt.y + 10;
-        } else if (abd.uEdge == ABE_LEFT) {
-            x = pt.x + 10;
-        } else if (abd.uEdge == ABE_RIGHT) {
-            x = pt.x - kPopoverWidth - 10;
-        }
-        
-        // Tránh tràn màn hình
-        int screenW = GetSystemMetrics(SM_CXSCREEN);
-        int screenH = GetSystemMetrics(SM_CYSCREEN);
-        if (x < 0) x = 10;
-        if (x + kPopoverWidth > screenW) x = screenW - kPopoverWidth - 10;
-        if (y < 0) y = 10;
-        if (y + kPopoverHeight > screenH) y = screenH - kPopoverHeight - 10;
-
-        SetWindowPos(g_hwndPopover, HWND_TOPMOST, x, y, 0, 0, SWP_NOSIZE);
-        ShowWindow(g_hwndPopover, SW_SHOW);
-        SetForegroundWindow(g_hwndPopover); // Để bắt WM_ACTIVATE
-        
-        InvalidateRect(g_hwndPopover, NULL, FALSE);
+        g_checkinMode = false;   // mở thường -> hiện tab, không phải khung check-in
+        ShowPopoverNearCursor();
     }
+}
+
+// [MINDFUL] C5 — hiện khung tự thuật "Mặt hồ đang thế nào?" (gọi từ nhịp chuông, mirror macOS panel
+// check-in bật sau bell tick). An toàn gọi từ luồng UI (Bell_TimerProc chạy trên message queue).
+void TrayPopover_ShowCheckin() {
+    if (!g_hwndPopover) return;
+    g_checkinMode = true;
+    ShowPopoverNearCursor();
 }
 
 void TrayPopover_Refresh() {

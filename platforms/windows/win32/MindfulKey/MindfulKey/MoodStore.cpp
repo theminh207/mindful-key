@@ -190,6 +190,27 @@ void MoodStore_LogSampleEvent(double avgRisk) {
     AppendEvent(L"sample", avgRisk, L"", L"");
 }
 
+// [MINDFUL] C5 — tự thuật "Mặt hồ đang thế nào?" (mirror MoodStoreMac_LogCheckinEvent). waveLevel
+// 1=phẳng lặng·2=gợn nhẹ·3=gợn sóng. AppendEvent để 2 cột cuối rỗng nên checkin phải tự viết dòng
+// để điền mood_label + intensity (khớp cột macOS: ...,mood_label,intensity).
+void MoodStore_LogCheckinEvent(int waveLevel) {
+    if (!MoodStore_HasConsent())
+        return;
+    if (waveLevel < 1) waveLevel = 1;
+    if (waveLevel > 3) waveLevel = 3;
+    const wchar_t* label = (waveLevel == 2) ? L"ripple" : (waveLevel == 3) ? L"wave" : L"calm";
+
+    lock_guard<mutex> lock(g_mutex);
+    wstring all;
+    if (!ReadAll(all) || all.empty())
+        all = wstring(kFileHeader) + L"\n";
+    wostringstream line;
+    // cột: ts, event_type, send_risk(rỗng), app(rỗng), choice(rỗng), mood_label, intensity
+    line << (long long)time(NULL) << L"\tcheckin\t\t\t\t" << label << L'\t' << waveLevel;
+    all += line.str() + L"\n";
+    WriteAll(all);
+}
+
 // ── Đọc ──
 
 MoodTodaySummary MoodStore_FetchTodaySummary() {
@@ -307,11 +328,25 @@ vector<MoodSample> MoodStore_FetchRecentSamples(int pastSeconds) {
         getline(f, tsStr, L'\t');
         getline(f, type, L'\t');
         getline(f, riskStr, L'\t');
-        if (tsStr.empty() || type != L"sample" || riskStr.empty()) continue;
+        if (tsStr.empty()) continue;
         MoodSample m;
         m.ts = _wtoi64(tsStr.c_str());
         if ((time_t)m.ts < startOfWindow) continue;
-        m.value = _wtof(riskStr.c_str());
+        if (type == L"sample" && !riskStr.empty()) {
+            m.value = _wtof(riskStr.c_str());
+        } else if (type == L"checkin") {
+            // [MINDFUL] C5 — tự thuật cũng lên sóng: đọc cột intensity (7) rồi quy 3 mức về biên độ.
+            // (Windows KHÔNG phân biệt vòng-rỗng/chấm-đặc như macOS — khác biệt cố ý, xem FRICTION-LOG.)
+            wstring app, choice, label, intensityStr;
+            getline(f, app, L'\t');
+            getline(f, choice, L'\t');
+            getline(f, label, L'\t');
+            getline(f, intensityStr, L'\t');
+            int lvl = _wtoi(intensityStr.c_str());
+            m.value = (lvl >= 3) ? 0.9 : (lvl == 2) ? 0.5 : 0.15;
+        } else {
+            continue;
+        }
         out.push_back(m);
     }
     return out;

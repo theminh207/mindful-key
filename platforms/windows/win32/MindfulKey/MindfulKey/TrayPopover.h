@@ -16,3 +16,6 @@ void TrayPopover_Toggle();
 
 // Cập nhật lại dữ liệu (như biểu đồ, trạng thái gác cổng) nếu đang hiện
 void TrayPopover_Refresh();
+
+// [MINDFUL] C5 — hiện khung tự thuật "Mặt hồ đang thế nào?" (gọi từ nhịp chuông). Mirror macOS check-in.
+void TrayPopover_ShowCheckin();

@@ -21,6 +21,7 @@
 #include "Bell.h"
 #include "NudgeCoordinator.h"
 #include "MoodWatch.h"
+#include "TrayPopover.h"   // [MINDFUL] C5 — nhịp chuông theo lịch bật khung tự thuật (ShowCheckin)
 #include "MoodStore.h"
 #include <vector>
 #include <string>
@@ -230,15 +231,9 @@ void Bell_PreviewSound() {
 
 // ── Lời nhắc ──
 
-// Câu chữ lấy nguyên từ BellMac.mm (chuẩn hành vi) — quan sát, không phán xét.
-static LPCTSTR PROMPTS[] = {
-    _T("Dừng lại 10 giây. Hít vào thật sâu, thở ra thật chậm. Ngay lúc này, bạn đang thấy thế nào?"),
-    _T("Một nhịp nghỉ cho riêng mình. Thả lỏng vai, buông căng thẳng xuống."),
-    _T("Khoan đã, kéo mắt rời màn hình một chút. Nhìn ra xa và chớp mắt vài cái."),
-    _T("Tỉnh thức. Bạn đang ngồi đây, đang thở, đang sống."),
-    _T("Nghỉ tay một lát. Uống một ngụm nước, vươn vai rồi quay lại."),
-};
-static const int PROMPT_COUNT = sizeof(PROMPTS) / sizeof(PROMPTS[0]);
+// [MINDFUL] C5 — mảng PROMPTS (5 câu nhắc thụ động cho nhịp theo lịch) đã BỎ: nhịp theo lịch nay
+// bật khung tự thuật check-in (TrayPopover_ShowCheckin) thay hộp nhắc chữ. PROMPTS_TENSE dưới GIỮ
+// NGUYÊN — rung vì chuỗi câu căng vẫn dùng lời nhắc chữ riêng, khác mục đích.
 
 // Câu RIÊNG cho lúc rung vì phát hiện CHUỖI câu căng — nói thẳng lý do rung, không giả vờ đây là
 // chuông định kỳ.
@@ -310,9 +305,10 @@ static void CALLBACK Bell_TimerProc(HWND hwnd, UINT msg, UINT_PTR id, DWORD t) {
     if (!NudgeCoordinator_ShouldNudge())
         return;
 
-    static int idx = 0;
-    idx++;
-    showBellPrompt(PROMPTS[idx % PROMPT_COUNT]);
+    // [MINDFUL] C5 — nhịp theo lịch nay bật khung tự thuật "Mặt hồ đang thế nào?" (mirror macOS
+    // check-in) thay hộp nhắc chữ cũ: giữ TIẾNG chuông, câu nhắc thụ động thành 3 nút tự ghi nhận.
+    playBellSound();
+    TrayPopover_ShowCheckin();
     NudgeCoordinator_MarkNudged();
 }
 

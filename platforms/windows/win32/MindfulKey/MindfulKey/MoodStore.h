@@ -53,6 +53,7 @@ void MoodStore_LogGatekeeperEvent(double sendRisk, const std::wstring& appExeNam
 
 // Một điểm trên dòng sông: risk TRUNG BÌNH của nhịp vừa qua. Gọi từ nhịp chung (Bell_TimerProc).
 void MoodStore_LogSampleEvent(double avgRisk);
+void MoodStore_LogCheckinEvent(int waveLevel);   // [MINDFUL] C5 — tự thuật 1=phẳng·2=gợn nhẹ·3=gợn sóng
 
 // ── Đọc / xoá ──
 struct MoodTodaySummary {
