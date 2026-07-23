@@ -192,45 +192,212 @@ giờ đạt. Chọn 1 chuẩn (đề xuất: theo macOS — xem `NudgeCoordinat
 
 ---
 
-## GĐ-B — Sóng sống (chi tiết hoá khi tới; cần bám chuẩn macOS)
+## GĐ-B — Sóng sống (port thật, có luồng — KHÔNG thuần chép-dán)
 
-| ID | Trạng thái | Việc | Chuẩn macOS để mirror |
-|---|---|---|---|
-| B1 | ⬜ | Thêm `MoodWatch_LiveAmplitude()` (EMA α=0.4, phai smoothstep 5' về 0, idle=-1) | `MoodWatchMac.mm:65-66,155,215-227` |
-| B2 | ⬜ | Thêm `MoodWatch_FetchLiveTrace()` (vệt RAM ≤1điểm/30s, giữ 4h, trộn persisted) | `MoodWatchMac.mm:231-258` |
-| B3 | ⬜ | Nối `liveHead` thật vào 3 chỗ vẽ (bỏ `-1.0` cứng) | TrayPopover.cpp:82 · MainControlDialog.cpp:273 · ReflectionScreen.cpp:319 |
-| B4 | ⬜ | Dòng "Chuông kế tiếp: lúc HH:mm" trên popover | `PanelViewController.mm:547-571` |
-- **Cổng người B:** gõ câu căng → đầu sóng nhích trong vài giây; ngừng 5' → tự lặng về phẳng.
-- ⚠️ Hợp đồng dec.4 (bất khả xâm phạm): idle = KHÔNG vẽ đầu sóng, KHÔNG bịa nước nối quãng đứt.
-
-## GĐ-C — Khung cửa sổ đúng cỡ (chi tiết hoá khi tới)
+> Ra bản **v0.4.15**. Cổng người: gõ câu căng → đầu sóng nhích trong vài giây; ngừng 5' → tự lặng
+> về phẳng. ⚠️ **Hợp đồng dec.4 (bất khả xâm phạm):** idle = KHÔNG vẽ đầu sóng, KHÔNG bịa nước nối
+> quãng đứt. Trục dọc = CƯỜNG ĐỘ, không valence, không đỏ/xanh.
 
 | ID | Trạng thái | Việc |
 |---|---|---|
-| C1 | ⬜ | Cửa Cài đặt resizable: `MindfulKey.rc:149` bỏ `DS_MODALFRAME`, thêm `WS_THICKFRAME`; thu `450,450`→cỡ khớp thiết kế; xử `WM_SIZE` để layout co giãn |
-| C2 | ⬜ | Nâng manifest `DeclareDPIAware.manifest` lên PerMonitorV2; scale mọi RECT vẽ tay/hit theo `GetDpiForWindow` |
-| C3 | ⬜ | Combo Kiểu gõ/Bảng mã popover thành dropdown thật; icon Bộ tiếng thật (bỏ chữ giả A/B/C/D — `BrandControls.cpp:301-309`) |
-| C4 | ⬜ | Pane Chuông đủ: giờ yên lặng + snooze + tiếng tùy chỉnh (Bell.cpp có sẵn logic, thiếu đường vào UI) |
-| C5 | ⬜ | Check-in overlay 3 mức sóng (mirror `PanelViewController.mm:361-460`) |
-- **Cổng người C:** đặt 2 máy cạnh nhau, chụp từng màn — lệch nào phải có lý do ghi ở PLAN §5.
+| **B1** | ⬜ | State sóng sống + cập nhật trong worker. Chi tiết ↓ |
+| **B2** | ⬜ | `MoodWatch_LiveAmplitude()` + `MoodWatch_FetchLiveTrace()`. Chi tiết ↓ |
+| **B3** | ⬜ | Nối `liveHead` thật + vệt dày vào 3 chỗ vẽ. Chi tiết ↓ |
+| **B4** | ⬜ | Dòng "Chuông kế tiếp: lúc HH:mm" trên popover. Chi tiết ↓ |
 
-## GĐ-D — Khép 100% + sổ sách
+### B1 — State sóng sống + cập nhật trong worker (`MoodWatch.cpp`)
 
-| ID | Trạng thái | Việc |
-|---|---|---|
-| D1 | ⬜ | Version Windows tự đọc `version.env` lúc build (hết sửa tay `.rc`) — 1 script sinh `.rc` version + gọi trong `windows.yml`+`release.yml` trước msbuild |
-| D2 | ⬜ | Quét ma trận PLAN §3 lần cuối: ❌/🎨 còn lại → làm hoặc ghi "khác biệt cố ý" (PLAN §5) |
-| D3 | ⬜ | Chạy TRỌN `docs/QA-WINDOWS.md` trên máy thật, điền bằng chứng vào `TEST_MATRIX.md` |
-| D4 | ⬜ | SignPath duyệt → nối ký (vá bug `github-artifact-name`, xem `WINDOWS-CODE-SIGNING.md`) |
+**Bối cảnh:** Windows đã có worker gọi `SendRiskAnalyzer_Analyze` mỗi câu (`MoodWatch.cpp:225-226`)
+nhưng KHÔNG giữ state EMA/vệt như macOS. macOS giữ `g_liveEma` + `g_lastWordTs` + `g_liveTrace`
+(khoá `g_liveLock`), cập nhật mỗi câu.
+
+1. Thêm hằng (cạnh `kSendRiskThreshold`, `MoodWatch.cpp:53-55`) — số LẤY TỪ macOS, không tự chế:
+   ```cpp
+   static const double kLiveAlpha       = 0.4;        // MoodWatchMac.mm (grep kLiveAlpha / g_liveEma)
+   static const double kLiveFadeSeconds = 300.0;      // phai 5 phút
+   static const long long kLiveTraceMaxSec = 4*3600;  // giữ vệt 4h
+   static const long long kLiveTraceMinGap = 30;      // ≤1 điểm/30s
+   ```
+2. Thêm globals + khoá (cạnh `g_sampleMutex:62`):
+   ```cpp
+   static mutex g_liveMutex;
+   static double g_liveEma = 0.0;
+   static long long g_lastWordTs = 0;
+   static std::vector<std::pair<long long,double>> g_liveTrace; // (ts, value 0..1)
+   ```
+3. Trong worker, NGAY SAU khi có `risk` từ `SendRiskAnalyzer_Analyze` (`~226`), thêm (khoá
+   `g_liveMutex`): `ema = alpha*risk + (1-alpha)*ema`; `lastWordTs = now`; nếu `now - ts_điểm_cuối
+   >= 30` thì `push_back({now, risk})`; xoá đầu vệt cũ hơn `now - 4h`. **Mirror TỪNG dòng** với chỗ
+   macOS cập nhật `g_liveEma`/`g_liveTrace` — `grep -n "g_liveEma\|g_liveTrace" MoodWatchMac.mm`
+   (quanh dòng 150-171), làm y hệt.
+- **⛔ Verify, đừng đoán:** `now` lấy bằng `time(NULL)` (giây, khớp macOS `timeIntervalSince1970`).
+- **Nghiệm thu:** mingw `MoodWatch.cpp` sạch (thêm `#include <vector>`/`<utility>` nếu thiếu).
+
+### B2 — 2 hàm phơi cho UI (`MoodWatch.cpp` + `MoodWatch.h`)
+
+Thêm khai báo ở `MoodWatch.h`, định nghĩa ở `MoodWatch.cpp`, **mirror `MoodWatchMac.mm:215-258`**:
+1. `double MoodWatch_LiveAmplitude()` — khoá đọc `g_liveEma`+`g_lastWordTs`; `lastTs==0` → `-1`;
+   `idle >= 300` → `-1`; else `clamp01(ema * smoothstep(1 - idle/300))`. Cần `smoothstep`+`clamp01`:
+   `grep -rn "MKSmoothstep\|smoothstep\|Clamp01" core/mood WIN/` — nếu `core/mood/EmotionWaveAmplitude.h`
+   có thì dùng; nếu không, thêm 2 hàm static nhỏ NGAY trong `MoodWatch.cpp` (`s = t*t*(3-2t)`).
+2. `std::vector<std::pair<long long,double>> MoodWatch_FetchLiveTrace(double windowSec)` — trộn vệt
+   RAM `g_liveTrace` (khoá) + mẫu persisted `MoodStore_FetchRecentSamples(windowSec)` (đã có), bỏ mẫu
+   persisted trùng quãng vệt RAM (theo `firstLiveTs`), sort tăng theo ts. Mirror `:231-258`.
+- **⛔ Verify:** kiểu trả về của `MoodStore_FetchRecentSamples` (vector gì?) — `grep -n
+  "FetchRecentSamples" MoodStore.h` — để chuyển đổi cho khớp `EmotionRiver_Draw` đang nhận.
+- **Nghiệm thu:** mingw sạch; đọc code đối chiếu logic với macOS.
+
+### B3 — Nối `liveHead` + vệt dày vào 3 chỗ vẽ
+
+1. Thay `liveHead = -1.0` cứng bằng `MoodWatch_LiveAmplitude()` tại: `TrayPopover.cpp:82`,
+   `MainControlDialog.cpp:273`, `ReflectionScreen.cpp:319`.
+2. Card "Hôm nay" popover (`TrayPopover.cpp:81-84`): đổi nguồn vẽ từ `MoodStore_FetchRecentSamples(3h)`
+   sang `MoodWatch_FetchLiveTrace(3*3600)` (vệt dày hơn). Giữ guard `if (vMoodWatch)` (tắt = "Nhật
+   ký cảm xúc đang tắt.").
+- **Nghiệm thu máy:** mingw 3 file sạch. **Mắt người:** bật nhật ký, gõ câu căng → đầu sóng nhích
+  trong vài giây; ngừng 5' → lặng về phẳng (idle không vẽ đầu sóng).
+
+### B4 — "Chuông kế tiếp: lúc HH:mm"
+
+Mirror `PanelViewController.mm:547-571`. Cần Bell phơi giờ reo kế: `grep -n "NextRing\|MinutesUntil\|
+fireDate\|nextFire" Bell.cpp Bell.h`. Nếu chưa có → thêm `int Bell_MinutesUntilNextRing()` đọc từ
+timer/`vBellInterval` (mirror `BellMac.mm:284-296`, trả `-1` khi tắt/hoãn). Vẽ dòng dưới card Hôm
+nay popover, ẩn khi `-1`.
+- **Nghiệm thu:** mắt người: bật chuông nhịp 30' → thấy "Chuông kế tiếp: lúc HH:mm".
 
 ---
 
-## Bản đồ phụ thuộc (thứ tự an toàn)
+## GĐ-C — Khung cửa sổ đúng cỡ + đồng bộ thiết kế (nặng nhất, có ĐIỂM QUYẾT ĐỊNH)
+
+> Ra bản **v0.4.16**. Cổng người: đặt 2 máy cạnh nhau, chụp TỪNG màn — lệch nào phải có lý do ghi
+> PLAN §5. ⚠️ **Đây là GĐ khó nhất, KHÔNG thuần chép-dán** — vài việc cần chủ dự án chốt trước.
+
+| ID | Trạng thái | Việc |
+|---|---|---|
+| **C1** | ⛔ chờ chốt | Thu cỡ + cho kéo giãn cửa Cài đặt. Chi tiết ↓ (cần chốt cỡ đích) |
+| **C1b** | ⬜ | Layout co giãn theo `WM_SIZE` (sau C1). Chi tiết ↓ |
+| **C2** | ⬜ | DPI PerMonitorV2 + scale toạ độ vẽ tay. Chi tiết ↓ (nặng) |
+| **C3** | ⛔ chờ chốt | Combo thật + icon Bộ tiếng thật (cần biết icon brand có chưa). Chi tiết ↓ |
+| **C4** | ⬜ | Pane Chuông đủ: giờ yên lặng + snooze + tiếng tùy chỉnh. Chi tiết ↓ |
+| **C5** | ⬜ | Check-in overlay 3 mức sóng. Chi tiết ↓ |
+
+### C1 — Thu cỡ + cho kéo giãn  ⛔ CẦN CHỦ DỰ ÁN CHỐT CỠ ĐÍCH
+`MindfulKey.rc:149` STYLE: bỏ `DS_MODALFRAME`, thêm `WS_THICKFRAME | WS_MINIMIZEBOX`. Thu `DIALOGEX
+0,0,450,450` (`:148`) về cỡ nhỏ hơn.
+- **⛔ DỪNG hỏi:** cỡ đích bao nhiêu DLU? Không tự chế. Đề xuất tham chiếu cỡ cửa sổ macOS
+  (`SettingsWindowController.mm` minSize) đổi ra DLU, HOẶC chủ dự án cho số. Ghi FRICTION-LOG.
+- **Nghiệm thu:** mắt người: cửa sổ nhỏ vừa màn + kéo mép giãn được.
+
+### C1b — Layout co giãn (sau C1)
+Hiện `tabPageEventProc` vẽ với `navRc={10,20,150,260}` cố định + `contentRc={160,0,clientRc.right,
+clientRc.bottom}` (đã theo bề rộng client — giãn NGANG đã chạy). Thiếu: giãn DỌC (card dùng `y+offset`
+cứng) → nội dung dài hơn client bị cắt. Chọn 1: (a) bọc nội dung trong vùng cuộn (thêm scrollbar khi
+tràn), hoặc (b) tính lại `y` theo tỷ lệ. Đề xuất (a) đơn giản+an toàn hơn. Thêm xử `WM_SIZE` →
+`InvalidateRect`.
+- **Nghiệm thu:** mắt người: kéo cửa sổ nhỏ lại → nội dung cuộn được, không cụt.
+
+### C2 — DPI PerMonitorV2 + scale toạ độ (nặng, cẩn thận)
+1. `DeclareDPIAware.manifest`: nâng `<dpiAware>true` → thêm
+   `<dpiAwareness>PerMonitorV2</dpiAwareness>` (đúng schema Win10 — verify format ở docs Microsoft).
+2. Trong `tabPageEventProc` (+ TrayPopover paint): đầu hàm tính `double s =
+   GetDpiForWindow(hDlg)/96.0;` rồi **nhân `s` vào MỌI số toạ độ literal** của RECT vẽ + hit-test
+   (nav, card, offset). Font đã theo DPI sẵn (`BrandControls.cpp:27,38`) nên chỉ còn phần vẽ tay.
+- **⚠️ Rủi ro cao:** đây là sửa rải khắp; làm TỪNG tab, mingw sau mỗi tab. Nếu quá rộng → tách
+  thành C2a/b/c per-tab.
+- **Nghiệm thu:** mắt người: đặt Windows scale 150% → chữ + khung + vùng bấm khớp, không mờ/lệch.
+
+### C3 — Combo thật + icon Bộ tiếng thật  ⛔ CẦN BIẾT ICON BRAND CÓ CHƯA
+1. Popover Kiểu gõ/Bảng mã (`TrayPopover.cpp:168-176`) đang là **nhãn vẽ**. Đổi thành dropdown thật:
+   hoặc child `COMBOBOX` Win32, hoặc menu bật khi bấm. Ghi `vInputType`/`vCodeTable` + áp.
+2. Icon Bộ tiếng: `BrandControls_DrawIconGroup` fallback chữ A/B/C/D (`BrandControls.cpp:301-309`).
+   - **⛔ DỪNG hỏi:** có icon brand cho 3 tiếng chuông (temple/chime/wind) trong `brand/` chưa?
+     `ls brand/platform/windows/ | grep -i bell` + `grep -i "IDI.*BELL\|sound" MindfulKey.rc`. CÓ →
+     load `.ico` vẽ vào iconRc. KHÔNG → hỏi chủ dự án vẽ, HOẶC tạm dùng chữ Việt gọn ("Chùa/Gió/Reo")
+     thay A/B/C/D (KHÔNG bịa icon).
+- **Nghiệm thu:** mắt người: bấm dropdown Kiểu gõ đổi được; Bộ tiếng hiện icon/chữ thật.
+
+### C4 — Pane Chuông đủ (giờ yên lặng + snooze + tiếng tùy chỉnh)
+Bell.cpp CÓ SẴN logic: giờ yên lặng (`vBellFrom`/`vBellTo`, `isInBellRange`), tiếng tùy chỉnh
+(`Bell_InstallCustomSound`/`kRegCustomPath` ~155-185), snooze (`Bell_Snooze`). Thiếu ĐƯỜNG VÀO UI.
+Thêm vào tab Chuông (settings) — mirror `BellSettingsView.mm`: 2 ô giờ (từ–đến), nút "Chọn tiếng của
+bạn..." (mở `GetOpenFileName` .wav → `Bell_InstallCustomSound`), nút "Tạm hoãn 1 giờ".
+- **⛔ Verify:** tên hàm thật ở `Bell.cpp`/`Bell.h` (grep) trước khi gọi.
+- **Nghiệm thu:** mắt người: đặt giờ yên lặng → trong khoảng đó không reo; chọn .wav lạ → reo tiếng đó.
+
+### C5 — Check-in overlay 3 mức sóng
+Mirror macOS `PanelViewController.mm:361-460` (khung "Mặt hồ đang thế nào?" + 3 nút Phẳng lặng/Gợn
+nhẹ/Gợn sóng + "Bỏ qua", ghi `MoodStore_LogCheckinEvent(1/2/3)`). Windows: overlay trên popover, bật
+sau nhịp chuông. Kiểm `MoodStore_LogCheckinEvent` đã có ở `MoodStore.cpp` chưa (grep) — chưa thì thêm.
+- **Nghiệm thu:** mắt người: sau nhịp chuông, popover hiện khung check-in; bấm 1 mức → ghi + đóng.
+
+---
+
+## GĐ-D — Khép 100% + sổ sách
+
+> Ra bản **v0.5.0** (mốc "đồng bộ Windows↔macOS"). Cổng: chạy trọn `QA-WINDOWS.md` trên máy thật.
+
+| ID | Trạng thái | Việc |
+|---|---|---|
+| **D1** | ⬜ | Version Windows tự đọc `version.env` lúc build. Chi tiết ↓ |
+| **D2** | ⬜ | Quét ma trận PLAN §3 lần cuối. Chi tiết ↓ |
+| **D3** | ⬜ | Chạy TRỌN `docs/QA-WINDOWS.md` + điền `TEST_MATRIX.md`. Chi tiết ↓ |
+| **D4** | ⬜ | SignPath duyệt → nối ký. Chi tiết ↓ |
+
+### D1 — Version tự đọc `version.env`
+Tạo `scripts/sync-win-version.py` (Python, chạy cả macOS lẫn runner Windows): đọc `VERSION` từ
+`version.env`, tính dạng phẩy (`0.5.0`→`0,5,0,0`) + dạng chấm (`0.5.0.0`), ghi đè 4 dòng trong
+`WIN/MindfulKey.rc` (`FILEVERSION`, `PRODUCTVERSION`, `VALUE "FileVersion"`, `VALUE "ProductVersion"`)
+bằng regex. Thêm 1 step `shell: bash` chạy `python3 scripts/sync-win-version.py` TRƯỚC `msbuild` trong
+CẢ `windows.yml` VÀ `release.yml` (job build-windows).
+- **Nghiệm thu:** chạy script local → `.rc` đổi đúng; mingw không đụng; CI Windows xanh.
+
+### D2 — Quét ma trận lần cuối
+Đối chiếu PLAN §3 với code sau A→C. Mục nào còn 🎨/❌ → làm nốt hoặc ghi "khác biệt cố ý" vào PLAN §5
+(có lý do). Cập nhật cột trạng thái toàn file này.
+
+### D3 — QA đầy đủ + sổ bằng chứng
+Chạy trọn `docs/QA-WINDOWS.md` (§3 gõ · §4 cảm xúc/gác cổng/chuông/nhật ký · §5 bất biến riêng tư ·
+§6 nhận diện) trên máy Windows thật. Mỗi ca PASS → điền bằng chứng (ảnh/mô tả) vào `TEST_MATRIX.md`
+cột mắt người, nâng ô ❌→✅. Ca iOS-style "chập chờn" phải PASS 2 lần.
+
+### D4 — Nối ký SignPath (khi duyệt)
+Khi SignPath cấp Organization ID / Project slug / Signing-policy slug + API token: vá bug
+`github-artifact-name`→`github-artifact-id` (+`github-token`) trong `release.yml` job `sign-windows`,
+cắm 3 slug, chủ dự án lưu secret `SIGNPATH_API_TOKEN`. Xem `docs/WINDOWS-CODE-SIGNING.md` §Bước 2.
+- **Nghiệm thu:** tag 1 bản → `.exe` tải về `signtool verify` thấy chữ ký; SmartScreen hết "Unknown".
+
+---
+
+## ⚠️ ĐỌC KỸ — giới hạn của "chạy một mạch"
+
+Sonnet **code được** cả A→D liền mạch, NHƯNG:
+
+1. **3 điểm ⛔ BẮT BUỘC dừng hỏi chủ dự án** (không được đoán, sẽ chặn "một mạch" tại đó):
+   **C1** (cỡ cửa sổ đích) · **C3** (icon brand cho tiếng chuông có chưa) · **D4** (chờ SignPath
+   duyệt — ngoài tầm code). Gặp là DỪNG, hỏi, ghi FRICTION-LOG, làm việc khác trong khi chờ.
+2. **Nghiệm thu là MẮT NGƯỜI trên Windows, theo từng GĐ.** Máy chỉ chứng minh "build được", KHÔNG
+   chứng minh "chạy đúng" (đúng bài học cả dự án). **Khuyến nghị mạnh:** xong mỗi GĐ → ra 1 bản
+   (v0.4.14/15/16/0.5.0) → chủ dự án test tay → mới sang GĐ sau. Nếu Sonnet code B/C/D chồng lên A
+   mà A có lỗi runtime ẩn (chỉ hiện trên Windows), là xây nhà trên cát.
+3. **GĐ-C là refactor nặng, dễ vỡ** (resize + DPI rải khắp code vẽ tay). Nếu 1 việc quá rộng cho 1
+   lượt → tự tách nhỏ hơn (per-tab), mingw sau mỗi mảnh. Đừng làm 1 commit khổng lồ.
+4. **Bump version + CHANGELOG mỗi khi kết 1 GĐ** (không phải mỗi việc con). `version.env` là nguồn
+   duy nhất.
+
+---
+
+## Bản đồ phụ thuộc (thứ tự an toàn, cả 4 GĐ)
 
 ```
-A0 (helper) ─┬─> A2 ─> A6      A1 (credit, độc lập, làm bất cứ lúc)
-             ├─> A3 ──┐
-             └─> A4   ├─> A5 (popover, độc lập A2-4)
-                      └─> A7, A8
-GĐ-A xong → v0.4.14 → mắt người → GĐ-B → v0.4.15 → ... → GĐ-C → GĐ-D
+GĐ-A  A0 ─┬─> A2 ─> A6         A1 (credit, độc lập)
+          ├─> A3
+          └─> A4       A5 (popover) ─> A7, A8
+      └──────────────────────────────> v0.4.14 → MẮT NGƯỜI ─┐
+                                                             v
+GĐ-B  B1 ─> B2 ─> B3 ─> B4 ───────────> v0.4.15 → MẮT NGƯỜI ─┐
+   (B cần A2/A6 xong: sóng dựa trên chuông/nhật ký đã bật được) v
+GĐ-C  C1⛔ ─> C1b ─> C2 ;  C3⛔ ;  C4 ;  C5 ─────> v0.4.16 → MẮT NGƯỜI ─┐
+                                                                        v
+GĐ-D  D1 ─> D2 ─> D3 (QA đầy đủ) ;  D4⛔ (chờ SignPath) ──> v0.5.0 (đồng bộ 100%)
 ```
+
