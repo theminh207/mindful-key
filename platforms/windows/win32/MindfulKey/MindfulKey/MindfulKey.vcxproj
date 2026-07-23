@@ -185,6 +185,7 @@
     <ClInclude Include="BrandPalette.h" />
     <ClInclude Include="BrandControls.h" />
     <ClInclude Include="MoodStore.h" />
+    <ClInclude Include="NotesHistory.h" />
     <ClInclude Include="ReflectionScreen.h" />
     <ClInclude Include="TrayPopover.h" />
     <ClInclude Include="NudgeCoordinator.h" />
@@ -221,6 +222,7 @@
     <ClCompile Include="BrandControls.cpp" />
     <ClCompile Include="MindfulKey.cpp" />
     <ClCompile Include="MoodStore.cpp" />
+    <ClCompile Include="NotesHistory.cpp" />
     <ClCompile Include="ReflectionScreen.cpp" />
     <ClCompile Include="TrayPopover.cpp" />
     <ClCompile Include="NudgeCoordinator.cpp" />

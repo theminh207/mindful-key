@@ -337,16 +337,29 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             int s_bellSoundIndex = (s_bellSoundName == L"chime") ? 1 : (s_bellSoundName == L"wind") ? 2 : (s_bellSoundName == L"custom") ? 3 : 0;
             int s_bellVolume = MindfulKeyHelper::getRegInt(_T("vBellVolume"), 60);
 
-            // Card Trạng thái
-            RECT card1Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 60 };
+            // Card Trạng thái — [MINDFUL] F3 (2026-07-23) card cao hơn (60→74) để nhét dòng "Dự
+            // kiến reo lúc HH:MM (còn N phút)" ngay dưới nhãn, mirror popover B5 + card macOS. Ẩn
+            // dòng khi chuông tắt/đang hoãn (Bell_MinutesUntilNextRing trả -1) — không vẽ chỗ trống.
+            RECT card1Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 74 };
             BrandControls_DrawCard(memDC, card1Rc, true);
-            RECT lblTrangThaiRc = { card1Rc.left + 15, card1Rc.top + 15, card1Rc.right - 60, card1Rc.bottom - 15 };
+            RECT lblTrangThaiRc = { card1Rc.left + 15, card1Rc.top + 13, card1Rc.right - 60, card1Rc.top + 35 };
             DrawLabel(L"Bật chuông tỉnh thức", lblTrangThaiRc, BrandFontBody, kBrandPaletteCharcoal);
+            int nextMin = Bell_MinutesUntilNextRing();
+            if (nextMin >= 0) {
+                SYSTEMTIME st;
+                GetLocalTime(&st);
+                int total = st.wHour * 60 + st.wMinute + nextMin;
+                int hh = (total / 60) % 24, mm = total % 60;
+                wchar_t nextLine[96];
+                wsprintfW(nextLine, L"Dự kiến reo lúc %02d:%02d (còn %d phút)", hh, mm, nextMin);
+                RECT nextRc = { card1Rc.left + 15, card1Rc.top + 38, card1Rc.right - 60, card1Rc.top + 58 };
+                DrawLabel(nextLine, nextRc, BrandFontBody, kBrandPaletteMuted, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+            }
             // [MINDFUL] A2 — click thật xử ở WM_LBUTTONUP (currentTab==1), KHÔNG còn ở đây (pt=-1,-1
             // lúc WM_PAINT nên khối if cũ không bao giờ khớp — đúng nguyên nhân tab Chuông tê liệt).
-            RECT sw1Rc = { card1Rc.right - 50, card1Rc.top + 18, card1Rc.right - 14, card1Rc.top + 39 };
+            RECT sw1Rc = { card1Rc.right - 50, card1Rc.top + 26, card1Rc.right - 14, card1Rc.top + 47 };
             BrandControls_DrawPillSwitch(memDC, sw1Rc, s_bellEnabled);
-            y += 75;
+            y += 89;
 
             // Card Nhịp
             RECT card2Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 90 };
@@ -387,27 +400,30 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             // IDD_DIALOG_BELL để chuẩn bị bỏ nó ở B8). Bell.cpp CÓ SẴN logic (isInBellRange /
             // Bell_InstallCustomSound / Bell_Snooze) — đây chỉ là đường vào UI owner-draw. vBellFrom/
             // vBellTo là GLOBAL (Bell.h), đọc thẳng; APP_SET_DATA ghi đúng khóa Bell.cpp đọc lại.
-            RECT card4Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 105 };
+            // [MINDFUL] F2 (2026-07-23) — card cao hơn (105→116) + giãn khoảng cách tiêu đề→hàng
+            // giờ (ry +36→+44) + nới/tách 2 stepper cho rõ, vì chủ dự án phản hồi khung giờ chật,
+            // đọc dính vào tiêu đề "GIỜ YÊN LẶNG".
+            RECT card4Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 116 };
             BrandControls_DrawCard(memDC, card4Rc, true);
             RECT lblYenLangRc = { card4Rc.left + 15, card4Rc.top + 10, card4Rc.right - 15, card4Rc.top + 30 };
             DrawLabel(L"GIỜ YÊN LẶNG", lblYenLangRc, BrandFontEyebrow, kBrandPaletteStone);
 
-            int ry = card4Rc.top + 36;
-            RECT lblFromRc = { card4Rc.left + 15, ry, card4Rc.left + 98, ry + 26 };
+            int ry = card4Rc.top + 44;
+            RECT lblFromRc = { card4Rc.left + 15, ry, card4Rc.left + 100, ry + 28 };
             DrawLabel(L"Không reo từ", lblFromRc, BrandFontBody, kBrandPaletteCharcoal);
-            // [MINDFUL] CP3 — nới box để "NN giờ" không bị cắt (trước hẹp 68px, chữ "giờ" mất). Nay 96px.
-            RECT fromBox = { card4Rc.left + 100, ry, card4Rc.left + 196, ry + 26 };
-            RECT lblDenRc = { card4Rc.left + 202, ry, card4Rc.left + 230, ry + 26 };
+            // [MINDFUL] CP3/F2 — box 100px để "NN giờ" thoáng; 2 stepper cách nhau qua chữ "đến".
+            RECT fromBox = { card4Rc.left + 102, ry, card4Rc.left + 202, ry + 28 };
+            RECT lblDenRc = { card4Rc.left + 208, ry, card4Rc.left + 238, ry + 28 };
             DrawLabel(L"đến", lblDenRc, BrandFontBody, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-            RECT toBox = { card4Rc.left + 233, ry, card4Rc.left + 329, ry + 26 };
+            RECT toBox = { card4Rc.left + 242, ry, card4Rc.left + 342, ry + 28 };
             // Stepper "− HH giờ +" — không dùng ô nhập native (tab này vẽ tay hết), bấm −/+ đổi giờ.
             auto DrawHourStepper = [&](RECT box, int hourVal) {
                 HBRUSH bg = CreateSolidBrush(MK_COLORREF(kBrandPaletteTealLight));
                 FillRect(memDC, &box, bg);
                 DeleteObject(bg);
-                RECT decRc = { box.left, box.top, box.left + 22, box.bottom };
-                RECT valRc = { box.left + 22, box.top, box.right - 22, box.bottom };
-                RECT incRc = { box.right - 22, box.top, box.right, box.bottom };
+                RECT decRc = { box.left, box.top, box.left + 24, box.bottom };
+                RECT valRc = { box.left + 24, box.top, box.right - 24, box.bottom };
+                RECT incRc = { box.right - 24, box.top, box.right, box.bottom };
                 DrawLabel(L"-", decRc, BrandFontButton, kBrandPaletteTeal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
                 DrawLabel(L"+", incRc, BrandFontButton, kBrandPaletteTeal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
                 wchar_t hh[16];
@@ -417,18 +433,16 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             DrawHourStepper(fromBox, vBellFrom);
             DrawHourStepper(toBox, vBellTo);
 
-            int by = card4Rc.top + 72;
-            RECT btnCustomRc = { card4Rc.left + 15, by, card4Rc.left + 205, by + 26 };
-            HBRUSH brCustom = CreateSolidBrush(MK_COLORREF(kBrandPaletteTealLight));
-            FillRect(memDC, &btnCustomRc, brCustom);
-            DeleteObject(brCustom);
-            DrawLabel(L"Chọn tiếng .wav của bạn…", btnCustomRc, BrandFontButton, kBrandPaletteTeal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            // [MINDFUL] F1 (2026-07-23) — GỠ nút "Chọn tiếng .wav của bạn…" ở đây: icon nốt nhạc
+            // trong "BỘ TIẾNG" (CP2) đã mở đúng hộp chọn .wav rồi, nút này là lối thứ hai thừa.
+            // Giữ "Tạm hoãn 1 giờ" (không trùng chức năng nào khác trên tab).
+            int by = card4Rc.top + 82;
             RECT btnSnoozeRc = { card4Rc.right - 130, by, card4Rc.right - 15, by + 26 };
             HBRUSH brSnooze = CreateSolidBrush(MK_COLORREF(kBrandPaletteTealLight));
             FillRect(memDC, &btnSnoozeRc, brSnooze);
             DeleteObject(brSnooze);
             DrawLabel(L"Tạm hoãn 1 giờ", btnSnoozeRc, BrandFontButton, kBrandPaletteTeal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-            y += 120;
+            y += 131;
         }
         else if (currentTab == 3) { // Riêng tư
             // [MINDFUL] CP5 — 4 nhóm THẬT (backend đã thêm: consent/DeleteAll có sẵn + ExportCSV +
@@ -705,9 +719,10 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             // cùng y ban đầu + cùng +offset, để vùng bấm không bao giờ trôi khỏi vùng vẽ.
             RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
             int y = 20;
-            RECT card1Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 60 };
-            RECT sw1Rc = { card1Rc.right - 50, card1Rc.top + 18, card1Rc.right - 14, card1Rc.top + 39 };
-            y += 75;
+            // [MINDFUL] F3 — card1 60→74 + sw1 dời tâm theo, y sau card1 75→89 (khớp WM_PAINT).
+            RECT card1Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 74 };
+            RECT sw1Rc = { card1Rc.right - 50, card1Rc.top + 26, card1Rc.right - 14, card1Rc.top + 47 };
+            y += 89;
 
             RECT card2Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 90 };
             RECT seg2Rc = { card2Rc.left + 15, card2Rc.top + 35, card2Rc.right - 15, card2Rc.top + 65 };
@@ -785,18 +800,18 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
 
             // [MINDFUL] B6 — card Giờ yên lặng: RECT dựng lại Y HỆT nhánh WM_PAINT (y sau card3 = +125).
             y += 125;
-            RECT card4Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 105 };
-            int ry = card4Rc.top + 36;
-            // [MINDFUL] CP3 — khớp Y HỆT khối vẽ (box nới 96px).
-            RECT fromBox = { card4Rc.left + 100, ry, card4Rc.left + 196, ry + 26 };
-            RECT toBox = { card4Rc.left + 233, ry, card4Rc.left + 329, ry + 26 };
-            int by = card4Rc.top + 72;
-            RECT btnCustomRc = { card4Rc.left + 15, by, card4Rc.left + 205, by + 26 };
+            // [MINDFUL] F1/F2 — khớp Y HỆT khối vẽ: card4 116, ry +44, box 100px cách qua "đến",
+            // GỠ btnCustom (nút .wav thừa), giữ Tạm hoãn.
+            RECT card4Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 116 };
+            int ry = card4Rc.top + 44;
+            RECT fromBox = { card4Rc.left + 102, ry, card4Rc.left + 202, ry + 28 };
+            RECT toBox = { card4Rc.left + 242, ry, card4Rc.left + 342, ry + 28 };
+            int by = card4Rc.top + 82;
             RECT btnSnoozeRc = { card4Rc.right - 130, by, card4Rc.right - 15, by + 26 };
             // Stepper: bấm − lùi 1 giờ, + tiến 1 giờ (vòng 0-23). Trả về giờ mới, -1 nếu không trúng.
             auto HitStepper = [&](RECT box, int cur) -> int {
-                RECT decRc = { box.left, box.top, box.left + 22, box.bottom };
-                RECT incRc = { box.right - 22, box.top, box.right, box.bottom };
+                RECT decRc = { box.left, box.top, box.left + 24, box.bottom };
+                RECT incRc = { box.right - 24, box.top, box.right, box.bottom };
                 if (PtInRect(&decRc, pt)) return (cur + 23) % 24;
                 if (PtInRect(&incRc, pt)) return (cur + 1) % 24;
                 return -1;
@@ -806,9 +821,6 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             int nt = HitStepper(toBox, vBellTo);
             if (nt != -1) { APP_SET_DATA(vBellTo, nt); Bell_ApplySettings(); changed = true; }
 
-            if (PtInRect(&btnCustomRc, pt)) {
-                PickCustomWav();   // [MINDFUL] CP2 — dùng chung lambda với icon nốt nhạc
-            }
             if (PtInRect(&btnSnoozeRc, pt)) {
                 Bell_Snooze(60);
             }

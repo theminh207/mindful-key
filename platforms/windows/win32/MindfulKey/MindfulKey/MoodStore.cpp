@@ -8,6 +8,7 @@
 #include <vector>
 #include <sstream>
 #include <mutex>
+#include <algorithm>   // [MINDFUL] F5 — std::sort cho MoodStore_FetchAllNotes (mới nhất trước)
 
 #pragma comment(lib, "crypt32.lib")
 
@@ -73,8 +74,9 @@ static bool Unprotect(const vector<BYTE>& cipher, wstring& out) {
 //     vài trăm KB -> đọc-sửa-ghi cả tệp là rẻ.
 // Đổi lại phải ghi NGUYÊN TỬ, xem WriteAll().
 
-static bool ReadAll(wstring& out) {
-    wstring path = StorePath();
+// [MINDFUL] F5 (2026-07-23) — tách lõi đọc/ghi mã hoá theo ĐƯỜNG DẪN, để notes.enc (ô ghi) tái
+// dùng đúng mạch DPAPI + ghi-nguyên-tử của mood.enc thay vì chép lại (code-review §7 / DRY).
+static bool ReadEncFile(const wstring& path, wstring& out) {
     if (path.empty()) return false;
     HANDLE f = CreateFile(path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
                           FILE_ATTRIBUTE_NORMAL, NULL);
@@ -91,8 +93,7 @@ static bool ReadAll(wstring& out) {
     return ok && Unprotect(cipher, out);
 }
 
-static bool WriteAll(const wstring& plain) {
-    wstring path = StorePath();
+static bool WriteEncFile(const wstring& path, const wstring& plain) {
     if (path.empty()) return false;
     vector<BYTE> cipher;
     if (!Protect(plain, cipher) || cipher.empty()) return false;
@@ -118,6 +119,9 @@ static bool WriteAll(const wstring& plain) {
     }
     return true;
 }
+
+static bool ReadAll(wstring& out)          { return ReadEncFile(StorePath(), out); }
+static bool WriteAll(const wstring& plain) { return WriteEncFile(StorePath(), plain); }
 
 // ── Consent ──
 
@@ -446,30 +450,182 @@ void MoodStore_SetPurgeDays(int days) {
     MoodStore_RunAutoPurgeIfNeeded();   // áp ngay khi đổi
 }
 
-// [MINDFUL] P8 — TIỆN ÍCH DEV, chỉ bản _DEBUG. Seed dữ liệu mẫu (sample backdate 24h + vài checkin)
-// để test khung sóng/nhật ký NGAY, không phải chờ gõ hàng giờ. KHÔNG lọt vào bản Release người dùng
-// (bọc #ifdef _DEBUG cả .h lẫn .cpp lẫn mục menu). KHÔNG sửa đường ghi/đọc thật — chỉ thêm hàm mới.
-// Đánh dấu mọi dòng seed bằng kSeedMarker ở cột app_bundle_id (reader 'sample'/'checkin' bỏ cột này)
-// để MoodStore_DeleteSimulatedData dọn sạch riêng phần giả, không đụng dữ liệu thật.
-#ifdef _DEBUG
+// ── Ô ghi cảm nhận (daily note) — tệp riêng notes.enc, xem hợp đồng ở MoodStore.h ──
+
+static LPCTSTR kRegNoteConsent = _T("vMoodNoteConsent");
+static LPCTSTR kRegNoteAsked   = _T("vMoodNoteAsked");
+static const wchar_t* kNotesHeader = L"mindful-key notes v1";
+
+// Dấu dữ liệu mẫu — DÙNG CHUNG cho mood.enc (cột app) lẫn notes.enc (cột thứ 4). Để cả bản Release
+// (F6): công cụ THỬ của chủ dự án, gỡ sạch được. Trước ở #ifdef _DEBUG; xem FRICTION-LOG 2026-07-23.
 static const wchar_t* kSeedMarker = L"__mk_seed_fake__";
 
-void MoodStore_DevSeed() {
-    if (!MoodStore_HasConsent())
+static wstring NotesPath() {
+    TCHAR appData[MAX_PATH];
+    if (FAILED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, appData)))
+        return wstring();
+    wstring dir = wstring(appData) + _T("\\MindfulKeyboard");
+    CreateDirectory(dir.c_str(), NULL);
+    return dir + _T("\\notes.enc");
+}
+
+// Chữ người viết có thể chứa TAB/xuống dòng — thoát ký tự để 1 note = 1 dòng TSV an toàn.
+static wstring EscapeField(const wstring& s) {
+    wstring o; o.reserve(s.size() + 8);
+    for (wchar_t c : s) {
+        if (c == L'\\') o += L"\\\\";
+        else if (c == L'\t') o += L"\\t";
+        else if (c == L'\n') o += L"\\n";
+        else if (c == L'\r') { /* bỏ CR */ }
+        else o += c;
+    }
+    return o;
+}
+static wstring UnescapeField(const wstring& s) {
+    wstring o; o.reserve(s.size());
+    for (size_t i = 0; i < s.size(); i++) {
+        if (s[i] == L'\\' && i + 1 < s.size()) {
+            wchar_t n = s[++i];
+            if (n == L't') o += L'\t';
+            else if (n == L'n') o += L'\n';
+            else o += n;   // "\\" -> "\"; ký tự lạ sau "\" giữ nguyên chính nó
+        } else {
+            o += s[i];
+        }
+    }
+    return o;
+}
+
+// Đầu/cuối hôm nay (giây epoch, giờ ĐỊA PHƯƠNG — "hôm nay" tính từ 00:00, không phải 24h trượt).
+static void TodayBounds(time_t& startOut, time_t& endOut) {
+    time_t now = time(NULL);
+    struct tm lt; localtime_s(&lt, &now);
+    lt.tm_hour = 0; lt.tm_min = 0; lt.tm_sec = 0;
+    startOut = mktime(&lt);
+    endOut = startOut + 86400;
+}
+
+bool MoodStore_HasNoteConsent() {
+    return MindfulKeyHelper::getRegInt(kRegNoteConsent, 0) != 0;
+}
+bool MoodStore_HasAskedNoteConsent() {
+    return MindfulKeyHelper::getRegInt(kRegNoteAsked, 0) != 0;
+}
+void MoodStore_SetNoteConsent(bool granted) {
+    MindfulKeyHelper::setRegInt(kRegNoteConsent, granted ? 1 : 0);
+    MindfulKeyHelper::setRegInt(kRegNoteAsked, 1);
+    if (!granted) {
+        // Từ chối/tắt = xoá sạch ghi chú. KHÔNG đụng dữ liệu số (mood.enc) — 2 kho tách biệt.
+        lock_guard<mutex> lock(g_mutex);
+        wstring path = NotesPath();
+        if (!path.empty()) {
+            DeleteFile(path.c_str());
+            DeleteFile((path + _T(".tmp")).c_str());
+        }
+    }
+}
+
+void MoodStore_SaveNoteForToday(const std::wstring& text, const std::wstring& question) {
+    if (!MoodStore_HasNoteConsent())
         return;
     lock_guard<mutex> lock(g_mutex);
+
+    time_t dayStart, dayEnd;
+    TodayBounds(dayStart, dayEnd);
+
     wstring all;
-    if (!ReadAll(all) || all.empty())
-        all = wstring(kFileHeader) + L"\n";
+    ReadEncFile(NotesPath(), all);   // chưa có tệp = rỗng, không phải lỗi
 
-    time_t now = time(NULL);
-    wostringstream out;
+    // Xoá dòng note HÔM NAY trước (1 note/ngày), rồi ghi lại — đơn giản hơn UPDATE, tự nhiên đúng luật.
+    wostringstream kept;
+    kept << kNotesHeader << L"\n";
+    wistringstream in(all);
+    wstring line;
+    bool headerSeen = false;
+    while (getline(in, line)) {
+        if (!headerSeen) { headerSeen = true; if (line.rfind(L"mindful-key notes", 0) == 0) continue; }
+        if (line.empty()) continue;
+        size_t tab = line.find(L'\t');
+        long long ts = (tab == wstring::npos) ? 0 : _wtoi64(line.substr(0, tab).c_str());
+        if (ts >= dayStart && ts < dayEnd) continue;   // dòng hôm nay -> bỏ
+        kept << line << L"\n";
+    }
 
-    // 'sample' rải 24h qua, bước 8 phút. Đi bộ ngẫu nhiên TẤT ĐỊNH theo idx (LCG nhỏ) — tái lập được,
-    // không cần srand/time. Cột: ts, sample, send_risk, app=marker, choice(rỗng), mood_label(rỗng), intensity(rỗng).
+    // Chuỗi chỉ-khoảng-trắng = rút lại: chỉ xoá, không ghi lại (mirror macOS).
+    wstring trimmed = text;
+    size_t b = trimmed.find_first_not_of(L" \t\r\n");
+    if (b == wstring::npos) trimmed.clear();
+
+    if (!trimmed.empty()) {
+        long long now = (long long)time(NULL);
+        // ts \t question \t text \t marker(rỗng = THẬT). question lưu nguyên văn (§2.6 macOS).
+        kept << now << L'\t' << EscapeField(question) << L'\t' << EscapeField(text) << L"\t\n";
+    }
+    WriteEncFile(NotesPath(), kept.str());
+}
+
+std::wstring MoodStore_FetchNoteForToday() {
+    if (!MoodStore_HasNoteConsent())
+        return wstring();
+    lock_guard<mutex> lock(g_mutex);
+    time_t dayStart, dayEnd;
+    TodayBounds(dayStart, dayEnd);
+    wstring all;
+    if (!ReadEncFile(NotesPath(), all))
+        return wstring();
+    wistringstream in(all);
+    wstring line, result;
+    while (getline(in, line)) {
+        if (line.rfind(L"mindful-key notes", 0) == 0 || line.empty()) continue;
+        wistringstream f(line);
+        wstring tsStr, qStr, textStr;
+        getline(f, tsStr, L'\t');
+        getline(f, qStr, L'\t');
+        getline(f, textStr, L'\t');
+        if (tsStr.empty()) continue;
+        long long ts = _wtoi64(tsStr.c_str());
+        if (ts < dayStart || ts >= dayEnd) continue;
+        result = UnescapeField(textStr);   // dòng cuối của hôm nay thắng
+    }
+    return result;
+}
+
+std::vector<MoodNote> MoodStore_FetchAllNotes() {
+    std::vector<MoodNote> notes;
+    if (!MoodStore_HasNoteConsent())
+        return notes;
+    lock_guard<mutex> lock(g_mutex);
+    wstring all;
+    if (!ReadEncFile(NotesPath(), all))
+        return notes;
+    wistringstream in(all);
+    wstring line;
+    while (getline(in, line)) {
+        if (line.rfind(L"mindful-key notes", 0) == 0 || line.empty()) continue;
+        wistringstream f(line);
+        wstring tsStr, qStr, textStr;
+        getline(f, tsStr, L'\t');
+        getline(f, qStr, L'\t');
+        getline(f, textStr, L'\t');
+        if (tsStr.empty()) continue;
+        MoodNote n;
+        n.ts = _wtoi64(tsStr.c_str());
+        n.question = UnescapeField(qStr);
+        n.text = UnescapeField(textStr);
+        if (n.text.empty()) continue;
+        notes.push_back(n);
+    }
+    // MỚI NHẤT TRƯỚC — đọc từ trên xuống như một chồng giấy.
+    std::sort(notes.begin(), notes.end(),
+              [](const MoodNote& a, const MoodNote& b) { return a.ts > b.ts; });
+    return notes;
+}
+
+// ── Công cụ THỬ (F6) — bơm dữ liệu mẫu, đánh dấu kSeedMarker, gỡ sạch được ──
+// Rải 'sample' mã hoá mẫu trong [now-span, now], bước `step` giây; risk đi bộ ngẫu nhiên TẤT ĐỊNH
+// theo idx (LCG nhỏ, tái lập được, không srand/time). Cột: ts, sample, risk, app=marker, ...rỗng.
+static void EmitSeedSamples(wostringstream& out, time_t now, long long span, long long step) {
     double risk = 0.35;
-    long long span = 24LL * 3600;
-    long long step = 8 * 60;
     int idx = 0;
     for (long long t = now - span; t <= now; t += step, idx++) {
         unsigned h = (unsigned)(idx * 1103515245u + 12345u);
@@ -479,32 +635,98 @@ void MoodStore_DevSeed() {
         if (risk > 0.85) risk = 0.85;
         out << t << L"\tsample\t" << risk << L'\t' << kSeedMarker << L"\t\t\t\n";
     }
+}
 
-    // Vài 'checkin' ở các mốc giờ quá khứ (mức 1/2/3 luân phiên).
-    long long checkAt[] = { now - 20 * 3600, now - 15 * 3600, now - 9 * 3600, now - 4 * 3600, now - 3600 };
-    for (int i = 0; i < 5; i++) {
+// Seed vài note ở các ngày quá khứ để test màn "Những dòng đã viết". CHỈ khi đã bật consent ghi chú
+// — KHÔNG tự bật thay người dùng (giữ cổng consent của hiến chương). Chưa bật thì bỏ qua lặng lẽ.
+static void EmitSeedNotes(time_t now) {
+    if (!MoodStore_HasNoteConsent())
+        return;
+    wstring all;
+    ReadEncFile(NotesPath(), all);
+    wostringstream out;
+    if (all.empty())
+        out << kNotesHeader << L"\n";
+    struct { int daysAgo; const wchar_t* q; const wchar_t* a; } seed[] = {
+        { 2, L"Nếu ngày mai gợn lên đúng như vậy, bạn muốn mình để ý điều gì sớm hơn?", L"Thử nghỉ tay sớm hơn khi thấy vai căng." },
+        { 5, L"Hôm nay mặt hồ khá phẳng. Điều gì đã giữ cho ngày nhẹ như vậy?",        L"Sáng đi bộ một vòng trước khi mở máy." },
+        { 9, L"Khi ngày trôi êm, bạn thường đang ở cùng ai, làm việc gì?",             L"Làm việc một mình, nghe nhạc nhẹ." },
+    };
+    for (auto& s : seed) {
+        long long ts = (long long)now - (long long)s.daysAgo * 86400 + 20 * 3600;   // ~20h ngày đó
+        out << ts << L'\t' << EscapeField(s.q) << L'\t' << EscapeField(s.a) << L'\t' << kSeedMarker << L"\n";
+    }
+    all += out.str();
+    WriteEncFile(NotesPath(), all);
+}
+
+static void SeedCheckins(wostringstream& out, time_t now, const long long* offs, int count) {
+    for (int i = 0; i < count; i++) {
         int lvl = (i % 3) + 1;
         const wchar_t* label = (lvl == 2) ? L"ripple" : (lvl == 3) ? L"wave" : L"calm";
-        // Cột: ts, checkin, send_risk(rỗng), app=marker, choice(rỗng), mood_label, intensity.
-        out << checkAt[i] << L"\tcheckin\t\t" << kSeedMarker << L"\t\t" << label << L'\t' << lvl << L"\n";
+        out << (now - offs[i]) << L"\tcheckin\t\t" << kSeedMarker << L"\t\t" << label << L'\t' << lvl << L"\n";
     }
+}
 
+void MoodStore_DevSeed12h() {
+    if (!MoodStore_HasConsent())
+        return;
+    lock_guard<mutex> lock(g_mutex);
+    wstring all;
+    if (!ReadAll(all) || all.empty())
+        all = wstring(kFileHeader) + L"\n";
+    time_t now = time(NULL);
+    wostringstream out;
+    EmitSeedSamples(out, now, 12LL * 3600, 5 * 60);   // dày (5 phút) — test SÓNG hôm nay
+    long long checkOffs[] = { 10 * 3600, 6 * 3600, 3 * 3600, 3600 };
+    SeedCheckins(out, now, checkOffs, 4);
     all += out.str();
     WriteAll(all);
 }
 
-void MoodStore_DeleteSimulatedData() {
+void MoodStore_DevSeed30d() {
+    if (!MoodStore_HasConsent())
+        return;
     lock_guard<mutex> lock(g_mutex);
     wstring all;
-    if (!ReadAll(all))
-        return;
-    wistringstream in(all);
-    wstring line;
-    wostringstream kept;
-    while (getline(in, line)) {
-        if (line.find(kSeedMarker) != wstring::npos) continue;   // bỏ mọi dòng seed, giữ dữ liệu thật
-        kept << line << L"\n";
-    }
-    WriteAll(kept.str());
+    if (!ReadAll(all) || all.empty())
+        all = wstring(kFileHeader) + L"\n";
+    time_t now = time(NULL);
+    wostringstream out;
+    EmitSeedSamples(out, now, 30LL * 86400, 30 * 60);   // 30 ngày, bước 30 phút
+    long long checkOffs[] = { 28LL * 86400, 21LL * 86400, 14LL * 86400, 7LL * 86400, 2LL * 86400, 4 * 3600 };
+    SeedCheckins(out, now, checkOffs, 6);
+    all += out.str();
+    WriteAll(all);
+    EmitSeedNotes(now);   // vài note quá khứ (nếu đã bật consent ghi chú)
 }
-#endif // _DEBUG
+
+void MoodStore_DeleteSimulatedData() {
+    lock_guard<mutex> lock(g_mutex);
+
+    // mood.enc: bỏ mọi dòng mang dấu mẫu (cột app), giữ dữ liệu thật.
+    wstring all;
+    if (ReadAll(all)) {
+        wistringstream in(all);
+        wstring line;
+        wostringstream kept;
+        while (getline(in, line)) {
+            if (line.find(kSeedMarker) != wstring::npos) continue;
+            kept << line << L"\n";
+        }
+        WriteAll(kept.str());
+    }
+
+    // notes.enc: tương tự — dòng note mẫu có kSeedMarker ở cột thứ 4.
+    wstring allNotes;
+    if (ReadEncFile(NotesPath(), allNotes)) {
+        wistringstream in(allNotes);
+        wstring line;
+        wostringstream kept;
+        while (getline(in, line)) {
+            if (line.find(kSeedMarker) != wstring::npos) continue;
+            kept << line << L"\n";
+        }
+        WriteEncFile(NotesPath(), kept.str());
+    }
+}

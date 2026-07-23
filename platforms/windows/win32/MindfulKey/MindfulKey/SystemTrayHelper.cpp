@@ -69,10 +69,12 @@ static bool g_waveAlert = false;
 #define POPUP_CONTROL_PANEL 1000
 #define POPUP_ABOUT_MINDFULKEY 1010
 #define POPUP_MINDFULKEY_EXIT 2000
-#ifdef _DEBUG
-#define POPUP_DEV_SEED 3000   // [MINDFUL] P8 — chỉ bản DEBUG
-#define POPUP_DEV_CLEAR 3001
-#endif
+// [MINDFUL] F6 (2026-07-23) — công cụ THỬ (bơm/gỡ dữ liệu mẫu). TRƯỚC ở #ifdef _DEBUG; nay để cả
+// bản Release vì chủ dự án cần thử sóng/nhật ký trên installer đã cài. Đặt trong submenu "Thử
+// nghiệm" nhãn rõ. Xem FRICTION-LOG 2026-07-23: ẩn/bỏ trước bản công khai 1.0.
+#define POPUP_SEED_12H   3000
+#define POPUP_SEED_30D   3001
+#define POPUP_SEED_CLEAR 3002
 
 #define MODIFY_MENU(MENU, COMMAND, DATA) ModifyMenu(MENU, COMMAND, \
 											MF_BYCOMMAND | (DATA ? MF_CHECKED : MF_UNCHECKED), \
@@ -330,16 +332,18 @@ void SystemTrayHelper::showContextMenu() {
 	case POPUP_MINDFULKEY_EXIT:
 		AppDelegate::getInstance()->onMindfulKeyExit();
 		break;
-#ifdef _DEBUG
-	case POPUP_DEV_SEED:
-		MoodStore_DevSeed();
+	case POPUP_SEED_12H:
+		MoodStore_DevSeed12h();
 		TrayPopover_Refresh();   // sông vẽ lại ngay để thấy dữ liệu mẫu
 		break;
-	case POPUP_DEV_CLEAR:
+	case POPUP_SEED_30D:
+		MoodStore_DevSeed30d();
+		TrayPopover_Refresh();
+		break;
+	case POPUP_SEED_CLEAR:
 		MoodStore_DeleteSimulatedData();
 		TrayPopover_Refresh();
 		break;
-#endif
 	}
 	SystemTrayHelper::updateData();
 }
@@ -410,12 +414,18 @@ void SystemTrayHelper::createPopupMenu() {
 
 	AppendMenu(popupMenu, MF_STRING, POPUP_CONTROL_PANEL, menuData[POPUP_CONTROL_PANEL]);
 	AppendMenu(popupMenu, MF_UNCHECKED, POPUP_ABOUT_MINDFULKEY, menuData[POPUP_ABOUT_MINDFULKEY]);
-#ifdef _DEBUG
-	// [MINDFUL] P8 — tiện ích DEV seed dữ liệu mẫu, CHỈ hiện ở bản DEBUG (không lọt bản Release).
+
+	// [MINDFUL] F6 (2026-07-23) — submenu "Thử nghiệm": bơm dữ liệu mẫu để xem sóng/nhật ký ngay.
+	// Nhãn rõ là công cụ thử; dữ liệu đánh dấu riêng, "Xoá dữ liệu mẫu" gỡ sạch. FRICTION-LOG: ẩn/bỏ
+	// trước bản 1.0. HMENU con do popupMenu sở hữu, hệ tự huỷ khi huỷ menu cha.
 	AppendMenu(popupMenu, MF_SEPARATOR, 0, 0);
-	AppendMenuW(popupMenu, MF_STRING, POPUP_DEV_SEED, L"[DEV] Tạo dữ liệu mẫu");
-	AppendMenuW(popupMenu, MF_STRING, POPUP_DEV_CLEAR, L"[DEV] Xoá dữ liệu mẫu");
-#endif
+	HMENU seedMenu = CreatePopupMenu();
+	AppendMenuW(seedMenu, MF_STRING, POPUP_SEED_12H,   L"Tạo dữ liệu mẫu · 12 giờ");
+	AppendMenuW(seedMenu, MF_STRING, POPUP_SEED_30D,   L"Tạo dữ liệu mẫu · 30 ngày");
+	AppendMenu(seedMenu, MF_SEPARATOR, 0, 0);
+	AppendMenuW(seedMenu, MF_STRING, POPUP_SEED_CLEAR, L"Xoá dữ liệu mẫu");
+	AppendMenuW(popupMenu, MF_POPUP, (UINT_PTR)seedMenu, L"Thử nghiệm");
+
 	AppendMenu(popupMenu, MF_SEPARATOR, 0, 0);
 	AppendMenu(popupMenu, MF_UNCHECKED, POPUP_MINDFULKEY_EXIT, menuData[POPUP_MINDFULKEY_EXIT]);
 

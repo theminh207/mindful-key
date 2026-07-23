@@ -83,8 +83,33 @@ int  MoodStore_GetPurgeDays();
 void MoodStore_SetPurgeDays(int days);
 void MoodStore_RunAutoPurgeIfNeeded();
 
-// [MINDFUL] P8 — tiện ích DEV, CHỈ bản _DEBUG (không lọt vào bản Release người dùng).
-#ifdef _DEBUG
-void MoodStore_DevSeed();              // seed dữ liệu mẫu (sample 24h + vài checkin) để test sóng/nhật ký
-void MoodStore_DeleteSimulatedData();  // xoá riêng phần seed (theo dấu), giữ dữ liệu thật
-#endif
+// ── Ô ghi cảm nhận (daily note) — [MINDFUL] F5 (2026-07-23), mirror MoodStoreMac note API ──
+// Consent RIÊNG với nhật ký số: người có thể muốn ghi số mà không ghi chữ (hoặc ngược lại). Chữ
+// người viết là NGOẠI LỆ DUY NHẤT với luật "kho không chứa câu chữ" — và có hợp đồng riêng:
+//   · CẤM TUYỆT ĐỐI chạy sentiment/model lên nội dung note. Note chỉ cho con người đọc.
+//   · Lưu ở TỆP RIÊNG `notes.enc` (KHÔNG nhét vào `mood.enc`): schema mood.enc bị khoá "không chứa
+//     câu chữ" (SYNC-emotion-mechanism-v2 §A), và TSV 1 dòng không giữ nổi văn bản nhiều dòng.
+//     Cùng DPAPI như mood.enc — khoá theo tài khoản Windows, không đi theo tệp.
+bool MoodStore_HasNoteConsent();
+bool MoodStore_HasAskedNoteConsent();
+void MoodStore_SetNoteConsent(bool granted);   // false = xoá sạch mọi ghi chú (KHÔNG đụng dữ liệu số)
+
+// 1 note/ngày. `text` rỗng = rút lại (xoá dòng hôm nay, không ghi lại). `question` là câu app đã
+// hỏi hôm đó — lưu nguyên văn kèm note để lịch sử đọc đúng câu của ngày đó (KHÔNG suy lại).
+void MoodStore_SaveNoteForToday(const std::wstring& text, const std::wstring& question);
+std::wstring MoodStore_FetchNoteForToday();
+
+struct MoodNote {
+    long long    ts = 0;
+    std::wstring question;
+    std::wstring text;
+};
+std::vector<MoodNote> MoodStore_FetchAllNotes();   // MỚI NHẤT TRƯỚC; rỗng nếu chưa consent
+
+// [MINDFUL] F6 (2026-07-23) — CÔNG CỤ THỬ: bơm dữ liệu mẫu để xem sóng/nhật ký NGAY, khỏi chờ gõ
+// hàng giờ. TRƯỚC đây #ifdef _DEBUG; nay để cả bản Release vì chủ dự án cần thử trên bản đã CÀI
+// (installer từ CI = Release). Dữ liệu mẫu đánh dấu riêng (kSeedMarker) + gỡ sạch được. Xem
+// FRICTION-LOG 2026-07-23: PHẢI ẩn/bỏ trước bản công khai 1.0.
+void MoodStore_DevSeed12h();            // ~12 giờ gần đây, dày (test SÓNG hôm nay)
+void MoodStore_DevSeed30d();            // ~30 ngày: sample + checkin + vài note quá khứ (test nhật ký)
+void MoodStore_DeleteSimulatedData();   // gỡ riêng phần mẫu ở CẢ mood.enc lẫn notes.enc, giữ dữ liệu thật

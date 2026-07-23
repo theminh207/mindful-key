@@ -120,6 +120,9 @@
     <ClInclude Include="ReflectionScreen.h">
       <Filter>Header Files\Mindful</Filter>
     </ClInclude>
+    <ClInclude Include="NotesHistory.h">
+      <Filter>Header Files\Mindful</Filter>
+    </ClInclude>
     <ClInclude Include="TrayPopover.h">
       <Filter>Header Files\Mindful</Filter>
     </ClInclude>
@@ -219,6 +222,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ReflectionScreen.cpp">
+      <Filter>Source Files\Mindful</Filter>
+    </ClCompile>
+    <ClCompile Include="NotesHistory.cpp">
       <Filter>Source Files\Mindful</Filter>
     </ClCompile>
     <ClCompile Include="TrayPopover.cpp">

@@ -3,6 +3,27 @@
 Theo [Keep a Changelog](https://keepachangelog.com/) và [SemVer](https://semver.org/).
 Phiên bản lấy từ `version.env`.
 
+## [0.4.19]
+
+Đợt "màn Soi lại + nhật ký viết tay" (`docs/REFLECTION-FEEDBACK.md`) — nghiệm thu tay v0.4.18.
+
+### Added
+
+- **Màn Soi lại (đại tu theo macOS):** 3 nhịp **Nhận ra / Soi / Nuôi dưỡng** — sóng cả ngày trong
+  thẻ (Sáng·Trưa·Chiều·Tối), câu quan sát + dòng gác cổng, câu hỏi phản chiếu, **ô ghi một dòng cho
+  hôm nay**, thẻ gợi ý nhẹ + link "Chỉnh chuông quanh Nh →" (F4/F5).
+- **Nhật ký "Những dòng đã viết":** lưu chữ bạn viết trong ô Soi lại — **mã hoá tại chỗ** (`notes.enc`,
+  DPAPI), hỏi đồng ý riêng đúng lúc bạn gõ dòng đầu, không bao giờ chạy máy đọc cảm xúc lên chữ đó.
+  Cửa sổ đọc lại (ngày · câu hỏi hôm đó · chữ bạn viết), cuộn được (F5).
+- **Tab Chuông:** dòng **"Dự kiến reo lúc HH:MM (còn N phút)"** ngay dưới "Bật chuông tỉnh thức" (F3).
+- **Menu khay "Thử nghiệm":** bơm dữ liệu mẫu **12 giờ** (xem sóng hôm nay) / **30 ngày** (xem nhật ký),
+  và "Xoá dữ liệu mẫu" — công cụ thử, dữ liệu đánh dấu riêng, gỡ sạch được (F6).
+
+### Changed
+
+- **Tab Chuông:** gỡ nút "Chọn tiếng .wav của bạn…" thừa (icon nốt nhạc đã mở chọn .wav) (F1); giãn
+  vùng khung giờ yên lặng cho rõ khỏi tiêu đề (F2).
+
 ## [0.4.18]
 
 Đợt "cửa Cài đặt bắt kịp macOS" (`docs/CONTROL-PANEL-FEEDBACK.md`).
