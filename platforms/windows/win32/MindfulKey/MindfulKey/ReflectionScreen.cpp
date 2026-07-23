@@ -58,6 +58,22 @@ static ULONG_PTR g_gdiplusToken = 0;
 static vector<MoodSample> g_samples;
 static MoodTodaySummary   g_summary;
 
+// [MINDFUL] 2026-07-23 — đồng bộ macOS (EmotionRiverView.mm, MKWaveSide): VẪN 1 trục biên độ
+// (KHÔNG thêm nghĩa tích cực/tiêu cực, decision-log 2026-07-20 "giữ 1 trục"), chỉ đổi CÁCH VẼ để
+// dáng sóng lên/xuống tự nhiên thay vì luôn nhô 1 chiều. Chiều lên/xuống CHỈ trang trí — tính từ
+// timestamp TUYỆT ĐỐI của chính điểm đó, KHÔNG dựa vào thứ tự trong mảng/số điểm lân cận (tránh
+// lặp lại đúng bug "sóng nhảy mỗi lần refresh" đã vá — index chẵn/lẻ từng quyết định nhô/chìm).
+// Biên độ (khoảng lệch trục) vẫn = ĐÚNG risk thật, KHÔNG co theo pha — câu càng căng vẫn luôn lệch
+// trục rõ, chỉ khác chiều lệch. `kTwoPi` viết literal (không dùng M_PI — MSVC cần _USE_MATH_DEFINES
+// trước <cmath>, tránh phụ thuộc macro thêm cho một hằng số).
+static const double kWaveCyclePeriodSeconds = 3.0 * 3600.0;
+static const double kTwoPi = 6.283185307179586;
+
+static REAL WaveSide(long long ts) {
+    double phase = kTwoPi * ((double)ts / kWaveCyclePeriodSeconds);
+    return (sin(phase) >= 0.0) ? 1.0f : -1.0f;
+}
+
 // ── Dòng sông ──
 
 // Vị trí ngang 0..1 của một mẫu = GIỜ THẬT trong ngày. Xem luật 2 ở đầu file.
@@ -118,11 +134,11 @@ static void DrawRiver(Graphics& g, const RectF& area, const vector<MoodSample>& 
     for (size_t i = 0; i < samples.size(); i++) {
         if (recentMode && samples[i].ts < originSec) continue; // Bỏ qua mẫu cũ ngoài cửa sổ
         xs.push_back(XFractionOf(samples[i].ts, originSec, spanSec, maxFrac));
-        ys.push_back((REAL)samples[i].value);
+        ys.push_back(WaveSide(samples[i].ts) * (REAL)samples[i].value);   // trang trí — xem WaveSide phía trên
     }
     if (recentMode && liveHead >= 0.0) {
         xs.push_back(maxFrac);
-        ys.push_back((REAL)liveHead);
+        ys.push_back(WaveSide((long long)now) * (REAL)liveHead);
     }
 
     int interval = vBellInterval > 0 ? vBellInterval : 60;
@@ -148,12 +164,12 @@ static void DrawRiver(Graphics& g, const RectF& area, const vector<MoodSample>& 
 
     for (size_t i = 0; i < xs.size(); i++) {
         REAL mx = xs[i] * w;
-        // [MINDFUL] 2026-07-23 (chủ dự án chốt "sửa cách vẽ sóng") — độ cao mỗi điểm = ĐÚNG biên độ
-        // của nó, luôn NHÔ LÊN từ đường trục (GDI+ trục Y hướng xuống nên "lên" = midY - value).
-        // Trước đây điểm chẵn nhô, điểm lẻ chìm theo THỨ TỰ trong mảng → thêm/bớt một điểm là đảo
-        // nhô-chìm mọi điểm sau nó, mỗi lần refresh sông "nhảy" một kiểu (đúng lỗi chập chờn macOS
-        // cũng dính, đã vá cùng ngày ở EmotionRiverView.mm). Nay vị trí một điểm chỉ phụ thuộc GIÁ
-        // TRỊ + thời điểm thật của chính nó. Chấm (vòng dưới) dùng lại chính toạ độ này nên khớp.
+        // [MINDFUL] 2026-07-23 — độ LỆCH TRỤC mỗi điểm = ĐÚNG biên độ của nó (ys[i] đã mang dấu
+        // trang trí từ WaveSide() phía trên; GDI+ trục Y hướng xuống nên "lên" = midY - value).
+        // Trước đây (bug đã vá) điểm chẵn nhô, điểm lẻ chìm theo THỨ TỰ trong mảng → thêm/bớt một
+        // điểm là đảo nhô-chìm mọi điểm sau nó, mỗi lần refresh sông "nhảy" một kiểu. Nay vị trí một
+        // điểm chỉ phụ thuộc GIÁ TRỊ + thời điểm thật của chính nó — chiều lên/xuống không mang
+        // valence. Chấm (vòng dưới) dùng lại chính toạ độ này nên khớp.
         PointF p(area.X + mx, midY - ys[i] * maxWaveH);
 
         currentSeg.push_back(p);
