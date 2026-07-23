@@ -452,7 +452,10 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             RECT p1Lbl = { p1Rc.left + 15, p1Rc.top + 30, p1Rc.right - 60, p1Rc.top + 52 };
             DrawLabel(L"Lưu điểm gợn cục bộ", p1Lbl, BrandFontBody, kBrandPaletteCharcoal);
             RECT p1Sw = { p1Rc.right - 50, p1Rc.top + 32, p1Rc.right - 14, p1Rc.top + 53 };
-            BrandControls_DrawPillSwitch(memDC, p1Sw, MoodStore_HasConsent());
+            // [MINDFUL] CP5 review — pill phản ánh vMoodWatch (watcher đang chạy = thứ THẬT SỰ ghi
+            // nhật ký), KHÔNG chỉ MoodStore consent. Trước đây đọc consent riêng → bật consent mà
+            // watcher tắt = công tắc chết câm (không ghi gì). Nay công tắc này bật/tắt CẢ hai (đồng bộ).
+            BrandControls_DrawPillSwitch(memDC, p1Sw, vMoodWatch != 0);
             RECT p1Note = { p1Rc.left + 15, p1Rc.top + 54, p1Rc.right - 15, p1Rc.top + 74 };
             DrawLabel(L"Tắt sẽ xóa sạch mọi dữ liệu đã lưu.", p1Note, BrandFontBody, kBrandPaletteMuted);
             y += 93;
@@ -876,16 +879,23 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             RECT btnDelRc = { p4Rc.left + 15, p4Rc.top + 34, p4Rc.left + 185, p4Rc.top + 60 };
 
             bool changed = false;
-            // Consent: tắt = MoodStore_SetConsent(false) TỰ XÓA SẠCH → hỏi lại trước khi tắt.
+            // [MINDFUL] CP5 review — công tắc này bật/tắt CẢ watcher (vMoodWatch — thứ ghi nhật ký) LẪN
+            // consent lưu trữ, để không còn "công tắc chết câm". Đồng bộ với popover "Bật nhật ký"
+            // (cùng đọc vMoodWatch). Tắt = tắt watcher (MoodWatch_Toggle tự dọn state sông sống) + XÓA
+            // SẠCH (SetConsent(false) gọi DeleteAll). Bật = bật watcher + cho phép lưu (bật ở đây LÀ đồng ý).
             if (PtInRect(&p1Sw, pt)) {
-                bool turnOn = !MoodStore_HasConsent();
-                if (!turnOn) {
+                if (vMoodWatch) {
                     if (MessageBoxW(hDlg, L"Tắt nhật ký sẽ XÓA SẠCH mọi dữ liệu cảm xúc đã lưu. Tiếp tục?",
-                            L"Mindful Keyboard", MB_YESNO | MB_ICONQUESTION) != IDYES)
-                        turnOn = true;   // huỷ -> giữ nguyên đang bật
+                            L"Mindful Keyboard", MB_YESNO | MB_ICONQUESTION) == IDYES) {
+                        MoodWatch_Toggle();            // vMoodWatch=1 -> 0 + dọn sạch state sông sống
+                        MoodStore_SetConsent(false);   // xóa dữ liệu đã lưu
+                        changed = true;
+                    }
+                } else {
+                    APP_SET_DATA(vMoodWatch, 1);        // bật watcher trực tiếp (không modal — đây LÀ đồng ý)
+                    MoodStore_SetConsent(true);         // cho phép lưu
+                    changed = true;
                 }
-                MoodStore_SetConsent(turnOn);
-                changed = true;
             }
             // Xuất CSV (GetSaveFileName → MoodStore_ExportCSV).
             if (PtInRect(&btnCsvRc, pt)) {

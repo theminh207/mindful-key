@@ -369,8 +369,8 @@ bool MoodStore_ExportCSV(const std::wstring& path) {
         return false;
     lock_guard<mutex> lock(g_mutex);
     wstring all;
-    if (!ReadAll(all))
-        return false;
+    ReadAll(all);   // [MINDFUL] review — chưa có file = nhật ký rỗng: vẫn xuất CSV chỉ-header (hợp lệ),
+                    // KHÔNG coi là thất bại. Loop dưới tự bỏ qua khi all rỗng.
 
     wstring csv = L"ts,event_type,send_risk,mood_label,intensity\r\n";
     wistringstream in(all);
