@@ -98,8 +98,10 @@ INT_PTR MainControlDialog::eventProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
     // C2 sẽ nhân theo DPI.) Ghi FRICTION-LOG: chọn min-clamp thay vì (a) cuộn / (b) co tỉ lệ.
     case WM_GETMINMAXINFO: {
         MINMAXINFO* mmi = (MINMAXINFO*)lParam;
-        mmi->ptMinTrackSize.x = 480;
-        mmi->ptMinTrackSize.y = 520;
+        // [MINDFUL] CP3 nới hàng giờ yên lặng (rộng tới ~529px client) + CP4 thêm thẻ Công cụ vào tab
+        // Bộ gõ (cao tới ~545px) → nâng ngưỡng để nội dung rộng/cao nhất không bị cắt lúc thu nhỏ.
+        mmi->ptMinTrackSize.x = 560;
+        mmi->ptMinTrackSize.y = 590;
         return TRUE;
     }
     case WM_COMMAND: {
@@ -336,7 +338,7 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             RECT card1Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 60 };
             BrandControls_DrawCard(memDC, card1Rc, true);
             RECT lblTrangThaiRc = { card1Rc.left + 15, card1Rc.top + 15, card1Rc.right - 60, card1Rc.bottom - 15 };
-            DrawLabel(L"Phát tiếng gõ", lblTrangThaiRc, BrandFontBody, kBrandPaletteCharcoal);
+            DrawLabel(L"Bật chuông tỉnh thức", lblTrangThaiRc, BrandFontBody, kBrandPaletteCharcoal);
             // [MINDFUL] A2 — click thật xử ở WM_LBUTTONUP (currentTab==1), KHÔNG còn ở đây (pt=-1,-1
             // lúc WM_PAINT nên khối if cũ không bao giờ khớp — đúng nguyên nhân tab Chuông tê liệt).
             RECT sw1Rc = { card1Rc.right - 50, card1Rc.top + 18, card1Rc.right - 14, card1Rc.top + 39 };
@@ -390,10 +392,11 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             int ry = card4Rc.top + 36;
             RECT lblFromRc = { card4Rc.left + 15, ry, card4Rc.left + 98, ry + 26 };
             DrawLabel(L"Không reo từ", lblFromRc, BrandFontBody, kBrandPaletteCharcoal);
-            RECT fromBox = { card4Rc.left + 100, ry, card4Rc.left + 168, ry + 26 };
-            RECT lblDenRc = { card4Rc.left + 174, ry, card4Rc.left + 202, ry + 26 };
+            // [MINDFUL] CP3 — nới box để "NN giờ" không bị cắt (trước hẹp 68px, chữ "giờ" mất). Nay 96px.
+            RECT fromBox = { card4Rc.left + 100, ry, card4Rc.left + 196, ry + 26 };
+            RECT lblDenRc = { card4Rc.left + 202, ry, card4Rc.left + 230, ry + 26 };
             DrawLabel(L"đến", lblDenRc, BrandFontBody, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-            RECT toBox = { card4Rc.left + 205, ry, card4Rc.left + 273, ry + 26 };
+            RECT toBox = { card4Rc.left + 233, ry, card4Rc.left + 329, ry + 26 };
             // Stepper "− HH giờ +" — không dùng ô nhập native (tab này vẽ tay hết), bấm −/+ đổi giờ.
             auto DrawHourStepper = [&](RECT box, int hourVal) {
                 HBRUSH bg = CreateSolidBrush(MK_COLORREF(kBrandPaletteTealLight));
@@ -632,7 +635,7 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
                 Bell_PreviewSound();
             }
 
-            // Pill "Phát tiếng gõ" — nối ĐÚNG vBell (không phải FLAG_BEEP của OpenKey).
+            // Pill "Bật chuông tỉnh thức" — nối ĐÚNG vBell (không phải FLAG_BEEP của OpenKey).
             if (PtInRect(&sw1Rc, pt)) {
                 APP_SET_DATA(vBell, vBell ? 0 : 1);
                 Bell_ApplySettings();   // BẬT/tắt đồng hồ chuông thật
@@ -648,10 +651,36 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
                 changed = true;
             }
 
-            // "BỘ TIẾNG" — ghi ĐÚNG chuỗi id mà Bell.cpp SoundIdFromStored chấp nhận (không phải
-            // vBellSoundIndex — khoá đó không ai đọc).
+            // [MINDFUL] CP2 — mở hộp chọn .wav, DÙNG CHUNG cho icon nốt nhạc + nút "Chọn tiếng .wav"
+            // (gom lambda tránh copy-paste trôi dạt — code-review §7).
+            auto PickCustomWav = [&]() {
+                TCHAR file[MAX_PATH] = { 0 };
+                OPENFILENAME ofn = { 0 };
+                ofn.lStructSize = sizeof(ofn);
+                ofn.hwndOwner = hDlg;
+                ofn.lpstrFilter = _T("Tệp âm thanh (*.wav)\0*.wav\0");
+                ofn.lpstrFile = file;
+                ofn.nMaxFile = MAX_PATH;
+                ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
+                if (GetOpenFileName(&ofn)) {
+                    std::wstring err;
+                    if (Bell_InstallCustomSound(file, &err)) {
+                        MindfulKeyHelper::setRegString(_T("vBellSoundName"), _T("custom"));
+                        Bell_PreviewSound();
+                        changed = true;
+                    } else {
+                        MessageBoxW(hDlg, err.c_str(), L"Mindful Keyboard", MB_OK);
+                    }
+                }
+            };
+
+            // "BỘ TIẾNG" — ghi ĐÚNG chuỗi id mà Bell.cpp SoundIdFromStored chấp nhận. CP2: bấm nốt nhạc
+            // (cs==3 "custom") LUÔN mở hộp chọn .wav (mirror macOS onBellClick + popover P2) — tách khỏi
+            // nhánh ghi tên thường để bấm lại vẫn cho đổi tệp.
             int cs = BrandControls_HitIconGroup(iconGrpRc, 4, pt);
-            if (cs != -1) {
+            if (cs == 3) {
+                PickCustomWav();
+            } else if (cs != -1) {
                 static const wchar_t* kBellSoundIds[] = { L"temple", L"chime", L"wind", L"custom" };
                 MindfulKeyHelper::setRegString(_T("vBellSoundName"), kBellSoundIds[cs]);
                 changed = true;
@@ -668,8 +697,9 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             y += 125;
             RECT card4Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 105 };
             int ry = card4Rc.top + 36;
-            RECT fromBox = { card4Rc.left + 100, ry, card4Rc.left + 168, ry + 26 };
-            RECT toBox = { card4Rc.left + 205, ry, card4Rc.left + 273, ry + 26 };
+            // [MINDFUL] CP3 — khớp Y HỆT khối vẽ (box nới 96px).
+            RECT fromBox = { card4Rc.left + 100, ry, card4Rc.left + 196, ry + 26 };
+            RECT toBox = { card4Rc.left + 233, ry, card4Rc.left + 329, ry + 26 };
             int by = card4Rc.top + 72;
             RECT btnCustomRc = { card4Rc.left + 15, by, card4Rc.left + 205, by + 26 };
             RECT btnSnoozeRc = { card4Rc.right - 130, by, card4Rc.right - 15, by + 26 };
@@ -687,25 +717,7 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             if (nt != -1) { APP_SET_DATA(vBellTo, nt); Bell_ApplySettings(); changed = true; }
 
             if (PtInRect(&btnCustomRc, pt)) {
-                TCHAR file[MAX_PATH] = { 0 };
-                OPENFILENAME ofn = { 0 };
-                ofn.lStructSize = sizeof(ofn);
-                ofn.hwndOwner = hDlg;
-                ofn.lpstrFilter = _T("Tệp âm thanh (*.wav)\0*.wav\0");
-                ofn.lpstrFile = file;
-                ofn.nMaxFile = MAX_PATH;
-                ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
-                if (GetOpenFileName(&ofn)) {
-                    std::wstring err;
-                    if (Bell_InstallCustomSound(file, &err)) {
-                        // Chọn luôn bộ tiếng "custom" (như hộp cũ chọn mục thứ 4 trong danh sách) + nghe ngay.
-                        MindfulKeyHelper::setRegString(_T("vBellSoundName"), _T("custom"));
-                        Bell_PreviewSound();
-                        changed = true;
-                    } else {
-                        MessageBoxW(hDlg, err.c_str(), L"Mindful Keyboard", MB_OK);
-                    }
-                }
+                PickCustomWav();   // [MINDFUL] CP2 — dùng chung lambda với icon nốt nhạc
             }
             if (PtInRect(&btnSnoozeRc, pt)) {
                 Bell_Snooze(60);
