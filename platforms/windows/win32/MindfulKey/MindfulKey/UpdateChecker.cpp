@@ -130,8 +130,27 @@ static bool ExtractTagName(const string& json, wstring& outTag) {
     return true;
 }
 
+// Parse "X.Y.Z" ra 3 số (bỏ hậu tố sau số thứ 3, vd "-beta"). KHÔNG dùng swscanf: MSVC coi nó C4996
+// (unsafe CRT) = LỖI build, còn mingw không bắt (khe hở proxy). Tự tách thủ công chạy giống nhau mọi
+// trình biên dịch + không dính rủi ro CRT-security. Trả false nếu không đủ 3 nhóm số.
 static bool ParseVersion(const wstring& s, int out[3]) {
-    return swscanf(s.c_str(), L"%d.%d.%d", &out[0], &out[1], &out[2]) == 3;
+    out[0] = out[1] = out[2] = 0;
+    int idx = 0;
+    bool sawDigit = false;
+    for (size_t i = 0; i < s.size() && idx < 3; i++) {
+        wchar_t c = s[i];
+        if (c >= L'0' && c <= L'9') {
+            out[idx] = out[idx] * 10 + (c - L'0');
+            sawDigit = true;
+        } else if (c == L'.') {
+            if (!sawDigit) return false;   // dấu chấm dẫn đầu hoặc ".."
+            idx++;
+            sawDigit = false;
+        } else {
+            break;   // ký tự khác (hậu tố "-beta"...) -> dừng, giữ những gì đã parse
+        }
+    }
+    return idx == 2 && sawDigit;   // đủ 3 nhóm: 2 dấu chấm + nhóm cuối có chữ số
 }
 
 // So theo bộ 3 số, KHÔNG so chuỗi (so chuỗi xếp sai thứ tự "0.4.9" sau "0.4.10"). Parse lỗi -> false
