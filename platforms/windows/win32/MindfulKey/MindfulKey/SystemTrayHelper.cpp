@@ -69,6 +69,10 @@ static bool g_waveAlert = false;
 #define POPUP_CONTROL_PANEL 1000
 #define POPUP_ABOUT_MINDFULKEY 1010
 #define POPUP_MINDFULKEY_EXIT 2000
+#ifdef _DEBUG
+#define POPUP_DEV_SEED 3000   // [MINDFUL] P8 — chỉ bản DEBUG
+#define POPUP_DEV_CLEAR 3001
+#endif
 
 #define MODIFY_MENU(MENU, COMMAND, DATA) ModifyMenu(MENU, COMMAND, \
 											MF_BYCOMMAND | (DATA ? MF_CHECKED : MF_UNCHECKED), \
@@ -326,6 +330,16 @@ void SystemTrayHelper::showContextMenu() {
 	case POPUP_MINDFULKEY_EXIT:
 		AppDelegate::getInstance()->onMindfulKeyExit();
 		break;
+#ifdef _DEBUG
+	case POPUP_DEV_SEED:
+		MoodStore_DevSeed();
+		TrayPopover_Refresh();   // sông vẽ lại ngay để thấy dữ liệu mẫu
+		break;
+	case POPUP_DEV_CLEAR:
+		MoodStore_DeleteSimulatedData();
+		TrayPopover_Refresh();
+		break;
+#endif
 	}
 	SystemTrayHelper::updateData();
 }
@@ -396,6 +410,12 @@ void SystemTrayHelper::createPopupMenu() {
 
 	AppendMenu(popupMenu, MF_STRING, POPUP_CONTROL_PANEL, menuData[POPUP_CONTROL_PANEL]);
 	AppendMenu(popupMenu, MF_UNCHECKED, POPUP_ABOUT_MINDFULKEY, menuData[POPUP_ABOUT_MINDFULKEY]);
+#ifdef _DEBUG
+	// [MINDFUL] P8 — tiện ích DEV seed dữ liệu mẫu, CHỈ hiện ở bản DEBUG (không lọt bản Release).
+	AppendMenu(popupMenu, MF_SEPARATOR, 0, 0);
+	AppendMenuW(popupMenu, MF_STRING, POPUP_DEV_SEED, L"[DEV] Tạo dữ liệu mẫu");
+	AppendMenuW(popupMenu, MF_STRING, POPUP_DEV_CLEAR, L"[DEV] Xoá dữ liệu mẫu");
+#endif
 	AppendMenu(popupMenu, MF_SEPARATOR, 0, 0);
 	AppendMenu(popupMenu, MF_UNCHECKED, POPUP_MINDFULKEY_EXIT, menuData[POPUP_MINDFULKEY_EXIT]);
 

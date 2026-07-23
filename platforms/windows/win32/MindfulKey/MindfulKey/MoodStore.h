@@ -75,3 +75,9 @@ std::vector<MoodSample> MoodStore_FetchTodaySamples();
 std::vector<MoodSample> MoodStore_FetchRecentSamples(int pastSeconds);
 
 void MoodStore_DeleteAll();       // xoá tệp. Hành động CHỦ ĐỘNG của người dùng, không bao giờ tự động.
+
+// [MINDFUL] P8 — tiện ích DEV, CHỈ bản _DEBUG (không lọt vào bản Release người dùng).
+#ifdef _DEBUG
+void MoodStore_DevSeed();              // seed dữ liệu mẫu (sample 24h + vài checkin) để test sóng/nhật ký
+void MoodStore_DeleteSimulatedData();  // xoá riêng phần seed (theo dấu), giữ dữ liệu thật
+#endif

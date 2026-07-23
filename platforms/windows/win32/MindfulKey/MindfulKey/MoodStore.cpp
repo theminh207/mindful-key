@@ -359,3 +359,66 @@ void MoodStore_DeleteAll() {
     DeleteFile(path.c_str());
     DeleteFile((path + _T(".tmp")).c_str());   // dọn cả tệp tạm nếu lần ghi trước chết giữa chừng
 }
+
+// [MINDFUL] P8 — TIỆN ÍCH DEV, chỉ bản _DEBUG. Seed dữ liệu mẫu (sample backdate 24h + vài checkin)
+// để test khung sóng/nhật ký NGAY, không phải chờ gõ hàng giờ. KHÔNG lọt vào bản Release người dùng
+// (bọc #ifdef _DEBUG cả .h lẫn .cpp lẫn mục menu). KHÔNG sửa đường ghi/đọc thật — chỉ thêm hàm mới.
+// Đánh dấu mọi dòng seed bằng kSeedMarker ở cột app_bundle_id (reader 'sample'/'checkin' bỏ cột này)
+// để MoodStore_DeleteSimulatedData dọn sạch riêng phần giả, không đụng dữ liệu thật.
+#ifdef _DEBUG
+static const wchar_t* kSeedMarker = L"__mk_seed_fake__";
+
+void MoodStore_DevSeed() {
+    if (!MoodStore_HasConsent())
+        return;
+    lock_guard<mutex> lock(g_mutex);
+    wstring all;
+    if (!ReadAll(all) || all.empty())
+        all = wstring(kFileHeader) + L"\n";
+
+    time_t now = time(NULL);
+    wostringstream out;
+
+    // 'sample' rải 24h qua, bước 8 phút. Đi bộ ngẫu nhiên TẤT ĐỊNH theo idx (LCG nhỏ) — tái lập được,
+    // không cần srand/time. Cột: ts, sample, send_risk, app=marker, choice(rỗng), mood_label(rỗng), intensity(rỗng).
+    double risk = 0.35;
+    long long span = 24LL * 3600;
+    long long step = 8 * 60;
+    int idx = 0;
+    for (long long t = now - span; t <= now; t += step, idx++) {
+        unsigned h = (unsigned)(idx * 1103515245u + 12345u);
+        double delta = (double)((h >> 16) & 0xFF) / 255.0 - 0.5;   // -0.5..0.5
+        risk += delta * 0.24;
+        if (risk < 0.05) risk = 0.05;
+        if (risk > 0.85) risk = 0.85;
+        out << t << L"\tsample\t" << risk << L'\t' << kSeedMarker << L"\t\t\t\n";
+    }
+
+    // Vài 'checkin' ở các mốc giờ quá khứ (mức 1/2/3 luân phiên).
+    long long checkAt[] = { now - 20 * 3600, now - 15 * 3600, now - 9 * 3600, now - 4 * 3600, now - 3600 };
+    for (int i = 0; i < 5; i++) {
+        int lvl = (i % 3) + 1;
+        const wchar_t* label = (lvl == 2) ? L"ripple" : (lvl == 3) ? L"wave" : L"calm";
+        // Cột: ts, checkin, send_risk(rỗng), app=marker, choice(rỗng), mood_label, intensity.
+        out << checkAt[i] << L"\tcheckin\t\t" << kSeedMarker << L"\t\t" << label << L'\t' << lvl << L"\n";
+    }
+
+    all += out.str();
+    WriteAll(all);
+}
+
+void MoodStore_DeleteSimulatedData() {
+    lock_guard<mutex> lock(g_mutex);
+    wstring all;
+    if (!ReadAll(all))
+        return;
+    wistringstream in(all);
+    wstring line;
+    wostringstream kept;
+    while (getline(in, line)) {
+        if (line.find(kSeedMarker) != wstring::npos) continue;   // bỏ mọi dòng seed, giữ dữ liệu thật
+        kept << line << L"\n";
+    }
+    WriteAll(kept.str());
+}
+#endif // _DEBUG
