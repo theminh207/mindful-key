@@ -339,9 +339,17 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             // Card Âm thanh
             RECT card3Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 110 };
             BrandControls_DrawCard(memDC, card3Rc, true);
-            RECT lblAmThanhRc = { card3Rc.left + 15, card3Rc.top + 10, card3Rc.right - 15, card3Rc.top + 30 };
+            RECT lblAmThanhRc = { card3Rc.left + 15, card3Rc.top + 10, card3Rc.left + 120, card3Rc.top + 30 };
             DrawLabel(L"BỘ TIẾNG", lblAmThanhRc, BrandFontEyebrow, kBrandPaletteStone);
-            
+
+            // [MINDFUL] B4 — nút "Nghe thử" (Bell_PreviewSound bỏ mọi cổng, phát ngay). Click xử ở
+            // WM_LBUTTONUP. RECT khớp nhánh WM_LBUTTONUP.
+            RECT btnPreviewRc = { card3Rc.right - 90, card3Rc.top + 8, card3Rc.right - 15, card3Rc.top + 30 };
+            HBRUSH brPreview = CreateSolidBrush(MK_COLORREF(kBrandPaletteTeal));
+            FillRect(memDC, &btnPreviewRc, brPreview);
+            DeleteObject(brPreview);
+            DrawLabel(L"Nghe thử", btnPreviewRc, BrandFontButton, kBrandPaletteCardWhite, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
             RECT iconGrpRc = { card3Rc.left + 15, card3Rc.top + 35, card3Rc.right - 15, card3Rc.top + 75 };
             BrandControls_DrawIconGroup(memDC, iconGrpRc, 4, s_bellSoundIndex, pt);
 
@@ -548,10 +556,16 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             y += 105;
 
             RECT card3Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 110 };
+            RECT btnPreviewRc = { card3Rc.right - 90, card3Rc.top + 8, card3Rc.right - 15, card3Rc.top + 30 };
             RECT iconGrpRc = { card3Rc.left + 15, card3Rc.top + 35, card3Rc.right - 15, card3Rc.top + 75 };
             RECT sliderRc = { card3Rc.left + 15, card3Rc.top + 85, card3Rc.right - 15, card3Rc.top + 100 };
 
             bool changed = false;
+
+            // [MINDFUL] B4 — "Nghe thử": phát ngay, không đổi state nên không cần `changed`.
+            if (PtInRect(&btnPreviewRc, pt)) {
+                Bell_PreviewSound();
+            }
 
             // Pill "Phát tiếng gõ" — nối ĐÚNG vBell (không phải FLAG_BEEP của OpenKey).
             if (PtInRect(&sw1Rc, pt)) {

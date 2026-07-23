@@ -157,8 +157,20 @@ static void ProcessTabBell(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     // Âm thanh
     RECT card3Rc = { 18, y, clientRc.right - 18, y + 110 };
     BrandControls_DrawCard(hdc, card3Rc, true);
-    RECT label3Rc = { card3Rc.left + 15, card3Rc.top + 10, card3Rc.right - 15, card3Rc.top + 30 };
+    RECT label3Rc = { card3Rc.left + 15, card3Rc.top + 10, card3Rc.left + 100, card3Rc.top + 30 };
     DrawLabel(hdc, L"BỘ TIẾNG", label3Rc, BrandFontEyebrow, kBrandPaletteStone);
+
+    // [MINDFUL] B4 — nút "Nghe thử": Bell_PreviewSound() phát NGAY tiếng+âm lượng đang chọn, bỏ qua
+    // mọi cổng (snooze/giờ/cooldown) — để test được ngay, không chờ nhịp chuông 15+ phút. Đây là
+    // fix trực tiếp phản hồi "chuông không hoạt động" (thật ra chuông chạy, chỉ chưa test nhanh được).
+    RECT btnPreviewRc = { card3Rc.right - 90, card3Rc.top + 8, card3Rc.right - 15, card3Rc.top + 30 };
+    if (clickPt.x != -1 && PtInRect(&btnPreviewRc, clickPt)) {
+        Bell_PreviewSound();
+    }
+    HBRUSH brPreview = CreateSolidBrush(MK_COLORREF(kBrandPaletteTeal));
+    FillRect(hdc, &btnPreviewRc, brPreview);
+    DeleteObject(brPreview);
+    DrawLabel(hdc, L"Nghe thử", btnPreviewRc, BrandFontButton, kBrandPaletteCardWhite, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
     
     // [MINDFUL] A6 — ghi ĐÚNG chuỗi id mà Bell.cpp SoundIdFromStored chấp nhận (không phải
     // vBellSoundIndex — khoá đó không ai đọc, giống bug A2 ở tab Chuông cửa Cài đặt).
