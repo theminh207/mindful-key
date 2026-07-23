@@ -284,11 +284,19 @@ static LRESULT CALLBACK PopoverWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
             }
         }
 
-        // Process clicks/drags in current tab
-        int drawY = 95;
-        if (g_currentTab == 0) ProcessTabToday(hdc, drawY, clientRc, pt);
-        else if (g_currentTab == 1) ProcessTabBell(hdc, drawY, clientRc, pt);
-        else ProcessTabKeyboard(hdc, drawY, clientRc, pt);
+        // [MINDFUL] A5 — chỉ xử ở WM_LBUTTONUP. Trước đây khối này chạy cho CẢ LBUTTONDOWN lẫn
+        // LBUTTONUP (và MOUSEMOVE lúc giữ chuột) nên mỗi cú bấm gọi ProcessTabX 2 LẦN — pill switch
+        // (PtInRect trong ProcessTabBell/ProcessTabKeyboard) đảo trạng thái ở LBUTTONDOWN rồi đảo
+        // NGƯỢC LẠI ở LBUTTONUP, về đúng chỗ cũ = bấm như không. Segmented/slider/icon-group là
+        // "đặt tuyệt đối theo vị trí chuột" nên không lộ bug (idempotent), chỉ pill mới lộ.
+        // Đánh đổi: slider giờ là "click-để-đặt" (đặt theo điểm thả chuột), không còn kéo-mượt theo
+        // chuột lúc đang giữ — đơn giản hơn, và đúng cho mọi control khác trên tab.
+        if (msg == WM_LBUTTONUP) {
+            int drawY = 95;
+            if (g_currentTab == 0) ProcessTabToday(hdc, drawY, clientRc, pt);
+            else if (g_currentTab == 1) ProcessTabBell(hdc, drawY, clientRc, pt);
+            else ProcessTabKeyboard(hdc, drawY, clientRc, pt);
+        }
 
         ReleaseDC(hwnd, hdc);
         InvalidateRect(hwnd, NULL, FALSE); // Redraw sau khi update state
