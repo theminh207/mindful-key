@@ -57,6 +57,12 @@ jobs:
             core\engine\Macro.cpp core\engine\SmartSwitchKey.cpp core\engine\ConvertTool.cpp || exit /b 1
           test_engine.exe || exit /b 1
 
+      # [MINDFUL] D1 — ghi version.env vào MindfulKey.rc TRƯỚC msbuild để .exe khai đúng phiên bản
+      # (trước đây .rc hardcode nên .exe kẹt version cũ dù version.env đã bump).
+      - name: Đồng bộ version .rc từ version.env
+        shell: bash
+        run: python3 scripts/sync-win-version.py
+
       # Chỉ nhắm target `MindfulKey` (app chính). Build qua .sln để $(SolutionDir)
       # resolve đúng, nhưng KHÔNG build `MindfulKeyUpdate` (updater gốc MindfulKey,
       # ngoài phạm vi Mốc 1 — hỏng ở đó không được phép chặn app chính).

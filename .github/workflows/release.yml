@@ -47,6 +47,11 @@ jobs:
           fi
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
+      # [MINDFUL] D1 — ghi version.env vào .rc TRƯỚC msbuild để .exe khai đúng phiên bản đang phát hành.
+      - name: Đồng bộ version .rc từ version.env
+        shell: bash
+        run: python3 scripts/sync-win-version.py
+
       # Chỉ target MindfulKey (app chính), KHÔNG build MindfulKeyUpdate — updater gốc của MindfulKey,
       # ngoài phạm vi bản phát hành này.
       - name: Build app Windows (Release x64)
