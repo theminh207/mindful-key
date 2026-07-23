@@ -91,7 +91,7 @@
     [openPanel setCanChooseDirectories:NO];
     openPanel.allowedContentTypes = @[UTTypePlainText];   // thay allowedFileTypes (deprecated từ macOS 12) khi nâng sàn 13.0
     [openPanel setExtensionHidden:NO];
-    [openPanel setNameFieldStringValue:@"OpenKeyMacro"];
+    [openPanel setNameFieldStringValue:@"MindfulKeyMacro"];
     [openPanel makeKeyAndOrderFront:nil];
     [openPanel setLevel:NSStatusWindowLevel];
     if ([openPanel runModal] == NSModalResponseOK ) {
@@ -115,7 +115,7 @@
     [savePanel setTitle:@"Chọn nơi lưu dữ liệu gõ tắt"];
     savePanel.allowedContentTypes = @[UTTypePlainText];   // thay allowedFileTypes (deprecated từ macOS 12) khi nâng sàn 13.0
     [savePanel setExtensionHidden:NO];
-    [savePanel setNameFieldStringValue:@"OpenKeyMacro"];
+    [savePanel setNameFieldStringValue:@"MindfulKeyMacro"];
     if ([savePanel runModal] == NSModalResponseOK) {
         saveToFile(savePanel.URL.path.UTF8String);
     }
