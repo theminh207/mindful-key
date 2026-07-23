@@ -28,6 +28,7 @@
 #include "NudgeCoordinator.h"
 #include "Bell.h"
 #include "BrandPalette.h"
+#include "BrandControls.h"   // [MINDFUL] BrandControls_FillRect/DrawCardHeader/Font + enum BrandFontRole — dùng ở DrawRiver/panel, thiếu là MSVC báo "not declared"
 #include "../../../../../core/mood/MoodPhrasing.h"
 #include <objidl.h>    // PHẢI đứng TRƯỚC gdiplus.h: GdiplusHeaders/GdiplusImaging dùng kiểu COM
                       // (PROPID, IStream, IImageBytes) mà WIN32_LEAN_AND_MEAN trong stdafx.h cắt

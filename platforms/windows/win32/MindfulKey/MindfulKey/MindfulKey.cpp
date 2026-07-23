@@ -12,6 +12,7 @@ You can fork, modify, improve this program. If you
 redistribute your new version, it MUST be open source.
 -----------------------------------------------------------*/
 #include "stdafx.h"
+#include <algorithm>   // [MINDFUL] std::find (tra _chromiumBrowser) — thiếu là MSVC báo no matching function
 #include "SendGatekeeper.h"
 #include "AppDelegate.h"
 

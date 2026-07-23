@@ -13,6 +13,7 @@
 #include "MoodStore.h"
 #include "SendGatekeeper.h"
 #include <objidl.h>
+#include <windowsx.h>   // [MINDFUL] GET_X_LPARAM / GET_Y_LPARAM (dùng ở WM_LBUTTONUP) — thiếu là MSVC báo identifier không nhận diện
 #include <gdiplus.h>
 #include "Bell.h"
 

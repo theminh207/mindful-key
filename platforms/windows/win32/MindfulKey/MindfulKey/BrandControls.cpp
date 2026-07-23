@@ -8,6 +8,9 @@
 #include "stdafx.h"
 #include "BrandControls.h"
 #include "BrandPalette.h"
+#include <objidl.h>    // [MINDFUL] phải đứng TRƯỚC gdiplus.h (định nghĩa PROPID) vì stdafx bật WIN32_LEAN_AND_MEAN — khớp thứ tự TrayPopover.cpp
+#include <gdiplus.h>   // [MINDFUL] file này nay dùng GDI+ (Gdiplus::Graphics/Pen/SolidBrush) — không có include này thì MSVC báo Gdiplus/SmoothingModeAntiAlias/Graphics không nhận diện được
+#pragma comment(lib, "gdiplus.lib")
 
 // Bo góc = radius.control token (8) — khớp macOS (BrandControls.m:16 kCornerCTA=8).
 static const int kBrandControlRadius = 8;

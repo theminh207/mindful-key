@@ -14,6 +14,7 @@ redistribute your new version, it MUST be open source.
 #include "MainControlDialog.h"
 #include "AppDelegate.h"
 #include <windowsx.h>
+#include <cstdint>   // [MINDFUL] uint32_t (tham số màu của lambda DrawLabel) — MSVC lấy được qua include gián tiếp nhưng khai rõ cho chắc + portable
 
 #define FLAG_BEEP 0x8000
 #include "MoodWatch.h"
@@ -576,7 +577,7 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             if (CheckSwitch(card1Rc, 3, pt)) {
                 APP_SET_DATA(vRunAsAdmin, vRunAsAdmin ? 0 : 1);
                 changed = true;
-                requestRestartAsAdmin();
+                pThis->requestRestartAsAdmin();
             }
 
             if (CheckSwitch(card2Rc, 0, pt)) { APP_SET_DATA(vSupportMetroApp, vSupportMetroApp ? 0 : 1); changed = true; }
@@ -601,7 +602,7 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             int clickedTab = (pt.y - navRc.top) / 40;
             if (clickedTab >= 0 && clickedTab < 6 && clickedTab != currentTab) {
                 currentTab = clickedTab;
-                onTabIndexChanged(); // cập nhật Show/Hide child dialogs
+                pThis->onTabIndexChanged(); // cập nhật Show/Hide child dialogs
                 InvalidateRect(hDlg, NULL, FALSE);
             }
         }

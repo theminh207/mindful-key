@@ -3,6 +3,22 @@
 Theo [Keep a Changelog](https://keepachangelog.com/) và [SemVer](https://semver.org/).
 Phiên bản lấy từ `version.env`.
 
+## [0.4.10]
+
+### Fixed
+
+- **Windows: gỡ hết lỗi biên dịch chặn phát hành** — bản build Windows trước đó chưa từng compile
+  sạch (viết trên máy Mac, không có compiler Windows để kiểm), nên CI hỏng từng đợt và trang Release
+  thiếu file `.exe`/`.dmg`. Lần này dựng compiler Windows (mingw-w64) ngay trên máy dev để bắt HẾT lỗi
+  trước khi push, thay vì đoán từng vòng CI:
+  - `BrandControls.cpp`: thêm `<gdiplus.h>` (+ `<objidl.h>` trước nó cho PROPID) — file đã chuyển sang
+    vẽ GDI+ nhưng quên include.
+  - `TrayPopover.cpp`: thêm `<windowsx.h>` (dùng `GET_X_LPARAM`).
+  - `MainControlDialog.cpp`: gọi hàm thành viên `onTabIndexChanged`/`requestRestartAsAdmin` từ window-proc
+    static phải qua con trỏ `pThis->`; thêm `<cstdint>` cho `uint32_t`.
+  - `ReflectionScreen.cpp`: thêm `BrandControls.h`; `MindfulKey.cpp`: thêm `<algorithm>` cho `std::find`
+    — 2 lỗi CI chưa kịp báo tới (sẽ nổ ở các vòng sau nếu không vá trước).
+
 ## [0.4.9]
 
 ### Added
