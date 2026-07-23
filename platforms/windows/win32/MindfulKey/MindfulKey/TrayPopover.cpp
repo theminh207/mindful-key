@@ -12,6 +12,7 @@
 #include "SendGatekeeper.h"
 #include <objidl.h>
 #include <windowsx.h>   // [MINDFUL] GET_X_LPARAM / GET_Y_LPARAM (dùng ở WM_LBUTTONUP) — thiếu là MSVC báo identifier không nhận diện
+#include <commdlg.h>    // [MINDFUL] P2 — GetOpenFileName (chọn .wav trên popover). WIN32_LEAN_AND_MEAN nên phải khai; comdlg32.lib đã link ở MainControlDialog.cpp
 #include <gdiplus.h>
 #include "Bell.h"
 #include "MoodWatch.h"   // [MINDFUL] B3 — MoodWatch_LiveAmplitude/FetchLiveTrace + vMoodWatch/Toggle
@@ -24,6 +25,7 @@ static const wchar_t* kPopoverClassName = L"MK_TrayPopover";
 static HWND g_hwndPopover = NULL;
 static int g_currentTab = 0; // 0: Hôm nay, 1: Chuông, 2: Bộ gõ
 static bool g_checkinMode = false;  // [MINDFUL] C5 — true: popover phủ khung "Mặt hồ đang thế nào?"
+static int g_bellIntervalDraft = 0; // [MINDFUL] P1 — số nháp của stepper nhịp tùy chỉnh (0=chưa init)
 static ULONG_PTR g_gdiplusTokenPopover = 0;
 
 // Removed virtual state variables to map directly to real global variables.
@@ -158,16 +160,48 @@ static void ProcessTabBell(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
         Bell_ApplySettings();
         SystemTrayHelper::updateData();
         currentInt = clickedInt;
+        g_bellIntervalDraft = 0;   // [MINDFUL] P1 — đổi preset -> nháp re-sync theo giá trị mới
     }
-    
+
     if (currentInt == 2) {
-        RECT editRc = { card2Rc.left + 15, card2Rc.top + 75, card2Rc.left + 80, card2Rc.top + 95 };
-        BrandControls_DrawTextBoxFrame(hdc, editRc);
+        // [MINDFUL] P1 — nhịp tùy chỉnh: stepper "− NN phút +" (bước 5, kẹp 15..240) + nút "Đặt".
+        // Popover owner-draw thuần chuột (không có ô EDIT gõ-số an toàn/verify-mù được) nên dùng stepper
+        // — đủ đặt khung giờ tùy ý theo bội số 5. "Đặt" mới CHỐT (giống macOS gõ-số-rồi-Đặt). Kẹp sàn
+        // 15/trần 240 IM LẶNG (không câu khiển trách — hiến chương: mô tả không phán xét).
+        if (g_bellIntervalDraft <= 0) g_bellIntervalDraft = vBellInterval;
+
+        RECT stepRc = { card2Rc.left + 15, card2Rc.top + 72, card2Rc.left + 130, card2Rc.top + 96 };
+        HBRUSH stepBg = CreateSolidBrush(MK_COLORREF(kBrandPaletteTealLight));
+        FillRect(hdc, &stepRc, stepBg);
+        DeleteObject(stepBg);
+        RECT decRc = { stepRc.left, stepRc.top, stepRc.left + 26, stepRc.bottom };
+        RECT valRc = { stepRc.left + 26, stepRc.top, stepRc.right - 26, stepRc.bottom };
+        RECT incRc = { stepRc.right - 26, stepRc.top, stepRc.right, stepRc.bottom };
+        DrawLabel(hdc, L"-", decRc, BrandFontButton, kBrandPaletteTeal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        DrawLabel(hdc, L"+", incRc, BrandFontButton, kBrandPaletteTeal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
         wchar_t buf[32];
-        wsprintfW(buf, L"%d", vBellInterval);
-        DrawLabel(hdc, buf, editRc, BrandFontBody, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-        RECT labelPhutRc = { editRc.right + 10, editRc.top, editRc.right + 50, editRc.bottom };
-        DrawLabel(hdc, L"phút", labelPhutRc, BrandFontBody, kBrandPaletteCharcoal);
+        wsprintfW(buf, L"%d phút", g_bellIntervalDraft);
+        DrawLabel(hdc, buf, valRc, BrandFontBody, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+        RECT setBtnRc = { stepRc.right + 10, stepRc.top, stepRc.right + 70, stepRc.bottom };
+        HBRUSH setBg = CreateSolidBrush(MK_COLORREF(kBrandPaletteTeal));
+        FillRect(hdc, &setBtnRc, setBg);
+        DeleteObject(setBg);
+        DrawLabel(hdc, L"Đặt", setBtnRc, BrandFontButton, kBrandPaletteCardWhite, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+        if (clickPt.x != -1) {
+            if (PtInRect(&decRc, clickPt)) {
+                g_bellIntervalDraft -= 5;
+                if (g_bellIntervalDraft < 15) g_bellIntervalDraft = 15;
+            } else if (PtInRect(&incRc, clickPt)) {
+                g_bellIntervalDraft += 5;
+                if (g_bellIntervalDraft > 240) g_bellIntervalDraft = 240;
+            } else if (PtInRect(&setBtnRc, clickPt)) {
+                APP_SET_DATA(vBellInterval, g_bellIntervalDraft);
+                Bell_ApplySettings();
+                SystemTrayHelper::updateData();
+            }
+        }
     }
     y += 125;
 
@@ -196,7 +230,29 @@ static void ProcessTabBell(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     int currentSnd = (currentSndName == L"chime") ? 1 : (currentSndName == L"wind") ? 2 : (currentSndName == L"custom") ? 3 : 0;
     static const int kBellIconIds[] = { IDI_ICON_BELL_TEMPLE, IDI_ICON_BELL_CHIME, IDI_ICON_BELL_WIND, IDI_ICON_BELL_CUSTOM };
     int clickedSnd = BrandControls_DrawIconGroup(hdc, iconGrpRc, 4, currentSnd, clickPt, kBellIconIds);
-    if (clickedSnd != -1 && clickedSnd != currentSnd) {
+    if (clickedSnd == 3) {
+        // [MINDFUL] P2 — nốt nhạc (bộ tiếng "custom"): LUÔN mở hộp chọn .wav (mirror macOS onBellClick +
+        // B6 ở cửa Cài đặt). Tách khỏi guard `!= currentSnd` nên bấm lại kể cả đang chọn custom vẫn cho
+        // ĐỔI tệp khác (macOS cố ý). Chọn xong tự phát thử; huỷ/tệp lỗi thì giữ nguyên lựa chọn cũ.
+        TCHAR file[MAX_PATH] = { 0 };
+        OPENFILENAME ofn = { 0 };
+        ofn.lStructSize = sizeof(ofn);
+        ofn.hwndOwner = g_hwndPopover;
+        ofn.lpstrFilter = _T("Tệp âm thanh (*.wav)\0*.wav\0");
+        ofn.lpstrFile = file;
+        ofn.nMaxFile = MAX_PATH;
+        ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
+        if (GetOpenFileName(&ofn)) {
+            std::wstring err;
+            if (Bell_InstallCustomSound(file, &err)) {
+                MindfulKeyHelper::setRegString(_T("vBellSoundName"), _T("custom"));
+                Bell_PreviewSound();
+                SystemTrayHelper::updateData();
+            } else {
+                MessageBoxW(g_hwndPopover, err.c_str(), L"Mindful Keyboard", MB_OK);
+            }
+        }
+    } else if (clickedSnd != -1 && clickedSnd != currentSnd) {
         static const wchar_t* kBellSoundIds[] = { L"temple", L"chime", L"wind", L"custom" };
         MindfulKeyHelper::setRegString(_T("vBellSoundName"), kBellSoundIds[clickedSnd]);
         SystemTrayHelper::updateData();
