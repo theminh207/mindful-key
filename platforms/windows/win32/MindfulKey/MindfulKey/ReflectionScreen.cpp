@@ -156,6 +156,37 @@ static void DrawRiver(Graphics& g, const RectF& area, const vector<MoodSample>& 
     axisPen.SetDashPattern(dash, 2);
     g.DrawLine(&axisPen, area.X, midY, area.X + w, midY);
 
+    // [MINDFUL] P4 — nhãn trục vẽ TRƯỚC early-return: không data vẫn thấy khung 3h/2h/1h
+    // (mirror macOS tách nhãn khỏi sóng). dec.4: chỉ khung trục, KHÔNG bịa nước khi rỗng.
+    // Nhãn trục ngang
+    FontFamily ff(L"Segoe UI");
+    Font font(&ff, 8, FontStyleRegular, UnitPoint);
+    SolidBrush textBrush(Color((ARGB)(0xB0000000 | kBrandPaletteMuted)));
+    StringFormat fmt;
+    
+    if (recentMode) {
+        fmt.SetAlignment(StringAlignmentNear); // Canh trái mép
+        // 3 nhãn: "3 giờ trước", "2 giờ", "1 giờ", "bây giờ"
+        const wchar_t* labels[] = { L"3 giờ trước", L"2 giờ", L"1 giờ", L"bây giờ" };
+        REAL fracs[] = { 0.0f, maxFrac / 3.0f, maxFrac * 2.0f / 3.0f, maxFrac };
+        for (int i = 0; i < 4; i++) {
+            if (i == 3) fmt.SetAlignment(StringAlignmentFar);
+            else if (i > 0) fmt.SetAlignment(StringAlignmentCenter);
+            REAL cx = area.X + fracs[i] * w;
+            g.DrawString(labels[i], -1, &font, PointF(cx, area.Y + area.Height + 2), &fmt, &textBrush);
+        }
+    } else {
+        fmt.SetAlignment(StringAlignmentCenter);
+        const int kAxisHour[4] = { 8, 12, 15, 21 };
+        for (int i = 0; i < 4; i++) {
+            long long ts = (long long)originSec + kAxisHour[i] * 3600;
+            wstring label = MoodPhrasingCore_TimeOfDayLabel(ts);
+            if (label.rfind(L"buổi ", 0) == 0) label = label.substr(5);
+            REAL cx = area.X + (REAL)(kAxisHour[i] / 24.0) * w;
+            g.DrawString(label.c_str(), -1, &font, PointF(cx, area.Y + area.Height + 2), &fmt, &textBrush);
+        }
+    }
+
     if (xs.empty()) return; // Không có nước (chỉ có trục)
 
     // Thu thập các phân đoạn liên tục (không bị ngăn cách bởi gap)
@@ -232,34 +263,6 @@ static void DrawRiver(Graphics& g, const RectF& area, const vector<MoodSample>& 
         }
     }
 
-    // Nhãn trục ngang
-    FontFamily ff(L"Segoe UI");
-    Font font(&ff, 8, FontStyleRegular, UnitPoint);
-    SolidBrush textBrush(Color((ARGB)(0xB0000000 | kBrandPaletteMuted)));
-    StringFormat fmt;
-    
-    if (recentMode) {
-        fmt.SetAlignment(StringAlignmentNear); // Canh trái mép
-        // 3 nhãn: "3 giờ trước", "2 giờ", "1 giờ", "bây giờ"
-        const wchar_t* labels[] = { L"3 giờ trước", L"2 giờ", L"1 giờ", L"bây giờ" };
-        REAL fracs[] = { 0.0f, maxFrac / 3.0f, maxFrac * 2.0f / 3.0f, maxFrac };
-        for (int i = 0; i < 4; i++) {
-            if (i == 3) fmt.SetAlignment(StringAlignmentFar);
-            else if (i > 0) fmt.SetAlignment(StringAlignmentCenter);
-            REAL cx = area.X + fracs[i] * w;
-            g.DrawString(labels[i], -1, &font, PointF(cx, area.Y + area.Height + 2), &fmt, &textBrush);
-        }
-    } else {
-        fmt.SetAlignment(StringAlignmentCenter);
-        const int kAxisHour[4] = { 8, 12, 15, 21 };
-        for (int i = 0; i < 4; i++) {
-            long long ts = (long long)originSec + kAxisHour[i] * 3600;
-            wstring label = MoodPhrasingCore_TimeOfDayLabel(ts);
-            if (label.rfind(L"buổi ", 0) == 0) label = label.substr(5);
-            REAL cx = area.X + (REAL)(kAxisHour[i] / 24.0) * w;
-            g.DrawString(label.c_str(), -1, &font, PointF(cx, area.Y + area.Height + 2), &fmt, &textBrush);
-        }
-    }
 }
 
 void EmotionRiver_Draw(HDC hdc, const RECT& rect, const std::vector<MoodSample>& samples, bool recentMode, double liveHead) {
