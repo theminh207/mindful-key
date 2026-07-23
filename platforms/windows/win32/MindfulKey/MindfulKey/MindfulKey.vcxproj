@@ -190,6 +190,7 @@
     <ClInclude Include="NudgeCoordinator.h" />
     <ClInclude Include="MindfulKeyHelper.h" />
     <ClInclude Include="MindfulKeyManager.h" />
+    <ClInclude Include="UpdateChecker.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SecureField.h" />
     <ClInclude Include="SendGatekeeper.h" />
@@ -225,6 +226,7 @@
     <ClCompile Include="NudgeCoordinator.cpp" />
     <ClCompile Include="MindfulKeyHelper.cpp" />
     <ClCompile Include="MindfulKeyManager.cpp" />
+    <ClCompile Include="UpdateChecker.cpp" />
     <ClCompile Include="SecureField.cpp" />
     <ClCompile Include="SendGatekeeper.cpp" />
     <ClCompile Include="stdafx.cpp">

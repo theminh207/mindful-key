@@ -14,6 +14,7 @@ redistribute your new version, it MUST be open source.
 #include "stdafx.h"
 #include "AboutDialog.h"
 #include "AppDelegate.h"
+#include "UpdateChecker.h"
 
 AboutDialog::AboutDialog(const HINSTANCE & hInstance, const int & resourceId)
 	: BaseDialog(hInstance, resourceId) {
@@ -84,8 +85,11 @@ void AboutDialog::initDialog() {
 }
 
 void AboutDialog::onUpdateButton() {
-	// Mở trang Releases thay vì tự kiểm phiên bản. Xem MindfulKeyManager::openReleasesPage() cho lý
-	// do đầy đủ (bản cũ hỏi repo MindfulKey gốc, so bằng số phiên bản của MindfulKey, rồi chạy 1 updater
-	// mà bộ cài không kèm).
-	MindfulKeyManager::openReleasesPage();
+	// [MINDFUL] Tự kiểm bản mới NGAY trong app (xem UpdateChecker.cpp) — thay lần nữa cho
+	// MindfulKeyManager::openReleasesPage() (2026-07-17, xem comment ở đó cho 3 lỗi bản cũ: hỏi
+	// nhầm repo OpenKey gốc, so nhầm version, chạy updater không có trong bộ cài). Lần này KHÔNG
+	// lặp lại cả 3: hỏi đúng repo mindful-key, so đúng version.env (qua D1 sync-win-version.py),
+	// và chạy THẲNG file Setup thật release.yml phát hành — không có updater ma nào cả. Chỉ chạy
+	// khi người dùng CHỦ ĐỘNG bấm nút (không tự động lúc khởi động — giữ đúng "riêng tư mặc định").
+	UpdateChecker_CheckAndUpdate(hDlg);
 }

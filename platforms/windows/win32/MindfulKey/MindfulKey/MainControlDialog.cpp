@@ -13,6 +13,7 @@ redistribute your new version, it MUST be open source.
 -----------------------------------------------------------*/
 #include "MainControlDialog.h"
 #include "AppDelegate.h"
+#include "UpdateChecker.h"
 #include <windowsx.h>
 #include <cstdint>   // [MINDFUL] uint32_t (tham số màu của lambda DrawLabel) — MSVC lấy được qua include gián tiếp nhưng khai rõ cho chắc + portable
 
@@ -1105,8 +1106,8 @@ void MainControlDialog::onTabIndexChanged() {
 }
 
 void MainControlDialog::onUpdateButton() {
-	// Xem AboutDialog::onUpdateButton() / MindfulKeyManager::openReleasesPage().
-	MindfulKeyManager::openReleasesPage();
+	// Xem AboutDialog::onUpdateButton() cho lịch sử/lý do đầy đủ. Tự kiểm + tự tải + tự mở bộ cài.
+	UpdateChecker_CheckAndUpdate(hDlg);
 }
 
 
