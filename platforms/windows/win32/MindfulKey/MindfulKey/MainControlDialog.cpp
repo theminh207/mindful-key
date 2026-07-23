@@ -270,8 +270,9 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             RECT riverRc = { contentRc.left + 20, y, contentRc.right - 20, y + 150 };
             BrandControls_DrawCard(memDC, riverRc, true);
             if (vMoodWatch) {
-                std::vector<MoodSample> samples = MoodStore_FetchRecentSamples(3 * 3600);
-                double liveHead = -1.0; 
+                // [MINDFUL] B3 — vệt dày + đầu sóng sống thật (xem TrayPopover.cpp cùng sửa).
+                std::vector<MoodSample> samples = MoodWatch_FetchLiveTrace(3 * 3600);
+                double liveHead = MoodWatch_LiveAmplitude();
                 RECT chartRc = { riverRc.left + 5, riverRc.top + 5, riverRc.right - 5, riverRc.bottom - 20 };
                 EmotionRiver_Draw(memDC, chartRc, samples, true, liveHead);
             } else {

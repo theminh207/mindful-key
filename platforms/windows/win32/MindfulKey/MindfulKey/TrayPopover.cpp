@@ -14,6 +14,7 @@
 #include <windowsx.h>   // [MINDFUL] GET_X_LPARAM / GET_Y_LPARAM (dùng ở WM_LBUTTONUP) — thiếu là MSVC báo identifier không nhận diện
 #include <gdiplus.h>
 #include "Bell.h"
+#include "MoodWatch.h"   // [MINDFUL] B3 — MoodWatch_LiveAmplitude/FetchLiveTrace + vMoodWatch/Toggle
 
 #pragma comment(lib, "gdiplus.lib")
 
@@ -29,9 +30,8 @@ static ULONG_PTR g_gdiplusTokenPopover = 0;
 static const int kPopoverWidth = 338;
 static const int kPopoverHeight = 520; // Tăng chiều cao để chứa đủ nội dung
 
-extern int vMoodWatch;
 extern int vSendGatekeeper;
-extern void MoodWatch_Toggle();   // [MINDFUL] A7 — nút "Bật nhật ký" ở ProcessTabToday
+// vMoodWatch + MoodWatch_Toggle() nay lấy từ MoodWatch.h (include phía trên) — bỏ extern cục bộ.
 
 // Helper vẽ Text đơn giản
 static void DrawLabel(HDC hdc, const wchar_t* text, RECT rc, BrandFontRole role, unsigned colorHex, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
@@ -81,8 +81,11 @@ static void ProcessTabToday(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     RECT riverRc = { 18, y, clientRc.right - 18, y + 150 };
     BrandControls_DrawCard(hdc, riverRc, true);
     if (vMoodWatch) {
-        std::vector<MoodSample> samples = MoodStore_FetchRecentSamples(3 * 3600);
-        double liveHead = -1.0; 
+        // [MINDFUL] B3 — vệt DÀY (trộn RAM + persisted) + đầu sóng SỐNG thật (nhích khi gõ, phai khi
+        // im). Trước đây samples chỉ lấy mẫu thưa persisted (≥15') + liveHead=-1 (không đầu sóng) nên
+        // gõ xong không thấy gì — đúng "sóng chưa hoạt động" chủ dự án báo.
+        std::vector<MoodSample> samples = MoodWatch_FetchLiveTrace(3 * 3600);
+        double liveHead = MoodWatch_LiveAmplitude();
         RECT chartRc = { riverRc.left + 5, riverRc.top + 5, riverRc.right - 5, riverRc.bottom - 20 };
         EmotionRiver_Draw(hdc, chartRc, samples, true, liveHead);
     } else {
