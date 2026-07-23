@@ -87,6 +87,20 @@ INT_PTR MainControlDialog::eventProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
         this->hDlg = hDlg;
         initDialog();
         return TRUE;
+    // [MINDFUL] C1 — cửa sổ nay kéo giãn được (WS_THICKFRAME). Nội dung vẽ tay theo GetClientRect nên
+    // resize = vẽ lại toàn client (nền tô kín ở tabPageEventProc WM_PAINT nên không cụt/không rác).
+    case WM_SIZE:
+        InvalidateRect(hDlg, NULL, FALSE);
+        return TRUE;
+    // [MINDFUL] C1b — chặn thu nhỏ dưới cỡ vừa đủ nội dung (tab Chuông cao nhất). Đây là cách gọn thay
+    // cho viewport cuộn: không cho co dưới ngưỡng thì nội dung không bao giờ bị cắt. (Số px 96-DPI;
+    // C2 sẽ nhân theo DPI.) Ghi FRICTION-LOG: chọn min-clamp thay vì (a) cuộn / (b) co tỉ lệ.
+    case WM_GETMINMAXINFO: {
+        MINMAXINFO* mmi = (MINMAXINFO*)lParam;
+        mmi->ptMinTrackSize.x = 480;
+        mmi->ptMinTrackSize.y = 520;
+        return TRUE;
+    }
     case WM_COMMAND: {
         int wmId = LOWORD(wParam);
         switch (wmId) {
