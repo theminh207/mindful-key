@@ -3,6 +3,23 @@
 Theo [Keep a Changelog](https://keepachangelog.com/) và [SemVer](https://semver.org/).
 Phiên bản lấy từ `version.env`.
 
+## [0.4.20]
+
+Đợt "đồng bộ Cài đặt↔Popover + phím tắt" (`docs/SYNC-HOTKEY-FEEDBACK.md`) — nghiệm thu tay v0.4.19.
+
+### Fixed
+
+- **Phím tắt bật/tắt tiếng Việt đã hoạt động** — mặc định cũ nhét mã phím Mac (0x06) nên bấm không
+  ăn trên Windows; nay **Ctrl + Alt + Z** (VK_Z=0x5A), tự sửa cho cả máy đã cài bản cũ (G1).
+- **Màn Soi lại:** khung sóng không còn rỗng khi chưa có dữ liệu (vẫn hiện trục Sáng·Trưa·Chiều·Tối);
+  câu quan sát + câu hỏi + thẻ Nuôi dưỡng đo chiều cao thật nên hết cắt chữ / lệch dòng (G3).
+
+### Added / Changed
+
+- **Phím tắt hiện cạnh "Gõ tiếng Việt"** (popover + Cài đặt), đọc từ cấu hình thật (G1).
+- **Đồng bộ Cài đặt ↔ Popover:** tab Chuông dùng "30 / 60 / Tùy chỉnh + stepper" như popover (thay
+  "Nhanh/Vừa/Chậm") (G2a); tab Hôm nay thêm toggle "Ngay bây giờ / Hôm nay" + link "Soi lại hôm nay →" (G2b).
+
 ## [0.4.19]
 
 Đợt "màn Soi lại + nhật ký viết tay" (`docs/REFLECTION-FEEDBACK.md`) — nghiệm thu tay v0.4.18.

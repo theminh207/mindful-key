@@ -87,7 +87,13 @@ void MindfulKeyInit() {
 	APP_GET_DATA(vCheckSpelling, 1);
 	APP_GET_DATA(vUseModernOrthography, 0);
 	APP_GET_DATA(vQuickTelex, 0);
-	APP_GET_DATA(vSwitchKeyStatus, 0x7A000206);
+	// [MINDFUL] G1 (2026-07-24) — phím tắt bật/tắt tiếng Việt = Ctrl+Alt+Z. Mã 0x5A00035A: VK_Z=0x5A
+	// (mã phím THẬT của Windows) ở byte thấp. Bản cũ 0x7A000206 nhét keycode Mac 0x06 (kVK_Z) vào —
+	// hook Windows (dòng ~553) so bằng vkCode Windows nên KHÔNG BAO GIỜ khớp -> bấm phím tắt không ăn.
+	APP_GET_DATA(vSwitchKeyStatus, 0x5A00035A);
+	// Migrate máy đã cài bản cũ: giá trị Mac hỏng (chưa từng nổ, không phải lựa chọn của người dùng
+	// vì UI mới không có chỗ đổi) -> Ctrl+Alt+Z Windows. APP_SET_DATA không an toàn trong bare-if -> {}.
+	if (vSwitchKeyStatus == 0x7A000206) { APP_SET_DATA(vSwitchKeyStatus, 0x5A00035A); }
 	APP_GET_DATA(vRestoreIfWrongSpelling, 1);
 	APP_GET_DATA(vFixRecommendBrowser, 1);
 	APP_GET_DATA(vUseMacro, 1);

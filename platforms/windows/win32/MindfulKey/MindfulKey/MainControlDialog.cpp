@@ -39,6 +39,27 @@ redistribute your new version, it MUST be open source.
 
 static Uint16 _lastKeyCode;
 
+// [MINDFUL] G2 (2026-07-24) — trạng thái cho 2 control mới ở cửa Cài đặt, đồng bộ với popover.
+static int g_settingsBellDraft  = 0;   // G2a — số nháp stepper nhịp tùy chỉnh (0=chưa init)
+static int g_settingsRiverView  = 0;   // G2b — 0=Ngay bây giờ (3h sống), 1=Hôm nay (24h)
+
+// [MINDFUL] G1 — chuỗi phím tắt bật/tắt tiếng Việt (kiểu chữ Windows). TWIN ở TrayPopover.cpp —
+// đổi ở đây thì đổi luôn bản kia (helper hiển thị nhỏ, cố ý không kéo thêm phụ thuộc chung).
+static std::wstring SwitchHotkeyText() {
+    extern int vSwitchKeyStatus;
+    int hk = vSwitchKeyStatus;
+    std::wstring s;
+    if (hk & 0x100) s += L"Ctrl + ";
+    if (hk & 0x200) s += L"Alt + ";
+    if (hk & 0x400) s += L"Win + ";
+    if (hk & 0x800) s += L"Shift + ";
+    int ch = (hk >> 24) & 0xFF;
+    if (ch == 32) s += L"Space";
+    else if (ch > 0) s += (wchar_t)((ch >= 'a' && ch <= 'z') ? ch - 32 : ch);
+    if (s.size() >= 3 && s.compare(s.size() - 3, 3, L" + ") == 0) s.erase(s.size() - 3);  // chỉ modifier
+    return s;
+}
+
 MainControlDialog::MainControlDialog(const HINSTANCE& hInstance, const int& resourceId)
     : BaseDialog(hInstance, resourceId) {
 }
@@ -51,6 +72,10 @@ void MainControlDialog::initDialog() {
     // [MINDFUL] CP5 — chạy dọn dẹp tự động (giữ N ngày gần nhất) mỗi lần mở cửa Cài đặt. Idempotent +
     // rẻ (chỉ ghi lại nếu thật sự có dòng quá hạn). Mirror macOS gọi lúc pane Riêng tư init.
     MoodStore_RunAutoPurgeIfNeeded();
+    // [MINDFUL] G2 — re-sync nháp/chế-độ-xem mỗi lần mở (mirror popover reset lúc show): tránh giá
+    // trị nháp cũ còn lại từ lần mở trước hiện sai so với vBellInterval thật.
+    g_settingsBellDraft = 0;
+    g_settingsRiverView = 0;
     //dialog icon
     SET_DIALOG_ICON(IDI_APP_ICON);
 
@@ -289,15 +314,28 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
 
             y += 80;
 
+            // [MINDFUL] G2b (2026-07-24) — toggle "Ngay bây giờ / Hôm nay" (mirror popover P5). Click
+            // thật xử ở WM_LBUTTONUP (RECT dựng lại y hệt). g_settingsRiverView: 0=3h sống, 1=24h.
+            RECT viewSegRc = { contentRc.left + 20, y, contentRc.right - 20, y + 30 };
+            const wchar_t* viewTabs[] = { L"Ngay bây giờ", L"Hôm nay" };
+            BrandControls_DrawSegmentedControl(memDC, viewSegRc, viewTabs, 2, g_settingsRiverView, pt, 0);
+            y += 38;
+
             // Biểu đồ cảm xúc
             RECT riverRc = { contentRc.left + 20, y, contentRc.right - 20, y + 150 };
             BrandControls_DrawCard(memDC, riverRc, true);
             if (vMoodWatch) {
-                // [MINDFUL] B3 — vệt dày + đầu sóng sống thật (xem TrayPopover.cpp cùng sửa).
-                std::vector<MoodSample> samples = MoodWatch_FetchLiveTrace(3 * 3600);
-                double liveHead = MoodWatch_LiveAmplitude();
                 RECT chartRc = { riverRc.left + 5, riverRc.top + 5, riverRc.right - 5, riverRc.bottom - 20 };
-                EmotionRiver_Draw(memDC, chartRc, samples, true, liveHead);
+                if (g_settingsRiverView == 1) {
+                    // Hôm nay (24h): mẫu cả ngày, trục Sáng/Trưa/Chiều/Tối (recentMode=false).
+                    std::vector<MoodSample> samples = MoodStore_FetchTodaySamples();
+                    EmotionRiver_Draw(memDC, chartRc, samples, false, -1.0);
+                } else {
+                    // [MINDFUL] B3 — Ngay bây giờ (3h): vệt dày + đầu sóng sống thật.
+                    std::vector<MoodSample> samples = MoodWatch_FetchLiveTrace(3 * 3600);
+                    double liveHead = MoodWatch_LiveAmplitude();
+                    EmotionRiver_Draw(memDC, chartRc, samples, true, liveHead);
+                }
             } else {
                 // [MINDFUL] A7 — nút "Bật nhật ký" tại chỗ. Click thật xử ở WM_LBUTTONUP
                 // (currentTab==0, đã có sẵn từ A3) — nhánh vẽ dưới đây CHỈ vẽ.
@@ -314,6 +352,17 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
                 SetTextColor(memDC, MK_COLORREF(kBrandPaletteCardWhite));
                 SelectObject(memDC, BrandControls_Font(BrandFontBody));
                 DrawTextW(memDC, L"Bật nhật ký", -1, &btnEnableRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            }
+
+            // [MINDFUL] G2b — link "Soi lại hôm nay →" (mirror popover P6). Chỉ khi đang canh (có gì
+            // để soi). Cam = lớp CTA, brand ghi rõ KHÔNG mã hoá cảm xúc. Click thật ở WM_LBUTTONUP.
+            if (vMoodWatch) {
+                y += 160;
+                RECT reflectRc = { contentRc.left + 20, y, contentRc.right - 20, y + 24 };
+                SetTextColor(memDC, MK_COLORREF(kBrandPaletteOrange));
+                oldFont = (HFONT)SelectObject(memDC, BrandControls_Font(BrandFontBody));
+                DrawTextW(memDC, L"Soi lại hôm nay →", -1, &reflectRc, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+                SelectObject(memDC, oldFont);
             }
         }
         else if (currentTab == 1) { // Chuông
@@ -332,7 +381,9 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             // Việt/Anh của OpenKey). Tiếng/âm lượng đọc đúng khoá Bell.cpp dùng (vBellSoundName chuỗi
             // id, vBellVolume 0..100) — trước đây ghi vào 2 khoá Bell.cpp không hề đọc (khoá chết).
             bool s_bellEnabled = (vBell != 0);
-            int s_bellInterval = (vBellInterval <= 30) ? 0 : ((vBellInterval <= 60) ? 1 : 2);
+            // [MINDFUL] G2a — SO SÁNH BẰNG (không <=): nhịp tùy chỉnh (vd 45') phải đứng ở "Tùy
+            // chỉnh", không bị xếp nhầm vào 60 (mirror popover P1).
+            int s_bellInterval = (vBellInterval == 30) ? 0 : ((vBellInterval == 60) ? 1 : 2);
             std::wstring s_bellSoundName = MindfulKeyHelper::getRegString(_T("vBellSoundName"), _T("temple"));
             int s_bellSoundIndex = (s_bellSoundName == L"chime") ? 1 : (s_bellSoundName == L"wind") ? 2 : (s_bellSoundName == L"custom") ? 3 : 0;
             int s_bellVolume = MindfulKeyHelper::getRegInt(_T("vBellVolume"), 60);
@@ -361,16 +412,40 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             BrandControls_DrawPillSwitch(memDC, sw1Rc, s_bellEnabled);
             y += 89;
 
-            // Card Nhịp
-            RECT card2Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 90 };
+            // Card Nhịp — [MINDFUL] G2a (2026-07-24): ĐỒNG BỘ với popover — "30 phút / 60 phút / Tùy
+            // chỉnh" + stepper tùy chỉnh, thay "Nhanh/Vừa/Chậm". Card cao 90→110 để chứa stepper.
+            RECT card2Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 110 };
             BrandControls_DrawCard(memDC, card2Rc, true);
             RECT lblNhipRc = { card2Rc.left + 15, card2Rc.top + 10, card2Rc.right - 15, card2Rc.top + 30 };
-            DrawLabel(L"TỐC ĐỘ NHỊP", lblNhipRc, BrandFontEyebrow, kBrandPaletteStone);
-            
+            DrawLabel(L"NHỊP", lblNhipRc, BrandFontEyebrow, kBrandPaletteStone);
+
             RECT seg2Rc = { card2Rc.left + 15, card2Rc.top + 35, card2Rc.right - 15, card2Rc.top + 65 };
-            const wchar_t* nhipTabs[] = { L"Nhanh", L"Vừa", L"Chậm" };
+            const wchar_t* nhipTabs[] = { L"30 phút", L"60 phút", L"Tùy chỉnh" };
             BrandControls_DrawSegmentedControl(memDC, seg2Rc, nhipTabs, 3, s_bellInterval, pt, 0);
-            y += 105;
+
+            // Stepper "− NN phút +" + "Đặt" — chỉ khi đang "Tùy chỉnh" (mirror popover P1). Bước 5,
+            // kẹp 15..240; "Đặt" mới chốt. Bấm thật xử ở WM_LBUTTONUP (RECT dựng lại y hệt dưới).
+            if (s_bellInterval == 2) {
+                if (g_settingsBellDraft <= 0) g_settingsBellDraft = vBellInterval;
+                RECT stepRc = { card2Rc.left + 15, card2Rc.top + 72, card2Rc.left + 150, card2Rc.top + 98 };
+                HBRUSH stepBg = CreateSolidBrush(MK_COLORREF(kBrandPaletteTealLight));
+                FillRect(memDC, &stepRc, stepBg);
+                DeleteObject(stepBg);
+                RECT sDecRc = { stepRc.left, stepRc.top, stepRc.left + 28, stepRc.bottom };
+                RECT sValRc = { stepRc.left + 28, stepRc.top, stepRc.right - 28, stepRc.bottom };
+                RECT sIncRc = { stepRc.right - 28, stepRc.top, stepRc.right, stepRc.bottom };
+                DrawLabel(L"-", sDecRc, BrandFontButton, kBrandPaletteTeal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+                DrawLabel(L"+", sIncRc, BrandFontButton, kBrandPaletteTeal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+                wchar_t sBuf[32];
+                wsprintfW(sBuf, L"%d phút", g_settingsBellDraft);
+                DrawLabel(sBuf, sValRc, BrandFontBody, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+                RECT sSetRc = { stepRc.right + 10, stepRc.top, stepRc.right + 74, stepRc.bottom };
+                HBRUSH sSetBg = CreateSolidBrush(MK_COLORREF(kBrandPaletteTeal));
+                FillRect(memDC, &sSetRc, sSetBg);
+                DeleteObject(sSetBg);
+                DrawLabel(L"Đặt", sSetRc, BrandFontButton, kBrandPaletteCardWhite, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            }
+            y += 125;
 
             // Card Âm thanh
             RECT card3Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 110 };
@@ -541,6 +616,12 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             };
 
             DrawRowSwitch(card1Rc, 0, L"Tiếng Việt (mặc định)", vLanguage == 1);
+            // [MINDFUL] G1 — chip phím tắt bật/tắt trên hàng Tiếng Việt (khớp popover). Read-only,
+            // giải mã vSwitchKeyStatus; canh phải sát toggle.
+            {
+                RECT hkRc = { card1Rc.right - 170, card1Rc.top + 10, card1Rc.right - 56, card1Rc.top + 35 };
+                DrawLabel(SwitchHotkeyText().c_str(), hkRc, BrandFontBody, kBrandPaletteStone, DT_RIGHT | DT_VCENTER | DT_SINGLELINE);
+            }
             DrawRowSwitch(card1Rc, 1, L"Viết hoa đầu câu", vUpperCaseFirstChar == 1);
             DrawRowSwitch(card1Rc, 2, L"Tự nhớ bảng mã", vRememberCode == 1);
             
@@ -702,14 +783,30 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             }
 
             // [MINDFUL] A7 — nút "Bật nhật ký" (chỉ hiện/bấm được khi đang tắt — RECT khớp nhánh vẽ).
+            // [MINDFUL] G2b — dựng lại Y HỆT WM_PAINT: sau card ĐỘ NHẠY (+80) là viewSeg (+38) rồi
+            // river (150). y advance KHÔNG còn trong if(!vMoodWatch) — WM_PAINT advance vô điều kiện.
+            y += 80;
+            RECT viewSegRc = { contentRc.left + 20, y, contentRc.right - 20, y + 30 };
+            int vv = BrandControls_HitSegmented(viewSegRc, 2, pt);
+            if (vv != -1 && vv != g_settingsRiverView) {
+                g_settingsRiverView = vv;
+                InvalidateRect(hDlg, NULL, FALSE);
+            }
+            y += 38;
+
+            RECT riverRc = { contentRc.left + 20, y, contentRc.right - 20, y + 150 };
             if (!vMoodWatch) {
-                y += 80;
-                RECT riverRc = { contentRc.left + 20, y, contentRc.right - 20, y + 150 };
                 RECT btnEnableRc = { riverRc.left + (riverRc.right - riverRc.left) / 2 - 70, riverRc.top + 95,
                                       riverRc.left + (riverRc.right - riverRc.left) / 2 + 70, riverRc.top + 123 };
                 if (PtInRect(&btnEnableRc, pt)) {
                     MoodWatch_Toggle();
                     InvalidateRect(hDlg, NULL, FALSE);
+                }
+            } else {
+                // Link "Soi lại hôm nay →" — RECT y hệt WM_PAINT (y += 160 sau river).
+                RECT reflectRc = { contentRc.left + 20, y + 160, contentRc.right - 20, y + 160 + 24 };
+                if (PtInRect(&reflectRc, pt)) {
+                    ReflectionScreen_Show(hDlg);
                 }
             }
         }
@@ -724,9 +821,10 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             RECT sw1Rc = { card1Rc.right - 50, card1Rc.top + 26, card1Rc.right - 14, card1Rc.top + 47 };
             y += 89;
 
-            RECT card2Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 90 };
+            // [MINDFUL] G2a — card2 90→110 + y 105→125 (khớp WM_PAINT: NHỊP + stepper tùy chỉnh).
+            RECT card2Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 110 };
             RECT seg2Rc = { card2Rc.left + 15, card2Rc.top + 35, card2Rc.right - 15, card2Rc.top + 65 };
-            y += 105;
+            y += 125;
 
             RECT card3Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 110 };
             RECT btnPreviewRc = { card3Rc.right - 90, card3Rc.top + 8, card3Rc.right - 15, card3Rc.top + 30 };
@@ -747,13 +845,29 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
                 changed = true;
             }
 
-            // Segmented "TỐC ĐỘ NHỊP" — Nhanh=30' / Vừa=60' / Chậm=120'.
+            // [MINDFUL] G2a — segmented "NHỊP" 30/60/Tùy chỉnh (mirror popover). ci==2 = Tùy chỉnh:
+            // đặt tạm 120' + mở stepper; dec/inc/Đặt xử ngay dưới.
             int ci = BrandControls_HitSegmented(seg2Rc, 3, pt);
             if (ci != -1) {
-                int newMins = (ci == 0) ? 30 : ((ci == 1) ? 60 : 120);
-                APP_SET_DATA(vBellInterval, newMins);
-                Bell_ApplySettings();
-                changed = true;
+                int curInt2 = (vBellInterval == 30) ? 0 : ((vBellInterval == 60) ? 1 : 2);
+                if (ci != curInt2) {
+                    int newMins = (ci == 0) ? 30 : ((ci == 1) ? 60 : 120);
+                    APP_SET_DATA(vBellInterval, newMins);
+                    Bell_ApplySettings();
+                    g_settingsBellDraft = 0;
+                    changed = true;
+                }
+            }
+            // Stepper tùy chỉnh — RECT dựng lại Y HỆT WM_PAINT (khi đang ở "Tùy chỉnh").
+            if (((vBellInterval == 30) ? 0 : ((vBellInterval == 60) ? 1 : 2)) == 2) {
+                if (g_settingsBellDraft <= 0) g_settingsBellDraft = vBellInterval;
+                RECT stepRc = { card2Rc.left + 15, card2Rc.top + 72, card2Rc.left + 150, card2Rc.top + 98 };
+                RECT sDecRc = { stepRc.left, stepRc.top, stepRc.left + 28, stepRc.bottom };
+                RECT sIncRc = { stepRc.right - 28, stepRc.top, stepRc.right, stepRc.bottom };
+                RECT sSetRc = { stepRc.right + 10, stepRc.top, stepRc.right + 74, stepRc.bottom };
+                if (PtInRect(&sDecRc, pt)) { g_settingsBellDraft -= 5; if (g_settingsBellDraft < 15) g_settingsBellDraft = 15; changed = true; }
+                else if (PtInRect(&sIncRc, pt)) { g_settingsBellDraft += 5; if (g_settingsBellDraft > 240) g_settingsBellDraft = 240; changed = true; }
+                else if (PtInRect(&sSetRc, pt)) { APP_SET_DATA(vBellInterval, g_settingsBellDraft); Bell_ApplySettings(); changed = true; }
             }
 
             // [MINDFUL] CP2 — mở hộp chọn .wav, DÙNG CHUNG cho icon nốt nhạc + nút "Chọn tiếng .wav"

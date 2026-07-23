@@ -304,6 +304,23 @@ static void ProcessTabBell(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     y += 125;
 }
 
+// [MINDFUL] G1 — chuỗi phím tắt bật/tắt tiếng Việt, giải mã từ vSwitchKeyStatus (bit Ctrl/Alt/Win/
+// Shift + ký tự ở byte cao). Kiểu chữ Windows, khác macOS dùng ký hiệu ⌃⌥⌘⇧. TWIN ở MainControlDialog.cpp.
+static std::wstring SwitchHotkeyText() {
+    extern int vSwitchKeyStatus;
+    int hk = vSwitchKeyStatus;
+    std::wstring s;
+    if (hk & 0x100) s += L"Ctrl + ";
+    if (hk & 0x200) s += L"Alt + ";
+    if (hk & 0x400) s += L"Win + ";
+    if (hk & 0x800) s += L"Shift + ";
+    int ch = (hk >> 24) & 0xFF;
+    if (ch == 32) s += L"Space";
+    else if (ch > 0) s += (wchar_t)((ch >= 'a' && ch <= 'z') ? ch - 32 : ch);
+    if (s.size() >= 3 && s.compare(s.size() - 3, 3, L" + ") == 0) s.erase(s.size() - 3);  // chỉ modifier
+    return s;
+}
+
 static void ProcessTabKeyboard(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     // Kiểu gõ
     RECT card1Rc = { 18, y, clientRc.right - 18, y + 90 };
@@ -373,6 +390,12 @@ static void ProcessTabKeyboard(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     int oldLang = vLanguage;
     DrawRowSwitch(card2Rc, 0, L"Gõ tiếng Việt", vLanguage);
     if (oldLang != vLanguage) { APP_SET_DATA(vLanguage, vLanguage); }
+    // [MINDFUL] G1 (2026-07-24) — hiện phím tắt bật/tắt ngay trên hàng "Gõ tiếng Việt" (chip xám,
+    // canh phải, sát toggle). Giải mã từ vSwitchKeyStatus nên đổi phím tắt là chữ đổi theo.
+    {
+        RECT hkRc = { card2Rc.right - 165, card2Rc.top + 10, card2Rc.right - 56, card2Rc.top + 35 };
+        DrawLabel(hdc, SwitchHotkeyText().c_str(), hkRc, BrandFontBody, kBrandPaletteStone, DT_RIGHT | DT_VCENTER | DT_SINGLELINE);
+    }
 
     int oldSpell = vCheckSpelling;
     DrawRowSwitch(card2Rc, 1, L"Kiểm tra chính tả", vCheckSpelling);

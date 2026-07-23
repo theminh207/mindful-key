@@ -26,7 +26,7 @@ int vCodeTable = 0;
 int vCheckSpelling = 1;
 int vUseModernOrthography = 1;
 int vQuickTelex = 0;
-#define DEFAULT_SWITCH_STATUS 0x5A00025A //default option + z
+#define DEFAULT_SWITCH_STATUS 0x5A00035A //[MINDFUL] G1 — control + option + z (Ctrl+Alt+Z), VK_Z=0x5A
 int vSwitchKeyStatus = DEFAULT_SWITCH_STATUS;
 int vRestoreIfWrongSpelling = 1;
 int vFixRecommendBrowser = 0;

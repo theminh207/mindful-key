@@ -110,8 +110,10 @@ static bool AmpAt(REAL xf, const vector<REAL>& xs, const vector<REAL>& ys, REAL 
 }
 
 static void DrawRiver(Graphics& g, const RectF& area, const vector<MoodSample>& samples, bool recentMode, double liveHead) {
-    if (samples.empty() && !recentMode)
-        return;   // trống thật — KHÔNG vẽ đường/chấm giả (luật 1)
+    // [MINDFUL] G3 (2026-07-24) — BỎ early-return khi trống ở chế độ full-day. Trước đây màn Soi lại
+    // không có mẫu vẽ ra HỘP RỖNG (ảnh chủ dự án). TRỤC (nét đứt + nhãn Sáng/Trưa/Chiều/Tối) là
+    // KHUNG, không phải nước giả — macOS vẫn vẽ khung khi trống. Nước teal + chấm VẪN chỉ ở chỗ có
+    // mẫu thật (guard `if (xs.empty()) return` bên dưới) nên luật 1 "không vẽ nước giả" vẫn giữ.
     if (area.Width <= 0)
         return;
 
@@ -305,6 +307,22 @@ static bool    g_showNote = false;
 static bool    g_showNotesLink = false;
 static HWND    g_noteEdit = NULL;
 static bool    g_openBellAfterClose = false;
+// [MINDFUL] G3 (2026-07-24) — chiều cao THẬT của 3 khối chữ dài (đo 1 lần ở _Show). Trước đây cao
+// cố định 40/52/34 nên câu 2-3 dòng bị cắt (thẻ Nuôi dưỡng mất chữ "đóng máy" trong ảnh) + đẩy lệch
+// các dòng dưới. Đo trước rồi layout theo -> không cắt, không lệch.
+static int     g_obsH = 40, g_qH = 52, g_sugH = 34;
+
+// Đo chiều cao chữ khi bọc trong `width` (DT_CALCRECT). DC màn hình đủ để đo (không cần DC cửa sổ).
+static int MeasureTextH(HFONT font, const wstring& s, int width) {
+    if (s.empty()) return 0;
+    HDC hdc = GetDC(NULL);
+    HFONT old = (HFONT)SelectObject(hdc, font);
+    RECT r = { 0, 0, width, 0 };
+    DrawTextW(hdc, s.c_str(), -1, &r, DT_WORDBREAK | DT_CALCRECT);
+    SelectObject(hdc, old);
+    ReleaseDC(NULL, hdc);
+    return r.bottom - r.top;
+}
 
 // Gợi ý nhỏ theo hình dạng ngày — mirror TinySuggestionsFor (macOS). Ngày êm thì không "khắc phục",
 // gợi ý là giữ lấy cái đang tốt. Chọn theo NGÀY (index), không bốc lại mỗi lần mở.
@@ -349,12 +367,12 @@ static ReflectLayout ComputeLayout(int clientW) {
     slot(L.eb1, 15);        y += 8;
     slot(L.riverCard, 96);  y += 10;
     L.river = { L.riverCard.left + 10, L.riverCard.top + 10, L.riverCard.right - 10, L.riverCard.bottom - 6 };
-    slot(L.observe, 40);    y += 6;
+    slot(L.observe, g_obsH); y += 6;
     slot(L.gk, 18);         y += 16;
     slot(L.div1, 1);        y += 16;
 
     slot(L.eb2, 15);        y += 8;
-    slot(L.question, 52);   y += 6;
+    slot(L.question, g_qH); y += 6;
     slot(L.qcap, 15);       y += 12;
     if (g_showNote) {
         slot(L.note, 26);   y += 6;
@@ -364,9 +382,9 @@ static ReflectLayout ComputeLayout(int clientW) {
     slot(L.div2, 1);        y += 16;
 
     slot(L.eb3, 15);        y += 8;
-    int cardH = 14 * 2 + 34 + (g_showBellLink ? (8 + 18) : 0);
+    int cardH = 14 * 2 + g_sugH + (g_showBellLink ? (8 + 18) : 0);
     slot(L.card, cardH);    y += 16;
-    L.sugText  = { L.card.left + 14, L.card.top + 14, L.card.right - 14, L.card.top + 14 + 34 };
+    L.sugText  = { L.card.left + 14, L.card.top + 14, L.card.right - 14, L.card.top + 14 + g_sugH };
     if (g_showBellLink)
         L.bellLink = { L.card.left + 14, L.card.bottom - 14 - 18, L.card.right - 14, L.card.bottom - 14 };
 
@@ -572,6 +590,16 @@ void ReflectionScreen_Show(HWND parent) {
     } else {
         g_gkStr = L"Gác cổng chưa cần dừng bạn lần nào hôm nay.";
     }
+
+    // [MINDFUL] G3 — đo chiều cao THẬT 3 khối chữ dài (rộng nội dung 440; gợi ý trong thẻ hẹp hơn
+    // 28px). Kẹp sàn để dòng đơn không bẹp. Layout dưới đọc g_obsH/g_qH/g_sugH -> không cắt/lệch.
+    const int contentW = kReflectClientW - 40;
+    int oh = MeasureTextH(BrandControls_Font(BrandFontBody),  g_observeStr,  contentW);
+    int qh = MeasureTextH(BrandControls_Font(BrandFontTitle), g_questionStr, contentW);
+    int sh = MeasureTextH(BrandControls_Font(BrandFontBody),  g_sugStr,      contentW - 28);
+    g_obsH = oh < 18 ? 18 : oh;
+    g_qH   = qh < 24 ? 24 : qh;
+    g_sugH = sh < 18 ? 18 : sh;
 
     // Ngày phẳng lặng không có "giờ đỉnh" đáng canh -> không mời chỉnh chuông (mirror macOS).
     g_bellHour = g_summary.peakHour;
