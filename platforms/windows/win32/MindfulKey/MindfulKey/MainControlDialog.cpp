@@ -336,42 +336,16 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             y += 125;
         }
         else if (currentTab == 3) { // Riêng tư
-            RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
-            int y = 20;
-
-            auto DrawLabel = [&](const wchar_t* text, RECT rc, BrandFontRole font, uint32_t color, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
-                SetTextColor(memDC, MK_COLORREF(color));
-                HFONT f = BrandControls_Font(font);
-                HFONT old = (HFONT)SelectObject(memDC, f);
-                DrawTextW(memDC, text, -1, &rc, format);
-                SelectObject(memDC, old);
-            };
-
-            static int s_privacyRetention = 1; 
-
-            // Card Lưu trữ
-            RECT card1Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 90 };
-            BrandControls_DrawCard(memDC, card1Rc, true);
-            RECT lblLuuRc = { card1Rc.left + 15, card1Rc.top + 10, card1Rc.right - 15, card1Rc.top + 30 };
-            DrawLabel(L"THỜI GIAN LƯU TRỮ", lblLuuRc, BrandFontEyebrow, kBrandPaletteStone);
-            
-            RECT segRc = { card1Rc.left + 15, card1Rc.top + 35, card1Rc.right - 15, card1Rc.top + 65 };
-            const wchar_t* retTabs[] = { L"1 Tuần", L"1 Tháng", L"3 Tháng" };
-            s_privacyRetention = BrandControls_DrawSegmentedControl(memDC, segRc, retTabs, 3, s_privacyRetention, pt, 0);
-            y += 105;
-
-            // Card Xuất dữ liệu
-            RECT card2Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 60 };
-            BrandControls_DrawCard(memDC, card2Rc, true);
-            RECT lblXuatRc = { card2Rc.left + 15, card2Rc.top + 15, card2Rc.right - 60, card2Rc.bottom - 15 };
-            DrawLabel(L"Xuất dữ liệu cảm xúc (CSV)", lblXuatRc, BrandFontBody, kBrandPaletteCharcoal);
-            
-            // Vẽ nút giả "Xuất"
-            RECT btnRc = { card2Rc.right - 70, card2Rc.top + 15, card2Rc.right - 15, card2Rc.bottom - 15 };
-            HBRUSH btnBr = CreateSolidBrush(MK_COLORREF(0x1D7C91));
-            FillRect(memDC, &btnRc, btnBr);
-            DeleteObject(btnBr);
-            DrawLabel(L"Xuất", btnRc, BrandFontBody, kBrandPaletteCardWhite, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            // [MINDFUL] A4 — ĐÃ GỠ 2 control giả khỏi tab này (rule "không để nút giả"):
+            // (1) segmented "THỜI GIAN LƯU TRỮ" — không có bất kỳ hàm purge/retention nào trong
+            //     MoodStore.cpp/.h (chỉ có MoodStore_DeleteAll — xoá sạch, không phải xoá theo N
+            //     ngày); biến giữ nó (s_privacyRetention) không lưu registry, và còn bị chính
+            //     WM_PAINT (pt={-1,-1}) ghi đè về -1 mỗi lần vẽ trước khi gỡ.
+            // (2) nút "Xuất" — code cũ tự ghi "Vẽ nút giả", không gọi hàm nào cả; MoodStore.cpp
+            //     không có hàm xuất CSV nào để gọi.
+            // macOS ĐÃ có đủ 2 tính năng này thật (MoodStoreMac_ExportCSVToURL +
+            // MoodStoreMac_RunAutoPurgeIfNeeded, popup 30/60/90/Không) — Windows chưa port.
+            // Xem docs/FRICTION-LOG.md 2026-07-23 "A4 — Riêng tư Windows thiếu export+purge".
         }
 
         

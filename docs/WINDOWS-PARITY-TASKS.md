@@ -50,7 +50,7 @@ dự án nhìn app thật) · `⛔ Chặn (chờ quyết định)`
 | **A1** | ✅ | **Credit GPL** (thuần đổi chuỗi, 0 rủi ro) — làm trước cho quen tay. Chi tiết ↓ |
 | **A2** | ✅ | **Tab Chuông (settings) bấm được + nối đúng dây chuông**. Chi tiết ↓ |
 | **A3** | ✅ | **Tab Hôm nay (settings) bấm được** (Độ nhạy + nút Bật nhật ký). Chi tiết ↓ |
-| **A4** | ⬜ | **Tab Riêng tư (settings) bấm được** (retention + Xuất CSV). Chi tiết ↓ |
+| **A4** | ⛔ | **Tab Riêng tư (settings) bấm được** (retention + Xuất CSV) — GỠ 2 control giả (không có backend), ghi FRICTION-LOG 2026-07-23, chờ chủ dự án chốt có port tính năng không. Chi tiết ↓ |
 | **A5** | ⬜ | **Popover hết đảo kép** (pill chỉ xử `WM_LBUTTONUP`). Chi tiết ↓ |
 | **A6** | ⬜ | **Popover nối đúng dây chuông** (vBell + vBellSoundName + vBellVolume). Chi tiết ↓ |
 | **A7** | ⬜ | **Nút "Bật nhật ký" tại chỗ** trên popover (chỗ hiện "đang tắt"). Chi tiết ↓ |
