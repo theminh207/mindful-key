@@ -254,14 +254,12 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             DrawTextW(memDC, L"ĐỘ NHẠY", -1, &cardTitleRc, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
             SelectObject(memDC, oldFont);
 
+            // [MINDFUL] A3 — click thật xử ở WM_LBUTTONUP (currentTab==0), KHÔNG còn ở đây (pt=-1,-1
+            // lúc WM_PAINT nên khối if cũ không bao giờ khớp — tab Hôm nay tê liệt cùng nguyên nhân).
             RECT segRc = { cardRc.left + 100, cardRc.top + 15, cardRc.right - 15, cardRc.top + 45 };
             const wchar_t* sensTabs[] = { L"Ít nhạy", L"Vừa", L"Nhạy" };
             int currentSens = MindfulKeyHelper::getRegInt(_T("vBellSensitivity"), 0);
-            int clickedSens = BrandControls_DrawSegmentedControl(memDC, segRc, sensTabs, 3, currentSens, pt, 0);
-            if (clickedSens != -1 && clickedSens != currentSens) {
-                MindfulKeyHelper::setRegInt(_T("vBellSensitivity"), clickedSens);
-                SystemTrayHelper::updateData();
-            }
+            BrandControls_DrawSegmentedControl(memDC, segRc, sensTabs, 3, currentSens, pt, 0);
 
             y += 80;
 
@@ -514,6 +512,25 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
         POINT pt = { x, y };
 
         RECT navRc = { 10, 20, 150, 260 };
+
+        if (currentTab == 0) {
+            // [MINDFUL] A3 — RECT dựng lại Y HỆT nhánh WM_PAINT (currentTab==0, dòng ~224-281):
+            // cùng y ban đầu + cùng +offset (title/subtitle cao 70), để vùng bấm không trôi khỏi vẽ.
+            RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
+            int y = 20;
+            y += 70;
+            RECT cardRc = { contentRc.left + 20, y, contentRc.right - 20, y + 65 };
+            RECT segRc = { cardRc.left + 100, cardRc.top + 15, cardRc.right - 15, cardRc.top + 45 };
+
+            // Độ nhạy — thang 0/1/2 khớp giá trị đang lưu hiện tại (TrayPopover.cpp dùng cùng thang).
+            // Việc khớp thang với NudgeCoordinator (1/2/3) là A8, không lấn ở đây.
+            int cs = BrandControls_HitSegmented(segRc, 3, pt);
+            if (cs != -1) {
+                MindfulKeyHelper::setRegInt(_T("vBellSensitivity"), cs);
+                SystemTrayHelper::updateData();
+                InvalidateRect(hDlg, NULL, FALSE);
+            }
+        }
 
         if (currentTab == 1) {
             // [MINDFUL] A2 — RECT dựng lại Y HỆT nhánh WM_PAINT (currentTab==1, dòng ~282-338):
