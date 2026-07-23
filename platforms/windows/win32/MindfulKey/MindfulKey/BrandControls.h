@@ -72,3 +72,11 @@ int BrandControls_DrawIconGroup(HDC hdc, const RECT& rc, int count, int selected
 // ── Text Input / ComboBox Styling ──
 // Vẽ viền xám nhạt, nền trắng, bo góc. Thường gọi trong WM_CTLCOLOR hoặc đè WM_NCPAINT của edit native.
 void BrandControls_DrawTextBoxFrame(HDC hdc, const RECT& rc);
+
+// ── Hit-test thuần (không vẽ) ──
+// Dùng trong WM_LBUTTONUP để dò click mà không cần vẽ lại (khớp TOÁN của bản Draw* tương ứng — xem
+// BrandControls.cpp). Các hàm Draw* vẫn nhận pt để vẽ+dò cùng lúc trong WM_PAINT (pt.x=-1 lúc vẽ);
+// bộ hàm này dành cho nơi ĐÃ có pt thật (WM_LBUTTONUP) mà không cần vẽ.
+int  BrandControls_HitSegmented(const RECT& rc, int count, POINT pt); // trả index 0..count-1, hoặc -1
+int  BrandControls_HitIconGroup(const RECT& rc, int count, POINT pt); // như trên
+bool BrandControls_HitSlider(const RECT& rc, POINT pt, float* outPos); // true nếu trúng, outPos=0..1

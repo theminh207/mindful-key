@@ -46,7 +46,7 @@ dự án nhìn app thật) · `⛔ Chặn (chờ quyết định)`
 
 | ID | Trạng thái | Việc |
 |---|---|---|
-| **A0** | ⬜ | **Helper hit-test cho BrandControls** — nền cho A1–A4. Chi tiết ↓ |
+| **A0** | ✅ | **Helper hit-test cho BrandControls** — nền cho A1–A4. Chi tiết ↓ |
 | **A1** | ⬜ | **Credit GPL** (thuần đổi chuỗi, 0 rủi ro) — làm trước cho quen tay. Chi tiết ↓ |
 | **A2** | ⬜ | **Tab Chuông (settings) bấm được + nối đúng dây chuông**. Chi tiết ↓ |
 | **A3** | ⬜ | **Tab Hôm nay (settings) bấm được** (Độ nhạy + nút Bật nhật ký). Chi tiết ↓ |

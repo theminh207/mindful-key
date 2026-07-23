@@ -340,3 +340,28 @@ void BrandControls_DrawTextBoxFrame(HDC hdc, const RECT& rc) {
     DeleteObject(borderBrush);
     DeleteObject(rgn);
 }
+
+// [MINDFUL] Hit-test thuần cho WM_LBUTTONUP — khớp TỪNG dòng toán với bản Draw* tương ứng ở trên,
+// để vùng bấm không bao giờ trôi lệch khỏi vùng vẽ (2 hàm khác nhau tính toạ độ khác nhau = bug).
+int BrandControls_HitSegmented(const RECT& rc, int count, POINT pt) {
+    if (count <= 0 || pt.x == -1) return -1;
+    int itemWidth = (rc.right - rc.left) / count;
+    for (int i = 0; i < count; i++) {
+        RECT it = { rc.left + i * itemWidth, rc.top, rc.left + (i + 1) * itemWidth, rc.bottom };
+        if (pt.x >= it.left && pt.x < it.right && pt.y >= it.top && pt.y < it.bottom) return i;
+    }
+    return -1;
+}
+
+int BrandControls_HitIconGroup(const RECT& rc, int count, POINT pt) {
+    return BrandControls_HitSegmented(rc, count, pt); // cùng toán chia đều theo bề ngang
+}
+
+bool BrandControls_HitSlider(const RECT& rc, POINT pt, float* outPos) {
+    if (pt.x == -1 || pt.x < rc.left || pt.x > rc.right || pt.y < rc.top || pt.y > rc.bottom) return false;
+    float p = (float)(pt.x - rc.left) / (rc.right - rc.left);
+    if (p < 0) p = 0;
+    if (p > 1) p = 1;
+    *outPos = p;
+    return true;
+}
