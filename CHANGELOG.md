@@ -3,6 +3,17 @@
 Theo [Keep a Changelog](https://keepachangelog.com/) và [SemVer](https://semver.org/).
 Phiên bản lấy từ `version.env`.
 
+## [0.4.13]
+
+### Added
+
+- **macOS: cửa sổ Cài đặt kéo giãn được** — trước đây cửa sổ đóng cứng một cỡ (thiếu
+  `NSWindowStyleMaskResizable`), mọi card dán frame cố định 600pt. Nay bật kéo giãn: cột nav ghim
+  trái, cột nội dung nới theo, và màn "Hôm nay" tự giãn — card sóng (Gác cổng) + dòng sông cảm xúc
+  kéo rộng theo bề ngang, link "Soi lại hôm nay →" vẫn ghim mép phải, pill "Ngày/Tuần/Tháng" giữ cỡ.
+  Sàn kích thước = cỡ thiết kế gốc (chỉ kéo to, không bóp nhỏ) để pane tái dùng từ OpenKey (NSBox,
+  bóng đổ chụp sẵn theo bounds) canh giữa giữ nguyên, không lệch bóng.
+
 ## [0.4.12]
 
 ### Fixed

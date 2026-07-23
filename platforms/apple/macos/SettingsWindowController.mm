@@ -218,6 +218,9 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
 
 #pragma mark - SettingsWindowController
 
+@interface SettingsWindowController () <NSWindowDelegate>
+@end
+
 @implementation SettingsWindowController {
     NSViewController *_rootVC;               // window.contentViewController — chỉ là điểm neo containment
     NSView *_navContainer;
@@ -251,7 +254,8 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     NSWindow *window = [[NSWindow alloc] initWithContentRect:frame
                                                      styleMask:(NSWindowStyleMaskTitled |
                                                                 NSWindowStyleMaskClosable |
-                                                                NSWindowStyleMaskMiniaturizable)
+                                                                NSWindowStyleMaskMiniaturizable |
+                                                                NSWindowStyleMaskResizable)   // [MINDFUL] kéo giãn được
                                                        backing:NSBackingStoreBuffered
                                                          defer:NO];
     window.title = @"Cài đặt Mindful Keyboard";
@@ -263,6 +267,12 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     self = [super initWithWindow:window];
     if (self) {
         _boGoSubIndex = 0;
+        // [MINDFUL] Sàn kích thước = cỡ thiết kế gốc (nav 170 + nội dung 600 + lề): kéo TO thì màn
+        // "Hôm nay" tự nới, pane mượn (NSBox từ OpenKey — bóng đổ chụp sẵn theo bounds ở
+        // applyBrandCardStyle) canh giữa giữ nguyên cỡ; KHÔNG cho bóp nhỏ hơn để pane mượn không bị
+        // cắt/lệch bóng. Không đặt trần → phóng bao lớn tuỳ ý.
+        window.minSize = NSMakeSize(kWindowW, kWindowH);
+        window.delegate = self;
         [self mk_buildContent];
     }
     return self;
@@ -287,14 +297,19 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     _navContainer = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, kNavW, kWindowH)];
     _navContainer.wantsLayer = YES;
     _navContainer.layer.backgroundColor = [Brand softWhite].CGColor;
+    // [MINDFUL] Cửa sổ kéo giãn — nav ghim TRÁI, bề ngang cố định, cao theo cửa sổ (lề phải co giãn).
+    _navContainer.autoresizingMask = NSViewMaxXMargin | NSViewHeightSizable;
     [root addSubview:_navContainer];
 
     NSView *divider = [[NSView alloc] initWithFrame:NSMakeRect(kNavW, 0, kDividerW, kWindowH)];
     divider.wantsLayer = YES;
     divider.layer.backgroundColor = [Brand divider].CGColor;
+    divider.autoresizingMask = NSViewMaxXMargin | NSViewHeightSizable;   // đứng yên sau nav, cao theo cửa sổ
     [root addSubview:divider];
 
     _contentContainer = [[NSView alloc] initWithFrame:NSMakeRect(kNavW + kDividerW, 0, kContentW, kWindowH)];
+    // Cột nội dung nuốt toàn bộ phần rộng/cao dư khi kéo (lề trái neo cố định sau divider).
+    _contentContainer.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     [root addSubview:_contentContainer];
 
     [self mk_buildNavRows];
@@ -507,9 +522,14 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     // giữa card Gác cổng và dòng sông.
     CGFloat totalH = kTodayTitleReserve + cardH + kTodaySectionGap + kDateRangeSegH + kTodaySectionGap + kTodayRiverH;
     NSView *pane = [self mk_buildEmptyPaneWithTitle:@"Hôm nay" height:totalH];
+    // [MINDFUL] Cửa sổ kéo giãn — tít "Hôm nay" ghim trên-trái, giữ nguyên cỡ (card tự vẽ bên dưới
+    // mới là thứ nới rộng). Card dùng applyThinCardStyle (bo/viền theo bounds, không bóng chụp sẵn)
+    // nên nới bề ngang là -layout của chúng tự vẽ lại đúng — xem GatekeeperCardView/EmotionRiverView.
+    pane.subviews.firstObject.autoresizingMask = NSViewMaxXMargin | NSViewMinYMargin;
 
     CGFloat cardTop = NSHeight(pane.frame) - kTodayTitleReserve;
     _gatekeeperCard.frame = NSMakeRect(0, cardTop - cardH, kMaxPaneW, cardH);
+    _gatekeeperCard.autoresizingMask = NSViewWidthSizable | NSViewMinYMargin;   // nới ngang, ghim đỉnh
     [pane addSubview:_gatekeeperCard];
 
     CGFloat segTop = cardTop - cardH - kTodaySectionGap;
@@ -520,6 +540,7 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     _dateRangeSeg.titles = @[@"Ngày", @"Tuần", @"Tháng"];
     _dateRangeSeg.target = self;
     _dateRangeSeg.action = @selector(mk_onDateRangeChanged:);
+    _dateRangeSeg.autoresizingMask = NSViewMaxXMargin | NSViewMinYMargin;   // pill giữ nguyên cỡ, ghim trên-trái
     [pane addSubview:_dateRangeSeg];
 
     // [MINDFUL] Vá lỗi (2026-07-16): trước đây riverTop lặp NGUYÊN công thức của segTop (quên
@@ -528,6 +549,7 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     // ai thấy được. Chủ dự án phát hiện qua ảnh chụp cửa sổ Cài đặt thật.
     CGFloat riverTop = segTop - kDateRangeSegH - kTodaySectionGap;
     _settingsRiver = [[EmotionRiverView alloc] initWithFrame:NSMakeRect(0, riverTop - kTodayRiverH, kMaxPaneW, kTodayRiverH)];
+    _settingsRiver.autoresizingMask = NSViewWidthSizable | NSViewMinYMargin;   // sông nới ngang, ghim đỉnh
     [pane addSubview:_settingsRiver];
     return pane;
 }
@@ -545,14 +567,9 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     BOOL isBoGo = (index == MKSettingsSectionInput);
     _subNavBar.hidden = !isBoGo;
 
-    // [MINDFUL] Giảm bớt vùng đỏ ở trên cùng khi không có sub nav bar
-    NSRect scrollFrame = _paneScroll.frame;
-    if (isBoGo) {
-        scrollFrame.size.height = kMaxPaneH;
-    } else {
-        scrollFrame.size.height = kMaxPaneH + kSubNavH + kSubNavGap;
-    }
-    _paneScroll.frame = scrollFrame;
+    // [MINDFUL] Cửa sổ kéo giãn — khung cuộn + thanh sub-nav "Bộ gõ" nay tính theo kích thước THẬT
+    // của cột nội dung (trước đây đóng cứng theo hằng kMaxPaneH); chừa chỗ thanh sub-nav khi ở "Bộ gõ".
+    [self mk_layoutScrollAndSubnav];
 
     switch ((MKSettingsSection)index) {
         case MKSettingsSectionToday:
@@ -688,27 +705,73 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     }
     if (paneView == nil) return;
 
-    // [MINDFUL] Epic 3 G1 (F5) — documentView cao bằng MAX(pane, khung nhìn):
-    //  - pane thấp hơn khung nhìn  → docH = khung nhìn, không sinh thanh cuộn thừa cho pane ngắn;
-    //  - pane cao hơn khung nhìn   → docH = pane, cuộn tới được dòng cuối.
-    // KHÔNG đổi KÍCH THƯỚC pane (chỉ đặt lại origin) — 2 NSBox tái dùng từ storyboard tính
-    // shadowPath theo self.bounds lúc viewDidLoad, resize ở đây là bóng đổ lệch (xem đầu file).
-    const CGFloat viewportH = NSHeight(_paneScroll.contentView.bounds);
-    const CGFloat docH = MAX(NSHeight(paneView.frame), viewportH);
-    _paneHost.frame = NSMakeRect(0.0, 0.0, kMaxPaneW, docH);
-
-    NSRect f = paneView.frame;
-    f.origin = NSMakePoint(0.0, docH - NSHeight(f));   // neo đỉnh (view KHÔNG lật, gốc ở dưới-trái)
-    paneView.frame = f;
     [_paneHost addSubview:paneView];
+    [self mk_layoutHostForCurrentPane];   // định cỡ documentView + đặt pane theo bề ngang hiện tại
 
     // Đổi mục thì luôn bắt đầu từ đỉnh — không thừa hưởng vị trí cuộn của mục vừa xem.
-    [_paneScroll.contentView scrollToPoint:NSMakePoint(0.0, docH - viewportH)];
+    const CGFloat viewportH = NSHeight(_paneScroll.contentView.bounds);
+    [_paneScroll.contentView scrollToPoint:NSMakePoint(0.0, NSHeight(_paneHost.frame) - viewportH)];
     [_paneScroll reflectScrolledClipView:_paneScroll.contentView];
 
     // Ép vẽ lại lần nữa SAU khi nội dung mới đã vào đúng vị trí — đảm bảo khung nhìn hiển thị
     // đúng pixel hiện tại, không phải bitmap còn sót từ pane/scroll-position trước đó.
     [clipView setNeedsDisplayInRect:clipView.bounds];
+}
+
+// [MINDFUL] Cửa sổ kéo giãn — dựng lại khung cuộn + thanh sub-nav "Bộ gõ" theo kích thước THẬT của
+// cột nội dung (đang tự giãn bằng autoresizing). Lề trái + đáy neo cố định kContentPad; khi ở "Bộ
+// gõ" thì chừa chỗ thanh "Kiểu gõ/Gõ tắt/Chuyển mã" bên trên. Ở cỡ cửa sổ gốc, số ra y hệt các hằng
+// kMaxPaneW/kMaxPaneH cũ (scrollW=600, scrollH=514 hoặc 472 khi Bộ gõ) — refactor không đổi bố cục.
+- (void)mk_layoutScrollAndSubnav {
+    CGFloat cw = NSWidth(_contentContainer.bounds);
+    CGFloat ch = NSHeight(_contentContainer.bounds);
+    BOOL isBoGo = (_selectedIndex == MKSettingsSectionInput);
+    CGFloat scrollW = MAX(cw - 2 * kContentPad, 0.0);
+    CGFloat topInset = isBoGo ? (kSubNavH + kSubNavGap) : 0.0;
+    CGFloat scrollH = MAX(ch - 2 * kContentPad - topInset, 0.0);
+    _paneScroll.frame = NSMakeRect(kContentPad, kContentPad, scrollW, scrollH);
+    if (isBoGo) {
+        _subNavBar.frame = NSMakeRect(kContentPad, kContentPad + scrollH + kSubNavGap, scrollW, kSubNavH);
+    }
+    // Ép NSScrollView chia lại khung NGAY để mk_layoutHostForCurrentPane đọc đúng bề ngang khả dụng
+    // của clip view (không phải giá trị cũ trước khi đổi frame).
+    [_paneScroll tile];
+}
+
+// [MINDFUL] Cửa sổ kéo giãn — đặt lại documentView + pane đang hiện theo bề ngang khung nhìn hiện
+// tại. Chỉ màn "Hôm nay" (_paneToday: toàn card tự vẽ applyThinCardStyle, bo/viền theo bounds, KHÔNG
+// bóng chụp sẵn) mới NỚI RỘNG — autoresizing của 3 card con lo phần còn lại. Các pane khác GIỮ nguyên
+// bề ngang, canh giữa cột: nhất là pane mượn NSBox từ OpenKey (applyBrandCardStyle chụp shadowPath
+// theo bounds lúc viewDidLoad → resize là bóng lệch, xem đầu file). Với pane cố định CHỈ đổi origin.
+//
+// [MINDFUL] Epic 3 G1 (F5) — documentView cao bằng MAX(pane, khung nhìn):
+//  - pane thấp hơn khung nhìn → docH = khung nhìn, không sinh thanh cuộn thừa cho pane ngắn;
+//  - pane cao hơn khung nhìn  → docH = pane, cuộn tới được dòng cuối.
+- (void)mk_layoutHostForCurrentPane {
+    NSView *pane = _paneHost.subviews.firstObject;
+    if (pane == nil) return;
+
+    CGFloat vw = NSWidth(_paneScroll.contentView.bounds);
+    CGFloat viewportH = NSHeight(_paneScroll.contentView.bounds);
+    if (vw <= 0.0) return;
+
+    BOOL stretchy = (pane == _paneToday);
+    CGFloat paneW = stretchy ? vw : NSWidth(pane.frame);
+    CGFloat paneH = NSHeight(pane.frame);
+    CGFloat docH = MAX(paneH, viewportH);
+
+    _paneHost.frame = NSMakeRect(0.0, 0.0, vw, docH);
+
+    CGFloat x = stretchy ? 0.0 : MAX(0.0, (vw - paneW) / 2.0);   // pane cố định canh giữa cột nội dung
+    pane.frame = NSMakeRect(x, docH - paneH, paneW, paneH);       // neo đỉnh (view KHÔNG lật, gốc dưới-trái)
+}
+
+// [MINDFUL] Cửa sổ kéo giãn — mỗi lần người dùng kéo cạnh cửa sổ: cột nav/divider/nội dung đã tự
+// giãn bằng autoresizing; còn khung cuộn + pane bên trong dựng lại tay ở đây (giữ nguyên vị trí cuộn,
+// không nhảy về đỉnh như lúc đổi mục).
+- (void)windowDidResize:(NSNotification *)notification {
+    [self mk_layoutScrollAndSubnav];
+    [self mk_layoutHostForCurrentPane];
 }
 
 @end
