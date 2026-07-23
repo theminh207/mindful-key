@@ -180,7 +180,10 @@ static void ProcessTabBell(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     
     RECT seg2Rc = { card2Rc.left + 15, card2Rc.top + 35, card2Rc.right - 15, card2Rc.top + 65 };
     const wchar_t* intervalTabs[] = { L"30 phút", L"60 phút", L"Tùy chỉnh" };
-    int currentInt = (vBellInterval <= 30) ? 0 : ((vBellInterval <= 60) ? 1 : 2);
+    // [MINDFUL] P1 review — SO SÁNH BẰNG, không phải khoảng (<=30/<=60). Preset chỉ BAO GIỜ ghi đúng
+    // 30 hoặc 60 (dòng dưới); mọi giá trị khác — kể cả tùy chỉnh nằm trong 15..60 — PHẢI đứng ở "Tùy
+    // chỉnh". Bản khoảng cũ tự ý xếp 45' vào ô "60 phút" ở lần vẽ kế, làm mất stepper + hiện sai số.
+    int currentInt = (vBellInterval == 30) ? 0 : ((vBellInterval == 60) ? 1 : 2);
     int clickedInt = BrandControls_DrawSegmentedControl(hdc, seg2Rc, intervalTabs, 3, currentInt, clickPt, 0);
     if (clickedInt != -1 && clickedInt != currentInt) {
         int newMins = (clickedInt == 0) ? 30 : ((clickedInt == 1) ? 60 : 120);
@@ -576,6 +579,9 @@ static LRESULT CALLBACK PopoverWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
             int clicked = BrandControls_DrawSegmentedControl(hdc, segRc, tabs, 3, g_currentTab, pt, 0);
             if (clicked != -1 && clicked != g_currentTab) {
                 g_currentTab = clicked;
+                // [MINDFUL] P1 review — rời tab Chuông thì bỏ nháp CHƯA bấm "Đặt". Không reset thì quay
+                // lại tab Chuông sẽ thấy số nháp cũ (chưa từng chốt) như thể đó là nhịp đang chạy thật.
+                g_bellIntervalDraft = 0;
                 InvalidateRect(hwnd, NULL, FALSE);
                 ReleaseDC(hwnd, hdc);
                 return 0;
@@ -661,6 +667,10 @@ void TrayPopover_Uninit() {
 
 // [MINDFUL] C5 — tách phần "định vị gần khay + hiện" để cả Toggle lẫn ShowCheckin dùng chung.
 static void ShowPopoverNearCursor() {
+    // [MINDFUL] P1 review — mỗi lần MỞ LẠI popover, bỏ nháp nhịp tùy chỉnh chưa chốt (đóng popover
+    // coi như huỷ thao tác dở dang, khớp cách stepper-Đặt hoạt động: chỉ "Đặt" mới ghi thật).
+    g_bellIntervalDraft = 0;
+
     // Lấy vị trí Taskbar để hiển thị gần Tray Icon
     APPBARDATA abd = { sizeof(APPBARDATA) };
     SHAppBarMessage(ABM_GETTASKBARPOS, &abd);
