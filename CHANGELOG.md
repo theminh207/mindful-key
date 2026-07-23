@@ -3,6 +3,33 @@
 Theo [Keep a Changelog](https://keepachangelog.com/) và [SemVer](https://semver.org/).
 Phiên bản lấy từ `version.env`.
 
+## [0.4.17]
+
+Đợt hoàn thiện Popover theo nghiệm thu tay (`docs/POPOVER-FEEDBACK.md`) + tự-cập-nhật một chạm.
+
+### Added
+
+- **Popover: nhịp chuông tùy chỉnh đặt được** — thêm bộ tăng/giảm "− NN phút +" + nút "Đặt" (thay ô
+  cứng chỉ đọc). Nhịp trong khoảng 15–240 phút (P1).
+- **Popover: bấm icon nốt nhạc để chọn file .wav** làm tiếng chuông của riêng bạn (P2).
+- **Popover: khung cảm xúc "Hôm nay" hết trống** — luôn hiện khung thời gian 3 giờ/2 giờ/1 giờ/bây
+  giờ kể cả khi chưa có dữ liệu; thêm nút chuyển **"Ngay bây giờ / Hôm nay"** (xem 24 giờ theo
+  sáng/trưa/chiều/tối) + link **"Soi lại hôm nay →"** (P4, P5, P6).
+- **Popover: tab Bộ gõ có thẻ "Gõ tắt"** — bật/tắt Macro + Chuyển chế độ thông minh + link mở bảng
+  gõ tắt (P7).
+- **Nút "Kiểm tra bản mới..." giờ tự cập nhật** — tự hỏi bản mới nhất, tải và mở bộ cài (chỉ khi bạn
+  bấm; vẫn qua kiểm tra an toàn của Windows). Chưa ký số nên có thể còn cảnh báo SmartScreen — bấm
+  "More info → Run anyway".
+
+### Changed
+
+- **Trang chủ đổi thành `https://key.bketech.xyz`** (link mã nguồn vẫn trỏ GitHub theo giấy phép GPL).
+
+### Fixed
+
+- **Bug thật: nhịp tùy chỉnh 15–60 phút bị xếp nhầm về "30/60 phút"** ở lần vẽ kế (hiện sai số so với
+  nhịp đang chạy thật). Nay so đúng bằng giá trị chính xác (P1 review).
+
 ## [0.4.16]
 
 Đợt "thu cửa sổ + đồng bộ thiết kế" (GĐ-C) + khép sổ (GĐ-D một phần), `docs/WINDOWS-PARITY-TASKS.md`.
