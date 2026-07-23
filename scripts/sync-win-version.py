@@ -12,6 +12,14 @@ import os
 import re
 import sys
 
+# [MINDFUL] stdout của Python trên runner Windows mặc định là cp1252 (không mã hoá nổi tiếng Việt) →
+# in chữ có dấu là crash `UnicodeEncodeError`. Ép UTF-8; mọi thông báo dưới cũng giữ ASCII cho chắc.
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except Exception:
+    pass
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RC = os.path.join(ROOT, "platforms", "windows", "win32", "MindfulKey", "MindfulKey", "MindfulKey.rc")
 
@@ -26,9 +34,9 @@ def read_version():
                 v = line.split("=", 1)[1].strip()
                 parts = v.split(".")
                 if len(parts) != 3 or not all(p.isdigit() for p in parts):
-                    sys.exit(f"version.env: VERSION không đúng dạng x.y.z: {v!r}")
+                    sys.exit(f"version.env: VERSION not in x.y.z form: {v!r}")
                 return parts  # ['0','4','15']
-    sys.exit("version.env: không tìm thấy dòng VERSION=")
+    sys.exit("version.env: no VERSION= line found")
 
 
 def main():
@@ -50,12 +58,12 @@ def main():
         text, n = re.subn(pat, repl, text)
         total += n
         if n == 0:
-            sys.exit(f"KHÔNG khớp mẫu (file .rc đổi cấu trúc?): {pat}")
+            sys.exit(f"pattern not matched (did .rc structure change?): {pat}")
 
     with open(RC, "w", encoding="utf-8") as f:
         f.write(text)
 
-    print(f"sync-win-version: .rc -> version {dot} ({total} dòng đã ghi)")
+    print(f"sync-win-version: .rc -> version {dot} ({total} fields written)")
 
 
 if __name__ == "__main__":
