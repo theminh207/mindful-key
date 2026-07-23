@@ -488,6 +488,19 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             DrawRowSwitch(card3Rc, 0, L"Sử dụng Macro (Gõ tắt)", vUseMacro == 1);
             DrawRowSwitch(card3Rc, 1, L"Gõ tắt cả khi tiếng Anh", vUseMacroInEnglishMode == 1);
             DrawRowSwitch(card3Rc, 2, L"Cho phép phụ âm z, w, j, f", vAllowConsonantZFWJ == 1);
+
+            y += 135;
+
+            // [MINDFUL] CP4 — thẻ "CÔNG CỤ": mở bảng Gõ tắt (macro) + Công cụ chuyển mã. 2 dialog đã có
+            // sẵn (onMacroTable/onConvertTool). Mirror macOS Gõ tắt/Chuyển mã — Windows mở cửa riêng.
+            RECT card4Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 80 };
+            BrandControls_DrawCard(memDC, card4Rc, true);
+            RECT lblToolRc = { card4Rc.left + 15, card4Rc.top + 8, card4Rc.right - 15, card4Rc.top + 26 };
+            DrawLabel(L"CÔNG CỤ", lblToolRc, BrandFontEyebrow, kBrandPaletteStone);
+            RECT macroLinkRc = { card4Rc.left + 15, card4Rc.top + 30, card4Rc.right - 15, card4Rc.top + 52 };
+            DrawLabel(L"Bảng gõ tắt ▸", macroLinkRc, BrandFontBody, kBrandPaletteTeal, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+            RECT convLinkRc = { card4Rc.left + 15, card4Rc.top + 54, card4Rc.right - 15, card4Rc.top + 76 };
+            DrawLabel(L"Công cụ chuyển mã ▸", convLinkRc, BrandFontBody, kBrandPaletteTeal, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
         }
         else if (currentTab == 4) { // Hệ thống
             RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
@@ -757,6 +770,14 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             if (CheckSwitch(card3Rc, 0, pt)) { APP_SET_DATA(vUseMacro, vUseMacro ? 0 : 1); changed = true; }
             if (CheckSwitch(card3Rc, 1, pt)) { APP_SET_DATA(vUseMacroInEnglishMode, vUseMacroInEnglishMode ? 0 : 1); changed = true; }
             if (CheckSwitch(card3Rc, 2, pt)) { APP_SET_DATA(vAllowConsonantZFWJ, vAllowConsonantZFWJ ? 0 : 1); changed = true; }
+
+            // [MINDFUL] CP4 — thẻ CÔNG CỤ: RECT dựng lại Y HỆT khối vẽ. Mở cửa riêng nên không cần changed.
+            y += 135;
+            RECT card4Rc = { contentRc.left + 20, y, contentRc.right - 20, y + 80 };
+            RECT macroLinkRc = { card4Rc.left + 15, card4Rc.top + 30, card4Rc.right - 15, card4Rc.top + 52 };
+            RECT convLinkRc = { card4Rc.left + 15, card4Rc.top + 54, card4Rc.right - 15, card4Rc.top + 76 };
+            if (PtInRect(&macroLinkRc, pt)) AppDelegate::getInstance()->onMacroTable();
+            else if (PtInRect(&convLinkRc, pt)) AppDelegate::getInstance()->onConvertTool();
 
             if (changed) {
                 SystemTrayHelper::updateData();
