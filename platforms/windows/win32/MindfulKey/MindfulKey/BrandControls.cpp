@@ -286,28 +286,40 @@ float BrandControls_DrawSlider(HDC hdc, const RECT& rc, float thumbPos, POINT cl
     return thumbPos;
 }
 
-int BrandControls_DrawIconGroup(HDC hdc, const RECT& rc, int count, int selectedIndex, POINT clickPt) {
+int BrandControls_DrawIconGroup(HDC hdc, const RECT& rc, int count, int selectedIndex, POINT clickPt, const int* iconResIds) {
     if (count <= 0) return -1;
     int itemWidth = (rc.right - rc.left) / count;
     int clickedIndex = -1;
 
     for (int i = 0; i < count; i++) {
         RECT itemRc = { rc.left + i * itemWidth, rc.top, rc.left + (i + 1) * itemWidth, rc.bottom };
-        
+
         if (clickPt.x != -1 && clickPt.x >= itemRc.left && clickPt.x < itemRc.right && clickPt.y >= itemRc.top && clickPt.y < itemRc.bottom) {
             clickedIndex = i;
         }
 
-        // Tạm vẽ ký tự giả lập icon nếu chưa tải được resource GDI+ image
-        // (Sẽ bổ sung logic vẽ PNG từ .rc sau)
-        HFONT font = BrandControls_Font(BrandFontTitle);
-        HFONT oldFont = (HFONT)SelectObject(hdc, font);
-        SetBkMode(hdc, TRANSPARENT);
-        SetTextColor(hdc, MK_COLORREF((i == selectedIndex) ? kBrandPaletteTeal : kBrandPaletteStone));
-        
-        const wchar_t* fallbackIcons[] = { L"A", L"B", L"C", L"D", L"E" };
-        DrawTextW(hdc, i < 5 ? fallbackIcons[i] : L"?", -1, &itemRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-        SelectObject(hdc, oldFont);
+        // Icon .ico thật từ .rc. LR_SHARED = hệ thống tự cache + tự giải phóng, không cần DestroyIcon.
+        // NULL/không tải được -> rơi về chữ A/B/C/D (giữ đường lui để không bao giờ vẽ ra ô trống).
+        HICON hIcon = NULL;
+        if (iconResIds) {
+            const int kIconPx = 28;
+            hIcon = (HICON)LoadImageW(GetModuleHandleW(NULL), MAKEINTRESOURCEW(iconResIds[i]),
+                                      IMAGE_ICON, kIconPx, kIconPx, LR_SHARED);
+            if (hIcon) {
+                int cx = itemRc.left + (itemRc.right - itemRc.left - kIconPx) / 2;
+                int cy = itemRc.top + (itemRc.bottom - itemRc.top - kIconPx) / 2 - 2;
+                DrawIconEx(hdc, cx, cy, hIcon, kIconPx, kIconPx, 0, NULL, DI_NORMAL);
+            }
+        }
+        if (!hIcon) {
+            HFONT font = BrandControls_Font(BrandFontTitle);
+            HFONT oldFont = (HFONT)SelectObject(hdc, font);
+            SetBkMode(hdc, TRANSPARENT);
+            SetTextColor(hdc, MK_COLORREF((i == selectedIndex) ? kBrandPaletteTeal : kBrandPaletteStone));
+            const wchar_t* fallbackIcons[] = { L"A", L"B", L"C", L"D", L"E" };
+            DrawTextW(hdc, i < 5 ? fallbackIcons[i] : L"?", -1, &itemRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            SelectObject(hdc, oldFont);
+        }
 
         // Vẽ indicator (chấm teal) dưới icon được chọn
         if (i == selectedIndex) {

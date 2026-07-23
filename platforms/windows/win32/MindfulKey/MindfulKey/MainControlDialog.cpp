@@ -351,7 +351,8 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             DrawLabel(L"Nghe thử", btnPreviewRc, BrandFontButton, kBrandPaletteCardWhite, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
             RECT iconGrpRc = { card3Rc.left + 15, card3Rc.top + 35, card3Rc.right - 15, card3Rc.top + 75 };
-            BrandControls_DrawIconGroup(memDC, iconGrpRc, 4, s_bellSoundIndex, pt);
+            static const int kBellIconIds[] = { IDI_ICON_BELL_TEMPLE, IDI_ICON_BELL_CHIME, IDI_ICON_BELL_WIND, IDI_ICON_BELL_CUSTOM };
+            BrandControls_DrawIconGroup(memDC, iconGrpRc, 4, s_bellSoundIndex, pt, kBellIconIds);
 
             // [MINDFUL] A2 — s_bellVolume ở thang 0..100 (khớp vBellVolume), DrawSlider nhận thumbPos
             // 0..1 để vẽ đúng vị trí; click thật xử ở WM_LBUTTONUP.

@@ -85,6 +85,10 @@
 #define IDI_TAB_GOTAT                   261
 #define IDI_TAB_HETHONG                 262
 #define IDI_TAB_THONGTIN                263
+#define IDI_ICON_BELL_TEMPLE            264
+#define IDI_ICON_BELL_CHIME             265
+#define IDI_ICON_BELL_WIND              266
+#define IDI_ICON_BELL_CUSTOM            267
 #define IDR_WAVE_TEMPLE                 300
 #define IDR_WAVE_CHIME                  301
 #define IDR_WAVE_WIND                   302

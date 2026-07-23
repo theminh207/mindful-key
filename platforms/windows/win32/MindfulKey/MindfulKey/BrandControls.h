@@ -67,7 +67,8 @@ float BrandControls_DrawSlider(HDC hdc, const RECT& rc, float thumbPos, POINT cl
 
 // ── Icon Group Selector (Bộ tiếng) ──
 // Nhóm 4 nút icon (Chuông chùa, Chuông báo, Chuông gió, Nhạc). Indicator là chấm teal dưới icon.
-int BrandControls_DrawIconGroup(HDC hdc, const RECT& rc, int count, int selectedIndex, POINT clickPt);
+// iconResIds = mảng `count` resource-id icon (.ico trong .rc). NULL -> vẽ chữ A/B/C/D dự phòng.
+int BrandControls_DrawIconGroup(HDC hdc, const RECT& rc, int count, int selectedIndex, POINT clickPt, const int* iconResIds);
 
 // ── Text Input / ComboBox Styling ──
 // Vẽ viền xám nhạt, nền trắng, bo góc. Thường gọi trong WM_CTLCOLOR hoặc đè WM_NCPAINT của edit native.

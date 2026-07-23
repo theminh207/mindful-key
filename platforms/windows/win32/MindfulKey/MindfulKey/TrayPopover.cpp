@@ -177,7 +177,8 @@ static void ProcessTabBell(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     RECT iconGrpRc = { card3Rc.left + 15, card3Rc.top + 35, card3Rc.right - 15, card3Rc.top + 75 };
     std::wstring currentSndName = MindfulKeyHelper::getRegString(_T("vBellSoundName"), _T("temple"));
     int currentSnd = (currentSndName == L"chime") ? 1 : (currentSndName == L"wind") ? 2 : (currentSndName == L"custom") ? 3 : 0;
-    int clickedSnd = BrandControls_DrawIconGroup(hdc, iconGrpRc, 4, currentSnd, clickPt);
+    static const int kBellIconIds[] = { IDI_ICON_BELL_TEMPLE, IDI_ICON_BELL_CHIME, IDI_ICON_BELL_WIND, IDI_ICON_BELL_CUSTOM };
+    int clickedSnd = BrandControls_DrawIconGroup(hdc, iconGrpRc, 4, currentSnd, clickPt, kBellIconIds);
     if (clickedSnd != -1 && clickedSnd != currentSnd) {
         static const wchar_t* kBellSoundIds[] = { L"temple", L"chime", L"wind", L"custom" };
         MindfulKeyHelper::setRegString(_T("vBellSoundName"), kBellSoundIds[clickedSnd]);

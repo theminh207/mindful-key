@@ -75,6 +75,16 @@ IDI_TAB_HETHONG         ICON                    "../../../../../brand/platform/w
 
 IDI_TAB_THONGTIN        ICON                    "../../../../../brand/platform/windows/TabThongTin.ico"
 
+// [MINDFUL] B7 — icon 4 bộ tiếng chuông (thay chữ giả A/B/C/D). Xuất từ SVG brand qua
+// brand/export-platform.sh (bell_temple/chime/wind + bell-custom).
+IDI_ICON_BELL_TEMPLE    ICON                    "../../../../../brand/platform/windows/BellTemple.ico"
+
+IDI_ICON_BELL_CHIME     ICON                    "../../../../../brand/platform/windows/BellChime.ico"
+
+IDI_ICON_BELL_WIND      ICON                    "../../../../../brand/platform/windows/BellWind.ico"
+
+IDI_ICON_BELL_CUSTOM    ICON                    "../../../../../brand/platform/windows/BellCustom.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

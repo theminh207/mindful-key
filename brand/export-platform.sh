@@ -73,6 +73,14 @@ ico_from_svg "$SVG/ui-tab-gotat.svg"    "$OUT/windows/TabGoTat.ico"    "" "${BTN
 ico_from_svg "$SVG/ui-tab-hethong.svg"  "$OUT/windows/TabHeThong.ico"  "" "${BTN_SIZES[@]}"
 ico_from_svg "$SVG/ui-tab-thongtin.svg" "$OUT/windows/TabThongTin.ico" "" "${BTN_SIZES[@]}"
 
+# Icon 4 bộ tiếng chuông (popover + tab Chuông). Brand vẽ sẵn 3 tiếng + 1 tuỳ chỉnh; trước 2026-07-23
+# UI Windows hiện chữ giả A/B/C/D (BrandControls_DrawIconGroup fallback) — nay nối sang .ico thật.
+echo "== Windows: icon bộ tiếng chuông =="
+ico_from_svg "$SVG/bell_temple.svg"  "$OUT/windows/BellTemple.ico"  "" "${BTN_SIZES[@]}"
+ico_from_svg "$SVG/bell_chime.svg"   "$OUT/windows/BellChime.ico"   "" "${BTN_SIZES[@]}"
+ico_from_svg "$SVG/bell_wind.svg"    "$OUT/windows/BellWind.ico"    "" "${BTN_SIZES[@]}"
+ico_from_svg "$SVG/bell-custom.svg"  "$OUT/windows/BellCustom.ico"  "" "${BTN_SIZES[@]}"
+
 echo "== Windows: icon app =="
 ico_from_svg "$SVG/AppIcon.svg"      "$OUT/windows/icon.ico"         ""       16 20 24 32 48 64 128 256
 
