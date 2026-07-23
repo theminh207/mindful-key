@@ -3,6 +3,25 @@
 Theo [Keep a Changelog](https://keepachangelog.com/) và [SemVer](https://semver.org/).
 Phiên bản lấy từ `version.env`.
 
+## [0.4.18]
+
+Đợt "cửa Cài đặt bắt kịp macOS" (`docs/CONTROL-PANEL-FEEDBACK.md`).
+
+### Added
+
+- **Tab Chuông:** bấm icon nốt nhạc cũng mở chọn file .wav (CP2); nới rộng ô nhập khung giờ yên lặng
+  để không bị cắt chữ (CP3).
+- **Tab Bộ gõ:** thêm thẻ "CÔNG CỤ" mở **Bảng gõ tắt** (macro) + **Công cụ chuyển mã** (CP4).
+- **Tab Riêng tư (trước để trống):** đủ 4 nhóm — bật/tắt nhật ký cảm xúc (tắt là xóa sạch), **Xuất
+  CSV** (bản sao gọn, không chứa chữ gõ), **tự động dọn dẹp** nhật ký cũ hơn 30/60/90 ngày, và **Xóa
+  toàn bộ nhật ký** (CP5).
+- **Tab Giới thiệu:** đồng bộ với macOS — icon, tagline "Một sản phẩm GNH", ngày cập nhật, credit
+  OpenKey, trang chủ key.bketech.xyz, nút cam "Kiểm tra bản mới..." nối bộ tự-cập-nhật, copyright GNH (CP6).
+
+### Changed
+
+- **Đổi tên "Phát tiếng gõ" → "Bật chuông tỉnh thức"** cho đúng nghĩa + đồng bộ với macOS/popover (CP1).
+
 ## [0.4.17]
 
 Đợt hoàn thiện Popover theo nghiệm thu tay (`docs/POPOVER-FEEDBACK.md`) + tự-cập-nhật một chạm.
