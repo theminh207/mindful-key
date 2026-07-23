@@ -51,6 +51,13 @@ Trạng thái: ✅ ngang macOS · 🎨 chỉ-vỏ (vẽ được, chưa bấm/ch
 
 ## 4. Lộ trình khắc phục — 4 giai đoạn
 
+> 🔧 **Bản THI CÔNG chia nhỏ từng việc (có cột trạng thái, neo `file:line`, công thức, cổng nghiệm
+> thu) cho model thực thi:** [WINDOWS-PARITY-TASKS.md](WINDOWS-PARITY-TASKS.md). Bản dưới đây chỉ nêu
+> khung 4 giai đoạn + lý do; đi làm thì mở bảng thi công.
+>
+> **Trạng thái tổng (cập nhật 2026-07-23):** GĐ-A `⬜ chưa khởi công` (9 việc A0–A8) · GĐ-B `⬜` ·
+> GĐ-C `⬜` · GĐ-D `⬜`. Việc gần nhất = **A0 (helper hit-test)** rồi **A1 (credit GPL)**.
+
 Nguyên tắc: giai đoạn trước là móng của giai đoạn sau; mỗi giai đoạn có cổng nghiệm thu riêng
 (máy + mắt người, bám `QA-WINDOWS.md` §7 Definition of Done). KHÔNG gộp — mỗi GĐ 1 đợt
 commit + 1 bản release để chủ dự án test tay.
