@@ -3,6 +3,29 @@
 Theo [Keep a Changelog](https://keepachangelog.com/) và [SemVer](https://semver.org/).
 Phiên bản lấy từ `version.env`.
 
+## [0.4.16]
+
+Đợt "thu cửa sổ + đồng bộ thiết kế" (GĐ-C) + khép sổ (GĐ-D một phần), `docs/WINDOWS-PARITY-TASKS.md`.
+
+### Added
+
+- **Windows: cửa Cài đặt kéo giãn được** — bỏ khung cứng, thêm mép kéo + nút thu nhỏ; thu cỡ mặc
+  định từ 450×450 xuống 380×360 (trước to quá so với nội dung). Có chặn thu-nhỏ-quá để nội dung
+  không bị cắt (C1).
+- **Windows: khung "Mặt hồ đang thế nào?" sau nhịp chuông** — thay hộp nhắc chữ cũ bằng 3 lựa chọn
+  tự ghi nhận (Phẳng lặng / Gợn nhẹ / Gợn sóng) + "Bỏ qua", ghi vào nhật ký và hiện lên cơn sóng. Ba
+  mức cùng một sắc trung tính — không đèn xanh/đỏ chấm điểm (C5).
+- **Windows: chọn Kiểu gõ / Bảng mã ngay trên popover** — trước đây chỉ hiện chữ "Telex"/"Unicode"
+  cứng (sai cả trạng thái thật lẫn không bấm được); nay đọc đúng thiết lập hiện tại và bấm để đổi (C3).
+- **Windows: file .exe khai đúng phiên bản** — thêm bước tự ghi số phiên bản từ `version.env` vào
+  file build, vá lỗi .exe kẹt version cũ (D1).
+
+### Notes
+
+- **DPI màn nét-cao (C2) tạm HOÃN có chủ đích**: hiện app vẫn hiển thị đúng cỡ + bấm trúng trên màn
+  150% (Windows tự phóng, hơi mờ). Bản "sắc nét per-monitor" cần sửa 260+ toạ độ vẽ+bấm và **chỉ màn
+  nét-cao thật mới kiểm được** — làm mù rủi ro lệch vùng bấm, để lại chờ máy thật. Xem `docs/FRICTION-LOG.md`.
+
 ## [0.4.15]
 
 Đợt "trọn vẹn tính năng chuông + cơn sóng sống" (GĐ-B, `docs/WINDOWS-PARITY-TASKS.md`) — sau nghiệm

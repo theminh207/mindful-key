@@ -344,12 +344,12 @@ bấm → toggle) + "⋯" (bấm → hiện menu khay `SystemTrayHelper` popup).
 
 | ID | Trạng thái | Việc |
 |---|---|---|
-| **C1** | ⛔ chờ chốt | Thu cỡ + cho kéo giãn cửa Cài đặt. Chi tiết ↓ (cần chốt cỡ đích) |
-| **C1b** | ⬜ | Layout co giãn theo `WM_SIZE` (sau C1). Chi tiết ↓ |
-| **C2** | ⬜ | DPI PerMonitorV2 + scale toạ độ vẽ tay. Chi tiết ↓ (nặng) |
-| **C3** | ⛔ chờ chốt | Combo thật + icon Bộ tiếng thật (cần biết icon brand có chưa). Chi tiết ↓ |
-| **C4** | ⬜ | Pane Chuông đủ: giờ yên lặng + snooze + tiếng tùy chỉnh. Chi tiết ↓ |
-| **C5** | ⬜ | Check-in overlay 3 mức sóng. Chi tiết ↓ |
+| **C1** | ✅ | Thu cửa Cài đặt 450→380×360 DLU + `WS_THICKFRAME`/kéo giãn được (v0.4.16). |
+| **C1b** | ✅ | `WM_SIZE` repaint + `WM_GETMINMAXINFO` min-clamp 480×520px (không cụt) thay vì viewport cuộn — xem FRICTION-LOG. |
+| **C2** | ⏸️ HOÃN | DPI PerMonitorV2 + scale 260+ toạ độ vẽ+bấm. Làm MÙ = rủi ro lệch-click còn TỆ hơn hiện trạng (mờ nhưng đúng+bấm được). Cần màn nét-cao THẬT của chủ dự án mới verify — xem FRICTION-LOG. |
+| **C3** | ✅ | Icon Bộ tiếng thật (B7) + dropdown Kiểu gõ/Bảng mã thật trên popover (đọc đúng vInputType/vCodeTable + menu chọn, v0.4.16). |
+| **C4** | ✅ | Đã làm ở B6 (kéo lên): giờ yên lặng + .wav riêng + tạm hoãn trong tab Chuông cửa Cài đặt. |
+| **C5** | ✅ | Khung check-in 3 mức (Phẳng lặng/Gợn nhẹ/Gợn sóng + Bỏ qua) bật sau nhịp chuông, ghi `MoodStore_LogCheckinEvent`, lên sóng (v0.4.16). |
 
 ### C1 — Thu cỡ + cho kéo giãn  ⛔ CẦN CHỦ DỰ ÁN CHỐT CỠ ĐÍCH
 `MindfulKey.rc:149` STYLE: bỏ `DS_MODALFRAME`, thêm `WS_THICKFRAME | WS_MINIMIZEBOX`. Thu `DIALOGEX
@@ -408,10 +408,10 @@ sau nhịp chuông. Kiểm `MoodStore_LogCheckinEvent` đã có ở `MoodStore.c
 
 | ID | Trạng thái | Việc |
 |---|---|---|
-| **D1** | ⬜ | Version Windows tự đọc `version.env` lúc build. Chi tiết ↓ |
-| **D2** | ⬜ | Quét ma trận PLAN §3 lần cuối. Chi tiết ↓ |
-| **D3** | ⬜ | Chạy TRỌN `docs/QA-WINDOWS.md` + điền `TEST_MATRIX.md`. Chi tiết ↓ |
-| **D4** | ⬜ | SignPath duyệt → nối ký. Chi tiết ↓ |
+| **D1** | ✅ | `scripts/sync-win-version.py` ghi version.env → .rc trước msbuild (windows.yml + release.yml). Vá bug .exe kẹt version cũ (v0.4.16). |
+| **D2** | ✅ | Quét ma trận cuối: bảng A/B/C cập nhật trạng thái, C2 ghi HOÃN, sổ FRICTION-LOG/PLAN đồng bộ (2026-07-23). |
+| **D3** | 🙋 chủ dự án | Chạy TRỌN `docs/QA-WINDOWS.md` trên Windows THẬT + điền `TEST_MATRIX.md`. Máy dev macOS không chạy được. |
+| **D4** | ⛔ chờ SignPath | CI đã cắm job `sign-windows` (secrets SIGNPATH_*); chờ SignPath DUYỆT cấp Org/Project/Policy slug + token. `continue-on-error` nên chưa ký vẫn ra bản (SmartScreen cảnh báo). |
 
 ### D1 — Version tự đọc `version.env`
 Tạo `scripts/sync-win-version.py` (Python, chạy cả macOS lẫn runner Windows): đọc `VERSION` từ

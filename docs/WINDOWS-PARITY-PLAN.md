@@ -55,11 +55,12 @@ Trạng thái: ✅ ngang macOS · 🎨 chỉ-vỏ (vẽ được, chưa bấm/ch
 > thu) cho model thực thi:** [WINDOWS-PARITY-TASKS.md](WINDOWS-PARITY-TASKS.md). Bản dưới đây chỉ nêu
 > khung 4 giai đoạn + lý do; đi làm thì mở bảng thi công.
 >
-> **Trạng thái tổng (cập nhật 2026-07-23):** GĐ-A `✅ XONG` (9 việc, v0.4.14 released, chờ mắt
-> người) · GĐ-B `✅ XONG` (9 việc B1–B9, v0.4.15 staged, chờ mắt người: sóng sống + nút Nghe-thử +
-> dòng "dự kiến reo" + giờ-yên-lặng/.wav-riêng + icon thật + bỏ hộp chuông cũ + header popover VN/⋯;
-> mingw sweep 21 file + windres + brand-lint đều xanh) · GĐ-C `⬜` (còn cửa sổ resize/DPI/check-in —
-> phần bell/icon đã kéo sang B) · GĐ-D `⬜`. Chi tiết thi công: TASKS.
+> **Trạng thái tổng (cập nhật 2026-07-23):** GĐ-A `✅ XONG` (9 việc, v0.4.14 released) · GĐ-B
+> `✅ XONG` (9 việc B1–B9, v0.4.15 **released + CI MSVC xanh** — "push trước" đã bắt 2 bug thật:
+> script cp1252 crash + selectTab MSVC filter nuốt) · GĐ-C `✅ gần xong` (C1 thu cửa+kéo giãn,
+> C1b min-clamp, C3 icon+dropdown thật, C4 kéo từ B6, C5 check-in 3 mức; **C2 DPI HOÃN có lý do** —
+> làm mù = rủi ro lệch-click, cần màn nét-cao thật) · GĐ-D `🔄` (D1 sync version XONG; D2 quét cuối;
+> D3 QA tay của chủ dự án; D4 SignPath chờ duyệt). Ra bản **v0.4.16**. Chi tiết: TASKS + FRICTION-LOG.
 > **Nghiệm thu v0.4.14 (mắt người):** chuông chạy nhưng chưa test được (thiếu Nghe-thử), sóng+nhật
 > ký chưa nhích (thiếu sóng sống), còn hộp thoại chuông native cũ song song → tất cả đã xử ở GĐ-B.
 
