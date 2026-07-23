@@ -222,17 +222,44 @@ static void ProcessTabKeyboard(HDC hdc, int& y, RECT clientRc, POINT clickPt) {
     RECT card1Rc = { 18, y, clientRc.right - 18, y + 90 };
     BrandControls_DrawCard(hdc, card1Rc, true);
     
+    // [MINDFUL] C3 — dropdown THẬT cho Kiểu gõ / Bảng mã. Trước đây hardcode "Telex"/"Unicode" (nói
+    // dối trạng thái thật + bấm không được). Nay đọc đúng vInputType/vCodeTable + bấm mở menu chọn.
+    static const wchar_t* kInputLabels[] = { L"Telex", L"VNI", L"Telex đơn giản" };
+    static const wchar_t* kCodeLabels[]  = { L"Unicode", L"TCVN3 (ABC)", L"VNI Windows", L"Unicode tổ hợp", L"CP 1258" };
+    // Mở menu tại con trỏ, trả index chọn (-1 nếu huỷ). g_hwndPopover làm chủ để menu định vị đúng.
+    auto ShowComboMenu = [&](const wchar_t** items, int count, int current) -> int {
+        HMENU m = CreatePopupMenu();
+        for (int i = 0; i < count; i++)
+            AppendMenuW(m, MF_STRING | (i == current ? MF_CHECKED : 0), (UINT)(i + 1), items[i]);
+        POINT cp;
+        GetCursorPos(&cp);
+        int c = TrackPopupMenu(m, TPM_RETURNCMD | TPM_NONOTIFY, cp.x, cp.y, 0, g_hwndPopover, NULL);
+        DestroyMenu(m);
+        return c - 1;
+    };
+
+    int it = (vInputType >= 0 && vInputType <= 2) ? vInputType : 0;
+    int ct = (vCodeTable >= 0 && vCodeTable <= 4) ? vCodeTable : 0;
+
     RECT labelKieuGoRc = { card1Rc.left + 15, card1Rc.top + 15, card1Rc.left + 100, card1Rc.top + 35 };
     DrawLabel(hdc, L"Kiểu gõ", labelKieuGoRc, BrandFontBody, kBrandPaletteCharcoal);
     RECT comboKieuGoRc = { card1Rc.right - 120, card1Rc.top + 10, card1Rc.right - 15, card1Rc.top + 40 };
     BrandControls_DrawTextBoxFrame(hdc, comboKieuGoRc);
-    DrawLabel(hdc, L"Telex", comboKieuGoRc, BrandFontBody, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+    DrawLabel(hdc, kInputLabels[it], comboKieuGoRc, BrandFontBody, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+    if (clickPt.x != -1 && PtInRect(&comboKieuGoRc, clickPt)) {
+        int sel = ShowComboMenu(kInputLabels, 3, it);
+        if (sel >= 0 && sel != it) { AppDelegate::getInstance()->onInputType(sel); SystemTrayHelper::updateData(); }
+    }
 
     RECT labelBangMaRc = { card1Rc.left + 15, card1Rc.top + 55, card1Rc.left + 100, card1Rc.top + 75 };
     DrawLabel(hdc, L"Bảng mã", labelBangMaRc, BrandFontBody, kBrandPaletteCharcoal);
     RECT comboBangMaRc = { card1Rc.right - 120, card1Rc.top + 50, card1Rc.right - 15, card1Rc.top + 80 };
     BrandControls_DrawTextBoxFrame(hdc, comboBangMaRc);
-    DrawLabel(hdc, L"Unicode", comboBangMaRc, BrandFontBody, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+    DrawLabel(hdc, kCodeLabels[ct], comboBangMaRc, BrandFontBody, kBrandPaletteCharcoal, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+    if (clickPt.x != -1 && PtInRect(&comboBangMaRc, clickPt)) {
+        int sel = ShowComboMenu(kCodeLabels, 5, ct);
+        if (sel >= 0 && sel != ct) { AppDelegate::getInstance()->onTableCode(sel); SystemTrayHelper::updateData(); }
+    }
 
     y += 105;
 
