@@ -33,7 +33,7 @@ Cột cuối là lý do SignPath là **bước 2**: họ không ký một bản 
 **Còn lại (không chặn SignPath):** chủ dự án cầm máy Windows thật xác nhận mở được, gõ Telex ra dấu
 (QA `T1`), chuông kêu (`B0`) trước khi tin bản ký chạy tốt.
 
-**Bước 1 — nộp đơn SignPath** *(việc của chủ dự án, CHẠY SONG SONG được ngay hôm nay)*
+**Bước 1 — nộp đơn SignPath** ✅ **ĐÃ NỘP 2026-07-23** — form "Apply for a free SignPath.io subscription" báo *"Form submitted, we'll be in touch soon"*. Đang chờ SignPath xét duyệt (vài ngày–tuần). Hồ sơ kèm: Code Signing Policy (`docs/CODE-SIGNING-POLICY.md`), Privacy Note, repo đã có mô tả + homepage. *(Hướng dẫn điền form gốc giữ bên dưới để tham chiếu.)*
 Duyệt mất **vài ngày–vài tuần**, nên bắt đầu sớm là khôn. Vào https://signpath.org/ →
 "Apply for Open Source". Điền:
 - **Project name:** Mindful Keyboard (mindful-key)

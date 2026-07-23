@@ -3,6 +3,16 @@
 Theo [Keep a Changelog](https://keepachangelog.com/) và [SemVer](https://semver.org/).
 Phiên bản lấy từ `version.env`.
 
+## [0.4.11]
+
+### Fixed
+
+- **Sóng cảm xúc vẽ ổn định, hết "nhảy" mỗi lần cập nhật (macOS + Windows)** — trước đây mỗi điểm
+  nhô lên hay chìm xuống theo THỨ TỰ trong mảng (điểm chẵn nhô, điểm lẻ chìm), nên chỉ cần thêm/bớt
+  một điểm là đảo nhô-chìm của mọi điểm sau nó → dòng sông đổi hình mỗi lần refresh. Nay độ cao mỗi
+  điểm = đúng biên độ của chính nó, luôn nhô lên từ đường trục; chấm khớp đúng đường. Sửa đồng bộ ở
+  `EmotionRiverView.mm` (macOS) và `ReflectionScreen.cpp` (Windows).
+
 ## [0.4.10]
 
 ### Fixed

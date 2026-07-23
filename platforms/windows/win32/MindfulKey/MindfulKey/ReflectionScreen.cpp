@@ -148,9 +148,14 @@ static void DrawRiver(Graphics& g, const RectF& area, const vector<MoodSample>& 
 
     for (size_t i = 0; i < xs.size(); i++) {
         REAL mx = xs[i] * w;
-        REAL sign = (i % 2 == 0) ? 1.0f : -1.0f;
-        PointF p(area.X + mx, midY - sign * ys[i] * maxWaveH);
-        
+        // [MINDFUL] 2026-07-23 (chủ dự án chốt "sửa cách vẽ sóng") — độ cao mỗi điểm = ĐÚNG biên độ
+        // của nó, luôn NHÔ LÊN từ đường trục (GDI+ trục Y hướng xuống nên "lên" = midY - value).
+        // Trước đây điểm chẵn nhô, điểm lẻ chìm theo THỨ TỰ trong mảng → thêm/bớt một điểm là đảo
+        // nhô-chìm mọi điểm sau nó, mỗi lần refresh sông "nhảy" một kiểu (đúng lỗi chập chờn macOS
+        // cũng dính, đã vá cùng ngày ở EmotionRiverView.mm). Nay vị trí một điểm chỉ phụ thuộc GIÁ
+        // TRỊ + thời điểm thật của chính nó. Chấm (vòng dưới) dùng lại chính toạ độ này nên khớp.
+        PointF p(area.X + mx, midY - ys[i] * maxWaveH);
+
         currentSeg.push_back(p);
         
         // Cắt phân đoạn nếu gap > gapXf

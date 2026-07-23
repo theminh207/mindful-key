@@ -133,17 +133,21 @@ static inline NSDictionary *MKMakeEntry(CGFloat xf, double value, BOOL isCheckin
     path.lineCapStyle = NSLineCapStyleRound;
     path.lineJoinStyle = NSLineJoinStyleRound;
 
-    // Vẽ đường sóng qua các điểm
+    // [MINDFUL] 2026-07-23 (chủ dự án chốt "sửa cách vẽ sóng") — độ cao mỗi điểm = ĐÚNG biên độ
+    // của nó (midY + value * maxWaveH), luôn NHÔ LÊN từ đường trục. Trước đây điểm chẵn nhô, điểm
+    // lẻ chìm theo THỨ TỰ trong mảng → thêm/bớt một điểm là đảo nhô-chìm của mọi điểm sau nó, mỗi
+    // lần refresh sông "nhảy" một kiểu (đúng cái chập chờn chủ dự án thấy). Nay vị trí đứng của một
+    // điểm chỉ phụ thuộc GIÁ TRỊ + thời điểm thật của chính nó → thêm điểm mới không dịch điểm cũ.
+    // Đường trục nét đứt = mặt hồ phẳng lặng; câu êm (risk≈0) → chấm sát trục; câu gắt → gợn nhô cao.
     for (NSArray<NSDictionary*> *seg in segments) {
         if (seg.count == 0) continue;
-        
+
         // Tính toạ độ các điểm trong segment
         NSMutableArray<NSValue*> *pts = [NSMutableArray array];
         for (NSUInteger i = 0; i < seg.count; i++) {
             NSPoint s = MKEntryPoint(seg[i]);
             CGFloat mx = s.x * w;
-            CGFloat sign = (i % 2 == 0) ? 1.0 : -1.0;
-            NSPoint p = NSMakePoint(mx, midY - sign * s.y * maxWaveH);
+            NSPoint p = NSMakePoint(mx, midY + s.y * maxWaveH);
             [pts addObject:[NSValue valueWithPoint:p]];
         }
         
@@ -164,14 +168,14 @@ static inline NSDictionary *MKMakeEntry(CGFloat xf, double value, BOOL isCheckin
     [teal setStroke];
     [path stroke];
 
-    // Vẽ các chấm
+    // Vẽ các chấm — cùng phép đặt độ cao với đường sóng (nhô lên theo giá trị thật), để chấm luôn
+    // nằm ĐÚNG trên đường, không lệch.
     for (NSArray<NSDictionary*> *seg in segments) {
         for (NSUInteger i = 0; i < seg.count; i++) {
             NSDictionary *e = seg[i];
             NSPoint s = MKEntryPoint(e);
             CGFloat mx = s.x * w;
-            CGFloat sign = (i % 2 == 0) ? 1.0 : -1.0;
-            NSPoint closestP = NSMakePoint(mx, midY - sign * s.y * maxWaveH);
+            NSPoint closestP = NSMakePoint(mx, midY + s.y * maxWaveH);
 
             NSRect dot = NSMakeRect(closestP.x - 3.3, closestP.y - 3.3, 6.6, 6.6);
             NSBezierPath *dotPath = [NSBezierPath bezierPathWithOvalInRect:dot];
