@@ -3,8 +3,8 @@ MindfulKey - The Cross platform Open source Vietnamese Keyboard application.
 
 Copyright (C) 2019 Mai Vu Tuyen
 Contact: maivutuyen.91@gmail.com
-Github: https://github.com/tuyenvm/MindfulKey
-Fanpage: https://www.facebook.com/MindfulKeyVN
+Github: https://github.com/tuyenvm/OpenKey
+Fanpage: https://www.facebook.com/OpenKeyVN
 
 This file is belong to the MindfulKey project, Win32 version
 which is released under GPL license.
@@ -143,7 +143,7 @@ INT_PTR MainControlDialog::eventProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
             if (link->hdr.idFrom == IDC_SYSLINK_HOME_PAGE)
                 ShellExecute(NULL, _T("open"), _T("https://github.com/theminh207/mindful-key"), NULL, NULL, SW_SHOWNORMAL);
             else if (link->hdr.idFrom == IDC_SYSLINK_FANPAGE)
-                ShellExecute(NULL, _T("open"), _T("https://www.facebook.com/MindfulKeyVN"), NULL, NULL, SW_SHOWNORMAL);
+                ShellExecute(NULL, _T("open"), _T("https://www.facebook.com/OpenKeyVN"), NULL, NULL, SW_SHOWNORMAL);
             else if (link->hdr.idFrom == IDC_SYSLINK_AUTHOR_EMAIL)
                 ShellExecute(NULL, _T("open"), _T("mailto:maivutuyen.91@gmail.com"), NULL, NULL, SW_SHOWNORMAL);
             break;

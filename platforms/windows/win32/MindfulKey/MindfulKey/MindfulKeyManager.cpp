@@ -4,7 +4,7 @@ MindfulKey - The Cross platform Open source Vietnamese Keyboard application.
 Copyright (C) 2019 Mai Vu Tuyen
 Contact: maivutuyen.91@gmail.com
 Github: https://github.com/theminh207/mindful-key
-Fanpage: https://www.facebook.com/MindfulKeyVN
+Fanpage: https://www.facebook.com/OpenKeyVN
 
 This file is belong to the MindfulKey project, Win32 version
 which is released under GPL license.

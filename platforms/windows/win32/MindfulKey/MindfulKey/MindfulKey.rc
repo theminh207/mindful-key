@@ -139,9 +139,9 @@ BEGIN
     LTEXT           "Fanpage:",IDC_STATIC_APP_SUB_TITLE4,45,103,47,8
     CONTROL         "<a>https://github.com/theminh207/mindful-key/releases</a>",IDC_SYSLINK_NEW_VERSION,
                     "SysLink",WS_TABSTOP,105,91,175,10
-    CONTROL         "<a>https://www.facebook.com/MindfulKeyVN</a>",IDC_SYSLINK_FANPAGE,
+    CONTROL         "<a>https://www.facebook.com/OpenKeyVN</a>",IDC_SYSLINK_FANPAGE,
                     "SysLink",WS_TABSTOP,105,104,175,10
-    CTEXT           "Dựa trên MindfulKey — Mai Vũ Tuyên (GPL v3)",IDC_STATIC_APP_SUB_TITLE5,20,142,247,8
+    CTEXT           "Dựa trên OpenKey — Mai Vũ Tuyên (GPL v3)",IDC_STATIC_APP_SUB_TITLE5,20,142,247,8
     PUSHBUTTON      "Kiểm tra bản mới...",IDC_BUTTON_CHECK_VERSION,44,117,75,14
 END
 
@@ -341,7 +341,7 @@ BEGIN
     CONTROL         "<a>https://github.com/theminh207/mindful-key</a>",IDC_SYSLINK_HOME_PAGE,
                     "SysLink",WS_TABSTOP,81,19,101,10
     LTEXT           "Facebook",IDC_STATIC_APP_TITLE3,39,29,37,8,SS_NOPREFIX
-    CONTROL         "<a>https://www.facebook.com/MindfulKeyVN</a>",IDC_SYSLINK_FANPAGE,
+    CONTROL         "<a>https://www.facebook.com/OpenKeyVN</a>",IDC_SYSLINK_FANPAGE,
                     "SysLink",WS_TABSTOP,81,29,184,10
     LTEXT           "Mindful Keyboard cho Windows là phần mềm mã nguồn mở và được phát hành miễn phí. Bạn hoàn toàn có thể đóng góp ý kiến, yêu cầu tính năng mới qua email của tác giả hoặc trên github.",IDC_STATIC_APP_SUB_TITLE5,39,61,234,28
     LTEXT           "Mai Vũ Tuyên © 2019 - ",IDC_STATIC_APP_SUB_TITLE6,39,94,78,8
