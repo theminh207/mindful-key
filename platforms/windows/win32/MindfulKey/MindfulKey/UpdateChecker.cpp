@@ -49,15 +49,21 @@ static bool HttpGetBody(const wchar_t* url, string& outBody) {
     }
 
     char buf[4096];
-    DWORD read = 0;
     outBody.clear();
-    while (InternetReadFile(hUrl, buf, sizeof(buf), &read) && read > 0) {
+    // [MINDFUL] review (HIGH) — PHẢI phân biệt "lỗi mạng giữa chừng" (InternetReadFile trả FALSE) với
+    // "EOF sạch" (trả TRUE + read==0). Vòng cũ `while(InternetReadFile(...) && read>0)` coi CẢ HAI là
+    // dừng bình thường → body cụt vẫn bị coi như tải xong. Nay lỗi đọc = thất bại thật.
+    bool ok = true;
+    for (;;) {
+        DWORD read = 0;
+        if (!InternetReadFile(hUrl, buf, sizeof(buf), &read)) { ok = false; break; }
+        if (read == 0) break;   // EOF thật
         outBody.append(buf, read);
         if (outBody.size() > 2 * 1024 * 1024) break;   // trần an toàn 2MB — JSON release thật nhỏ hơn nhiều
     }
     InternetCloseHandle(hUrl);
     InternetCloseHandle(hInternet);
-    return !outBody.empty();
+    return ok && !outBody.empty();
 }
 
 // Tải nhị phân 1 URL xuống file đích. Trả false nếu lỗi ở BẤT KỲ bước nào (tự dọn file dở nếu có).
@@ -84,17 +90,25 @@ static bool HttpDownloadFile(const wchar_t* url, const wstring& destPath) {
     }
 
     char buf[8192];
-    DWORD read = 0;
+    // [MINDFUL] review (HIGH) — CRITICAL cho luồng tự-chạy-file: lỗi mạng giữa chừng KHÔNG được coi là
+    // tải xong. Vòng cũ chỉ đổi ok=false khi WriteFile lỗi; InternetReadFile trả FALSE (rớt mạng) thì
+    // thoát êm với ok=true → .exe cụt/rỗng vẫn được ShellExecute chạy. Nay: lỗi đọc = thất bại; file
+    // rỗng (totalWritten==0) cũng = thất bại — KHÔNG BAO GIỜ chạy một file cài dở/trống.
     bool ok = true;
-    while (InternetReadFile(hUrl, buf, sizeof(buf), &read) && read > 0) {
+    DWORD totalWritten = 0;
+    for (;;) {
+        DWORD read = 0;
+        if (!InternetReadFile(hUrl, buf, sizeof(buf), &read)) { ok = false; break; }
+        if (read == 0) break;   // EOF thật
         DWORD written = 0;
         if (!WriteFile(hFile, buf, read, &written, NULL) || written != read) { ok = false; break; }
+        totalWritten += written;
     }
     CloseHandle(hFile);
     InternetCloseHandle(hUrl);
     InternetCloseHandle(hInternet);
-    if (!ok) DeleteFileW(destPath.c_str());
-    return ok;
+    if (!ok || totalWritten == 0) { DeleteFileW(destPath.c_str()); return false; }
+    return true;
 }
 
 // Tách "tag_name":"vX.Y.Z" khỏi JSON thô — KHÔNG viết bộ phân tích JSON đầy đủ (tránh kéo thư viện
@@ -108,7 +122,10 @@ static bool ExtractTagName(const string& json, wstring& outTag) {
     size_t end = json.find('"', pos);
     if (end == string::npos) return false;
     string tag = json.substr(pos, end - pos);
-    if (tag.empty()) return false;
+    // [MINDFUL] SECURITY (review) — tag phiên bản THẬT rất ngắn ("v0.4.17"). Dài bất thường = JSON
+    // lỗi/bị chèn độc → CHẶN. Đây là hàng rào chống TRÀN BUFFER: tag đi thẳng vào wsprintfW ghép URL/
+    // đường dẫn/thông báo trên stack, mà wsprintfW KHÔNG tự kiểm cỡ buffer. Chặn ở nguồn là chắc nhất.
+    if (tag.empty() || tag.size() > 40) return false;
     outTag.assign(tag.begin(), tag.end());   // tag GitHub chỉ gồm ASCII (vd "v0.4.17")
     return true;
 }
@@ -144,6 +161,14 @@ void UpdateChecker_CheckAndUpdate(HWND owner) {
     }
 
     wstring localVer = MindfulKeyHelper::getVersionString();
+    // [MINDFUL] review (MEDIUM) — nếu ĐỌC version cục bộ lỗi, getVersionString trả "0.0.0". Đừng đem
+    // 0.0.0 đi so (mọi bản đều "mới hơn" → báo NHẦM có cập nhật, tải bừa). Không đọc được thì mở trang
+    // để người dùng tự nhìn, KHÔNG đoán.
+    int lv[3] = { 0, 0, 0 };
+    if (!ParseVersion(localVer, lv) || (lv[0] == 0 && lv[1] == 0 && lv[2] == 0)) {
+        MindfulKeyManager::openReleasesPage();
+        return;
+    }
     if (!IsNewer(tag, localVer)) {
         MessageBoxW(owner, L"Bạn đang dùng bản mới nhất.", L"Mindful Keyboard", MB_OK | MB_ICONINFORMATION);
         return;
@@ -168,8 +193,12 @@ void UpdateChecker_CheckAndUpdate(HWND owner) {
         kRepoOwner, kRepoName, tag.c_str(), versionNoV.c_str());
 
     wchar_t tempDir[MAX_PATH];
-    GetTempPathW(MAX_PATH, tempDir);
-    wchar_t destPath[MAX_PATH];
+    DWORD tlen = GetTempPathW(MAX_PATH, tempDir);
+    if (tlen == 0 || tlen > MAX_PATH) {   // [MINDFUL] review — thất bại thì tempDir là rác chưa khởi tạo
+        MindfulKeyManager::openReleasesPage();
+        return;
+    }
+    wchar_t destPath[MAX_PATH + 64];   // [MINDFUL] review — tempDir(≤MAX_PATH) + tên tệp có thể vượt MAX_PATH
     wsprintfW(destPath, L"%sMindfulKey_%s_x64-setup.exe", tempDir, versionNoV.c_str());
 
     HCURSOR oldCursor = SetCursor(LoadCursor(NULL, IDC_WAIT));
