@@ -3,6 +3,28 @@
 Theo [Keep a Changelog](https://keepachangelog.com/) và [SemVer](https://semver.org/).
 Phiên bản lấy từ `version.env`.
 
+## [0.4.12]
+
+### Fixed
+
+- **Windows: chữ Tiếng Việt hết bị vỡ (mojibake)** — thêm cờ `/utf-8` vào cả 4 cấu hình build. File
+  nguồn UTF-8 không có BOM trước đây bị MSVC đọc như CP1252 → mọi chữ Việt trong menu khay, popover,
+  hộp thoại vỡ thành "HÃ´m nay". Nay đọc đúng UTF-8.
+- **Windows: cửa sổ Cài đặt hết trắng trơn** — phần vẽ toàn bộ 6-nav + nội dung nằm trong
+  `tabPageEventProc` nhưng hàm này chưa bao giờ được gắn làm window proc; `eventProc` (proc thật của
+  cửa sổ) không có WM_PAINT → chỉ vẽ nền trống. Nay `eventProc` chuyển tiếp WM_PAINT/ERASEBKGND/
+  LBUTTONUP sang `tabPageEventProc` + bỏ điều kiện `IsThemeActive()` (Classic/high-contrast không vẽ).
+- **Windows: hết cảnh báo "tự nhận mình là đối thủ"** — `RIVAL_MINDFULKEY_CLASS` bị đè trùng
+  `APP_CLASS` lúc đổi tên OpenKey→MindfulKey, khiến app tìm thấy chính cửa sổ mình rồi cảnh báo. Trả
+  về `"OpenKeyVietnameseInputMethod"` (lớp cửa sổ OpenKey gốc) để chỉ cảnh báo khi OpenKey thật chạy.
+- **Windows: tiêu đề hết kẹt "0.4.2"** — `.rc` cập nhật version 0.4.12 (đồng bộ `version.env`).
+
+### Known follow-ups
+
+- Windows tab "Hôm nay"/"Chuông"/"Riêng tư" (0/1/3): hiển thị đúng nhưng hit-test click còn kẹt trong
+  nhánh WM_PAINT — sẽ chuyển sang WM_LBUTTONUP như tab Bộ gõ/Hệ thống.
+- Windows version nên tự đọc `version.env` lúc build thay vì hardcode trong `.rc`.
+
 ## [0.4.11]
 
 ### Fixed

@@ -139,14 +139,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		// đổ lỗi cho bên nào. KHÔNG tự tắt bên kia — để người dùng chọn, khác macOS (Windows tắt
 		// tiến trình bên khác là hành vi nặng); chỉ nói cho biết. §6.3: không để xung đột diễn ra câm.
 		//
-		// Hai lớp nhận diện: (a) MindfulKey gốc qua lớp cửa sổ thừa kế (RIVAL_MINDFULKEY_CLASS — chắc
+		// Hai lớp nhận diện: (a) OpenKey gốc qua lớp cửa sổ thừa kế (RIVAL_MINDFULKEY_CLASS — chắc
 		// nhất, không phụ thuộc tên file); (b) các bộ gõ Việt khác qua TÊN TIẾN TRÌNH. Danh sách
 		// tên ĐÃ XÁC MINH từ nguồn công khai 2026-07-18, KHÔNG đoán: UniKeyNT.exe/UniKey.exe
 		// (file.net + processlibrary), EVKey.exe/EVKey32.exe/EVKey64.exe (github.com/lamquangminh/
 		// EVKey — cùng tác giả bản macOS đã xác minh), GoTiengViet.exe (trankynam.com).
 		std::wstring rivalName;
 		if (FindWindow(RIVAL_MINDFULKEY_CLASS, NULL)) {
-			rivalName = L"MindfulKey";
+			rivalName = L"OpenKey";
 		} else {
 			static const wchar_t* kRivalImeExes[] = {
 				L"UniKeyNT.exe", L"UniKey.exe",

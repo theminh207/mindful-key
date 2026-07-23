@@ -70,6 +70,15 @@ void MainControlDialog::initDialog() {
 }
 
 INT_PTR MainControlDialog::eventProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    // [MINDFUL] blank-window fix: the entire main window (left 6-nav + tab content + clicks) is
+    // rendered by tabPageEventProc, which is NEVER installed as a window/dialog procedure. This
+    // dialog's real proc is BaseDialog::DialogProc -> eventProc, which has no WM_PAINT handler, so
+    // the window painted only the empty IDD_DIALOG_MAIN template = blank gray. Delegate paint and
+    // mouse messages to tabPageEventProc; GWLP_USERDATA already holds `this` (set by DialogProc),
+    // which is exactly what tabPageEventProc reads back.
+    if (uMsg == WM_PAINT || uMsg == WM_ERASEBKGND || uMsg == WM_LBUTTONUP) {
+        return tabPageEventProc(hDlg, uMsg, wParam, lParam);
+    }
     switch (uMsg) {
     case WM_INITDIALOG:
         this->hDlg = hDlg;
@@ -175,7 +184,7 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
         SetBkMode((HDC)wParam, TRANSPARENT);
         return (LRESULT)GetStockObject(COLOR_WINDOW + 1);
     }
-    if (uMsg == WM_PAINT && IsThemeActive()) {
+    if (uMsg == WM_PAINT) {  // [MINDFUL] removed `&& IsThemeActive()`: Classic/high-contrast/theme-off (some RDP) sessions were skipping ALL painting -> blank window even when wired
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hDlg, &ps);
 
@@ -608,14 +617,10 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
         }
     }
 
-#ifdef _WIN64
-    LONG_PTR attr = GetWindowLongPtr(hDlg, GWLP_USERDATA);
-#else
-    long attr = GetWindowLong(hDlg, GWL_USERDATA);
-#endif
-    if (attr != 0) {
-        return ((MainControlDialog*)attr)->eventProc(hDlg, uMsg, wParam, lParam);
-    }
+    // [MINDFUL] blank-window fix: tabPageEventProc is now reached ONLY via eventProc's delegation
+    // of WM_PAINT/WM_ERASEBKGND/WM_LBUTTONUP. It must NOT forward back to eventProc, or WM_LBUTTONUP
+    // would recurse forever (eventProc re-delegates it straight back here). WM_COMMAND/WM_NOTIFY
+    // already reach eventProc directly since that is the dialog's real proc.
     return FALSE;
 }
 
