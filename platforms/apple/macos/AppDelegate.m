@@ -458,18 +458,22 @@ static BOOL IsConflictingInputMethodBundleID(NSString *bundleID) {
     [theMenu addItemWithTitle:@"Soi lại hôm nay..." action:@selector(onShowReflectionSelected) keyEquivalent:@""];
     [theMenu addItemWithTitle:@"Xóa nhật ký cảm xúc..." action:@selector(onDeleteMoodLogSelected) keyEquivalent:@""];
 
-#if DEBUG
-    // [MINDFUL] 2026-07-16 — CHỈ có trong build Debug (biến mất khỏi bản Release, xem
-    // MoodStoreMac.h). Giả lập 30 ngày dữ liệu (đủ cho cả Tuần lẫn Tháng) để test sông mà không
-    // cần chờ dùng thật nhiều ngày; "Xóa dữ liệu giả lập" chỉ xóa đúng phần đánh dấu, dữ liệu
-    // thật (nếu có) không bị đụng tới.
+    // [MINDFUL] H2 (2026-07-24) — submenu "Thử nghiệm" PHƠI cả Release (trước cả nhóm ở #if DEBUG):
+    // bơm dữ liệu mẫu để test biểu đồ Ngày/Tuần/Tháng trên bản đã cài. Đánh dấu riêng, "Xóa dữ liệu
+    // mẫu" dọn sạch. Nhãn khớp Windows F6. ⚠️ FRICTION-LOG: ẩn/bỏ trước bản công khai 1.0.
     [theMenu addItem:[NSMenuItem separatorItem]];
-    [theMenu addItemWithTitle:@"[DEV] Giả lập 30 ngày dữ liệu sông" action:@selector(onSeedFakeMoodDataSelected) keyEquivalent:@""];
-    [theMenu addItemWithTitle:@"[DEV] Giả lập 1 ngày dày (12-18h) — test sông live" action:@selector(onSeedDenseDaySelected) keyEquivalent:@""];
-    [theMenu addItemWithTitle:@"[DEV] Xóa dữ liệu giả lập" action:@selector(onDeleteSimulatedMoodDataSelected) keyEquivalent:@""];
-    // [MINDFUL] 2026-07-16 — khung chấm nhịp chỉ tự hiện mỗi vBellInterval phút (sàn 15). Không có
-    // lối gọi tay thì mỗi lần sửa nó phải chờ 15 phút mới thấy — nên không ai verify, và đó đúng là
-    // cách bug lọt (bài học 2026-07-16: build xanh ≠ đã chạy). Chỉ Debug, biến mất ở Release.
+    NSMenu *seedMenu = [[NSMenu alloc] initWithTitle:@"Thử nghiệm"];
+    NSMenuItem *sd12 = [seedMenu addItemWithTitle:@"Tạo dữ liệu mẫu · 12 giờ" action:@selector(onSeedDenseDaySelected) keyEquivalent:@""];
+    NSMenuItem *sd7  = [seedMenu addItemWithTitle:@"Tạo dữ liệu mẫu · 1 tuần" action:@selector(onSeedWeekMoodDataSelected) keyEquivalent:@""];
+    NSMenuItem *sd30 = [seedMenu addItemWithTitle:@"Tạo dữ liệu mẫu · 30 ngày" action:@selector(onSeedFakeMoodDataSelected) keyEquivalent:@""];
+    [seedMenu addItem:[NSMenuItem separatorItem]];
+    NSMenuItem *sdClear = [seedMenu addItemWithTitle:@"Xóa dữ liệu mẫu" action:@selector(onDeleteSimulatedMoodDataSelected) keyEquivalent:@""];
+    for (NSMenuItem *it in @[sd12, sd7, sd30, sdClear]) it.target = self;  // submenu -> đặt target rõ
+    NSMenuItem *seedItem = [[NSMenuItem alloc] initWithTitle:@"Thử nghiệm" action:nil keyEquivalent:@""];
+    [seedItem setSubmenu:seedMenu];
+    [theMenu addItem:seedItem];
+#if DEBUG
+    // Khung chấm nhịp — vẫn Debug-only (khác nhóm seed; công cụ verify nội bộ, không cho end-user).
     [theMenu addItemWithTitle:@"[DEV] Hiện khung chấm nhịp ngay" action:@selector(onShowCheckinNowSelected) keyEquivalent:@""];
 #endif
 
@@ -912,12 +916,25 @@ static BOOL IsConflictingInputMethodBundleID(NSString *bundleID) {
 -(void)onShowCheckinNowSelected {
     [_panelVC showCheckinOverlay];
 }
+#endif
 
+// [MINDFUL] H2 (2026-07-24) — seed handlers PHƠI cả bản Release (trước ở #if DEBUG). ⚠️ FRICTION-LOG:
+// ẩn/bỏ trước bản công khai 1.0 (end-user không nên bơm được dữ liệu giả vào nhật ký).
 -(void)onSeedFakeMoodDataSelected {
     MoodStoreMac_SeedFakeSamplesForTesting(30);
     NSAlert *alert = [[NSAlert alloc] init];
-    alert.messageText = @"Đã giả lập 30 ngày dữ liệu";
-    alert.informativeText = @"Mở Cài đặt ▸ Hôm nay ▸ Tuần/Tháng để xem. Dữ liệu này có đánh dấu riêng — dùng \"Xóa dữ liệu giả lập\" khi xong, không ảnh hưởng dữ liệu thật.";
+    alert.messageText = @"Đã tạo dữ liệu mẫu 30 ngày";
+    alert.informativeText = @"Mở Cài đặt ▸ Hôm nay ▸ Tuần/Tháng để xem. Dữ liệu này có đánh dấu riêng — dùng \"Xóa dữ liệu mẫu\" khi xong, không ảnh hưởng dữ liệu thật.";
+    [alert addButtonWithTitle:@"Đã hiểu"];
+    alert.window.level = NSStatusWindowLevel;
+    [alert runModal];
+}
+
+-(void)onSeedWeekMoodDataSelected {
+    MoodStoreMac_SeedFakeSamplesForTesting(7);
+    NSAlert *alert = [[NSAlert alloc] init];
+    alert.messageText = @"Đã tạo dữ liệu mẫu 1 tuần";
+    alert.informativeText = @"Mở Cài đặt ▸ Hôm nay ▸ Tuần để xem biểu đồ 7 ngày. Dữ liệu có đánh dấu riêng — dùng \"Xóa dữ liệu mẫu\" khi xong.";
     [alert addButtonWithTitle:@"Đã hiểu"];
     alert.window.level = NSStatusWindowLevel;
     [alert runModal];
@@ -957,13 +974,12 @@ static BOOL IsConflictingInputMethodBundleID(NSString *bundleID) {
     }
     MoodStoreMac_DeleteSimulatedData();
     NSAlert *alert = [[NSAlert alloc] init];
-    alert.messageText = @"Đã xóa dữ liệu giả lập";
+    alert.messageText = @"Đã xóa dữ liệu mẫu";
     alert.informativeText = @"Dữ liệu thật (nếu có) vẫn còn nguyên.";
     [alert addButtonWithTitle:@"Đã hiểu"];
     alert.window.level = NSStatusWindowLevel;
     [alert runModal];
 }
-#endif
 
 // [MINDFUL] Story 2.2 — mở cửa sổ quản lý DUY NHẤT (nav trái 6 mục), thay 4 cửa sổ rời rạc cũ.
 // Cùng pattern lazy-instantiate + visible-check-return như onControlPanelSelected/onMacroSelected/

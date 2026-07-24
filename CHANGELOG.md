@@ -3,6 +3,20 @@
 Theo [Keep a Changelog](https://keepachangelog.com/) và [SemVer](https://semver.org/).
 Phiên bản lấy từ `version.env`.
 
+## [0.4.22]
+
+Đợt "Nhật Ký Tâm" phần 1 (`docs/JOURNAL-NAV-FEEDBACK.md`) — nghiệm thu tay v0.4.21. (Phần 2 = mục
+nav "Nhật Ký Tâm" sẽ ở bản sau.)
+
+### Added
+
+- **Dữ liệu mẫu "1 tuần"** trong công cụ Thử nghiệm — bộ seed nay có 3 mốc **12 giờ / 1 tuần / 30
+  ngày** trên **CẢ Windows lẫn macOS** (để test biểu đồ Ngày/Tuần/Tháng) (H2).
+- **macOS: công cụ Thử nghiệm hiện ở bản Release** (trước chỉ Debug) — bơm dữ liệu mẫu để xem biểu đồ
+  trên bản đã cài, giống Windows. Nằm trong submenu "Thử nghiệm". (⚠️ ẩn/bỏ trước 1.0.)
+- **Màn Soi lại (Windows): thêm dòng chân trang** "Xử lý trên máy · Câu hỏi mỗi ngày một khác · Không
+  điểm số, không chuỗi ngày" (đồng bộ macOS) (H3).
+
 ## [0.4.21]
 
 ### Fixed

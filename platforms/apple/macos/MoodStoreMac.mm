@@ -823,11 +823,10 @@ NSArray<NSDictionary *> *MoodStoreMac_FetchMonthSamples(void) {
     return FetchDailyAverages(30);
 }
 
-#if DEBUG
-// [MINDFUL] 2026-07-16 — xem MoodStoreMac.h cho bối cảnh đầy đủ. Đánh dấu bằng app_bundle_id vì
-// cột này KHÔNG dùng cho event_type='sample' (INSERT thật ở MoodStoreMac_LogSampleEvent phía
-// trên chỉ set ts/event_type/send_risk) — tái dùng cột có sẵn, không cần ALTER TABLE/migration
-// trên file mã hóa đang chạy thật của người dùng.
+// [MINDFUL] H2 (2026-07-24) — TRƯỚC ở `#if DEBUG`; nay phơi cả Release (xem MoodStoreMac.h). Đánh
+// dấu bằng app_bundle_id vì cột này KHÔNG dùng cho event_type='sample' (INSERT thật ở
+// MoodStoreMac_LogSampleEvent chỉ set ts/event_type/send_risk) — tái dùng cột có sẵn, không cần
+// ALTER TABLE/migration trên file mã hóa đang chạy thật của người dùng.
 static NSString *const kSeedFakeMarker = @"__mk_seed_fake__";
 
 void MoodStoreMac_SeedFakeSamplesForTesting(NSInteger numDays) {
@@ -1016,7 +1015,6 @@ BOOL MoodStoreMac_HasSimulatedData(void) {
     FlushAndCloseDB(db, tempPath);
     return has;
 }
-#endif
 
 void MoodStoreMac_DeleteAll(void) {
     [[NSFileManager defaultManager] removeItemAtURL:EncryptedFileURL() error:nil];

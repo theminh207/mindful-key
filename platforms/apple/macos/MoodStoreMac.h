@@ -74,20 +74,15 @@ extern int vShowCheckinOnRiver;
 NSArray<NSDictionary *> *MoodStoreMac_FetchWeekSamples(void);   // 7 ngày gần nhất, tính cả hôm nay
 NSArray<NSDictionary *> *MoodStoreMac_FetchMonthSamples(void);  // 30 ngày gần nhất, tính cả hôm nay
 
-#if DEBUG
-// [MINDFUL] 2026-07-16 — CHỈ tồn tại trong build Debug (biến mất hoàn toàn khỏi bản Release/phát
-// hành, xem project.yml GCC_PREPROCESSOR_DEFINITIONS). Giả lập dữ liệu sông để test hiển thị
-// Tuần/Tháng mà không cần chờ dùng thật nhiều ngày — chủ dự án đã chốt cách làm (2026-07-16):
-// ghi thẳng vào ĐÚNG kho thật (không có kho nháp riêng) nhưng đánh dấu ẩn ở cột app_bundle_id
-// (vốn không dùng cho event 'sample'), để tách biệt khỏi dữ liệu thật.
-// MoodStoreMac_DeleteSimulatedData() CHỈ xóa đúng phần đánh dấu này — dữ liệu thật không đụng tới.
-void MoodStoreMac_SeedFakeSamplesForTesting(NSInteger numDays);
-// [MINDFUL] 2026-07-19 — 1 ngày 12-18h chấm DÀY (~8 phút/mẫu) để test sông live "Ngay bây giờ".
-// Cùng marker với SeedFake ở trên nên DeleteSimulatedData dọn chung. DEBUG-only.
+// [MINDFUL] H2 (2026-07-24) — TRƯỚC ở `#if DEBUG` (ẩn khỏi Release). Nay PHƠI cả bản Release vì chủ
+// dự án cần bơm dữ liệu mẫu để test biểu đồ Ngày/Tuần/Tháng trên bản đã cài (giống Windows F6). Ghi
+// thẳng vào ĐÚNG kho thật nhưng đánh dấu ẩn ở cột app_bundle_id (không dùng cho 'sample') để tách
+// khỏi dữ liệu thật; DeleteSimulatedData chỉ xóa đúng phần đánh dấu. ⚠️ FRICTION-LOG: ẩn/bỏ trước 1.0.
+void MoodStoreMac_SeedFakeSamplesForTesting(NSInteger numDays);  // numDays ngày (vd 7 = 1 tuần, 30 = tháng)
+// 1 ngày 12-18h chấm DÀY (~8 phút/mẫu) để test sông live "Ngay bây giờ". Cùng marker nên dọn chung.
 void MoodStoreMac_SeedDenseDayForTesting(void);
 void MoodStoreMac_DeleteSimulatedData(void);
 BOOL MoodStoreMac_HasSimulatedData(void);
-#endif
 
 #pragma mark - Ô ghi cảm nhận cuối ngày (daily note)
 

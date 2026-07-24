@@ -684,6 +684,23 @@ void MoodStore_DevSeed12h() {
     WriteAll(all);
 }
 
+void MoodStore_DevSeed7d() {
+    if (!MoodStore_HasConsent())
+        return;
+    lock_guard<mutex> lock(g_mutex);
+    wstring all;
+    if (!ReadAll(all) || all.empty())
+        all = wstring(kFileHeader) + L"\n";
+    time_t now = time(NULL);
+    wostringstream out;
+    EmitSeedSamples(out, now, 7LL * 86400, 20 * 60);   // 7 ngày, bước 20 phút (đủ dày cho biểu đồ Tuần)
+    long long checkOffs[] = { 6LL * 86400, 5LL * 86400, 3LL * 86400, 2LL * 86400, 86400, 4 * 3600 };
+    SeedCheckins(out, now, checkOffs, 6);
+    all += out.str();
+    WriteAll(all);
+    EmitSeedNotes(now);   // vài note quá khứ (nếu đã bật consent ghi chú)
+}
+
 void MoodStore_DevSeed30d() {
     if (!MoodStore_HasConsent())
         return;

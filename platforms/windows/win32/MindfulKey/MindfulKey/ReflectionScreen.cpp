@@ -350,7 +350,7 @@ static const wchar_t* SuggestionFor(MoodDayShape shape, int index) {
 struct ReflectLayout {
     RECT eb1, riverCard, river, observe, gk, div1;
     RECT eb2, question, qcap, note, hint, notesLink, div2;
-    RECT eb3, card, sugText, bellLink, closeBtn;
+    RECT eb3, card, sugText, bellLink, closeBtn, footer;
     int  totalH;
 };
 
@@ -388,8 +388,11 @@ static ReflectLayout ComputeLayout(int clientW) {
     if (g_showBellLink)
         L.bellLink = { L.card.left + 14, L.card.bottom - 14 - 18, L.card.right - 14, L.card.bottom - 14 };
 
-    slot(L.closeBtn, 28);   y += 14;
+    slot(L.closeBtn, 28);   y += 12;
     L.closeBtn.left = L.closeBtn.right - 90;   // nút Đóng canh phải
+    // [MINDFUL] H3 (2026-07-24) — chân trang 3 dòng tin cậy (mirror macOS): span FULL width, canh
+    // giữa, mờ. Trước đây bản Windows thiếu hẳn dòng này so với macOS.
+    L.footer = { 0, y, clientW, y + 16 }; y += 16 + 12;
 
     L.totalH = y;
     return L;
@@ -502,6 +505,10 @@ static INT_PTR CALLBACK ReflectDlgProc(HWND hDlg, UINT msg, WPARAM wParam, LPARA
 
         BrandControls_FillRect(memDC, L.closeBtn, kBrandPaletteOrange);
         text(L"Đóng", L.closeBtn, kBrandPaletteCardWhite, BrandFontBody, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+        // [MINDFUL] H3 — chân trang tin cậy (mirror macOS), canh giữa cả bề rộng.
+        text(L"Xử lý trên máy · Câu hỏi mỗi ngày một khác · Không điểm số, không chuỗi ngày",
+             L.footer, kBrandPaletteStone, BrandFontEyebrow, DT_CENTER | DT_TOP | DT_SINGLELINE);
 
         BitBlt(hdc, 0, 0, clientRc.right, clientRc.bottom, memDC, 0, 0, SRCCOPY);
         SelectObject(memDC, oldBm);

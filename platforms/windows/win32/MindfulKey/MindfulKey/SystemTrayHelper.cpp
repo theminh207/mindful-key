@@ -73,6 +73,7 @@ static bool g_waveAlert = false;
 // bản Release vì chủ dự án cần thử sóng/nhật ký trên installer đã cài. Đặt trong submenu "Thử
 // nghiệm" nhãn rõ. Xem FRICTION-LOG 2026-07-23: ẩn/bỏ trước bản công khai 1.0.
 #define POPUP_SEED_12H   3000
+#define POPUP_SEED_7D    3003
 #define POPUP_SEED_30D   3001
 #define POPUP_SEED_CLEAR 3002
 
@@ -336,6 +337,10 @@ void SystemTrayHelper::showContextMenu() {
 		MoodStore_DevSeed12h();
 		TrayPopover_Refresh();   // sông vẽ lại ngay để thấy dữ liệu mẫu
 		break;
+	case POPUP_SEED_7D:
+		MoodStore_DevSeed7d();
+		TrayPopover_Refresh();
+		break;
 	case POPUP_SEED_30D:
 		MoodStore_DevSeed30d();
 		TrayPopover_Refresh();
@@ -421,6 +426,7 @@ void SystemTrayHelper::createPopupMenu() {
 	AppendMenu(popupMenu, MF_SEPARATOR, 0, 0);
 	HMENU seedMenu = CreatePopupMenu();
 	AppendMenuW(seedMenu, MF_STRING, POPUP_SEED_12H,   L"Tạo dữ liệu mẫu · 12 giờ");
+	AppendMenuW(seedMenu, MF_STRING, POPUP_SEED_7D,    L"Tạo dữ liệu mẫu · 1 tuần");
 	AppendMenuW(seedMenu, MF_STRING, POPUP_SEED_30D,   L"Tạo dữ liệu mẫu · 30 ngày");
 	AppendMenu(seedMenu, MF_SEPARATOR, 0, 0);
 	AppendMenuW(seedMenu, MF_STRING, POPUP_SEED_CLEAR, L"Xoá dữ liệu mẫu");
