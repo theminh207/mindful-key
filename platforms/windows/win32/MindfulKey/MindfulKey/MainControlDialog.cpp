@@ -24,6 +24,7 @@ redistribute your new version, it MUST be open source.
 #include "BrandPalette.h"
 #include "ReflectionScreen.h"
 #include "MoodStore.h"
+#include "NotesHistory.h"   // [MINDFUL] H4 — pane "Nhật Ký Tâm" mở cửa sổ đầy đủ + đọc danh sách note
 #include <Shlobj.h>
 #include <Uxtheme.h>
 #include <commdlg.h>   // [MINDFUL] B6 — GetOpenFileName/OPENFILENAME (chọn .wav riêng). stdafx bật
@@ -249,22 +250,23 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
         FillRect(memDC, &clientRc, (HBRUSH)(COLOR_WINDOW + 1));
 
         // Vẽ 6-Nav (Cột trái)
-        RECT navRc = { 10, 20, 150, 260 };
-        const wchar_t* tabs[] = { L"Hôm nay", L"Chuông", L"Bộ gõ", L"Riêng tư", L"Hệ thống", L"Giới thiệu" };
+        // [MINDFUL] H4 (2026-07-24) — nav 7 mục (thêm "Nhật Ký Tâm"). Thứ tự HIỂN THỊ khác chỉ số
+        // pane: navTabIndex map vị-trí-nav -> currentTab, để "Nhật Ký Tâm" (pane MỚI = 6) đứng thứ 2
+        // mà KHÔNG phải đánh số lại 5 pane cũ (đánh số lại = dễ lệch click ở owner-draw).
+        RECT navRc = { 10, 20, 150, 300 };
+        const wchar_t* tabs[] = { L"Hôm nay", L"Nhật Ký Tâm", L"Chuông", L"Bộ gõ", L"Riêng tư", L"Hệ thống", L"Giới thiệu" };
+        static const int navTabIndex[] = { 0, 6, 1, 2, 3, 4, 5 };
         POINT pt = { -1, -1 };
-        // Giả lập Segmented Control dọc hoặc vẽ thẳng
-        // Tạm thời gọi hàm DrawSegmentedControl (cần thêm cờ hoặc vẽ tuỳ chỉnh dọc)
-        // Thay vì thế, ta vẽ nhanh thủ công ở đây:
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 7; i++) {
             RECT itemRc = { navRc.left, navRc.top + i * 40, navRc.right, navRc.top + i * 40 + 35 };
-            if (i == currentTab) {
-                // Background tealLight
+            bool sel = (navTabIndex[i] == currentTab);
+            if (sel) {
                 HBRUSH br = CreateSolidBrush(MK_COLORREF(0xDEF0F2)); // tealLight
                 FillRect(memDC, &itemRc, br);
                 DeleteObject(br);
             }
             SetBkMode(memDC, TRANSPARENT);
-            SetTextColor(memDC, MK_COLORREF(i == currentTab ? 0x1D7C91 : 0x4B5563)); // teal vs charcoal
+            SetTextColor(memDC, MK_COLORREF(sel ? 0x1D7C91 : 0x4B5563)); // teal vs charcoal
             DrawTextW(memDC, tabs[i], -1, &itemRc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
         }
 
@@ -744,6 +746,57 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
             RECT copyRc = { contentRc.left, 266, contentRc.right, 286 };
             DrawLabel(L"© 2026 GNH — Lan tỏa điều tử tế", copyRc, BrandFontBody, kBrandPaletteMuted, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
         }
+        else if (currentTab == 6) { // [MINDFUL] H4 — Nhật Ký Tâm (các dòng đã viết)
+            RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
+            int left = contentRc.left + 20, right = contentRc.right - 20;
+            auto DrawLabel = [&](const wchar_t* text, RECT rc, BrandFontRole font, uint32_t color, UINT format = DT_LEFT | DT_VCENTER | DT_SINGLELINE) {
+                SetBkMode(memDC, TRANSPARENT);
+                SetTextColor(memDC, MK_COLORREF(color));
+                HFONT f = BrandControls_Font(font);
+                HFONT old = (HFONT)SelectObject(memDC, f);
+                DrawTextW(memDC, text, -1, &rc, format);
+                SelectObject(memDC, old);
+            };
+            auto dateStr = [](long long ts) -> std::wstring {
+                time_t t = (time_t)ts; struct tm lt; localtime_s(&lt, &t);
+                static const wchar_t* wd[] = { L"CHỦ NHẬT", L"THỨ HAI", L"THỨ BA", L"THỨ TƯ", L"THỨ NĂM", L"THỨ SÁU", L"THỨ BẢY" };
+                wchar_t b[48]; swprintf_s(b, L"%s %02d·%02d", wd[lt.tm_wday], lt.tm_mday, lt.tm_mon + 1); return b;
+            };
+
+            int y = 20;
+            DrawLabel(L"Nhật Ký Tâm", { left, y, right, y + 28 }, BrandFontTitle, kBrandPaletteCharcoal);
+            y += 30;
+            DrawLabel(L"Những dòng bạn đã viết", { left, y, right, y + 20 }, BrandFontBody, kBrandPaletteMuted);
+            y += 34;
+
+            // Danh sách note (mới nhất trước). Pane không cuộn được nên chỉ XEM TRƯỚC vài dòng +
+            // link mở cửa sổ "Những dòng bạn đã viết" (cuộn đầy đủ). Link giữ nguyên trong Soi lại.
+            std::vector<MoodNote> notes = MoodStore_FetchAllNotes();
+            if (notes.empty()) {
+                RECT emptyRc = { left, y, right, y + 60 };
+                DrawLabel(L"Chưa có dòng nào. Ô ghi nằm ở cuối màn \"Soi lại hôm nay\" — khi muốn, ghi lại một dòng cho hôm nay.",
+                          emptyRc, BrandFontBody, kBrandPaletteMuted, DT_LEFT | DT_TOP | DT_WORDBREAK);
+            } else {
+                const int kMaxPreview = 5;
+                int shown = (int)notes.size() < kMaxPreview ? (int)notes.size() : kMaxPreview;
+                for (int i = 0; i < shown; i++) {
+                    DrawLabel(dateStr(notes[i].ts).c_str(), { left, y, right, y + 16 }, BrandFontEyebrow, kBrandPaletteStone);
+                    y += 18;
+                    DrawLabel(notes[i].text.c_str(), { left, y, right, y + 22 }, BrandFontBody, kBrandPaletteCharcoal, DT_LEFT | DT_TOP | DT_SINGLELINE | DT_END_ELLIPSIS);
+                    y += 26;
+                    RECT div = { left, y, right, y + 1 };
+                    BrandControls_FillRect(memDC, div, kBrandPaletteDivider);
+                    y += 12;
+                }
+                wchar_t moreBuf[64];
+                if ((int)notes.size() > kMaxPreview) wsprintfW(moreBuf, L"Xem tất cả (%d) →", (int)notes.size());
+                else wcscpy_s(moreBuf, L"Xem trong cửa sổ riêng →");
+                DrawLabel(moreBuf, { left, y, right, y + 24 }, BrandFontBody, kBrandPaletteOrange, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+            }
+
+            RECT footRc = { left, contentRc.bottom - 34, right, contentRc.bottom - 14 };
+            DrawLabel(L"Chỉ nằm trên máy · đã mã hoá · xoá được bất cứ lúc nào.", footRc, BrandFontEyebrow, kBrandPaletteStone, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+        }
 
         BitBlt(hdc, 0, 0, clientRc.right, clientRc.bottom, memDC, 0, 0, SRCCOPY);
 
@@ -762,7 +815,7 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
         int y = GET_Y_LPARAM(lParam);
         POINT pt = { x, y };
 
-        RECT navRc = { 10, 20, 150, 260 };
+        RECT navRc = { 10, 20, 150, 300 };   // [MINDFUL] H4 — 7 mục (khớp WM_PAINT)
 
         if (currentTab == 0) {
             // [MINDFUL] A3 — RECT dựng lại Y HỆT nhánh WM_PAINT (currentTab==0, dòng ~224-281):
@@ -1111,11 +1164,25 @@ INT_PTR MainControlDialog::tabPageEventProc(HWND hDlg, UINT uMsg, WPARAM wParam,
                 pThis->onUpdateButton();   // tự kiểm + tự tải + tự mở bộ cài (UpdateChecker)
             }
         }
+        else if (currentTab == 6) {   // [MINDFUL] H4 — Nhật Ký Tâm: link "Xem tất cả/riêng →" mở cửa sổ đầy đủ
+            RECT contentRc = { 160, 0, clientRc.right, clientRc.bottom };
+            int left = contentRc.left + 20, right = contentRc.right - 20;
+            std::vector<MoodNote> notes = MoodStore_FetchAllNotes();
+            if (!notes.empty()) {
+                int shown = (int)notes.size() < 5 ? (int)notes.size() : 5;
+                int linkY = 84 + shown * 56;   // khớp WM_PAINT: 20+30+34 + shown*(18+26+12)
+                RECT linkRc = { left, linkY, right, linkY + 24 };
+                if (PtInRect(&linkRc, pt)) {
+                    NotesHistory_Show(hDlg);
+                }
+            }
+        }
 
         if (PtInRect(&navRc, pt)) {
-            int clickedTab = (pt.y - navRc.top) / 40;
-            if (clickedTab >= 0 && clickedTab < 6 && clickedTab != currentTab) {
-                currentTab = clickedTab;
+            int row = (pt.y - navRc.top) / 40;
+            static const int navTabIndex[] = { 0, 6, 1, 2, 3, 4, 5 };   // [MINDFUL] H4 — khớp WM_PAINT
+            if (row >= 0 && row < 7 && navTabIndex[row] != currentTab) {
+                currentTab = navTabIndex[row];
                 pThis->onTabIndexChanged(); // cập nhật Show/Hide child dialogs
                 InvalidateRect(hDlg, NULL, FALSE);
             }

@@ -3,6 +3,19 @@
 Theo [Keep a Changelog](https://keepachangelog.com/) và [SemVer](https://semver.org/).
 Phiên bản lấy từ `version.env`.
 
+## [0.4.23]
+
+Đợt "Nhật Ký Tâm" phần 2 — Windows (`docs/JOURNAL-NAV-FEEDBACK.md`).
+
+### Added
+
+- **Windows: mục nav "Nhật Ký Tâm"** (ngay dưới "Hôm nay") trong cửa Cài đặt — hiện các dòng đã viết:
+  xem trước 5 dòng gần nhất (ngày + chữ), "Xem tất cả (N) →" mở cửa sổ cuộn đầy đủ. Link "Những dòng
+  đã viết →" trong màn Soi lại vẫn giữ (H4). Dùng bảng thứ-tự-hiển-thị để mục mới đứng thứ 2 mà không
+  đánh số lại các pane cũ.
+
+> macOS "Nhật Ký Tâm" sẽ ở bản kế (v0.4.24) — nav macOS khớp cứng storyboard, làm riêng cho chắc.
+
 ## [0.4.22]
 
 Đợt "Nhật Ký Tâm" phần 1 (`docs/JOURNAL-NAV-FEEDBACK.md`) — nghiệm thu tay v0.4.21. (Phần 2 = mục
