@@ -3,6 +3,17 @@
 Theo [Keep a Changelog](https://keepachangelog.com/) và [SemVer](https://semver.org/).
 Phiên bản lấy từ `version.env`.
 
+## [0.4.21]
+
+### Fixed
+
+- **Nút "Kiểm tra bản mới" báo nhầm "đang dùng bản mới nhất"** dù đã có bản mới. Updater hỏi endpoint
+  GitHub `/releases/latest` — endpoint này **cố ý bỏ qua prerelease**, mà mọi bản beta của mình đều là
+  prerelease → nó trả về bản full-release cũ (v0.4.13) nên luôn tưởng đã mới nhất. Nay đọc `/releases`
+  (gồm prerelease, phần tử đầu = mới nhất) + `ExtractTagName` chịu được khoảng trắng trong JSON GitHub.
+  ⚠️ **Bản đã cài (≤ v0.4.20) mang updater hỏng** nên phải cài tay MỘT LẦN lên v0.4.21; từ đó nút tự
+  cập nhật mới chạy đúng cho các bản sau.
+
 ## [0.4.20]
 
 Đợt "đồng bộ Cài đặt↔Popover + phím tắt" (`docs/SYNC-HOTKEY-FEEDBACK.md`) — nghiệm thu tay v0.4.19.

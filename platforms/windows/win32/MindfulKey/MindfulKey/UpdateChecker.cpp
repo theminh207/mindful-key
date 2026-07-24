@@ -24,7 +24,12 @@
 
 using namespace std;
 
-static const wchar_t* kApiUrl = L"https://api.github.com/repos/theminh207/mindful-key/releases/latest";
+// [MINDFUL] 2026-07-24 — DÙNG `/releases` (danh sách, mới-nhất-trước) chứ KHÔNG `/releases/latest`.
+// `/releases/latest` của GitHub CỐ Ý BỎ QUA prerelease/draft — mà mọi bản phát hành của mình đều
+// prerelease=true (bản beta), nên endpoint đó trả về bản full-release CŨ (vd v0.4.13) → updater báo
+// "đang dùng bản mới nhất" dù đã có bản mới hơn. `/releases` gồm cả prerelease; phần tử ĐẦU = mới nhất
+// (GitHub sắp theo created_at giảm dần), ExtractTagName lấy đúng "tag_name" đầu tiên = bản mới nhất.
+static const wchar_t* kApiUrl = L"https://api.github.com/repos/theminh207/mindful-key/releases?per_page=10";
 static const wchar_t* kRepoOwner = L"theminh207";
 static const wchar_t* kRepoName = L"mindful-key";
 static const wchar_t* kUserAgent = L"MindfulKey-UpdateChecker";
@@ -115,12 +120,18 @@ static bool HttpDownloadFile(const wchar_t* url, const wstring& destPath) {
 // ngoài cho 1 giá trị). Chỉ tìm đúng 1 khoá cố định trong response của GitHub — nguồn đáng tin, cấu
 // trúc ổn định, không phải dữ liệu người dùng nhập tuỳ ý.
 static bool ExtractTagName(const string& json, wstring& outTag) {
-    const string key = "\"tag_name\":\"";
-    size_t pos = json.find(key);
-    if (pos == string::npos) return false;
-    pos += key.size();
-    size_t end = json.find('"', pos);
+    // [MINDFUL] 2026-07-24 — GitHub trả JSON pretty-print CÓ khoảng trắng sau ':' ("tag_name": "v..").
+    // Dò cứng chuỗi "tag_name":" (không cách) sẽ TRẬT. Tách từng bước: khoá -> ':' -> '"' mở -> '"' đóng,
+    // bỏ mọi khoảng trắng ở giữa. Với `/releases` (mảng), "tag_name" ĐẦU TIÊN = bản mới nhất.
+    size_t k = json.find("\"tag_name\"");
+    if (k == string::npos) return false;
+    size_t colon = json.find(':', k + 10);
+    if (colon == string::npos) return false;
+    size_t q1 = json.find('"', colon + 1);
+    if (q1 == string::npos) return false;
+    size_t end = json.find('"', q1 + 1);
     if (end == string::npos) return false;
+    size_t pos = q1 + 1;
     string tag = json.substr(pos, end - pos);
     // [MINDFUL] SECURITY (review) — tag phiên bản THẬT rất ngắn ("v0.4.17"). Dài bất thường = JSON
     // lỗi/bị chèn độc → CHẶN. Đây là hàng rào chống TRÀN BUFFER: tag đi thẳng vào wsprintfW ghép URL/
