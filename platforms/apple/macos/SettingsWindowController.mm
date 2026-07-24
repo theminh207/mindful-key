@@ -81,7 +81,36 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     MKSettingsSectionPrivacy  = 3,
     MKSettingsSectionSystem   = 4,
     MKSettingsSectionAbout    = 5,
+    MKSettingsSectionJournal  = 6,   // [MINDFUL] H4 — "Nhật Ký Tâm". Giá trị MỚI ở CUỐI (không đánh
+                                     // số lại 5 mục cũ); nav dựng theo THỨ TỰ HIỂN THỊ, xem mk_buildNavRows.
 };
+
+// [MINDFUL] H4 (2026-07-24) — helper dựng pane "Nhật Ký Tâm" (mirror NotesHistoryMac: ngày eyebrow
+// + câu hỏi mờ + chữ người viết). Đo chiều cao chữ để pane cao đúng, NSScrollView của settings tự cuộn.
+static CGFloat MKJournalTextH(NSString *s, NSFont *font, CGFloat width) {
+    if (s.length == 0) return 0;
+    NSRect r = [s boundingRectWithSize:NSMakeSize(width, 10000)
+                               options:NSStringDrawingUsesLineFragmentOrigin
+                            attributes:@{NSFontAttributeName: font}];
+    return ceil(r.size.height);
+}
+static NSString *MKJournalDateLabel(long long ts) {
+    NSCalendar *cal = [NSCalendar currentCalendar];
+    NSDate *d = [NSDate dateWithTimeIntervalSince1970:(NSTimeInterval)ts];
+    NSDateComponents *c = [cal components:(NSCalendarUnitWeekday | NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear) fromDate:d];
+    NSArray<NSString *> *wd = @[@"CHỦ NHẬT", @"THỨ HAI", @"THỨ BA", @"THỨ TƯ", @"THỨ NĂM", @"THỨ SÁU", @"THỨ BẢY"];
+    NSString *w = wd[(NSUInteger)c.weekday - 1];
+    NSInteger nowYear = [cal component:NSCalendarUnitYear fromDate:[NSDate date]];
+    if (c.year != nowYear) return [NSString stringWithFormat:@"%@ %02ld·%02ld·%ld", w, (long)c.day, (long)c.month, (long)c.year];
+    return [NSString stringWithFormat:@"%@ %02ld·%02ld", w, (long)c.day, (long)c.month];
+}
+static NSAttributedString *MKJournalEyebrow(NSString *s) {
+    return [[NSAttributedString alloc] initWithString:s attributes:@{
+        NSFontAttributeName: [NSFont systemFontOfSize:10.5 weight:NSFontWeightSemibold],
+        NSForegroundColorAttributeName: [Brand stone],
+        NSKernAttributeName: @(1.0),
+    }];
+}
 
 #pragma mark - MKSettingsNavRow (1 hàng nav trái: chấm 6px + nhãn 12.5px)
 
@@ -229,9 +258,11 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     NSView *_paneHost;                        // documentView của _paneScroll; hiện ĐÚNG 1 pane tại 1 thời điểm
     NSView *_subNavBar;                       // 3 nút "Kiểu gõ/Gõ tắt/Chuyển mã", chỉ hiện ở mục "Bộ gõ"
     NSMutableArray<MKSettingsNavRow *> *_navRows;
+    NSArray<NSNumber *> *_navRowSection;       // [MINDFUL] H4 — map vị-trí-nav -> MKSettingsSection (thứ tự HIỂN THỊ)
     NSMutableArray<NSButton *> *_subNavButtons;
 
     NSView *_paneToday;
+    NSView *_paneJournal;                      // [MINDFUL] H4 — "Nhật Ký Tâm" (dựng lại mỗi lần chọn)
     GatekeeperCardView *_gatekeeperCard;       // [MINDFUL] Story 3.5 — Feature #1, luôn trên cùng
     MKDateRangeSeg *_dateRangeSeg;             // [MINDFUL] Story 3.7/3.8 — "Ngày / Tuần / Tháng"
     EmotionRiverView *_settingsRiver;
@@ -342,15 +373,19 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
 }
 
 - (void)mk_buildNavRows {
-    NSArray<NSString *> *titles = @[@"Hôm nay", @"Chuông", @"Bộ gõ", @"Riêng tư", @"Hệ thống", @"Giới thiệu"];
+    // [MINDFUL] H4 — 7 mục theo THỨ TỰ HIỂN THỊ; _navRowSection map vị-trí-nav -> MKSettingsSection,
+    // để "Nhật Ký Tâm" (section 6) đứng thứ 2 mà KHÔNG đánh số lại 5 section cũ (enum==index cũ vỡ dây).
+    NSArray<NSString *> *titles = @[@"Hôm nay", @"Nhật Ký Tâm", @"Chuông", @"Bộ gõ", @"Riêng tư", @"Hệ thống", @"Giới thiệu"];
+    _navRowSection = @[@(MKSettingsSectionToday), @(MKSettingsSectionJournal), @(MKSettingsSectionBell),
+                       @(MKSettingsSectionInput), @(MKSettingsSectionPrivacy), @(MKSettingsSectionSystem), @(MKSettingsSectionAbout)];
     _navRows = [NSMutableArray arrayWithCapacity:titles.count];
     for (NSUInteger i = 0; i < titles.count; i++) {
         CGFloat top = kNavTopPad + (CGFloat)i * kNavRowH;
         NSRect rowFrame = NSMakeRect(8.0, kWindowH - top - kNavRowH + 3.0, kNavW - 16.0, kNavRowH - 6.0);
         MKSettingsNavRow *row = [[MKSettingsNavRow alloc] initWithFrame:rowFrame title:titles[i]];
-        NSInteger idx = (NSInteger)i;
+        NSInteger section = [_navRowSection[i] integerValue];
         __weak SettingsWindowController *weakSelf = self;
-        row.onTap = ^{ [weakSelf selectSectionAtIndex:idx]; };
+        row.onTap = ^{ [weakSelf selectSectionAtIndex:section]; };
         [_navContainer addSubview:row];
         [_navRows addObject:row];
     }
@@ -513,6 +548,76 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
 // điều 10), rồi tới dòng sông. Card + link "Soi lại hôm nay →" TÁI DÙNG nguyên GatekeeperCardView
 // đã chạy tốt trong popover (PanelViewController.mm) — không viết lại, link tự gọi
 // ReflectionScreenMac_Show() bên trong, không cần wiring thêm.
+// [MINDFUL] H4 (2026-07-24) — pane "Nhật Ký Tâm": danh sách "Những dòng đã viết" (ngày + câu hỏi mờ
+// + chữ), dựng thẳng vào pane cao đúng nội dung, NSScrollView của settings tự cuộn. Cố ý KHÔNG sóng/
+// số/chuỗi ngày (mirror NotesHistoryMac). Link "Những dòng đã viết →" trong Soi lại vẫn giữ song song.
+- (NSView *)mk_buildJournalPane {
+    NSArray<NSDictionary *> *notes = MoodStoreMac_FetchAllNotes();   // mới nhất trước; @[] nếu chưa consent
+    CGFloat textW = kMaxPaneW - 4.0;
+    NSFont *qFont = [NSFont systemFontOfSize:12 weight:NSFontWeightRegular];
+    NSFont *bFont = [NSFont systemFontOfSize:15 weight:NSFontWeightRegular];
+    const CGFloat titleReserve = 48.0;
+
+    if (notes.count == 0) {
+        NSView *pane = [self mk_buildEmptyPaneWithTitle:@"Nhật Ký Tâm" height:kMaxPaneH];
+        NSTextField *msg = [NSTextField wrappingLabelWithString:
+            @"Chưa có dòng nào. Ô ghi nằm ở cuối màn “Soi lại hôm nay” — khi muốn, ghi lại một dòng cho hôm nay."];
+        msg.font = [NSFont systemFontOfSize:13 weight:NSFontWeightRegular];
+        msg.textColor = [Brand muted];
+        msg.frame = NSMakeRect(0, NSHeight(pane.frame) - titleReserve - 44.0, textW, 44.0);
+        [pane addSubview:msg];
+        return pane;
+    }
+
+    const CGFloat dateH = 16, dateGap = 6, qGap = 5, entryGap = 24, ruleGap = 12;
+    NSMutableArray<NSNumber *> *qHs = [NSMutableArray array], *bHs = [NSMutableArray array];
+    CGFloat total = titleReserve;
+    for (NSDictionary *n in notes) {
+        NSString *q = n[@"question"]; NSString *t = n[@"text"] ?: @"";
+        CGFloat qh = (q.length > 0) ? MKJournalTextH(q, qFont, textW) : 0;
+        CGFloat bh = MKJournalTextH(t, bFont, textW);
+        [qHs addObject:@(qh)]; [bHs addObject:@(bh)];
+        total += dateH + dateGap + (qh > 0 ? qh + qGap : 0) + bh + entryGap;
+    }
+    total += 8.0;
+
+    NSView *pane = [self mk_buildEmptyPaneWithTitle:@"Nhật Ký Tâm" height:MAX(total, kMaxPaneH)];
+    CGFloat y = NSHeight(pane.frame) - titleReserve;   // đi từ dưới tiêu đề xuống (AppKit gốc dưới-trái)
+    for (NSUInteger i = 0; i < notes.count; i++) {
+        NSDictionary *n = notes[i];
+        CGFloat qh = qHs[i].doubleValue, bh = bHs[i].doubleValue;
+
+        NSTextField *dl = [NSTextField labelWithAttributedString:MKJournalEyebrow(MKJournalDateLabel([n[@"ts"] longLongValue]))];
+        dl.frame = NSMakeRect(0, y - dateH, textW, dateH);
+        [pane addSubview:dl];
+        y -= dateH + dateGap;
+
+        NSString *q = n[@"question"];
+        if (qh > 0) {
+            NSTextField *ql = [NSTextField wrappingLabelWithString:q];
+            ql.font = qFont; ql.textColor = [Brand stone];
+            ql.frame = NSMakeRect(0, y - qh, textW, qh);
+            [pane addSubview:ql];
+            y -= qh + qGap;
+        }
+
+        NSTextField *bl = [NSTextField wrappingLabelWithString:(n[@"text"] ?: @"")];
+        bl.font = bFont; bl.textColor = [Brand charcoal]; bl.selectable = YES;   // chữ của họ — copy được
+        bl.frame = NSMakeRect(0, y - bh, textW, bh);
+        [pane addSubview:bl];
+        y -= bh;
+
+        if (i + 1 < notes.count) {
+            NSView *rule = [[NSView alloc] initWithFrame:NSMakeRect(0, y - ruleGap, textW, 1)];
+            rule.wantsLayer = YES;
+            rule.layer.backgroundColor = [Brand divider].CGColor;
+            [pane addSubview:rule];
+        }
+        y -= entryGap;
+    }
+    return pane;
+}
+
 - (NSView *)mk_buildTodayPane {
     // Instantiate trước để đọc preferredHeight thật, dùng tính tổng chiều cao pane.
     _gatekeeperCard = [[GatekeeperCardView alloc] initWithFrame:NSMakeRect(0, 0, kMaxPaneW, 96)];
@@ -561,7 +666,9 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
     _selectedIndex = index;
 
     for (NSInteger i = 0; i < (NSInteger)_navRows.count; i++) {
-        [_navRows[(NSUInteger)i] setSelectedRow:(i == index)];
+        // [MINDFUL] H4 — tô sáng theo SECTION (map từ vị-trí-nav), không so vị-trí trực tiếp nữa.
+        NSInteger sec = (i < (NSInteger)_navRowSection.count) ? [_navRowSection[(NSUInteger)i] integerValue] : i;
+        [_navRows[(NSUInteger)i] setSelectedRow:(sec == index)];
     }
 
     BOOL isBoGo = (index == MKSettingsSectionInput);
@@ -601,6 +708,11 @@ typedef NS_ENUM(NSInteger, MKSettingsSection) {
             break;
         case MKSettingsSectionAbout:
             [self mk_showPaneInHost:_aboutVC.view];
+            break;
+        case MKSettingsSectionJournal:
+            // [MINDFUL] H4 — dựng LẠI mỗi lần chọn: note có thể vừa được viết thêm ở màn Soi lại.
+            _paneJournal = [self mk_buildJournalPane];
+            [self mk_showPaneInHost:_paneJournal];
             break;
     }
 }

@@ -3,6 +3,17 @@
 Theo [Keep a Changelog](https://keepachangelog.com/) và [SemVer](https://semver.org/).
 Phiên bản lấy từ `version.env`.
 
+## [0.4.24]
+
+Đợt "Nhật Ký Tâm" phần 3 — macOS (`docs/JOURNAL-NAV-FEEDBACK.md`). Hoàn tất H4 trên cả 2 nền.
+
+### Added
+
+- **macOS: mục nav "Nhật Ký Tâm"** (ngay dưới "Hôm nay") trong cửa Cài đặt — hiện danh sách **đầy đủ**
+  các dòng đã viết (ngày + câu hỏi hôm đó + chữ), cuộn được. Enum thêm section mới ở cuối + nav dựng
+  theo thứ-tự-hiển-thị (không đánh số lại 5 section cũ, tránh vỡ nav). Link "Những dòng đã viết →"
+  trong màn Soi lại vẫn giữ song song.
+
 ## [0.4.23]
 
 Đợt "Nhật Ký Tâm" phần 2 — Windows (`docs/JOURNAL-NAV-FEEDBACK.md`).
