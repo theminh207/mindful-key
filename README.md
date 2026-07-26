@@ -69,7 +69,7 @@ Cố ý **không** có: điểm số/phần trăm hiện ra · streak/huy hiệu
 - **Cửa sổ đầy đủ** — sáu mục: Hôm nay · Chuông · Bộ gõ · Riêng tư · Hệ thống · Giới thiệu.
 - **Soi lại cuối ngày** — một câu hỏi để mang theo, không phải biểu đồ.
 
-Hướng dẫn có hình đầy đủ (bản minh hoạ): [`docs/HUONG-DAN-SU-DUNG.html`](docs/HUONG-DAN-SU-DUNG.html) — mở trong trình duyệt.
+Hướng dẫn có hình đầy đủ (bản minh hoạ): [`docs/tasks/HUONG-DAN-SU-DUNG.html`](docs/tasks/HUONG-DAN-SU-DUNG.html) — mở trong trình duyệt.
 
 ## Riêng tư mặc định
 
@@ -83,7 +83,7 @@ bộ, khóa giữ trong Keychain. Không máy chủ, không tài khoản, không
   liệu**. Chưa tới một phút.
 - **Windows** — đang phát triển, sẽ có ở Releases khi sẵn sàng.
 
-> Bản hiện tại ký ad-hoc (chưa notarize) — xem `docs/INSTALL.md` nếu macOS chặn lần mở đầu.
+> Bản hiện tại ký ad-hoc (chưa notarize) — xem `docs/tasks/INSTALL.md` nếu macOS chặn lần mở đầu.
 
 ## Phát triển
 
@@ -121,7 +121,7 @@ mindful-key/
 
 **Nhận diện chảy 1 nguồn → nhiều đích:** sửa màu/logo CHỈ ở `brand/tokens.json` + `brand/svg/`.
 `make brand` sinh asset vào app; `make public-brand` sinh bộ mặt-tiền. Không hard-code màu ở nơi khác.
-Chi tiết: `docs/REPO-TOPOLOGY.md`.
+Chi tiết: `docs/tasks/REPO-TOPOLOGY.md`.
 </details>
 
 ## Ghi nhận nguồn & giấy phép
@@ -137,7 +137,7 @@ Lõi engine gõ Tiếng Việt được **fork từ [OpenKey](https://github.com
 
 ## Hiến chương
 
-Mọi quyết định kỹ thuật & nhận diện quy chiếu [`docs/AGENT-BRIEF.md`](docs/AGENT-BRIEF.md). Điều bất khả
+Mọi quyết định kỹ thuật & nhận diện quy chiếu [`docs/01-intent.md`](docs/01-intent.md). Điều bất khả
 xâm phạm: không đèn đỏ/xanh mã hóa cảm xúc · không emoji chấm điểm · không gamification · không copy
 khiển trách. Tự kiểm mọi giao diện: *"Cái này đang mô tả hay đang phán xét?"* — phán xét thì bỏ.
 

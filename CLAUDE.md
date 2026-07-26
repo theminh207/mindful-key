@@ -2,7 +2,7 @@
 
 Kỷ luật coding cho dự án **mindful-key** — bộ gõ Tiếng Việt chánh niệm (fork OpenKey), stack **C++ (bộ não) + Objective-C/++ (vỏ macOS)**. File này lo *cách viết code cho kỷ luật*.
 
-> ⚖️ **Luật tối cao = HIẾN CHƯƠNG**, không phải file này. Mọi quyết định chạm **NHẬN DIỆN / PHÁP LÝ / RIÊNG TƯ** phải quy chiếu `docs/AGENT-BRIEF.md` (và bản trích ở CLAUDE.md thư mục cha) TRƯỚC. Bất khả xâm phạm: KHÔNG đèn đỏ/xanh cảm xúc · KHÔNG emoji chấm điểm · KHÔNG gamification (streak/điểm/huy hiệu) · KHÔNG copy khiển trách — nhận diện là con sóng `~` trung tính, "mô tả không phán xét". GPL v3, giữ credit Mai Vũ Tuyên. Mơ hồ → **hỏi chủ dự án**.
+> ⚖️ **Luật tối cao = HIẾN CHƯƠNG**, không phải file này. Mọi quyết định chạm **NHẬN DIỆN / PHÁP LÝ / RIÊNG TƯ** phải quy chiếu `docs/01-intent.md` (bản gốc đầy đủ: `docs/tasks/AGENT-BRIEF.md`; bản trích ở CLAUDE.md thư mục cha) TRƯỚC. Bất khả xâm phạm: KHÔNG đèn đỏ/xanh cảm xúc · KHÔNG emoji chấm điểm · KHÔNG gamification (streak/điểm/huy hiệu) · KHÔNG copy khiển trách — nhận diện là con sóng `~` trung tính, "mô tả không phán xét". GPL v3, giữ credit Mai Vũ Tuyên. Mơ hồ → **hỏi chủ dự án**.
 
 ---
 
@@ -120,7 +120,7 @@ Rules chi tiết nằm ở `.claude/rules/` (ngay trong repo này). Dự án CH�
 | `platform-shell-agent` | Vỏ macOS/Windows/Android/Linux | `platforms/{apple/macos,windows,android,linux}` | `platform-porting` |
 | `ios-shell-agent` | Vỏ iOS (keyboard extension) | `platforms/apple/ios`, `tests/ios` | `ios-keyboard-extension` |
 
-Việc chưa rõ thuộc mảng nào, hoặc chạm ≥2 mảng → qua orchestrator `mindful-keyboard-harness`. Việc rõ 1 mảng → gọi thẳng skill/agent tương ứng. Hai sổ đi kèm harness: `docs/TEST_MATRIX.md` (bằng chứng hành vi) + `docs/FRICTION-LOG.md` (chỗ AI phải đoán).
+Việc chưa rõ thuộc mảng nào, hoặc chạm ≥2 mảng → qua orchestrator `mindful-keyboard-harness`. Việc rõ 1 mảng → gọi thẳng skill/agent tương ứng. Hai sổ đi kèm harness: `docs/tasks/TEST_MATRIX.md` (bằng chứng hành vi) + `docs/tasks/FRICTION-LOG.md` (chỗ AI phải đoán).
 
 ### Lịch sử thay đổi
 
