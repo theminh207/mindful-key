@@ -111,7 +111,7 @@ không thống kê/biểu đồ trên note · không phân tích nội dung. T�
 
 1. `MoodStore` (macOS trước): thêm loại `'note'` + cột text mã hoá + migration; hàm lưu/đọc note theo ngày.
 2. `ReflectionScreenMac.mm`: ô ghi dưới nhịp "Soi" (load note hôm nay nếu có, lưu khi rời/đổi); consent gate lần đầu.
-3. `docs/PRIVACY-NOTE.md`: thêm đoạn "ô ghi cảm nhận — chữ thật, mã hoá, chỉ trên máy, loại khỏi export mặc định".
+3. `docs/tasks/PRIVACY-NOTE.md`: thêm đoạn "ô ghi cảm nhận — chữ thật, mã hoá, chỉ trên máy, loại khỏi export mặc định".
 4. `_shared/SYNC-emotion-mechanism-v2.md` mục A: thêm 1 dòng schema `'note'` (đã phản ánh ở đây, cập nhật khi code).
 5. Cân nhắc Full Access iOS (friction 2026-07-13): cộng "lưu note = chữ thật" vào lý do hệ trọng.
 

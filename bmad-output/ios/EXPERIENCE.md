@@ -589,4 +589,4 @@ phải biểu đồ/con số (như macOS `ReflectionScreen`). Giọng quan sát,
 ---
 
 *Part of the BMAD Planning & Orchestrator plugin. Produced by the `bmad-ux` skill.*
-*Design system: `bmad-output/ios/DESIGN.md`. Hiến chương: `docs/AGENT-BRIEF.md`.*
+*Design system: `bmad-output/ios/DESIGN.md`. Hiến chương: `docs/tasks/AGENT-BRIEF.md`.*

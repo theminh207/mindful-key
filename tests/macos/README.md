@@ -20,7 +20,7 @@ Link **file thật** (`MoodWatchMac.mm`, `MoodStoreMac.mm`, `BellMac.mm`, `Nudge
 
 - **Kho:** `-DMK_TEST_STORE_DIR_ENV` + env `MK_TEST_STORE_DIR` trỏ thư mục tạm. KHÔNG dùng được
   env `HOME` như tests/ios — `NSHomeDirectory`/`URLForDirectory:` trên macOS lấy home qua
-  `getpwuid`, phớt lờ `$HOME` (verify thực nghiệm 2026-07-16, xem `docs/FRICTION-LOG.md`).
+  `getpwuid`, phớt lờ `$HOME` (verify thực nghiệm 2026-07-16, xem `docs/tasks/FRICTION-LOG.md`).
 - **Keychain:** đổi tên `SecItemCopyMatching`/`SecItemAdd`/`SecItemDelete` bằng `-D` macro lúc
   biên dịch → khóa AES test cố định, không đụng item thật + không bật hộp thoại xin quyền.
 - Test tự **abort** nếu env không trỏ vào thư mục tạm `mk-e2e-store` (cổng an toàn 2 lớp).
@@ -37,4 +37,4 @@ khóa Keychain dù chưa consent — đã vá tại `OpenWorkingDB` (MoodStoreMa
 - NSTimer của BellMac tick đúng `vBellInterval` phút thật (cần chờ ≥1 phút — mới chỉ kiểm timer
   đã được lên lịch qua `BellMac_NextRingDate`).
 - Vẽ `EmotionRiverView` / mở popover thật / gõ qua CGEventTap thật — cần app chạy + mắt người,
-  theo `bmad-output/macos/TEST-PLAN-macos-control-panel.md` và `docs/TEST_MATRIX.md`.
+  theo `bmad-output/macos/TEST-PLAN-macos-control-panel.md` và `docs/tasks/TEST_MATRIX.md`.

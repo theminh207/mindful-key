@@ -2,7 +2,7 @@
 
 > Ba bất biến mà MỌI vỏ (macOS · Windows · iOS · Linux sau này) phải giữ khi khởi động và tắt.
 > Sinh ra 2026-07-18 sau khi một loại lỗi tái phát ĐỘC LẬP qua hai vỏ. Cùng khuôn với
-> `docs/BREATHING-PAUSE-CONTRACT.md`: viết luật một lần, soi được bằng một `grep` ở mọi vỏ.
+> `docs/tasks/BREATHING-PAUSE-CONTRACT.md`: viết luật một lần, soi được bằng một `grep` ở mọi vỏ.
 
 ## Vì sao có file này
 

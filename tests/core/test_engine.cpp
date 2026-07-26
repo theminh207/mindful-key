@@ -149,7 +149,7 @@ int main() {
     printf("\n--- Loại 6: backspace / sửa giữa từ (⌫ = '\\b') ---\n");
     runCase("vieetj\b",   "việ");           // gõ "việt" rồi ⌫ 1 lần → bỏ 't'
     // ⚠️ QUIRK (đã verify, khóa làm mốc): sau ⌫ về rỗng qua 1 âm tiết CÓ DẤU, biến hình aw→ă
-    // KHÔNG tái kích hoạt → "nawm" ra thô "nawm" (không phải "năm"). Xem docs/FRICTION-LOG.md.
+    // KHÔNG tái kích hoạt → "nawm" ra thô "nawm" (không phải "năm"). Xem docs/tasks/FRICTION-LOG.md.
     runCase("as\b\bnawm", "nawm");          // á, ⌫⌫ về rỗng, gõ "nawm" → engine không transform lại
     runCase("tooi\bs",    "tố");            // "tôi", ⌫ bỏ 'i' → "tô", rồi 's' (sắc) → "tố" (đúng)
 

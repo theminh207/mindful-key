@@ -7,7 +7,7 @@
 - `bmad-output/macos/DESIGN-macos-control-panel.md` — token, spec 7 component, WCAG (§3), ràng buộc hiến chương (§5), bản đồ component↔code (§6).
 - `bmad-output/macos/EXPERIENCE-macos-control-panel.md` — 4 journey, screen states (§3), wireframe, decision points (§4).
 - `bmad-output/macos/brainstorming-report-macos-control-panel.md` — 18 ý tưởng, risks.
-- `docs/AGENT-BRIEF.md` — HIẾN CHƯƠNG bất khả xâm phạm.
+- `docs/tasks/AGENT-BRIEF.md` — HIẾN CHƯƠNG bất khả xâm phạm.
 - Cite theo dạng `[Source: DESIGN-macos-control-panel.md#2.1]`, `[Source: EXPERIENCE-macos-control-panel.md#3.1]`. Suy luận riêng ghi `[Inference]`.
 
 ## Code thật (Owned Scope bám theo đây)

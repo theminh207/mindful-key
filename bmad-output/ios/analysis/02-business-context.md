@@ -1,7 +1,7 @@
 # 02 — Business Context (Step 0)
 
 > **Pha 2/4 · problem-based-srs Step 0.** Nền business context cho toàn bộ chuỗi CP→CN→FR.
-> Nguồn: hiến chương `docs/AGENT-BRIEF.md`, `project-context.md`, PRD macOS, MOBILE-UX-ANALYSIS,
+> Nguồn: hiến chương `docs/tasks/AGENT-BRIEF.md`, `project-context.md`, PRD macOS, MOBILE-UX-ANALYSIS,
 > và Discovery `01-discovery-findings.md`. **2026-07-11.**
 
 ---

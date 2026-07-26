@@ -2,7 +2,7 @@
 //  SendGatekeeperMac.mm
 //  ModernKey
 //
-//  [MINDFUL] Xem SendGatekeeperMac.h + docs/BREATHING-PAUSE-CONTRACT.md.
+//  [MINDFUL] Xem SendGatekeeperMac.h + docs/tasks/BREATHING-PAUSE-CONTRACT.md.
 //
 
 #import "SendGatekeeperMac.h"
@@ -144,7 +144,7 @@ void SendGatekeeperMac_ShowPause(void) {
     panel.hidesOnDeactivate = NO;
     panel.becomesKeyOnlyIfNeeded = YES; // không cướp focus khỏi app chat đang gõ
 
-    // [MINDFUL] Màu NOW BRAND OS (docs/BRAND-ASSETS.md): nền cam nhạt = "khoảnh khắc con
+    // [MINDFUL] Màu NOW BRAND OS (docs/tasks/BRAND-ASSETS.md): nền cam nhạt = "khoảnh khắc con
     // người" của lớp nhịp thở (KHÔNG dùng cam để mã hóa trạng thái cảm xúc — chỉ dùng ở đây
     // như brand chrome, đúng ngoại lệ đã ghi trong BRAND-ASSETS.md).
     panel.contentView.wantsLayer = YES;
@@ -166,7 +166,7 @@ void SendGatekeeperMac_ShowPause(void) {
     g_waitTarget.choice = BreathingPauseChoice::Wait;
 
     // "Đợi chút" tô đậm bằng cam NOW — nhẹ nhàng gợi ý lựa chọn dừng lại, không ẩn/khoá nút
-    // "Vẫn gửi" (quyền quyết định luôn thuộc người dùng, xem docs/PRD.md).
+    // "Vẫn gửi" (quyền quyết định luôn thuộc người dùng, xem docs/tasks/PRD.md).
     NSButton *waitBtn = [[NSButton alloc] initWithFrame:NSMakeRect(20, 15, 160, 32)];
     waitBtn.title = @"Đợi chút";
     waitBtn.bezelStyle = NSBezelStyleRounded;

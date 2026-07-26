@@ -119,7 +119,7 @@
 1. Chọn loại đang đụng (vd Mốc B nối engine → ưu tiên Loại 1,2,6,7).
 2. Với mỗi ca 🔬: thêm `runCase("input", "mong đợi")` vào `test_engine.cpp`, **chạy `make test`**, đọc output THẬT, sửa "mong đợi" cho khớp engine (rồi khóa lại làm regression).
 3. Ca thuộc Loại 10 (bất biến riêng tư) → viết ở tầng vỏ/mood khi Round 2, không phải engine.
-4. Ghi ca đã chứng minh vào `docs/TEST_MATRIX.md` (cột Engine/E2E).
+4. Ghi ca đã chứng minh vào `docs/tasks/TEST_MATRIX.md` (cột Engine/E2E).
 
 > Ma trận là *bản đồ ca cần nghĩ tới*, KHÔNG phải danh sách kỳ vọng đã chốt. Engine nói sự thật —
 > `make test` là trọng tài, không phải bảng này.

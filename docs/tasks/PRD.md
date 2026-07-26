@@ -23,7 +23,7 @@ MVP thành công = vòng lặp này chạy mượt trên macOS, trong ít nhất
 
 - **Không phải add-on vui vui** — mood tracking không phải tính năng phụ, nó chính là lý do sản phẩm tồn tại.
 - **Không phải công cụ giám sát** — không phải parental control, không phải employee monitoring. Dữ liệu chỉ người gõ được xem; không có chế độ báo cáo/xem từ xa cho người khác.
-- **Không chặn cứng việc gửi** — luôn là ma sát mềm; ép buộc sẽ khiến người dùng gỡ cài đặt ngay (đã cảnh báo trong `docs/OPENKEY-MAP.md`).
+- **Không chặn cứng việc gửi** — luôn là ma sát mềm; ép buộc sẽ khiến người dùng gỡ cài đặt ngay (đã cảnh báo trong `docs/tasks/OPENKEY-MAP.md`).
 - **Không gửi câu gõ gốc ra khỏi máy** dưới bất kỳ lý do nào, kể cả "để cải thiện model".
 - **Không qua Mac App Store ở MVP này** — phân phối trực tiếp qua .dmg đã ký + notarize.
 - **Không hứa phủ hết mọi app chat** — MVP giới hạn ở 2–3 app đã test kỹ (Zalo/Messenger/Telegram); phát hiện "sắp gửi" dựa trên allow-list + Enter-không-Shift qua CGEventTap, không phải AX semantic "nút Gửi" riêng từng app.
@@ -51,4 +51,4 @@ MVP nhắm nhóm nhỏ (cộng đồng chánh niệm), nên không đặt mục 
 
 ## 6. Phạm vi kỹ thuật MVP
 
-macOS only (deployment target **13.0+** — nâng từ 10.15 ngày 2026-07-18 vì chưa từng test máy cũ hơn 14.8.3 và SMAppService login-item cần 13+, xem `docs/FRICTION-LOG.md`), dùng nguyên bộ não OpenKey đã fork + callback đã cắm sẵn (`vOnWordCommitted`); vỏ = `OpenKey.xcodeproj`/`ModernKey` (menu-bar app có sẵn, CGEventTap + Accessibility có sẵn); mood layer dùng lexicon quy về 1 điểm send-risk (chưa cần PhoBERT ONNX); UI = `NSPanel` nổi tại thời điểm "pause" + màn soi lại trong app trên thanh menu; đóng gói `.dmg` ký Developer ID + notarize, launch-at-login, zero telemetry.
+macOS only (deployment target **13.0+** — nâng từ 10.15 ngày 2026-07-18 vì chưa từng test máy cũ hơn 14.8.3 và SMAppService login-item cần 13+, xem `docs/tasks/FRICTION-LOG.md`), dùng nguyên bộ não OpenKey đã fork + callback đã cắm sẵn (`vOnWordCommitted`); vỏ = `OpenKey.xcodeproj`/`ModernKey` (menu-bar app có sẵn, CGEventTap + Accessibility có sẵn); mood layer dùng lexicon quy về 1 điểm send-risk (chưa cần PhoBERT ONNX); UI = `NSPanel` nổi tại thời điểm "pause" + màn soi lại trong app trên thanh menu; đóng gói `.dmg` ký Developer ID + notarize, launch-at-login, zero telemetry.

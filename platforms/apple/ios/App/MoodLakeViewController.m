@@ -12,7 +12,7 @@
 //  Nav bar hệ thống bị ẩn toàn app (xem AppDelegate.m) — tự vẽ "‹ Quay lại" ở đầu màn, cùng idiom
 //  SettingsViewController.m / MacroManagerViewController.m (story 2.3 / 2.4).
 //
-//  Đối chiếu hiến chương (docs/AGENT-BRIEF.md) trước khi sửa file này: KHÔNG đèn đỏ/xanh cảm xúc,
+//  Đối chiếu hiến chương (docs/tasks/AGENT-BRIEF.md) trước khi sửa file này: KHÔNG đèn đỏ/xanh cảm xúc,
 //  KHÔNG emoji chấm điểm, KHÔNG game hoá kiểu thi đua/tích luỹ (hiến chương §2.2), copy "mô tả
 //  không phán xét". Màu CHỈ lấy từ BrandColorsUIKit (moodLevel: là thang biên độ trung tính, không
 //  mã hoá valence).
@@ -443,7 +443,7 @@ typedef NS_ENUM(NSInteger, MKMoodLakeState) {
 }
 
 // Consent NO — KHÔNG hiện số giả/số 0 gây hiểu lầm, mời bật bằng giọng bình thản + cam kết riêng
-// tư ngay trong câu mời (mirror docs/PRIVACY-NOTE.md), nút ghost (phụ, không phải CTA cam nổi bật).
+// tư ngay trong câu mời (mirror docs/tasks/PRIVACY-NOTE.md), nút ghost (phụ, không phải CTA cam nổi bật).
 - (UIView *)mk_buildConsentInviteView {
     UIStackView *stack = [[UIStackView alloc] init];
     stack.axis = UILayoutConstraintAxisVertical;

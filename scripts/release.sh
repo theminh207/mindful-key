@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Nhạc trưởng: universal build -> ký+notarize .app -> đóng .dmg -> ký+notarize .dmg ->
 # xuất dSYM + zip -> cắt changelog. Output đủ 4 loại asset để đăng GitHub Release (giống
-# cấu trúc haynoi — xem docs/RELEASE.md): <ver>.dmg, universal.zip, universal.dSYM.zip,
+# cấu trúc haynoi — xem docs/tasks/RELEASE.md): <ver>.dmg, universal.zip, universal.dSYM.zip,
 # release-notes.html.
 #
 # Cách dùng:

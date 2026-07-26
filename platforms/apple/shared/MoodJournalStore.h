@@ -17,7 +17,7 @@
 //      SẺ qua keychain-access-groups (xem .mm cho giới hạn host-test không verify được phần chia
 //      sẻ cross-process — CHỈ verify trên thiết bị thật/Simulator).
 //
-//  RIÊNG TƯ (cứng — hiến chương + docs/PRIVACY-NOTE.md): schema TUYỆT ĐỐI CHỈ {ts:int64,
+//  RIÊNG TƯ (cứng — hiến chương + docs/tasks/PRIVACY-NOTE.md): schema TUYỆT ĐỐI CHỈ {ts:int64,
 //  sendRisk:double}. KHÔNG trường văn bản gốc, KHÔNG app id/lựa chọn (khác macOS — iOS sandbox
 //  không biết host app đang gõ ở đâu). KHÔNG NSLog/os_log nội dung gõ ở bất cứ đâu trong file này.
 //

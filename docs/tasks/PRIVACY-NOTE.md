@@ -1,6 +1,6 @@
 # Mindful Keyboard xử lý dữ liệu của bạn như thế nào
 
-*(Bản dễ đọc — dùng trong màn hình xin phép và onboarding. Xem `docs/PRD.md` §5 cho phiên bản kỹ thuật đầy đủ.)*
+*(Bản dễ đọc — dùng trong màn hình xin phép và onboarding. Xem `docs/tasks/PRD.md` §5 cho phiên bản kỹ thuật đầy đủ.)*
 
 ## Điều quan trọng nhất
 

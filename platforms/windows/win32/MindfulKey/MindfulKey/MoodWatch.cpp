@@ -5,7 +5,7 @@
 // Nhận từng từ engine commit -> đẩy sang LUỒNG RIÊNG -> gom câu bằng core/mood/MoodBuffer ->
 // chấm send-risk bằng core/mood/SendRiskAnalyzer -> risk đủ cao thì hiện lời nhắc.
 //
-// ĐÃ VIẾT LẠI 2026-07-17 (GĐ1, docs/ROADMAP-WINDOWS.md). Bản trước:
+// ĐÃ VIẾT LẠI 2026-07-17 (GĐ1, docs/tasks/ROADMAP-WINDOWS.md). Bản trước:
 //   1. TỰ gom câu bằng mảng g_words riêng -> chép lại việc của MoodBuffer, phạm lằn ranh
 //      "vỏ KHÔNG chép logic bộ não".
 //   2. TỰ giữ một bản lexicon riêng -> bản photo thứ 3, đúng thứ vừa phải đi hợp nhất về core.
@@ -48,8 +48,8 @@ using namespace std;
 // TẮT: máy dev là macOS, KHÔNG chạy được Windows thật để tự mắt xác nhận UI Automation phủ đủ mọi
 // loại ô mật khẩu (Win32 gốc chắc chắn được — lớp rẻ không cần UIA; Chrome/UWP phụ thuộc app đó có
 // làm accessibility tử tế hay không, kể cả Electron còn CHƯA rõ). Bật mặc định là quyết định của
-// chủ dự án, sau khi có người kiểm trên Windows thật (docs/QA-WINDOWS.md ca P1) — xem
-// docs/FRICTION-LOG.md 2026-07-17 "CHẶN PHÁT HÀNH".
+// chủ dự án, sau khi có người kiểm trên Windows thật (docs/tasks/QA-WINDOWS.md ca P1) — xem
+// docs/tasks/FRICTION-LOG.md 2026-07-17 "CHẶN PHÁT HÀNH".
 int vMoodWatch = 0;
 
 // Khớp MoodWatchMac.mm: risk >= 0.5 mới nhắc, và 15 giây nghỉ giữa 2 lần nhắc.
@@ -401,7 +401,7 @@ void MoodWatch_OnWord(const wstring& word) {
     if (!vMoodWatch || word.empty())
         return;
 
-    // [MINDFUL] P1 CHẶN PHÁT HÀNH (docs/FRICTION-LOG.md 2026-07-17) — đang ở ô mật khẩu, HOẶC
+    // [MINDFUL] P1 CHẶN PHÁT HÀNH (docs/tasks/FRICTION-LOG.md 2026-07-17) — đang ở ô mật khẩu, HOẶC
     // chưa chắc là không (fail-closed). Đọc cờ này KHÔNG chạy UIA tại chỗ — chỉ đọc 1 biến đã có
     // sẵn (xem SecureField.h), nên an toàn trên luồng hook. Dọn sạch MoodBuffer NGAY và giữ nó
     // rỗng suốt lúc ở ô mật khẩu, để chữ gõ TRƯỚC lúc vào ô mật khẩu không lẫn với chữ gõ SAU khi
@@ -424,7 +424,7 @@ void MoodWatch_OnWord(const wstring& word) {
         // BẮT BUỘC: `vOnWordCommitted` truyền tham chiếu tới biến CỤC BỘ của emitCommittedWord()
         // (Engine.cpp:463) — nó chết ngay khi callback return. Vỏ iOS và macOS đều đã ngã đúng hố
         // này; macOS crash 10 lần đêm 2026-07-16 (push_back trên chuỗi đã chết -> length_error ->
-        // abort). Xem docs/FRICTION-LOG.md 2026-07-16. ĐỪNG đổi thành đẩy con trỏ/tham chiếu.
+        // abort). Xem docs/tasks/FRICTION-LOG.md 2026-07-16. ĐỪNG đổi thành đẩy con trỏ/tham chiếu.
         g_queue.push_back(word);
     }
     g_cv.notify_one();
@@ -434,7 +434,7 @@ void MoodWatch_OnWord(const wstring& word) {
 // ai đọc. Trả về true nếu sau lời này lớp cảm xúc được BẬT.
 bool MoodWatch_ConfirmEnable(HWND parent) {
     // [MINDFUL] Copy này PHẢI khớp đúng thứ SecureField.cpp đang làm — xem MoodWatch.cpp đầu file
-    // + docs/FRICTION-LOG.md 2026-07-17 "CHẶN PHÁT HÀNH". Giọng quan sát, không phán xét (HIẾN
+    // + docs/tasks/FRICTION-LOG.md 2026-07-17 "CHẶN PHÁT HÀNH". Giọng quan sát, không phán xét (HIẾN
     // CHƯƠNG §2.2): nói thẳng cơ chế đang chạy VÀ giới hạn còn lại, không tô hồng cũng không doạ.
     return MessageBoxW(parent,
         L"Bật lớp cảm xúc?\n\n"

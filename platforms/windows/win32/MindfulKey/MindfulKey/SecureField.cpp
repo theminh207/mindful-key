@@ -44,7 +44,7 @@ static bool IsWin32PasswordControlFocused() {
     // control tự định nghĩa lại. ES_PASSWORD là 0x0020 — ĐÚNG BIT mà lớp BUTTON gọi là BS_LEFTTEXT
     // (checkbox/radio để chữ bên trái). Đọc bit trần thì một cái checkbox bình thường bị đọc thành
     // "ô mật khẩu": fail-closed nên KHÔNG lộ gì, nhưng lớp cảm xúc sẽ tự câm ở những chỗ vô hại mà
-    // không ai hiểu vì sao — mà câm thì sản phẩm vô dụng (docs/QA-WINDOWS.md §1).
+    // không ai hiểu vì sao — mà câm thì sản phẩm vô dụng (docs/tasks/QA-WINDOWS.md §1).
     // Control KHÔNG phải EDIT rơi xuống lớp UIA bên dưới và được hỏi tử tế, không mất gì.
     wchar_t cls[16] = { 0 };
     if (!GetClassNameW(info.hwndFocus, cls, ARRAYSIZE(cls)))

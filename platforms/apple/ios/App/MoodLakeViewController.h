@@ -8,7 +8,7 @@
 //      (MoodJournalStore_FetchTodaySummary) chỉ là bối cảnh PHỤ, nhỏ, đặt DƯỚI câu hỏi.
 //    - "Thang mặt hồ tâm" — 5 mức An/Nhẹ/Gợn/Sóng/Cuộn, biên độ sóng tăng dần, KHÔNG phải điểm số.
 //
-//  Xem MoodLakeViewController.m cho chi tiết dựng UI. Đối chiếu hiến chương (docs/AGENT-BRIEF.md):
+//  Xem MoodLakeViewController.m cho chi tiết dựng UI. Đối chiếu hiến chương (docs/tasks/AGENT-BRIEF.md):
 //  không đèn đỏ/xanh cảm xúc, không emoji chấm điểm, không gamification, "mô tả không phán xét".
 //
 

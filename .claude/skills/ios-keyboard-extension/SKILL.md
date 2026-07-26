@@ -7,7 +7,7 @@ description: Build/port bộ gõ chánh niệm sang iOS — Custom Keyboard Exte
 
 ## Cổng an toàn (đọc TRƯỚC khi sửa — kể cả khi được gọi thẳng, không qua orchestrator)
 - **Phân loại rủi ro:** việc chạm **nhận diện** (con sóng/màu/copy/biên độ) · **pháp lý** (GPL v3, credit Mai Vũ Tuyên) · **riêng tư** (dữ liệu gõ/mood, Full Access, App Group, nơi lưu) · **sửa core/ để vá riêng iOS** → **DỪNG, hỏi chủ dự án trước.** Việc nhỏ, rõ, không nhạy cảm → làm luôn.
-- **Phải đoán vì thiếu luật/nguồn sự thật?** → thêm 1 dòng cụ thể vào `docs/FRICTION-LOG.md`.
+- **Phải đoán vì thiếu luật/nguồn sự thật?** → thêm 1 dòng cụ thể vào `docs/tasks/FRICTION-LOG.md`.
 
 ## Kiến trúc: 1 BỘ NÃO + N CÁI VỎ (iOS là vỏ thứ 5)
 ```
@@ -23,12 +23,12 @@ iOS chỉ viết VỎ. `core/engine` + `core/mood` dùng chung 100% — KHÔNG f
 Keyboard extension của iOS sống trong sandbox rất chặt:
 - **Không global hook.** Không có cửa nào như `CGEventTap` (macOS) để tap phím toàn cục. Extension chỉ thấy phím **khi bàn phím mình đang hiện**, trong ô nhập của host app.
 - **Không thấy nút Gửi host app**, không can thiệp hành vi gửi tin của app khác → **gác cổng gửi tin (Feature #1 macOS) bất khả thi.** Đừng thiết kế lại kiểu "chặn Enter" cho iOS.
-- **Chốt 2026-07-10 (chủ dự án):** iOS = **nhật ký cảm xúc + nhắc chánh niệm thụ động** (gợn sóng `~` ambient, "quan sát không phán xét"). Nhận diện "người gác cổng" giữ ở macOS/Windows. Chi tiết: `docs/FRICTION-LOG.md`, khối "Đội iOS" trong `docs/TEST_MATRIX.md`.
+- **Chốt 2026-07-10 (chủ dự án):** iOS = **nhật ký cảm xúc + nhắc chánh niệm thụ động** (gợn sóng `~` ambient, "quan sát không phán xét"). Nhận diện "người gác cổng" giữ ở macOS/Windows. Chi tiết: `docs/tasks/FRICTION-LOG.md`, khối "Đội iOS" trong `docs/tasks/TEST_MATRIX.md`.
 
 ## Sự thật kỹ thuật cần biết trước (không giả định)
 - **App Group** (`group.<bundle-id>`) là kênh DUY NHẤT chia dữ liệu giữa extension và app chính (nhật ký, cấu hình) — extension và container app không đọc thẳng file của nhau. Khai báo trong entitlements cả 2 target.
 - **Full Access** (`RequestsOpenAccess = YES` trong Info.plist của extension) cần cho mạng + một số truy cập chia sẻ — nhưng là cờ đỏ riêng tư với người dùng; chỉ bật khi thật cần, giải thích minh bạch (Hiến chương: riêng tư mặc định).
-- **Giới hạn bộ nhớ extension gắt** (~40–70MB tuỳ đời máy). Model on-device (PhoBERT ONNX, `docs/SEND-RISK-MODEL-SPEC.md`) có thể vượt hạn mức → **đo thật trước khi cam kết**, luôn có đường lui về lexicon heuristic. Vượt mức = iOS kill extension = bàn phím "chết".
+- **Giới hạn bộ nhớ extension gắt** (~40–70MB tuỳ đời máy). Model on-device (PhoBERT ONNX, `docs/tasks/SEND-RISK-MODEL-SPEC.md`) có thể vượt hạn mức → **đo thật trước khi cam kết**, luôn có đường lui về lexicon heuristic. Vượt mức = iOS kill extension = bàn phím "chết".
 - **UI khung bàn phím** = UIKit/SwiftUI trong `UIInputViewController`. Nhận diện con sóng `~` vẽ trong khung chật này phải trung tính — KHÔNG đèn đỏ/xanh, KHÔNG emoji chấm điểm, KHÔNG gamification.
 
 ## Quy trình khi build/port iOS

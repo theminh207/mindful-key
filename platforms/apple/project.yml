@@ -94,7 +94,7 @@ targets:
 
         COMBINE_HIDPI_IMAGES: YES   # Resources dùng PNG rời + hậu tố @2x thủ công (không phải asset catalog)
 
-        # Ký AD-HOC — không có Developer ID/Apple Developer Program (xem docs/INSTALL.md)
+        # Ký AD-HOC — không có Developer ID/Apple Developer Program (xem docs/tasks/INSTALL.md)
         CODE_SIGN_IDENTITY: "-"
         CODE_SIGN_STYLE: Manual
         CODE_SIGNING_REQUIRED: NO

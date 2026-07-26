@@ -5,7 +5,7 @@ Phiên bản lấy từ `version.env`.
 
 ## [0.4.24]
 
-Đợt "Nhật Ký Tâm" phần 3 — macOS (`docs/JOURNAL-NAV-FEEDBACK.md`). Hoàn tất H4 trên cả 2 nền.
+Đợt "Nhật Ký Tâm" phần 3 — macOS (`docs/tasks/JOURNAL-NAV-FEEDBACK.md`). Hoàn tất H4 trên cả 2 nền.
 
 ### Added
 
@@ -16,7 +16,7 @@ Phiên bản lấy từ `version.env`.
 
 ## [0.4.23]
 
-Đợt "Nhật Ký Tâm" phần 2 — Windows (`docs/JOURNAL-NAV-FEEDBACK.md`).
+Đợt "Nhật Ký Tâm" phần 2 — Windows (`docs/tasks/JOURNAL-NAV-FEEDBACK.md`).
 
 ### Added
 
@@ -29,7 +29,7 @@ Phiên bản lấy từ `version.env`.
 
 ## [0.4.22]
 
-Đợt "Nhật Ký Tâm" phần 1 (`docs/JOURNAL-NAV-FEEDBACK.md`) — nghiệm thu tay v0.4.21. (Phần 2 = mục
+Đợt "Nhật Ký Tâm" phần 1 (`docs/tasks/JOURNAL-NAV-FEEDBACK.md`) — nghiệm thu tay v0.4.21. (Phần 2 = mục
 nav "Nhật Ký Tâm" sẽ ở bản sau.)
 
 ### Added
@@ -54,7 +54,7 @@ nav "Nhật Ký Tâm" sẽ ở bản sau.)
 
 ## [0.4.20]
 
-Đợt "đồng bộ Cài đặt↔Popover + phím tắt" (`docs/SYNC-HOTKEY-FEEDBACK.md`) — nghiệm thu tay v0.4.19.
+Đợt "đồng bộ Cài đặt↔Popover + phím tắt" (`docs/tasks/SYNC-HOTKEY-FEEDBACK.md`) — nghiệm thu tay v0.4.19.
 
 ### Fixed
 
@@ -71,7 +71,7 @@ nav "Nhật Ký Tâm" sẽ ở bản sau.)
 
 ## [0.4.19]
 
-Đợt "màn Soi lại + nhật ký viết tay" (`docs/REFLECTION-FEEDBACK.md`) — nghiệm thu tay v0.4.18.
+Đợt "màn Soi lại + nhật ký viết tay" (`docs/tasks/REFLECTION-FEEDBACK.md`) — nghiệm thu tay v0.4.18.
 
 ### Added
 
@@ -92,7 +92,7 @@ nav "Nhật Ký Tâm" sẽ ở bản sau.)
 
 ## [0.4.18]
 
-Đợt "cửa Cài đặt bắt kịp macOS" (`docs/CONTROL-PANEL-FEEDBACK.md`).
+Đợt "cửa Cài đặt bắt kịp macOS" (`docs/tasks/CONTROL-PANEL-FEEDBACK.md`).
 
 ### Added
 
@@ -111,7 +111,7 @@ nav "Nhật Ký Tâm" sẽ ở bản sau.)
 
 ## [0.4.17]
 
-Đợt hoàn thiện Popover theo nghiệm thu tay (`docs/POPOVER-FEEDBACK.md`) + tự-cập-nhật một chạm.
+Đợt hoàn thiện Popover theo nghiệm thu tay (`docs/tasks/POPOVER-FEEDBACK.md`) + tự-cập-nhật một chạm.
 
 ### Added
 
@@ -138,7 +138,7 @@ nav "Nhật Ký Tâm" sẽ ở bản sau.)
 
 ## [0.4.16]
 
-Đợt "thu cửa sổ + đồng bộ thiết kế" (GĐ-C) + khép sổ (GĐ-D một phần), `docs/WINDOWS-PARITY-TASKS.md`.
+Đợt "thu cửa sổ + đồng bộ thiết kế" (GĐ-C) + khép sổ (GĐ-D một phần), `docs/tasks/WINDOWS-PARITY-TASKS.md`.
 
 ### Added
 
@@ -157,11 +157,11 @@ nav "Nhật Ký Tâm" sẽ ở bản sau.)
 
 - **DPI màn nét-cao (C2) tạm HOÃN có chủ đích**: hiện app vẫn hiển thị đúng cỡ + bấm trúng trên màn
   150% (Windows tự phóng, hơi mờ). Bản "sắc nét per-monitor" cần sửa 260+ toạ độ vẽ+bấm và **chỉ màn
-  nét-cao thật mới kiểm được** — làm mù rủi ro lệch vùng bấm, để lại chờ máy thật. Xem `docs/FRICTION-LOG.md`.
+  nét-cao thật mới kiểm được** — làm mù rủi ro lệch vùng bấm, để lại chờ máy thật. Xem `docs/tasks/FRICTION-LOG.md`.
 
 ## [0.4.15]
 
-Đợt "trọn vẹn tính năng chuông + cơn sóng sống" (GĐ-B, `docs/WINDOWS-PARITY-TASKS.md`) — sau nghiệm
+Đợt "trọn vẹn tính năng chuông + cơn sóng sống" (GĐ-B, `docs/tasks/WINDOWS-PARITY-TASKS.md`) — sau nghiệm
 thu tay v0.4.14, hoàn thiện 9 việc B1–B9 để vỏ Windows bắt kịp macOS về chuông, nhật ký, cơn sóng
 và bỏ nốt giao diện cũ. Mỗi việc 1 commit riêng.
 
@@ -188,7 +188,7 @@ và bỏ nốt giao diện cũ. Mỗi việc 1 commit riêng.
 
 ## [0.4.14]
 
-Đợt "nối lại dây điện" (GĐ-A, `docs/WINDOWS-PARITY-TASKS.md`) — sau nghiệm thu tay v0.4.12 lộ ra
+Đợt "nối lại dây điện" (GĐ-A, `docs/tasks/WINDOWS-PARITY-TASKS.md`) — sau nghiệm thu tay v0.4.12 lộ ra
 UI Windows đã vẽ đúng nhưng nhiều control chưa nối dây thật hoặc nối nhầm dây. 9 việc A0–A8, mỗi
 việc 1 commit riêng.
 
@@ -223,7 +223,7 @@ việc 1 commit riêng.
 - **Windows: tab "Riêng tư" tạm trống** — 2 control cũ (chọn thời gian lưu trữ, xuất CSV) chưa
   từng có hàm hậu trường nào cả (không phải chỉ sai tên khoá) nên đã gỡ khỏi UI thay vì để nút giả.
   macOS đã có đủ 2 tính năng này thật; port sang Windows là việc riêng, chờ chủ dự án chốt — xem
-  `docs/FRICTION-LOG.md` 2026-07-23 "A4".
+  `docs/tasks/FRICTION-LOG.md` 2026-07-23 "A4".
 
 ## [0.4.13]
 

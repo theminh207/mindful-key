@@ -74,7 +74,7 @@ void AppDelegate::checkUpdate() {
 	// hộp Giới thiệu.
 	//
 	// Hệ quả: checkbox "Kiểm tra bản mới" nay không điều khiển gì. Bỏ 1 checkbox khỏi UI là quyết
-	// định của chủ dự án, không phải của tôi — đã ghi docs/FRICTION-LOG.md 2026-07-17.
+	// định của chủ dự án, không phải của tôi — đã ghi docs/tasks/FRICTION-LOG.md 2026-07-17.
 }
 
 AppDelegate::AppDelegate() {
@@ -125,7 +125,7 @@ int AppDelegate::run(HINSTANCE hInstance) {
 
 	// [MINDFUL] Khay đã có -> nhờ luồng cửa sổ cảnh báo nếu MindfulKey gốc đang chạy (hai bộ gõ giẫm
 	// phím nhau, chữ sai dấu). Deferred qua PostMessage, KHÔNG chặn khởi động — xem
-	// docs/LIFECYCLE-SAFETY-CONTRACT.md. Nhờ APP_CLASS nay đã riêng (stdafx.h), FindWindow ở trên
+	// docs/tasks/LIFECYCLE-SAFETY-CONTRACT.md. Nhờ APP_CLASS nay đã riêng (stdafx.h), FindWindow ở trên
 	// không còn nhầm MindfulKey gốc là "bản thứ 2 của mình" và tự thoát nữa.
 	SystemTrayHelper::checkRivalInputMethod();
 

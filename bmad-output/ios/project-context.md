@@ -4,7 +4,7 @@
 > sự thật. Giữ gọn, cập nhật, có thẩm quyền. Khi một quyết định lớn đổi phạm vi → sửa
 > file này + ghi thêm vào `decision-log.md`.
 >
-> ⚖️ **Luật tối cao vẫn là HIẾN CHƯƠNG** `docs/AGENT-BRIEF.md` (không đèn đỏ/xanh cảm xúc ·
+> ⚖️ **Luật tối cao vẫn là HIẾN CHƯƠNG** `docs/tasks/AGENT-BRIEF.md` (không đèn đỏ/xanh cảm xúc ·
 > không emoji chấm điểm · không gamification · không copy khiển trách · nhận diện = con sóng
 > `~` trung tính, "mô tả không phán xét" · GPL v3, giữ credit Mai Vũ Tuyên · mơ hồ chạm nhận
 > diện/pháp lý → hỏi chủ dự án). File này chỉ là ngữ cảnh riêng đội iOS, không ghi đè hiến chương.

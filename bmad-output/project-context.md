@@ -50,7 +50,7 @@ sản phẩm. Không nhắm "mọi người gõ tiếng Việt" nói chung.
   dùng chung" trong HIẾN CHƯƠNG (CLAUDE.md).
 - **Riêng tư mặc định** — câu gõ gốc không rời máy; xử lý cảm xúc 100% on-device; zero
   network telemetry; kho dữ liệu local mã hoá at-rest; consent gate 1 lần lúc khởi động,
-  không hỏi giữa lúc căng thẳng (theo `docs/PRIVACY-NOTE.md`).
+  không hỏi giữa lúc căng thẳng (theo `docs/tasks/PRIVACY-NOTE.md`).
 - **GPL v3** — kế thừa OpenKey, giữ credit Mai Vũ Tuyên.
 - **Ma sát mềm, không chặn cứng** — gatekeeper không bao giờ khoá nút Gửi.
 - **Nhận diện trung tính** — sóng `~` biến hình theo biên độ, sắc độ trung tính không
@@ -88,7 +88,7 @@ gọi thẳng agent/skill chuyên biệt, bỏ qua BMAD.
   trong app chat allow-list — ma sát mềm, không chặn cứng.
 - **Ma sát mềm (soft friction):** nút Gửi không bao giờ bị khoá; quyết định cuối luôn
   thuộc người dùng.
-- **HIẾN CHƯƠNG:** văn bản quản trị bất khả xâm phạm của dự án (`docs/AGENT-BRIEF.md`,
+- **HIẾN CHƯƠNG:** văn bản quản trị bất khả xâm phạm của dự án (`docs/tasks/AGENT-BRIEF.md`,
   trích ở `CLAUDE.md`).
 - **Vỏ (shell):** lớp code riêng từng OS (win32/, macOS/) — đối lập với "bộ não"
   (`core/engine`) dùng chung.

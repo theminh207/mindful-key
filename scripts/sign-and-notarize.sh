@@ -24,7 +24,7 @@
 #     APPLE_ID               email Apple ID
 #     APPLE_APP_SPECIFIC_PASSWORD
 #
-# Xem checklist đầy đủ (kể cả phần chỉ làm được thủ công, VD lấy cert): docs/RELEASE.md
+# Xem checklist đầy đủ (kể cả phần chỉ làm được thủ công, VD lấy cert): docs/tasks/RELEASE.md
 set -euo pipefail
 
 MODE="${1:?Cần chỉ định 'app' hoặc 'dmg'}"

@@ -29,13 +29,13 @@ redistribute your new version, it MUST be open source.
 #define WM_WAVE_ALERT  (WM_USER + 2)
 // [MINDFUL] Cảnh báo bộ gõ đối thủ (MindfulKey gốc) đang chạy cùng lúc. CỐ Ý PostMessage chứ không
 // Send: hộp thoại chỉ được hiện SAU khi vòng lặp thông điệp đã chạy và cửa sổ đã có chủ — không
-// bao giờ chặn lúc dựng app. Đây là hiện thân của docs/LIFECYCLE-SAFETY-CONTRACT.md bất biến #1.
+// bao giờ chặn lúc dựng app. Đây là hiện thân của docs/tasks/LIFECYCLE-SAFETY-CONTRACT.md bất biến #1.
 #define WM_MK_RIVAL_WARN (WM_USER + 3)
 #define TIMER_WAVE_SETTLE 0xA1
 
 // "rồi lắng về Status sau VÀI GIÂY" (BRAND-ASSETS.md §6). "Vài giây" không phải con số — 3s lấy
 // theo mỏ neo có sẵn của chính sản phẩm: BreathingPausePrompt::durationSeconds mặc định 3.0
-// (core/mood/BreathingPause.h). Xem docs/FRICTION-LOG.md 2026-07-17.
+// (core/mood/BreathingPause.h). Xem docs/tasks/FRICTION-LOG.md 2026-07-17.
 static const UINT kWaveAlertMs = 3000;
 static bool g_waveAlert = false;
 #define TRAY_ICONUID 100

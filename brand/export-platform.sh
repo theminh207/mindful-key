@@ -24,7 +24,7 @@ python3 "$ROOT/brand/pack-ico.py" "$OUT/windows/AppIcon.ico" "${args[@]}"
 # BẢN XÁM (`vUseGrayIcon` -> *10.ico): macOS làm bằng `setTemplate:YES` — hệ thống TỰ chuyển sang
 # đơn sắc thích ứng thanh menu sáng/tối. Windows KHÔNG có gì tương đương, khay cần pixel thật. Nên
 # ta tô lại bằng token `stone` (#8A9BA0) — sắc độ trung tính của chính brand, đọc được trên cả khay
-# sáng lẫn tối. ĐÂY LÀ CÁCH ĐỌC BRAND, chưa phải quyết định của chủ dự án — xem docs/FRICTION-LOG.md
+# sáng lẫn tối. ĐÂY LÀ CÁCH ĐỌC BRAND, chưa phải quyết định của chủ dự án — xem docs/tasks/FRICTION-LOG.md
 # 2026-07-17. Tên "*10" là di sản OpenKey và NÓI DỐI: nó không phải "kiểu Windows 10", nó là bản
 # xám (SystemTrayHelper.cpp:288). Giữ tên vì đổi = đụng resource.h + .rc, ngoài phạm vi.
 STONE="#8A9BA0"

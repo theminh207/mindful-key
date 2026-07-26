@@ -46,7 +46,7 @@ plan B, không có nhánh thứ 3.
 
 Repo **chưa có** dataset "harmful-if-sent" tiếng Việt nào. Không được dùng câu gõ thật của người
 dùng để train (vi phạm nguyên tắc 100% on-device / không bao giờ lưu văn bản gốc trong
-`docs/PRD.md`). Hướng đề xuất khi tới lúc làm:
+`docs/tasks/PRD.md`). Hướng đề xuất khi tới lúc làm:
 1. Bootstrap nhãn yếu (weak label) bằng chính lexicon + danh sách profanity hiện có làm nhãn tự động trên corpus tiếng Việt công khai (báo, mạng xã hội public, bình luận công khai đã ẩn danh).
 2. Tập validation nhỏ gán nhãn tay (vài trăm câu) để đo chính xác thật, không chỉ tin nhãn yếu.
 3. Không thu thập/qua tay dữ liệu người dùng thật của Mindful Keyboard dưới bất kỳ hình thức nào.

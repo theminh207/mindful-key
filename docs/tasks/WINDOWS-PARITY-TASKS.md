@@ -19,7 +19,7 @@
 3. **CẤM sửa `core/`** để vá lỗi riêng Windows. Lỗi vỏ Windows sửa trong `WIN/`. Nếu thấy phải đụng
    `core/` → DỪNG, hỏi chủ dự án.
 4. **CẤM chạm nhận diện**: không thêm đèn đỏ/xanh cho cảm xúc, mặt cười, streak/điểm/huy hiệu, copy
-   khiển trách. Mơ hồ → HIẾN CHƯƠNG (`docs/AGENT-BRIEF.md`) là tối cao, hỏi chủ dự án.
+   khiển trách. Mơ hồ → HIẾN CHƯƠNG (`docs/tasks/AGENT-BRIEF.md`) là tối cao, hỏi chủ dự án.
 5. **Bám STYLE code sẵn có.** Việc "cho nút bấm được" = **chép y hệt mẫu khối `WM_LBUTTONUP` của
    tab 2** (`MainControlDialog.cpp:531-564`): dựng lại RECT giống hệt nhánh `WM_PAINT`, dùng điểm
    chuột thật `pt`, `PtInRect`/helper, rồi `InvalidateRect(hDlg, NULL, FALSE)`.
@@ -29,7 +29,7 @@
 8. **Commit mỗi việc**, message tiếng Anh, cuối có trailer `Co-Authored-By: ...`. **KHÔNG push**
    (chủ dự án tự push).
 9. **Việc nào cần quyết định ngoài spec này** (số liệu, tên, hành vi mơ hồ) → DỪNG, hỏi chủ dự án,
-   ghi 1 dòng vào `docs/FRICTION-LOG.md`. ĐỪNG bịa "reasonable default".
+   ghi 1 dòng vào `docs/tasks/FRICTION-LOG.md`. ĐỪNG bịa "reasonable default".
 10. Xong 1 việc → **cập nhật ô Trạng thái trong file này** trong cùng commit.
 
 ## Ký hiệu trạng thái
@@ -305,7 +305,7 @@ SVG nguồn CÓ SẴN: `brand/svg/bell_temple.svg`, `bell_chime.svg`, `bell_wind
 — nhưng CHƯA xuất sang Windows (`brand/platform/windows/` không có). `BrandControls_DrawIconGroup`
 (`BrandControls.cpp:301-309`) fallback chữ A/B/C/D, comment tự ghi "sẽ bổ sung".
 1. Thêm 4 icon vào `brand/export-platform.sh` (xuất `.ico` vào `brand/platform/windows/`) — xem
-   `docs/BRAND-ASSETS.md` + cách 8 icon khác đang xuất. Chạy `make brand-platform` (cần rsvg —
+   `docs/tasks/BRAND-ASSETS.md` + cách 8 icon khác đang xuất. Chạy `make brand-platform` (cần rsvg —
    verify có trên máy; KHÔNG có → ⛔ báo chủ dự án).
 2. Khai 4 `IDI_ICON_BELL_*` trong `MindfulKey.rc` (trỏ `../../../../../brand/platform/windows/*.ico`,
    như `IDI_TAB_*`) + `resource.h`.
@@ -410,7 +410,7 @@ sau nhịp chuông. Kiểm `MoodStore_LogCheckinEvent` đã có ở `MoodStore.c
 |---|---|---|
 | **D1** | ✅ | `scripts/sync-win-version.py` ghi version.env → .rc trước msbuild (windows.yml + release.yml). Vá bug .exe kẹt version cũ (v0.4.16). |
 | **D2** | ✅ | Quét ma trận cuối: bảng A/B/C cập nhật trạng thái, C2 ghi HOÃN, sổ FRICTION-LOG/PLAN đồng bộ (2026-07-23). |
-| **D3** | 🙋 chủ dự án | Chạy TRỌN `docs/QA-WINDOWS.md` trên Windows THẬT + điền `TEST_MATRIX.md`. Máy dev macOS không chạy được. |
+| **D3** | 🙋 chủ dự án | Chạy TRỌN `docs/tasks/QA-WINDOWS.md` trên Windows THẬT + điền `TEST_MATRIX.md`. Máy dev macOS không chạy được. |
 | **D4** | ⛔ chờ SignPath | CI đã cắm job `sign-windows` (secrets SIGNPATH_*); chờ SignPath DUYỆT cấp Org/Project/Policy slug + token. `continue-on-error` nên chưa ký vẫn ra bản (SmartScreen cảnh báo). |
 
 ### D1 — Version tự đọc `version.env`
@@ -426,14 +426,14 @@ CẢ `windows.yml` VÀ `release.yml` (job build-windows).
 (có lý do). Cập nhật cột trạng thái toàn file này.
 
 ### D3 — QA đầy đủ + sổ bằng chứng
-Chạy trọn `docs/QA-WINDOWS.md` (§3 gõ · §4 cảm xúc/gác cổng/chuông/nhật ký · §5 bất biến riêng tư ·
+Chạy trọn `docs/tasks/QA-WINDOWS.md` (§3 gõ · §4 cảm xúc/gác cổng/chuông/nhật ký · §5 bất biến riêng tư ·
 §6 nhận diện) trên máy Windows thật. Mỗi ca PASS → điền bằng chứng (ảnh/mô tả) vào `TEST_MATRIX.md`
 cột mắt người, nâng ô ❌→✅. Ca iOS-style "chập chờn" phải PASS 2 lần.
 
 ### D4 — Nối ký SignPath (khi duyệt)
 Khi SignPath cấp Organization ID / Project slug / Signing-policy slug + API token: vá bug
 `github-artifact-name`→`github-artifact-id` (+`github-token`) trong `release.yml` job `sign-windows`,
-cắm 3 slug, chủ dự án lưu secret `SIGNPATH_API_TOKEN`. Xem `docs/WINDOWS-CODE-SIGNING.md` §Bước 2.
+cắm 3 slug, chủ dự án lưu secret `SIGNPATH_API_TOKEN`. Xem `docs/tasks/WINDOWS-CODE-SIGNING.md` §Bước 2.
 - **Nghiệm thu:** tag 1 bản → `.exe` tải về `signtool verify` thấy chữ ký; SmartScreen hết "Unknown".
 
 ---

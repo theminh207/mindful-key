@@ -164,7 +164,7 @@ SendRiskResult SendRiskAnalyzer_Analyze(const wstring& recentText) {
     if (hardHit && raw < 9.0) raw = 9.0;  // chửi thề nặng -> luôn đẩy risk lên cao
 
     // Bão hoà 1 - e^(-raw/K): raw=0 -> 0, tăng dần, không bao giờ chạm hẳn 1.
-    // Không nhắm độ chính xác tuyệt đối — xem docs/PRD.md.
+    // Không nhắm độ chính xác tuyệt đối — xem docs/tasks/PRD.md.
     double risk = 1.0 - std::exp(-raw / 5.0);
     if (risk > 1.0) risk = 1.0;
     result.risk = risk;

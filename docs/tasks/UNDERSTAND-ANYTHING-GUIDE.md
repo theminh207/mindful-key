@@ -24,11 +24,11 @@ thẳng cú pháp — chắc chắn, không bịa. Phần "mô tả tòa nhà" (
 gì) do AI đọc code rồi viết tiếng người — **có thể sai**, vì là suy diễn chứ
 không phải phân tích tĩnh.
 
-**Quan hệ với tài liệu đã có:** dự án đã có `docs/OPENKEY-MAP.md`,
-`docs/BREATHING-PAUSE-CONTRACT.md`... viết tay, xác minh kỹ theo dòng số cụ
+**Quan hệ với tài liệu đã có:** dự án đã có `docs/tasks/OPENKEY-MAP.md`,
+`docs/tasks/BREATHING-PAUSE-CONTRACT.md`... viết tay, xác minh kỹ theo dòng số cụ
 thể. Understand-Anything **không thay thế** mấy file đó — dùng nó như tấm
 gương đối chiếu: nếu bản đồ AI vẽ ra khác với những gì tài liệu tay đã ghi,
-đó là dấu hiệu lệch pha, ghi vào `docs/FRICTION-LOG.md` chứ đừng sửa tài liệu
+đó là dấu hiệu lệch pha, ghi vào `docs/tasks/FRICTION-LOG.md` chứ đừng sửa tài liệu
 gốc theo AI ngay. Đúng luật "CẤM đoán" trong CLAUDE.md — coi output của nó là
 gợi ý định hướng, verify lại code thật trước khi quyết định.
 
@@ -143,7 +143,7 @@ bị xóa là mất bản đồ theo. Không cần tự tay xử lý việc này
 - **Nơi lưu artifact:** `.ua/` tại gốc repo (`/Users/now/Projects/mindful-keyboard/mindful-key/.ua/`).
 - **Cài đặt:** scope `project`, chỉ áp dụng repo này — không cộng thêm token
   always-on vào project khác (khác với plugin BMAD cài scope `user`, xem
-  `docs/BMAD-SKILLS-GUIDE.md` mục 7).
+  `docs/tasks/BMAD-SKILLS-GUIDE.md` mục 7).
 - **Không thấy `/understand-dashboard` mở được:** kiểm tra `.ua/knowledge-graph.json`
   đã tồn tại chưa — nếu chưa, `/understand` vẫn đang chạy dở hoặc chưa chạy
   lần nào.

@@ -6,7 +6,7 @@
 //  1 mạch nhắc, tránh dồn dập 2 lời nhắc cùng lúc cho cùng 1 khoảnh khắc căng thẳng.
 //
 //  KHÔNG áp dụng cho gác cổng gửi tin (SendGatekeeperMac) — đó là Feature #1, luôn phải hiện
-//  khi điều kiện đủ, không bị cooldown chung này che mất (xem docs/PRD.md §1).
+//  khi điều kiện đủ, không bị cooldown chung này che mất (xem docs/tasks/PRD.md §1).
 //
 
 #ifndef NudgeCoordinatorMac_h

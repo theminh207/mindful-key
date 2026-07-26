@@ -2,7 +2,7 @@
 
 **Lập ngày:** 2026-07-16 · **Chốt bởi:** chủ dự án ("nâng cấp toàn bộ rồi mới đóng gói")
 **Chuẩn hành vi:** `platforms/apple/macos/` — mọi module Windows phải khớp HÀNH VI bản Mac.
-**Luật tối cao:** `docs/AGENT-BRIEF.md` (HIẾN CHƯƠNG). Mơ hồ về nhận diện/pháp lý → hỏi chủ dự án.
+**Luật tối cao:** `docs/tasks/AGENT-BRIEF.md` (HIẾN CHƯƠNG). Mơ hồ về nhận diện/pháp lý → hỏi chủ dự án.
 
 ---
 
@@ -34,7 +34,7 @@ Vỏ Windows hiện có: engine gõ chữ (dùng chung core) + `MoodWatch.cpp`/`
 2. **Lỗi riêng Windows sửa ở `platforms/windows/`**, không sửa `core/`.
 3. **Rebrand = chuỗi hiển thị.** KHÔNG đổi tên file/class/project/solution.
 4. **Nhận diện lấy từ `brand/tokens.json`**, cấm tự chế màu/chữ/hình.
-5. **Không tuyên bố "xong" khi chưa có bằng chứng chạy thật** (`docs/TEST_MATRIX.md`).
+5. **Không tuyên bố "xong" khi chưa có bằng chứng chạy thật** (`docs/tasks/TEST_MATRIX.md`).
 
 ---
 
@@ -76,8 +76,8 @@ nhận diện nhất lại là phần duy nhất không ai gác.
 CI `Windows` XANH cả Debug lẫn Release x64 (`3b08752`, `543ea49`), có `.exe` tải về được.
 **Gốc rễ hoá ra không nằm ở code Windows:** việc của phiên trước (vá include + rebrand, 9 file)
 chưa bao giờ được commit — đọc file trên đĩa thì thấy đã sửa, còn CI checkout code đã commit nên
-dịch bản cũ. 3 vòng đỏ trước đó là lỗi CI do chính tôi gài (xem `docs/TEST_MATRIX.md`).
-**CÒN LẠI:** CI chỉ chứng minh compile+link. Gõ thật cần người → `docs/QA-WINDOWS.md`.
+dịch bản cũ. 3 vòng đỏ trước đó là lỗi CI do chính tôi gài (xem `docs/tasks/TEST_MATRIX.md`).
+**CÒN LẠI:** CI chỉ chứng minh compile+link. Gõ thật cần người → `docs/tasks/QA-WINDOWS.md`.
 
 <details><summary>Mô tả gốc lúc lập kế hoạch</summary>
 
@@ -137,7 +137,7 @@ code 2 đội.
 Cả 5 việc trong bảng dưới đã làm. Ngoài ra sửa thêm 1 lỗi bản cũ không ai nêu: nó quét lexicon
 NGAY trên luồng hook và tự biện minh "chỉ quét RAM nên an toàn" — sai, vì `LowLevelHooksTimeout`
 gỡ hook âm thầm. Nay có luồng worker riêng. CI Windows XANH. Chưa ai nhìn popup thật →
-`docs/QA-WINDOWS.md` §4.
+`docs/tasks/QA-WINDOWS.md` §4.
 
 <details><summary>Kế hoạch gốc</summary>
 

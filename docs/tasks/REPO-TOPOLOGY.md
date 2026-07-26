@@ -21,7 +21,7 @@ Brand là bộ nhận diện của quán — logo, màu, biển hiệu — làm 
 **⚠️ Sự thật đang có (đọc kỹ trước khi tách):** pipeline release hiện tại (`scripts/release.sh` +
 `.github/workflows/release.yml`) đang **phát hành THẲNG từ repo dev** `theminh207/mindful-key` —
 gắn tag `vX.Y.Z` là GitHub Actions tự dựng + đăng Release ngay tại đó (kiểu repo tham chiếu
-`sonpiaz/haynoi`). Xem `docs/RELEASE.md`.
+`sonpiaz/haynoi`). Xem `docs/tasks/RELEASE.md`.
 
 → Nghĩa là repo public bạn sắp mở là **một lớp mới**. Có 2 cách khớp nó vào (bạn quyết — chạm pháp lý GPL):
 
@@ -55,7 +55,7 @@ brand/                                 ← 1 nguồn nhận diện
 **Nhớ khi làm mobile (đừng kỳ vọng copy-paste desktop):** tính năng vương miện — *gác cổng chặn
 Enter trong Zalo* — **iOS làm gần như không được** (bàn phím iOS là extension bị nhốt trong hộp cát,
 không thấy nút "Gửi" của app khác). Dự án **đã chốt** mandate iOS hẹp lại: **chỉ nhật ký + nhắc thụ
-động, KHÔNG gác cổng gửi tin** (xem `docs/FRICTION-LOG.md`, 2026-07-10). Android đỡ hơn nhưng cũng
+động, KHÔNG gác cổng gửi tin** (xem `docs/tasks/FRICTION-LOG.md`, 2026-07-10). Android đỡ hơn nhưng cũng
 bị giới hạn IME. → Mobile **dùng chung engine + mood + brand**, nhưng **tính năng từng vỏ khác nhau**
 — càng là lý do để chung repo (chia sẻ cái chia sẻ được), chỉ khác ở tầng vỏ.
 
@@ -114,7 +114,7 @@ cp -R release-out/public-brand/. <repo-public>/assets/brand/
 # social-preview.png → repo public › Settings › Social preview (upload, không cần commit)
 ```
 
-**Phát hành bản chạy** (chi tiết ký + notarize: `docs/RELEASE.md`):
+**Phát hành bản chạy** (chi tiết ký + notarize: `docs/tasks/RELEASE.md`):
 ```bash
 # 1. bump VERSION trong version.env
 # 2. cập nhật CHANGELOG.md ([Unreleased] → [X.Y.Z])

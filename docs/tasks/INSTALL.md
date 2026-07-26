@@ -2,7 +2,7 @@
 
 > Bản `.dmg` này ký **ad-hoc** (không phải Developer ID thật) — chỉ dùng để tự cài/test trên
 > máy của chính bạn. Muốn chia sẻ cho người khác test (beta), cần hoàn tất Apple Developer
-> Program + ký thật + notarize trước (xem `docs/PRD.md` §6 và roadmap Bước 9) — nếu không,
+> Program + ký thật + notarize trước (xem `docs/tasks/PRD.md` §6 và roadmap Bước 9) — nếu không,
 > Gatekeeper trên máy người nhận sẽ chặn với cảnh báo "không thể xác minh nhà phát triển".
 
 ## Đóng gói lại (khi có bản build mới)
@@ -20,7 +20,7 @@ Ra file `MindfulKeyboard_Beta.dmg` ở gốc repo. Script tự tìm `.app` mới
 3. **Vì app ký ad-hoc**, lần đầu mở macOS sẽ cảnh báo "không thể xác minh nhà phát triển":
    - Cách 1: chuột phải (hoặc Control-click) vào `OpenKey.app` trong Applications → chọn **Open** → xác nhận **Open** lần nữa.
    - Cách 2: System Settings → Privacy & Security → cuộn xuống mục cảnh báo → bấm **Open Anyway**.
-4. Cấp quyền **Accessibility** + **Input Monitoring** khi được hỏi (xem `docs/PRIVACY-NOTE.md` để hiểu vì sao cần).
+4. Cấp quyền **Accessibility** + **Input Monitoring** khi được hỏi (xem `docs/tasks/PRIVACY-NOTE.md` để hiểu vì sao cần).
 5. Đồng ý (hoặc từ chối) bật nhật ký cảm xúc khi được hỏi lần đầu.
 
 ## Gỡ cài đặt

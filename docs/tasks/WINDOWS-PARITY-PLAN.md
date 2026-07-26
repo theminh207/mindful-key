@@ -5,8 +5,8 @@
 > "dây điện" vỏ Windows từng control. Mục tiêu chủ dự án chốt: **hành vi Windows ↔ macOS đồng bộ
 > 100%** (trong phạm vi OS cho phép — xem §5).
 >
-> Bám tên giai đoạn của `docs/ROADMAP-WINDOWS.md` (GĐ0–GĐ7 đã xong phần dựng); đây là các giai
-> đoạn **sau nghiệm thu**, đánh số GĐ-A → GĐ-D. Ca nghiệm thu lấy từ `docs/QA-WINDOWS.md`.
+> Bám tên giai đoạn của `docs/tasks/ROADMAP-WINDOWS.md` (GĐ0–GĐ7 đã xong phần dựng); đây là các giai
+> đoạn **sau nghiệm thu**, đánh số GĐ-A → GĐ-D. Ca nghiệm thu lấy từ `docs/tasks/QA-WINDOWS.md`.
 
 ## 1. Nghiệm thu v0.4.12 — cái gì ĐÃ ăn
 

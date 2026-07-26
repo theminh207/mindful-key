@@ -1,7 +1,7 @@
 #!/bin/bash
 # install-macos.sh — [MINDFUL] cài MindfulKey qua Terminal, KHÔNG dính cảnh báo "damaged".
 #
-# Vì sao script này tồn tại (docs/INSTALL-MACOS-BETA.md): app beta chưa notarize với Apple.
+# Vì sao script này tồn tại (docs/tasks/INSTALL-MACOS-BETA.md): app beta chưa notarize với Apple.
 # Tải .dmg bằng TRÌNH DUYỆT thì browser dán cờ kiểm dịch (com.apple.quarantine) lên file,
 # và macOS chặn app ad-hoc có cờ đó bằng thông báo "damaged" (người dùng thật đã dính,
 # 2026-07-17). curl KHÔNG dán cờ — nên tải qua script này thì app mở là chạy.

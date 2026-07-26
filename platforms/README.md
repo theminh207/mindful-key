@@ -1,7 +1,7 @@
 # Lộ trình nền tảng
 
 Thứ tự **macOS ① → Windows ② → Android ③ → Linux ④ → iOS ⑤** (đề xuất — chủ dự án đổi được
-tuỳ thực tế; xem AGENT-BRIEF §4 và `docs/OPENKEY-MAP.md` cho lý do đằng sau thứ tự này).
+tuỳ thực tế; xem AGENT-BRIEF §4 và `docs/tasks/OPENKEY-MAP.md` cho lý do đằng sau thứ tự này).
 
 1. **macOS** — công dân hạng nhất, đang làm (`apple/macos/`). Full Access, CGEventTap +
    Accessibility, gác cổng gửi tin hoạt động đầy đủ.

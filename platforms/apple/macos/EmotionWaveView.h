@@ -4,7 +4,7 @@
 //
 //  [MINDFUL] Story 1.2 — widget "con sóng" ~ biểu đạt trạng thái cảm xúc bằng BIÊN ĐỘ.
 //
-//  Ràng buộc HIẾN CHƯƠNG khoá trong file này (docs/AGENT-BRIEF.md §2.2/2.3):
+//  Ràng buộc HIẾN CHƯƠNG khoá trong file này (docs/tasks/AGENT-BRIEF.md §2.2/2.3):
 //    - CHỈ 1 hue: nội suy màu giữa teal (#1D7C91) và stone (#8A9BA0). KHÔNG bao giờ đổi
 //      sang cam/đỏ. Biên độ chỉ đổi độ cao sóng / tần số / độ dày nét.
 //    - Mặc định THU GỌN. Nghỉ (biên độ ~0) = tĩnh phẳng im lặng, KHÔNG loop animation.

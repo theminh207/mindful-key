@@ -1,13 +1,13 @@
 //
 // SendGatekeeper.cpp — [MINDFUL] Feature #1: người gác cổng gửi tin, bản Windows.
-// Xem SendGatekeeper.h + docs/BREATHING-PAUSE-CONTRACT.md.
+// Xem SendGatekeeper.h + docs/tasks/BREATHING-PAUSE-CONTRACT.md.
 //
 #include "stdafx.h"
 #include "SendGatekeeper.h"
 #include "MoodWatch.h"
 #include "MoodStore.h"
 #include "SecureField.h"   // [MINDFUL] P1 — cổng ô mật khẩu, xem SecureField.h
-#include "BrandControls.h" // [MINDFUL] vẽ lại UI theo nhận diện — xem docs/WINDOWS-UI-REDESIGN.md
+#include "BrandControls.h" // [MINDFUL] vẽ lại UI theo nhận diện — xem docs/tasks/WINDOWS-UI-REDESIGN.md
 #include "BrandPalette.h"
 #include "../../../../../core/mood/BreathingPause.h"
 #include <vector>

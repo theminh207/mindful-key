@@ -1,7 +1,7 @@
 # QA-WINDOWS — kịch bản kiểm thử trước khi đóng gói .exe cho người dùng
 
 **Lập:** 2026-07-17 · **Theo:** `.claude/skills/mindful-test-design` (Risk-Based + "verify đừng đoán")
-**Chuẩn hành vi:** `platforms/apple/macos/` · **Luật tối cao:** `docs/AGENT-BRIEF.md`
+**Chuẩn hành vi:** `platforms/apple/macos/` · **Luật tối cao:** `docs/tasks/AGENT-BRIEF.md`
 
 > ⚠️ **Vì sao tài liệu này tồn tại:** máy dev là macOS. CI `windows-latest` chỉ chứng minh
 > **compile + link** — nó KHÔNG chứng minh gõ ra đúng chữ, không chứng minh popup hiện đúng chỗ,
@@ -108,7 +108,7 @@ chữ ra không dấu, phải tắt/bật lại app mới gõ tiếp được. N
 **Bẫy dễ báo nhầm bug:** ở G4 **phải gõ dấu cách sau `ddm`** trước khi bấm Enter. Engine chỉ giao
 từ cho lớp cảm xúc khi từ tiếp theo bắt đầu — gõ `ddm` rồi Enter luôn thì risk vẫn là của câu
 TRƯỚC đó, nên không gác. **Đây là hạn chế đã biết, bản macOS cũng y hệt** (ghi ở `OpenKey.mm` +
-`docs/BREATHING-PAUSE-CONTRACT.md`), không phải lỗi riêng Windows.
+`docs/tasks/BREATHING-PAUSE-CONTRACT.md`), không phải lỗi riêng Windows.
 
 ---
 
@@ -206,7 +206,7 @@ căng..."). Độ nhạy đổi ngưỡng: registry `vBellSensitivity` 1=ít nh�
 | P3 | Tắt "Nhắc tâm (cảm xúc)" trong cửa sổ Điều khiển, gõ `ddijt mej` + dấu cách | **KHÔNG** hiện gì |
 
 > ✅ **P1 ĐÃ VÁ trong code (2026-07-17) — nhưng CHƯA CÓ MẮT NGƯỜI XÁC NHẬN, vẫn CHẶN PHÁT HÀNH tới
-> khi có.** Xem `docs/FRICTION-LOG.md` cùng ngày, mục "CHẶN PHÁT HÀNH", cho lịch sử điều tra đầy đủ.
+> khi có.** Xem `docs/tasks/FRICTION-LOG.md` cùng ngày, mục "CHẶN PHÁT HÀNH", cho lịch sử điều tra đầy đủ.
 >
 > **Cách vá:** file mới `platforms/windows/win32/OpenKey/OpenKey/SecureField.{h,cpp}`. Một luồng
 > riêng (không phải luồng hook bàn phím) dựng `SetWinEventHook(EVENT_OBJECT_FOCUS)` + COM apartment
@@ -265,8 +265,8 @@ căng..."). Độ nhạy đổi ngưỡng: registry `vBellSensitivity` 1=ít nh�
 - [ ] Ca chập chờn (hook, popup) → **PASS 2 lần liên tiếp** mới tính
 
 ### Cổng sổ sách
-- [ ] `docs/TEST_MATRIX.md` ghi ca đã chứng minh, cột bằng chứng trỏ tới thứ có thật
-- [ ] Chỗ phải đoán → `docs/FRICTION-LOG.md`
+- [ ] `docs/tasks/TEST_MATRIX.md` ghi ca đã chứng minh, cột bằng chứng trỏ tới thứ có thật
+- [ ] Chỗ phải đoán → `docs/tasks/FRICTION-LOG.md`
 - [ ] Còn nợ đã biết (icon khay, ô mật khẩu…) → ghi RÕ trong release notes, **không giấu**
 
 ### Cổng chủ dự án

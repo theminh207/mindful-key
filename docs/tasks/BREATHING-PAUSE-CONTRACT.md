@@ -8,7 +8,7 @@
 ## 1. Vì sao cần 1 hợp đồng riêng, tách khỏi MoodWatchMac hiện có
 
 `MoodWatchMac.mm` (bước 2) đã có cơ chế cảnh báo, nhưng đó là **cảnh báo thụ động ngay lúc gõ
-xong 1 câu** (giai đoạn Sense→Remind trong vòng lặp `docs/PRD.md` §2). Feature #1 của sản phẩm —
+xong 1 câu** (giai đoạn Sense→Remind trong vòng lặp `docs/tasks/PRD.md` §2). Feature #1 của sản phẩm —
 "gác cổng trước khi GỬI" — là một khoảnh khắc **khác**: chỉ xảy ra khi vỏ macOS phát hiện người
 dùng bấm Enter/nút Gửi trong 1 app chat (bước 5). Hai khoảnh khắc này:
 - Có thể dùng cùng con số send-risk (từ `MoodWatchMac_LastSendRisk()`),
@@ -36,7 +36,7 @@ void BreathingPause_ReportChoice(BreathingPauseChoice choice);
 
 `BreathingPause_Evaluate` trả `true` **không có nghĩa nút Gửi bị khóa**. Đây thuần là dữ liệu để
 vỏ quyết định hiển thị gì — bản thân hợp đồng không có cơ chế nào ngăn hành động gửi. Trách
-nhiệm giữ đúng nguyên tắc "ma sát mềm" (`docs/PRD.md` §3 non-goals) nằm ở phía vỏ khi implement
+nhiệm giữ đúng nguyên tắc "ma sát mềm" (`docs/tasks/PRD.md` §3 non-goals) nằm ở phía vỏ khi implement
 UI thật: overlay chỉ được che tạm, nút "Vẫn gửi" luôn phải hoạt động ngay lập tức.
 
 ## 4. Câu chữ (copy) cho cộng đồng chánh niệm

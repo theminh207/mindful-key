@@ -63,7 +63,7 @@ authentication (MFA) enabled.
 - **The application** performs all Vietnamese-input and mindfulness processing on
   the user's device. No typed content, and no derived emotional data, is ever
   transmitted off the device. See the
-  [Privacy Note](https://github.com/theminh207/mindful-key/blob/main/docs/PRIVACY-NOTE.md).
+  [Privacy Note](https://github.com/theminh207/mindful-key/blob/main/docs/tasks/PRIVACY-NOTE.md).
 - **The signing process** only ever handles the compiled, unsigned binaries built
   from public source code. No end-user data is involved in signing.
 

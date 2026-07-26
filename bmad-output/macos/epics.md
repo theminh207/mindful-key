@@ -9,7 +9,7 @@
 > nguồn spec là 2 tài liệu UX + báo cáo brainstorm (thay vai trò PRD/architecture cho
 > riêng epic này — dự án chưa có prd.md/architecture.md).
 > Sources: `DESIGN-macos-control-panel.md`, `EXPERIENCE-macos-control-panel.md`,
-> `brainstorming-report-macos-control-panel.md`, `docs/AGENT-BRIEF.md` (HIẾN CHƯƠNG).
+> `brainstorming-report-macos-control-panel.md`, `docs/tasks/AGENT-BRIEF.md` (HIẾN CHƯƠNG).
 
 ---
 
@@ -52,7 +52,7 @@ thái cảm xúc hiển thị rõ nhưng tôn trọng riêng tư + hiến chươ
 > **Trạng thái + bằng chứng thi công (nguồn sự thật DUY NHẤT): `sprint-status.yaml` mục
 > `stories:`.** Bảng dưới đây KHÔNG còn cột Status — từng ghi text độc lập ở đây từng lệch
 > so với `sprint-status.yaml` nhiều lần (vd 1.4/1.5 từng ghi "in-progress"/"ready-for-dev"
-> trong khi đã `done` từ lâu). Xem đồng thời `docs/TEST_MATRIX.md` để biết mức bằng chứng
+> trong khi đã `done` từ lâu). Xem đồng thời `docs/tasks/TEST_MATRIX.md` để biết mức bằng chứng
 > (build-verified hay đã có người xem/gõ thật).
 
 | ID | Slug | Intent | Wave |
@@ -127,7 +127,7 @@ lấy mẫu), `NudgeCoordinatorMac` (độ nhạy 3 mức), `BellMac`/`BellSetti
 **Stories (6 bước tuần tự — build-xem-thật rồi mới sang bước kế):**
 
 > **Trạng thái + bằng chứng thi công (nguồn sự thật DUY NHẤT): `sprint-status.yaml` mục
-> `v2_roadmap.steps`.** Không lặp lại status ở bảng này — xem đồng thời `docs/TEST_MATRIX.md`
+> `v2_roadmap.steps`.** Không lặp lại status ở bảng này — xem đồng thời `docs/tasks/TEST_MATRIX.md`
 > để biết mức bằng chứng (build-verified hay đã có người xem/gõ thật).
 
 | ID | Slug | Intent | Owner |

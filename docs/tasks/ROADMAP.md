@@ -1,7 +1,7 @@
 # Kế hoạch tổng thể + nề nếp nhánh — bám theo để triển khai
 
 > Lộ trình đưa mindful-key từ "tổ chức theo bản năng" về một cấu trúc gọn, deploy được ngay.
-> Cấu trúc thư mục & tách brand: `docs/REPO-TOPOLOGY.md`. Release ký/notarize: `docs/RELEASE.md`.
+> Cấu trúc thư mục & tách brand: `docs/tasks/REPO-TOPOLOGY.md`. Release ký/notarize: `docs/tasks/RELEASE.md`.
 
 ---
 
@@ -77,18 +77,18 @@ Rồi: đổi trigger CI (`.github/workflows/*`) + Coolify sang nhánh `main`.
 - `site/index.html` (từ artifact), nút tải → GitHub Releases.
 - `site/Dockerfile` (nginx 2 dòng) cho Coolify.
 - Coolify: repo → Base Directory `site` · Static · **Watch Paths `site/**`** · nhánh `main` · domain + TLS.
-- Chi tiết: `docs/REPO-TOPOLOGY.md §6`.
+- Chi tiết: `docs/tasks/REPO-TOPOLOGY.md §6`.
 
 ### ▶ Giai đoạn 2 — Brand hết trôi màu  *(tùy chọn, nhẹ)*
 - `make site-css`: sinh `site/assets/tokens.css` từ `brand/tokens.json` → landing đọc token, hết chép tay.
 
 ### ▶ Giai đoạn 3 — Release thật  *(khi có Apple Developer Program)*
 - Pipeline ký + notarize đã viết sẵn. Chỉ cần cert → tag `vX.Y.Z` → Actions tự đăng Release.
-- Chi tiết + 7 secret cần khai: `docs/RELEASE.md`.
+- Chi tiết + 7 secret cần khai: `docs/tasks/RELEASE.md`.
 
 ### ▶ Giai đoạn 4 — Công khai (hướng a)  *(khi sẵn sàng ra mắt)*
 - README đẹp (hero brand), `LICENSE` GPL v3 + **credit Mai Vũ Tuyên**, đổi repo sang public.
-- 1 repo vừa dev vừa public; brand chảy 1 nguồn → 3 đích (`docs/REPO-TOPOLOGY.md §4`).
+- 1 repo vừa dev vừa public; brand chảy 1 nguồn → 3 đích (`docs/tasks/REPO-TOPOLOGY.md §4`).
 
 ## 4. Nề nếp git từ nay (quy tắc bám theo)
 

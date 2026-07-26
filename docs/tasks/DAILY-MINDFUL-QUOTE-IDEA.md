@@ -24,7 +24,7 @@ câu trong danh sách đó qua 1 mục Cài đặt riêng.
 
 Ảnh 1 dùng **emoji chấm điểm** (✅💡) và **giọng khen ngợi trực tiếp thành tích** ("bạn chính là
 người thuyền trưởng xuất sắc nhất"). Cả hai đều rơi đúng vào điều bất khả xâm phạm của
-`docs/AGENT-BRIEF.md` §2.2: **không emoji chấm điểm · không copy khen ngợi/khiển trách** — nhận
+`docs/tasks/AGENT-BRIEF.md` §2.2: **không emoji chấm điểm · không copy khen ngợi/khiển trách** — nhận
 diện phải là "quan sát không phán xét" (như "Mặt hồ đang gợn sóng").
 
 → Nếu làm tính năng này, câu dẫn **không được** viết theo giọng ảnh 1. Phải viết theo giọng quan

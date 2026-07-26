@@ -40,7 +40,7 @@ vào bước UX/PRD tiếp theo, kèm danh sách nguyên tắc phòng ngừa vi 
 **Related BMAD Artifacts:**
 - Objective chi tiết: `bmad-output/macos/brainstorm-objective-macos-panel.md`
 - Chi tiết từng kỹ thuật: `brainstorm-macos-panel-scamper.md`, `-hats.md`, `-reverse.md`
-- Constitution: `docs/AGENT-BRIEF.md`; brand: `docs/BRAND-ASSETS.md`
+- Constitution: `docs/tasks/AGENT-BRIEF.md`; brand: `docs/tasks/BRAND-ASSETS.md`
 
 ---
 

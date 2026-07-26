@@ -22,7 +22,7 @@ paths:
 languages:
   communication: "Vietnamese"
   document_output: "Vietnamese"
-  # Khớp phần còn lại của repo (root config.yaml, docs/PRD.md, docs/AGENT-BRIEF.md,
+  # Khớp phần còn lại của repo (root config.yaml, docs/tasks/PRD.md, docs/tasks/AGENT-BRIEF.md,
   # và mọi doc iOS đã viết đều tiếng Việt). Đổi tại đây nếu sau này muốn doc kế hoạch English.
 
 # Delivery is COUNT-BASED: track stories remaining / completion rate.

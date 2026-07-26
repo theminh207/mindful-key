@@ -3,7 +3,7 @@
 # sẵn sàng copy sang repo public/release.
 #
 # Nguồn thật vẫn là brand/svg + brand/tokens.json (SSOT). Script này CHỈ SINH RA bản public,
-# không bao giờ sửa nguồn. Chi tiết mô hình "1 nguồn → 3 đích": docs/REPO-TOPOLOGY.md.
+# không bao giờ sửa nguồn. Chi tiết mô hình "1 nguồn → 3 đích": docs/tasks/REPO-TOPOLOGY.md.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="$ROOT/release-out/public-brand"

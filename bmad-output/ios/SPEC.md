@@ -5,7 +5,7 @@
 > Do not add sections. If something doesn't fit, put it in the PRD.
 
 **Created:** 2026-07-10
-**Source:** Kernel Round 1 do chủ dự án cung cấp trực tiếp (vai trưởng nhóm iOS), đối chiếu `docs/AGENT-BRIEF.md` + `/Users/now/Projects/mindful-keyboard/docs/MOBILE-UX-ANALYSIS.md` (phân tích Laban Key, §3 — kết luận Feature #1 không port thẳng lên iOS được).
+**Source:** Kernel Round 1 do chủ dự án cung cấp trực tiếp (vai trưởng nhóm iOS), đối chiếu `docs/tasks/AGENT-BRIEF.md` + `/Users/now/Projects/mindful-keyboard/docs/MOBILE-UX-ANALYSIS.md` (phân tích Laban Key, §3 — kết luận Feature #1 không port thẳng lên iOS được).
 **Track:** quick-flow
 **Status:** draft — chờ chủ dự án duyệt trước khi qua `bmad-tech-spec`
 

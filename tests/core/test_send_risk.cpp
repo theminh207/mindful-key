@@ -6,7 +6,7 @@
 // (2026-07-16): biên dịch bản này CẠNH bản đang chạy của iOS (platforms/apple/shared/
 // SendRiskAnalyzer.mm) trong cùng 1 binary rồi cho chấm cùng input — 25/27 ca trùng khít tới
 // 1e-12. Hai ca lệch là hai ca DẤU CÂU, nơi bản iOS sai và bản này theo bản macOS (chuẩn hành vi):
-// xem docs/FRICTION-LOG.md 2026-07-16 "hai bản lexicon đã trôi lệch".
+// xem docs/tasks/FRICTION-LOG.md 2026-07-16 "hai bản lexicon đã trôi lệch".
 //
 // Build: xem tests/core/send_risk_build.sh
 

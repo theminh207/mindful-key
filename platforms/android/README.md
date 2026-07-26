@@ -2,7 +2,7 @@
 
 Chưa có code — chỉ ghi chú lộ trình.
 
-Theo `docs/OPENKEY-MAP.md` §Lộ trình, Android đứng thứ 3 (sau macOS, Windows): tính năng
+Theo `docs/tasks/OPENKEY-MAP.md` §Lộ trình, Android đứng thứ 3 (sau macOS, Windows): tính năng
 "chặn tin nhắn nóng giận" hợp ngữ cảnh điện thoại nhất (IME tiếng Việt + gác cổng gửi tin
 trong các app chat di động). Vỏ sẽ là 1 Input Method Service (Kotlin/Java hoặc NDK bridge
 sang `core/engine` C++ qua JNI) — `core/engine` và `core/mood` dùng lại y nguyên, không fork

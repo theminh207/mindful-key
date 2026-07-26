@@ -2,7 +2,7 @@
 //  BrandColors.h
 //  Mindful Keyboard — based on OpenKey
 //
-//  Token màu NOW BRAND OS (docs/BRAND-ASSETS.md). Đọc từ Assets.xcassets Color Set —
+//  Token màu NOW BRAND OS (docs/tasks/BRAND-ASSETS.md). Đọc từ Assets.xcassets Color Set —
 //  KHÔNG hard-code hex ở đây để tránh lệch giữa asset catalog và code khi brand đổi màu.
 
 #import <Cocoa/Cocoa.h>

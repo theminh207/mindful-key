@@ -19,13 +19,13 @@
       <mxCell id="a1" value="🧭 bmad-output/macos/sprint-status.yaml&#xa;&#xa;❓ LÀM GÌ TIẾP THEO?&#xa;&#xa;Nguồn sự thật DUY NHẤT về status.&#xa;Đọc khối comment 30 dòng đầu trước." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=3;fontSize=12;fontStyle=1;" vertex="1" parent="A">
         <mxGeometry x="20" y="50" width="260" height="140" as="geometry" />
       </mxCell>
-      <mxCell id="a2" value="docs/TEST_MATRIX.md&#xa;&#xa;❓ CÁI ĐÓ ĐÃ AI CHẠY THẬT CHƯA?&#xa;&#xa;Sổ bằng chứng. Cấm tự suy ra&#xa;&quot;build sạch = chạy đúng&quot;." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=3;fontSize=12;" vertex="1" parent="A">
+      <mxCell id="a2" value="docs/tasks/TEST_MATRIX.md&#xa;&#xa;❓ CÁI ĐÓ ĐÃ AI CHẠY THẬT CHƯA?&#xa;&#xa;Sổ bằng chứng. Cấm tự suy ra&#xa;&quot;build sạch = chạy đúng&quot;." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=3;fontSize=12;" vertex="1" parent="A">
         <mxGeometry x="300" y="50" width="260" height="140" as="geometry" />
       </mxCell>
       <mxCell id="a3" value="bmad-output/decision-log.md&#xa;&#xa;❓ VÌ SAO LẠI LÀM THẾ?&#xa;&#xa;Append-only, mới nhất ở TRÊN CÙNG.&#xa;Không bao giờ sửa/xoá entry cũ." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="A">
         <mxGeometry x="580" y="50" width="260" height="140" as="geometry" />
       </mxCell>
-      <mxCell id="a4" value="docs/FRICTION-LOG.md&#xa;&#xa;❓ CHỖ NÀO CÒN MƠ HỒ?&#xa;&#xa;Câu hỏi treo chờ chủ dự án chốt.&#xa;Đừng đoán lại cái đã đoán." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="A">
+      <mxCell id="a4" value="docs/tasks/FRICTION-LOG.md&#xa;&#xa;❓ CHỖ NÀO CÒN MƠ HỒ?&#xa;&#xa;Câu hỏi treo chờ chủ dự án chốt.&#xa;Đừng đoán lại cái đã đoán." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="A">
         <mxGeometry x="860" y="50" width="260" height="140" as="geometry" />
       </mxCell>
 
@@ -83,7 +83,7 @@
       <mxCell id="e1" value="① sprint-status.yaml&#xa;→ đổi status của chính story đó" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=3;fontSize=12;fontStyle=1;" vertex="1" parent="E">
         <mxGeometry x="20" y="50" width="330" height="80" as="geometry" />
       </mxCell>
-      <mxCell id="e2" value="② docs/TEST_MATRIX.md&#xa;→ thêm 1 dòng bằng chứng mới" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=3;fontSize=12;fontStyle=1;" vertex="1" parent="E">
+      <mxCell id="e2" value="② docs/tasks/TEST_MATRIX.md&#xa;→ thêm 1 dòng bằng chứng mới" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=3;fontSize=12;fontStyle=1;" vertex="1" parent="E">
         <mxGeometry x="380" y="50" width="330" height="80" as="geometry" />
       </mxCell>
       <mxCell id="e3" value="⚠️ Thiếu 1 trong 2 = CHƯA XONG&#xa;dù code chạy sạch, dù đã commit." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;" vertex="1" parent="E">

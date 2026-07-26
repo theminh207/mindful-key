@@ -7,7 +7,7 @@
 //  sang thẻ TRẮNG viền mảnh (khớp mockup-v2-tabbed.html .card trong tab "Hôm nay"). Tiêu đề tĩnh
 //  "Gác cổng gửi tin" bị bỏ — tít giờ là CÂU TRẠNG THÁI động lấy thẳng từ EmotionWaveView.
 //
-//  Ràng buộc HIẾN CHƯƠNG khoá trong file này (docs/AGENT-BRIEF.md §2.2/2.3):
+//  Ràng buộc HIẾN CHƯƠNG khoá trong file này (docs/tasks/AGENT-BRIEF.md §2.2/2.3):
 //    - Chứa EmotionWaveView + đúng 1 câu mô tả quan-sát-không-phán-xét làm tít.
 //    - State "tắt": sóng phẳng + copy trung tính, KHÔNG màu đỏ / xám-chết cảnh báo.
 //    - Lối tắt "Soi lại hôm nay →" gọi ReflectionScreenMac_Show().

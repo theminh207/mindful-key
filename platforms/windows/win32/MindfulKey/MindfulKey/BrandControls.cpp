@@ -3,7 +3,7 @@
 //
 //  Lần đầu dùng GDI THUẦN (CreateRoundRectRgn), KHÔNG GDI+: robust khi vẽ mù (máy dev là macOS,
 //  không render được Windows), không dây dưa vòng đời GdiplusStartup. Góc bo hơi gợn — nâng lên
-//  GDI+ (anti-alias) SAU khi ảnh Windows thật xác nhận cách tiếp cận. Xem docs/WINDOWS-UI-REDESIGN.md.
+//  GDI+ (anti-alias) SAU khi ảnh Windows thật xác nhận cách tiếp cận. Xem docs/tasks/WINDOWS-UI-REDESIGN.md.
 //
 #include "stdafx.h"
 #include "BrandControls.h"

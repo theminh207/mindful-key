@@ -38,7 +38,7 @@ thế từ 2026-07-13, mà không có dấu hiệu gì ngay trong 2 file đó �
 
 ### 2026-07-20 — Nhận diện: giữ 1 trục biên độ, KHÔNG thêm trục +/- (tích cực/tiêu cực)
 - **Decision:** Con sóng `~` tiếp tục chỉ có 1 trục **biên độ** (phẳng lặng ↔ gợn sóng), giữ
-  nguyên đúng `docs/AGENT-BRIEF.md §2.1-2.3`. KHÔNG dựng thêm trục thứ 2 kiểu tích cực(+)/tiêu
+  nguyên đúng `docs/tasks/AGENT-BRIEF.md §2.1-2.3`. KHÔNG dựng thêm trục thứ 2 kiểu tích cực(+)/tiêu
   cực(-) như mô hình "sơ đồ cơn sóng cảm xúc" của một chương trình phát triển bản thân bên ngoài
   (Cộng đồng Sống Tử Tế/Bách Khoa Education — "Tư duy Tiêu cực-Tích cực → Tư duy Đúng đắn") mà
   chủ dự án đưa ra đối chiếu.
@@ -263,7 +263,7 @@ thế từ 2026-07-13, mà không có dấu hiệu gì ngay trong 2 file đó �
   3 màn dùng chung ngôn ngữ dòng sông:
   1. **Dòng sông đọc thành MỘT dòng** (đã code + verify): thêm trục thời-gian nét đứt mờ suốt ngày ở
      `EmotionRiverView.mm` (là TRỤC, không phải mặt nước → dec.4 nguyên vẹn) + vá bug chấm tô trắng
-     tàng hình → tô teal đặc. Trục dọc = **chỉ cường độ, không valence**. Ghi ở `docs/FRICTION-LOG.md` 2026-07-16.
+     tàng hình → tô teal đặc. Trục dọc = **chỉ cường độ, không valence**. Ghi ở `docs/tasks/FRICTION-LOG.md` 2026-07-16.
   2. **Màn Soi lại v2.1** (chưa code — gói thành lệnh cho `platform-shell-agent`): câu hỏi + gợi ý phải
      **khớp hình dạng ngày** (ngày phẳng lặng đừng hỏi về "nóng giận"), thôi random mù; nút chuông theo
      **giờ đỉnh thật** (bỏ hardcode 15-17h) và **hạ xuống link cam nhẹ** (không phải nút cam đặc) để "câu
@@ -583,13 +583,13 @@ thế từ 2026-07-13, mà không có dấu hiệu gì ngay trong 2 file đó �
   2. **(F10) Nhịp chuông = 2 nút nhanh 30/60 + ô "Tùy chỉnh" điền số phút, CHẶN SÀN 15, TRẦN 240**
      (4 giờ). Mức 15 hiện đang chạy bị gỡ khỏi hàng nút nhanh, nhưng vẫn đạt được qua ô tùy chỉnh.
   3. **(F9) Tên hiển thị cho người dùng = "Mindful Key"** (2 chữ, viết hoa). Tiêu đề cửa sổ đang
-     là "Cài đặt Mindful Keyboard" → sẽ đổi. Luật ghi ở `docs/BRAND-ASSETS.md`.
+     là "Cài đặt Mindful Keyboard" → sẽ đổi. Luật ghi ở `docs/tasks/BRAND-ASSETS.md`.
 - **Rationale:**
   - (F10) là quyết định **chạm riêng tư**, không phải chuyện âm thanh — chuông gánh 2 vai: tiếng
     reo thật VÀ nhịp ghi nhật ký (chốt 2026-07-13). Vì sao phải có sàn: (a) chuông reo mỗi 5 phút
     = **hối thúc**, đúng thứ HIẾN CHƯƠNG cấm, ngược tinh thần chánh niệm; (b) nhịp càng dày, nhật
     ký càng thành **dòng thời gian cảm xúc chi tiết** thay vì "vài chấm thưa trong ngày" như
-    `docs/PRIVACY-NOTE.md` đã hứa. Chọn sàn = **15** vì đó đúng bằng mức thấp nhất app đang chạy
+    `docs/tasks/PRIVACY-NOTE.md` đã hứa. Chọn sàn = **15** vì đó đúng bằng mức thấp nhất app đang chạy
     (`6d15a0b`) — không siết chặt hơn hiện trạng, cũng không mở toang xuống 5. Trần 240 để ô tự
     điền không nhận số vô nghĩa.
     Phương án khác đã cân nhắc: ô tự điền **không** sàn (chủ dự án hỏi thẳng "có thể điền số phút
@@ -598,10 +598,10 @@ thế từ 2026-07-13, mà không có dấu hiệu gì ngay trong 2 file đó �
   - (F2) mockup A2 vẽ card gác cổng nằm TRONG cửa sổ; chọn "bản đầy đủ" là theo đúng bản vẽ, và
     giữ được §5 điều 10 (Feature #1 luôn nổi nhất) ở cả 2 chỗ người dùng có thể mở.
 - **Hệ quả phải làm (đừng để rơi):** con số "~24–48 chấm/ngày" trong artifact A2 nay chỉ đúng cho
-  30/60. Nếu người dùng đặt 15 qua ô tùy chỉnh → ~96 chấm/ngày. `docs/PRIVACY-NOTE.md` phải nói
+  30/60. Nếu người dùng đặt 15 qua ô tùy chỉnh → ~96 chấm/ngày. `docs/tasks/PRIVACY-NOTE.md` phải nói
   đúng chuyện này (mô tả khoảng thật, không hứa một con số cố định).
 - **Made by:** hội thoại với chủ dự án (trả lời 3 câu hỏi chặn)
-- **Supersedes:** không — đóng 3 dòng `mở` trong `docs/FRICTION-LOG.md` (2026-07-15).
+- **Supersedes:** không — đóng 3 dòng `mở` trong `docs/tasks/FRICTION-LOG.md` (2026-07-15).
 
 ---
 
@@ -628,7 +628,7 @@ thế từ 2026-07-13, mà không có dấu hiệu gì ngay trong 2 file đó �
   Phương án khác đã cân nhắc: nhét findings vào Epic 2 như "việc còn lại". Bỏ, vì Epic 2 đóng
   khung theo *6 bước thi công*, còn đây là *đóng khoảng cách với thiết kế* — trộn vào sẽ làm
   chìm mất ranh giới "code xong" vs "đúng thiết kế", đúng lỗi vừa mắc phải.
-- **Ghi kèm:** 3 chỗ phải-đoán vào `docs/FRICTION-LOG.md` (2026-07-15) — "Hôm nay" cửa sổ vs
+- **Ghi kèm:** 3 chỗ phải-đoán vào `docs/tasks/FRICTION-LOG.md` (2026-07-15) — "Hôm nay" cửa sổ vs
   popover (F2) · nhịp chuông 15 phút vs trần lấy mẫu 30/60 đã chốt (F10, chạm riêng tư) · tên
   sản phẩm hiển thị (F9, chạm nhận diện). **Cả 3 chặn code cho tới khi chủ dự án chốt** — không
   tự chọn trong im lặng (bài học "Chốt điểm gai #3" 2026-07-14).
@@ -680,7 +680,7 @@ thế từ 2026-07-13, mà không có dấu hiệu gì ngay trong 2 file đó �
      tinh thần "riêng tư mặc định" — hẹp hơn cả những gì lưu tại chỗ là lựa chọn AN TOÀN HƠN,
      không phải thiếu sót.
   2. **N-ngày tự xoá mặc định = 90 ngày**, giữ đủ 4 lựa chọn 30/60/90/Không bao giờ.
-- **Theo dõi thêm:** `docs/PRIVACY-NOTE.md` được cập nhật cùng lúc để nói rõ "xuất CSV hẹp hơn
+- **Theo dõi thêm:** `docs/tasks/PRIVACY-NOTE.md` được cập nhật cùng lúc để nói rõ "xuất CSV hẹp hơn
   lưu trữ" (bảng "Được lưu" liệt kê cả tên app + lựa chọn, nhưng export thì không) — tránh người
   dùng đọc PRIVACY-NOTE rồi tưởng nhầm file xuất ra có đủ mọi thứ đã lưu.
 - **Rationale:** Đây là 1 trong "5 điểm gai" liệt kê ở entry ngay dưới (2026-07-14, mục 3) —
@@ -924,8 +924,8 @@ thế từ 2026-07-13, mà không có dấu hiệu gì ngay trong 2 file đó �
 ### 2026-07-09 — Language: planning docs in Vietnamese
 - **Decision:** Set `languages.communication` and `languages.document_output` to
   Vietnamese in `config.yaml` (script default was English).
-- **Rationale:** every existing project doc (`CLAUDE.md`, `docs/PRD.md`,
-  `docs/AGENT-BRIEF.md`, `docs/BMAD-SKILLS-GUIDE.md`) is Vietnamese; English output
+- **Rationale:** every existing project doc (`CLAUDE.md`, `docs/tasks/PRD.md`,
+  `docs/tasks/AGENT-BRIEF.md`, `docs/tasks/BMAD-SKILLS-GUIDE.md`) is Vietnamese; English output
   would be inconsistent with the rest of the repo. Reversible — edit `config.yaml` if
   this project ever wants English planning docs instead.
 - **Made by:** bmad-init
@@ -937,7 +937,7 @@ thế từ 2026-07-13, mà không có dấu hiệu gì ngay trong 2 file đó �
   reflection screen, local encrypted mood store, packaging — reusing the shared
   `core/engine` unchanged.
 - **Rationale:** `CLAUDE.md` (constitution changelog) says the project is "chuẩn bị
-  bước sang giai đoạn build app Windows thật"; `docs/BMAD-SKILLS-GUIDE.md` explicitly
+  bước sang giai đoạn build app Windows thật"; `docs/tasks/BMAD-SKILLS-GUIDE.md` explicitly
   scripts this as the practice exercise for buổi 1–4, recommending bmad-method track.
   Confirmed with the project owner before scaffolding.
 - **Made by:** bmad-init

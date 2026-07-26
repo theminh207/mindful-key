@@ -40,7 +40,7 @@
 
 > **Trạng thái + bằng chứng thi công (nguồn sự thật DUY NHẤT): `sprint-status.yaml` mục
 > `stories:`.** Bảng dưới đây KHÔNG còn cột Status (bỏ 2026-07-14) — từng ghi "ready-for-dev"
-> cho gần hết Round 1 dù đã code xong từ lâu. Xem đồng thời `docs/TEST_MATRIX.md` để biết mức
+> cho gần hết Round 1 dù đã code xong từ lâu. Xem đồng thời `docs/tasks/TEST_MATRIX.md` để biết mức
 > bằng chứng (build-verified hay đã có người xem/gõ thật).
 
 | ID | Slug | Intent |
@@ -73,7 +73,7 @@
 > `sprint-status.yaml` (và ngay cả bảng Status ở Epic 2 phía trên cũng đã lệch, xem note).
 > Số liệu done/review/in-progress thật: xem `sprint-status.yaml` mục `sequencing_summary`.
 > Còn lại CHỈ kiểm thủ công trên máy thật (không tự động hóa được): gõ Notes/Zalo, đo RAM,
-> VoiceOver/Reduce-Motion, Settings round-trip — xem `docs/TEST_MATRIX.md` để biết đúng dòng
+> VoiceOver/Reduce-Motion, Settings round-trip — xem `docs/tasks/TEST_MATRIX.md` để biết đúng dòng
 > nào còn thiếu bước này.
 > (Nhịp 0 + Mốc A + lưới test engine đã xong nhưng KHÔNG tính là story — là context nền.)
 

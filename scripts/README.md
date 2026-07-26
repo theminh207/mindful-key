@@ -16,7 +16,7 @@ qua Sparkle** (`make_appcast.sh`), vì app chưa gắn Sparkle SDK — xem mục
 | `release.sh` | Nhạc trưởng: test engine → build universal → xuất+dán dSYM → ký/notarize `.app` → đóng `.dmg` → ký/notarize `.dmg` → cắt changelog. Output vào `release-out/`. `SKIP_SIGN=1` để build+đóng gói ad-hoc test cục bộ, không notarize (không dùng bản này để phát hành công khai). |
 
 `.github/workflows/release.yml` gọi `release.sh` tự động khi gắn tag `v*` rồi đăng GitHub
-Release — xem checklist secrets cần cấu hình ở đầu file đó (hoặc `docs/RELEASE.md`).
+Release — xem checklist secrets cần cấu hình ở đầu file đó (hoặc `docs/tasks/RELEASE.md`).
 
 ## Còn thiếu — auto-update Sparkle
 
@@ -35,6 +35,6 @@ appcast bây giờ sẽ là artifact chết, không ai đọc. Khi nào cắm Sp
 
 ## Đọc thêm
 
-- Checklist đầy đủ để chạy release thật (lấy cert, cấu hình secrets GitHub): `docs/RELEASE.md`.
-- Bối cảnh trước khi có Developer Program: `docs/INSTALL.md`, `docs/PRD.md §6`.
-- Đích của cả dây chuyền (universal binary + Sparkle appcast): §3.3 trong `docs/AGENT-BRIEF.md`.
+- Checklist đầy đủ để chạy release thật (lấy cert, cấu hình secrets GitHub): `docs/tasks/RELEASE.md`.
+- Bối cảnh trước khi có Developer Program: `docs/tasks/INSTALL.md`, `docs/tasks/PRD.md §6`.
+- Đích của cả dây chuyền (universal binary + Sparkle appcast): §3.3 trong `docs/tasks/AGENT-BRIEF.md`.

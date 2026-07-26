@@ -46,7 +46,7 @@ BRAND_CRITICAL = re.compile(r"(SendGatekeeper|Nudge|Bell|Reflection|MoodWatch|Ab
 # là mô hình đã đẻ ra bug lexicon (2 bản trôi lệch trong 3 ngày) — không lặp lại lần nữa.
 #
 # .cpp/.rc/.iss = UI vỏ Windows (dialog Win32, chuỗi hiển thị, bộ cài); UI Windows sắp viết
-# (~6.000 dòng, xem docs/ROADMAP-WINDOWS.md) nằm gần hết trong .cpp. Cả 2 file .rc trong repo đã
+# (~6.000 dòng, xem docs/tasks/ROADMAP-WINDOWS.md) nằm gần hết trong .cpp. Cả 2 file .rc trong repo đã
 # kiểm: UTF-8 đọc được, không phải UTF-16.
 UI_EXT = {".m", ".mm", ".swift", ".h", ".cpp", ".rc", ".iss", ".svg",
           ".html", ".css", ".js", ".ts", ".tsx", ".kt", ".xml", ".storyboard", ".xib"}
@@ -119,7 +119,7 @@ def main():
     for rel, i, msg in errors:
         print(f"❌ {rel}:{i} — {msg}")
     if errors:
-        print(f"\nBRAND-LINT: {len(errors)} vi phạm CỨNG. Xem docs/AGENT-BRIEF.md §2 + brand/tokens.json.")
+        print(f"\nBRAND-LINT: {len(errors)} vi phạm CỨNG. Xem docs/tasks/AGENT-BRIEF.md §2 + brand/tokens.json.")
         return 1
     print(f"✅ brand-lint OK — {len(files)} file, {len(warns)} cảnh báo.")
     return 0

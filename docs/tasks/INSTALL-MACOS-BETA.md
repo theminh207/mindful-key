@@ -1,7 +1,7 @@
 # Cài MindfulKey trên macOS — bản beta (chưa notarize)
 
 **Lập:** 2026-07-17 · Bối cảnh: người dùng thật tải 0.2.1 qua Chrome và bị macOS báo
-*"MindfulKey is damaged and can't be opened"* (xem `docs/FRICTION-LOG.md` cùng ngày).
+*"MindfulKey is damaged and can't be opened"* (xem `docs/tasks/FRICTION-LOG.md` cùng ngày).
 
 ## Vì sao bị "damaged" — cơ chế thật, không phải app hỏng
 
@@ -30,7 +30,7 @@ Script (`scripts/install-macos.sh`) tải bản mới nhất, tự thoát bản 
 đường lỗi 404 thoát sạch kèm thông điệp rõ).
 
 > ⚠️ **Trạng thái link (đo thật 2026-07-17):** `releases/latest/download/MindfulKey.dmg` đang
-> **404** — job release kèm asset tên cố định chưa chạy lần nào (xem `docs/TEST_MATRIX.md`).
+> **404** — job release kèm asset tên cố định chưa chạy lần nào (xem `docs/tasks/TEST_MATRIX.md`).
 > Script sẽ báo lỗi tử tế và chỉ sang trang Releases. Link tự sống từ bản phát hành kế tiếp.
 
 ### 2. Tải bằng trình duyệt + tự gỡ tem

@@ -8,7 +8,7 @@
 //  YÊN LẶNG), khớp mockup-v2-tabbed.html. View này LUÔN hiện đủ (không còn khái niệm thu gọn/mở
 //  của bản danh sách cũ — tab đã tự phân tách nội dung rồi).
 //
-//  Ràng buộc HIẾN CHƯƠNG khoá trong file này (docs/AGENT-BRIEF.md §2.2/2.3):
+//  Ràng buộc HIẾN CHƯƠNG khoá trong file này (docs/tasks/AGENT-BRIEF.md §2.2/2.3):
 //    - Độ nhạy = 3 nhãn CHỮ ("Ít nhạy · Vừa · Nhạy"), KHÔNG số, KHÔNG progress bar,
 //      KHÔNG nút "xem thử ngay" cạnh slider số.
 //    - Track slider = 1 màu teal (cấm cam/gradient/đầu mút màu cảnh báo).

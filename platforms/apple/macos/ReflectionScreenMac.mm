@@ -555,7 +555,7 @@ void ReflectionScreenMac_Show(void) {
         [content addSubview:ebNourish];
 
         // [MINDFUL] Thẻ gợi ý — nền cam nhạt, CÙNG ngoại lệ "brand chrome cho khoảnh khắc con
-        // người" đã dùng ở SendGatekeeperMac (docs/BRAND-ASSETS.md) — KHÔNG mã hoá trạng thái
+        // người" đã dùng ở SendGatekeeperMac (docs/tasks/BRAND-ASSETS.md) — KHÔNG mã hoá trạng thái
         // cảm xúc, chỉ là nền cho nhịp "Nuôi dưỡng".
         NSView *card = [[NSView alloc] initWithFrame:NSMakeRect(pad, ReflY(contentH, cardY, cardH), contentW, cardH)];
         card.wantsLayer = YES;

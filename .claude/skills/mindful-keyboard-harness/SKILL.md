@@ -40,7 +40,7 @@ Trước mọi việc, tự phân loại rủi ro rồi mới quyết cách làm
    - Việc chạm ≥2 mảng (vd: thêm callback mới cho mood layer) → gọi cả 2 chuyên gia liên quan, chuyên gia "chủ" (nơi code thực sự thay đổi) làm trước, chuyên gia phụ thuộc làm sau, dựa trên hợp đồng chuyên gia chủ để lại.
 2. **Gọi chuyên gia tương ứng** qua tool `Agent`, đọc file `.claude/agents/{name}.md` để lấy đúng vai trò/nguyên tắc nếu `subagent_type` không tự nhận diện tên agent.
 3. **Kiểm tra kết quả:** nếu có sửa `core/`, luôn xác nhận `tests/core/test_engine` vẫn 5/5 (`make test-core`) trước khi báo hoàn thành.
-4. **Cập nhật sổ bằng chứng:** khi hoàn thành/đổi một hành vi sản phẩm, cập nhật dòng tương ứng trong `docs/TEST_MATRIX.md` (điền Bằng chứng thật, đừng để `implemented` mà Bằng chứng = none). Trigger tự nhiên: *"soi bằng chứng test"*, *"ma trận test còn đúng không"*, *"cập nhật test matrix"*.
+4. **Cập nhật sổ bằng chứng:** khi hoàn thành/đổi một hành vi sản phẩm, cập nhật dòng tương ứng trong `docs/tasks/TEST_MATRIX.md` (điền Bằng chứng thật, đừng để `implemented` mà Bằng chứng = none). Trigger tự nhiên: *"soi bằng chứng test"*, *"ma trận test còn đúng không"*, *"cập nhật test matrix"*.
 4b. **Cập nhật trạng thái story (BẮT BUỘC, cùng lúc với bước 4, KHÔNG tách lượt sau):** ngay
     trong CÙNG commit hoàn thành 1 story, cập nhật trạng thái story đó trong
     `bmad-output/{macos,ios}/sprint-status.yaml` (mục `stories:` hoặc `v2_roadmap.steps` tuỳ
@@ -53,7 +53,7 @@ Trước mọi việc, tự phân loại rủi ro rồi mới quyết cách làm
     cập nhật + TEST_MATRIX.md có dòng bằng chứng — thiếu 1 trong 2 thì story đó CHƯA xong việc.
 5. **Ghi chỗ phải đoán:** bất cứ khi nào phải suy diễn vì thiếu luật/nguồn sự thật — kể cả khi
    quyết định đó đã tự chọn 1 phương án và ghi `[Inference]` ngay trong file `.story.md` — PHẢI
-   thêm 1 dòng vào `docs/FRICTION-LOG.md` (cụ thể, không chung chung), NGAY LÚC PHÁT SINH, không
+   thêm 1 dòng vào `docs/tasks/FRICTION-LOG.md` (cụ thể, không chung chung), NGAY LÚC PHÁT SINH, không
    để nó chỉ nằm trong prose của story file. Một câu hỏi "DỪNG-HỎI chủ dự án" ghi trong story mà
    không lọt ra `FRICTION-LOG.md` coi như CHƯA từng hỏi — chủ dự án khó lòng thấy được nó giữa
    hàng nghìn dòng story. Đây là danh sách việc nên chốt/viết luật tiếp theo.

@@ -10,8 +10,8 @@
 > 3. Rồi mô tả màn bạn muốn ("thiết kế màn nhật ký cảm xúc...").
 >
 > **NGUỒN CHUẨN (khóa cứng, thứ tự ưu tiên):** `brand/tokens.json` (token máy-đọc-được —
-> **nguồn DUY NHẤT** cho màu/font/bo góc/thang mood) → `docs/BRAND-ASSETS.md` (governance +
-> thang "mặt hồ tâm" + 4 nguyên tắc) → `docs/AGENT-BRIEF.md` (hiến chương). PHẦN 1 dưới đây
+> **nguồn DUY NHẤT** cho màu/font/bo góc/thang mood) → `docs/tasks/BRAND-ASSETS.md` (governance +
+> thang "mặt hồ tâm" + 4 nguyên tắc) → `docs/tasks/AGENT-BRIEF.md` (hiến chương). PHẦN 1 dưới đây
 > là bản CÔ ĐỌNG tự-chứa của 3 nguồn đó — nếu có mâu thuẫn, `brand/tokens.json` thắng.
 
 ---
@@ -191,6 +191,6 @@ trách+streak).
 
 ---
 
-*Nguồn khóa cứng: `brand/tokens.json` (nguồn DUY nhất màu/font/mood) + `docs/BRAND-ASSETS.md`
-+ `docs/AGENT-BRIEF.md`. Bổ trợ: `bmad-output/ios/DESIGN.md`, `EXPERIENCE.md`.*
+*Nguồn khóa cứng: `brand/tokens.json` (nguồn DUY nhất màu/font/mood) + `docs/tasks/BRAND-ASSETS.md`
++ `docs/tasks/AGENT-BRIEF.md`. Bổ trợ: `bmad-output/ios/DESIGN.md`, `EXPERIENCE.md`.*
 *Khi brand/tokens.json đổi, cập nhật file này để Claude Design luôn nhận bản mới nhất.*
