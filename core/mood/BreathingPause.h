@@ -21,7 +21,7 @@
 
 // Ngưỡng kích hoạt mặc định cho chính khoảnh khắc GỬI. Cố ý tách khỏi ngưỡng cảnh báo thụ động
 // trong MoodWatchMac.mm (dù cùng giá trị 0.5 hôm nay) — hai nơi kích hoạt khác nhau trong vòng
-// lặp Sense→Pause→Remind→Reflect (xem docs/PRD.md §2), có thể cần tinh chỉnh độc lập sau này.
+// lặp Sense→Pause→Remind→Reflect (xem docs/tasks/PRD.md §2), có thể cần tinh chỉnh độc lập sau này.
 extern const double kBreathingPauseRiskThreshold;
 
 // Dữ liệu mood-layer đưa cho vỏ khi risk vượt ngưỡng VÀ vỏ báo "sắp gửi".
@@ -32,7 +32,7 @@ struct BreathingPausePrompt {
 };
 
 // Kết quả người dùng chọn trên overlay. Vỏ báo lại cho mood-layer để dùng cho success metrics
-// (docs/PRD.md §4 — "tỷ lệ pause mà người dùng chủ động sửa/không gửi"). KHÔNG bắt buộc gọi:
+// (docs/tasks/PRD.md §4 — "tỷ lệ pause mà người dùng chủ động sửa/không gửi"). KHÔNG bắt buộc gọi:
 // nếu vỏ chưa implement UI (đúng phạm vi bước 3 này), không có gì vỡ, chỉ thiếu số liệu.
 enum class BreathingPauseChoice {
     SendAnyway,  // "Vẫn gửi" — vỏ PHẢI cho gửi ngay lập tức, không nhánh nào được chặn cứng

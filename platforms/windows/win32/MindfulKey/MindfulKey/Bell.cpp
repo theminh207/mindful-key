@@ -2,7 +2,7 @@
 // Bell.cpp — [MINDFUL] Chuông tỉnh thức, bản Windows.
 // File MỚI của dự án mindful-keyboard (không thuộc MindfulKey gốc).
 //
-// ĐÃ VIẾT LẠI 2026-07-17 (GĐ4, docs/ROADMAP-WINDOWS.md). Bản trước KHÔNG phát tiếng nào cả — nó
+// ĐÃ VIẾT LẠI 2026-07-17 (GĐ4, docs/tasks/ROADMAP-WINDOWS.md). Bản trước KHÔNG phát tiếng nào cả — nó
 // chỉ gọi MessageBox với cờ MB_ICONINFORMATION, nên Windows tự kêu tiếng "ding" MẶC ĐỊNH của hệ
 // thống. Ba tiếng chuông chủ dự án đã thiết lập (Chuông chùa/gió/reo) chưa từng được dùng.
 //
@@ -56,7 +56,7 @@ static UINT_PTR g_bellTimer = 0;
 static DWORD    g_snoozeUntil = 0;   // GetTickCount lúc hết hoãn; 0 = không hoãn
 // [MINDFUL] B5 — mốc arm timer + chu kỳ (ms) để tính "còn bao lâu tới nhịp kế". macOS đọc thẳng
 // NSTimer.fireDate; Win32 SetTimer KHÔNG phơi giờ tick kế nên phải tự tính lại theo chu kỳ từ mốc
-// arm (khác biệt nền tảng đã ghi docs/FRICTION-LOG.md).
+// arm (khác biệt nền tảng đã ghi docs/tasks/FRICTION-LOG.md).
 static DWORD    g_bellArmedAtTick = 0;
 static DWORD    g_bellIntervalMs = 0;
 

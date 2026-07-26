@@ -4,7 +4,7 @@ Phân tích sâu để nâng iOS từ *walking skeleton* → **sản phẩm bàn
 phần công cụ + lớp chánh niệm: sóng `~`, chuông, nhật ký). Dùng bộ skill `analysis` (discovery +
 problem-based-srs). **Nơi lưu:** hòa với workspace BMAD iOS, coi SPEC/tech-spec cũ là input.
 
-> ⚖️ Luật tối cao vẫn là HIẾN CHƯƠNG (`docs/AGENT-BRIEF.md`). Gói này là **phân tích/tài liệu** —
+> ⚖️ Luật tối cao vẫn là HIẾN CHƯƠNG (`docs/tasks/AGENT-BRIEF.md`). Gói này là **phân tích/tài liệu** —
 > không code, không sửa `core/`, không sửa README lạc hậu (chỉ ghi nhận ở `09` để chờ duyệt).
 
 ## Đọc theo thứ tự

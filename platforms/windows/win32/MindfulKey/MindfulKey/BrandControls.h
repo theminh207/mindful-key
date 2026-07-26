@@ -4,7 +4,7 @@
 //
 //  Đối ứng Win32 của platforms/apple/macos/BrandControls.m — macOS là CHUẨN HÀNH VI. Mọi hộp thoại
 //  vẽ lại theo nhận diện GỌI LẠI đây, KHÔNG tự chép GDI: hai bản GDI chép tay sẽ trôi lệch (đúng mô
-//  hình đã đẻ bug lexicon). Xem docs/WINDOWS-UI-REDESIGN.md.
+//  hình đã đẻ bug lexicon). Xem docs/tasks/WINDOWS-UI-REDESIGN.md.
 //
 //  Xây DẦN theo nhu cầu từng màn (YAGNI) — hiện có đúng thứ màn "Nhịp thở" (Phase 1) cần: font,
 //  tô nền, nút bo tròn. Thêm thẻ/PillSwitch/segmented khi màn tương ứng tới lượt.

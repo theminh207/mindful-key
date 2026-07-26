@@ -56,7 +56,7 @@ chốt 2026-07-14 sau khi phát hiện lỗ hổng này ở đội macOS.
 - **Rationale:** Nút thắt chặn "linh hồn" R3. Q4/Q6 bám hiến chương (số liệu = bối cảnh phụ, màu trung
   tính, không gamify). Q5 là **nới lỏng CÓ Ý THỨC** so với mandate iOS "nhắc THỤ ĐỘNG" (2026-07-10):
   notification là "nhắc chủ động", nhưng chủ dự án chọn với rào chắn cứng (mặc định TẮT + opt-in + 1
-  lần/ngày + tắt được) → ghi `docs/FRICTION-LOG.md`. Kiến trúc "log tense-event, no SQLite, shared store,
+  lần/ngày + tắt được) → ghi `docs/tasks/FRICTION-LOG.md`. Kiến trúc "log tense-event, no SQLite, shared store,
   extension ghi/container đọc" chọn để tối thiểu hóa dữ liệu + nhẹ RAM + đúng "1 kho on-device mã hóa".
 - **Hệ quả:** R3 shard thành **4 story** (3.1 kho + consent, 3.2 theme, 3.3 màn soi lại, 3.4 notification).
   R3 khiến câu hỏi **Full Access** (còn `mở`, FRICTION-LOG 2026-07-13) NẶNG KÝ hơn — giờ PERSIST dữ liệu
@@ -266,7 +266,7 @@ chốt 2026-07-14 sau khi phát hiện lỗ hổng này ở đội macOS.
   onboarding kích hoạt + Full Access, thêm target iOS vào `platforms/apple/project.yml`, và
   Nhịp 0 (rút code dùng-chung-được ra `platforms/apple/shared/`).
 - **Source:** Kernel do chủ dự án cung cấp trực tiếp (vai trưởng nhóm iOS), đối chiếu
-  `docs/AGENT-BRIEF.md` + `/Users/now/Projects/mindful-keyboard/docs/MOBILE-UX-ANALYSIS.md`.
+  `docs/tasks/AGENT-BRIEF.md` + `/Users/now/Projects/mindful-keyboard/docs/MOBILE-UX-ANALYSIS.md`.
 - **Key scope decision:** Non-Goal — KHÔNG làm gác cổng/nhịp thở (kể cả bản "nhắc" theo Phương
   án A) ở Round 1, dời sang Round 2. Lý do: `MOBILE-UX-ANALYSIS.md` §3 kết luận Feature #1
   không port thẳng được lên iOS (sandbox không thấy nút Gửi/host app) — cần thiết kế lại,

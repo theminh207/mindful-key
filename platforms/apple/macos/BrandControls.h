@@ -5,7 +5,7 @@
 //  [MINDFUL] Story 1.1 — bộ control AppKit tái dùng theo token NOW BRAND OS.
 //  3 control nền tảng cho các card sau (1.3–1.6) dùng lại: PillSwitch, StatusDot, CTAButton.
 //
-//  Ràng buộc HIẾN CHƯƠNG khoá trong file này (xem docs/AGENT-BRIEF.md §2.2/2.3):
+//  Ràng buộc HIẾN CHƯƠNG khoá trong file này (xem docs/tasks/AGENT-BRIEF.md §2.2/2.3):
 //    - PillSwitch bật = teal (KHÔNG dùng màu xanh-lá hệ thống / tint mặc định NSSwitch).
 //    - StatusDot chỉ nhận boolean bật/tắt — KHÔNG tham số biên độ/mức/màu, để không ai
 //      lỡ dùng nó biểu đạt cảm xúc.

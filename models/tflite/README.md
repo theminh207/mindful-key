@@ -4,4 +4,4 @@ Chưa có model file (`.tflite`). Nền tảng đích: **Android**, khi nhánh �
 `../../platforms/android/README.md`).
 
 Trạng thái hiện tại: chưa có gì để convert — nhánh Android chưa bắt đầu và model sentiment
-vẫn ở dạng lexicon (chưa phải ONNX/PhoBERT thật). Xem `../../docs/SEND-RISK-MODEL-SPEC.md`.
+vẫn ở dạng lexicon (chưa phải ONNX/PhoBERT thật). Xem `../../docs/tasks/SEND-RISK-MODEL-SPEC.md`.

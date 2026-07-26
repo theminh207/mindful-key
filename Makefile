@@ -8,7 +8,7 @@ DERIVED   := platforms/apple/build
 # -derivedDataPath (app rơi vào ~/Library/Developer/Xcode/DerivedData/MindfulKey-<hash>/)
 # còn `run` thì có (app rơi vào platforms/apple/build/) → 2 bản khác nhau ở 2 nơi, và
 # `make clean` chỉ dọn được 1. Hậu quả thật: vá lỗi bằng `make build` rồi mở bản ở đường
-# kia = chạy bản CŨ, tưởng đã vá. Xem docs/FRICTION-LOG.md 2026-07-16.
+# kia = chạy bản CŨ, tưởng đã vá. Xem docs/tasks/FRICTION-LOG.md 2026-07-16.
 APP_BUILT     := $(DERIVED)/Build/Products/$(CONFIG)/MindfulKey.app
 APP_INSTALLED := /Applications/MindfulKey.app
 IOS_SIM   ?= iPhone 17

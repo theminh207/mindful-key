@@ -4,9 +4,9 @@
 > Cố ý CHƯA ghi vào `sprint-status.yaml`/`epics.md` — vào đó là thành lệnh thi công.
 > Duyệt xong mới wire vào, kèm 1 entry `decision-log.md`.
 >
-> **Ngày:** 2026-07-15 · **Soạn từ:** `docs/PRD.md` (chuẩn "xong" của MVP) · `ACCEPTANCE-v2-2026-07-15.md`
-> (10 finding nghiệm thu tay) · `docs/TEST_MATRIX.md` (12 ô ❌) · audit code "cái gì chưa nối dây"
-> (2026-07-15, phát hiện thêm F11–F15) · `docs/INSTALL.md` (tình trạng phát hành).
+> **Ngày:** 2026-07-15 · **Soạn từ:** `docs/tasks/PRD.md` (chuẩn "xong" của MVP) · `ACCEPTANCE-v2-2026-07-15.md`
+> (10 finding nghiệm thu tay) · `docs/tasks/TEST_MATRIX.md` (12 ô ❌) · audit code "cái gì chưa nối dây"
+> (2026-07-15, phát hiện thêm F11–F15) · `docs/tasks/INSTALL.md` (tình trạng phát hành).
 
 ## ⚙️ PHẠM VI ĐỢT NÀY — chủ dự án chốt 2026-07-15
 
@@ -17,7 +17,7 @@
 **phiên bản Windows**. Ký thật + notarize + phủ thêm app chat để dành cho lúc phát hành thật.
 
 > ⚠️ **Hệ quả phải nói thẳng — hoãn 2 chặng này KHÔNG miễn phí:**
-> 1. **Đợt này CỐ Ý KHÔNG đạt chuẩn MVP của `docs/PRD.md` §2** — PRD ghi *"MVP thành công = vòng
+> 1. **Đợt này CỐ Ý KHÔNG đạt chuẩn MVP của `docs/tasks/PRD.md` §2** — PRD ghi *"MVP thành công = vòng
 >    lặp này chạy mượt… trong ít nhất **2–3 app chat phổ biến**"*. Hoãn chặng 3 → allow-list vẫn chỉ
 >    **Zalo + Discord**, chứng minh được nhiều nhất ở **1 app thật** (Zalo). Đây là lựa chọn có ý
 >    thức của chủ dự án, KHÔNG phải quên — nhưng phải ghi `decision-log`, và **không được gọi kết
@@ -37,11 +37,11 @@ vì vấn đề lớn nhất không phải cái ta NHÌN thấy, mà cái ta ch�
 
 > ### ⚠️ Tính năng số 1 của sản phẩm chưa bao giờ được chứng minh là chạy.
 >
-> `docs/PRD.md` §1 nói thẳng: *"một bộ gõ tiếng Việt tồn tại vì **một nhiệm vụ duy nhất** — đứng
+> `docs/tasks/PRD.md` §1 nói thẳng: *"một bộ gõ tiếng Việt tồn tại vì **một nhiệm vụ duy nhất** — đứng
 > giữa bạn và khoảnh khắc bạn sắp gửi đi thứ mà 5 phút sau bạn sẽ hối hận"*, và *"mọi tính năng
 > khác phục vụ cho feature này, không ngang hàng với nó"*.
 >
-> `docs/TEST_MATRIX.md:30` nói thẳng không kém:
+> `docs/tasks/TEST_MATRIX.md:30` nói thẳng không kém:
 > `| Gác cổng Enter-không-Shift (Zalo/Discord) | — | ❌ | ❌ | none — luồng chính chưa có bằng chứng E2E |`
 >
 > **Chưa một ai từng gõ một câu giận trong Zalo và thấy app dừng mình lại.** Cả code lẫn kế hoạch
@@ -53,7 +53,7 @@ Và chuẩn "xong" của chính PRD cũng chưa đạt:
 |---|---|
 | §2: gác cổng chạy trong **Zalo, Messenger, Telegram** | Allow-list chỉ có **Zalo** + **Discord** (`SendGatekeeperMac.mm:27-35`). Discord là app *để test*, tự comment ghi "ngoài mục tiêu gốc". → **Thiếu Messenger + Telegram**, tức thiếu 2/3 app đã hứa |
 | §2: "MVP thành công = vòng lặp này chạy mượt… trong ít nhất **2–3 app chat phổ biến**" | Chưa chứng minh ở **0** app |
-| §6: đóng gói `.dmg` **ký Developer ID + notarize** | Đang ký **ad-hoc** (`docs/INSTALL.md:3`) → máy người khác mở sẽ bị Gatekeeper chặn. **Chưa ai ngoài chủ dự án cài được** |
+| §6: đóng gói `.dmg` **ký Developer ID + notarize** | Đang ký **ad-hoc** (`docs/tasks/INSTALL.md:3`) → máy người khác mở sẽ bị Gatekeeper chặn. **Chưa ai ngoài chủ dự án cài được** |
 
 **Kết luận:** "chưa hoàn thiện" = **chưa có bằng chứng vòng lặp lõi sống**, chứ không phải thiếu
 nút. Nên roadmap này để việc chứng minh vòng lặp **lên trước** việc sửa giao diện.
@@ -90,7 +90,7 @@ phủ hết mọi app chat.
 
 Đợt này kết thúc là sang vỏ Windows — nên phải nhìn trước một cái bẫy **đã có thật trong sổ**:
 
-> `docs/FRICTION-LOG.md` (2026-07-13, còn `mở`): lexicon tính **send-risk nằm ở vỏ macOS**
+> `docs/tasks/FRICTION-LOG.md` (2026-07-13, còn `mở`): lexicon tính **send-risk nằm ở vỏ macOS**
 > (`MoodWatchMac.mm`), **KHÔNG** ở `core/mood` — `MoodBuffer` chỉ gom câu, tự ghi "shells decide how
 > to analyze". Đội iOS vì thế đã phải làm **bản analyzer thứ 2** ở `platforms/apple/shared/`.
 
@@ -177,7 +177,7 @@ Nghiệm thu 2026-07-15 chỉ xem **5/6 mục của cửa sổ**. Còn nguyên:
 |---|------|
 | 5.1 | **Apple Developer Program** ($99/năm) — *chủ dự án làm, không phải việc code*. **Chặn cứng 5.2–5.4** |
 | 5.2 | Ký **Developer ID** + **notarize** + staple (đã có skill `macos-release-pipeline` + `scripts/release.sh`) |
-| 5.3 | Viết lại `docs/INSTALL.md` — bỏ hết phần "lách cảnh báo bảo mật" |
+| 5.3 | Viết lại `docs/tasks/INSTALL.md` — bỏ hết phần "lách cảnh báo bảo mật" |
 | 5.4 | Gửi `.dmg` cho 1 người thật cài thử → câu 5 của định nghĩa xong |
 
 ---
@@ -227,4 +227,4 @@ Chặng 1 (thử tay) ──┬─→ Chặng 2 (diện mạo) ──→ Chặng
 - **KHÔNG đụng `core/`** ở bất kỳ chặng nào — giữ `make test` xanh.
 - **Luật bằng chứng của Epic 3 áp cho cả roadmap này:** cột macOS chỉ nhận `✅` khi **có mắt nhìn
   app thật**; build sạch chỉ là `⚠️`. Chính build-verified đã để lọt cả 10 finding + 5 cái mới.
-- Mỗi việc xong: cập nhật `sprint-status.yaml` + 1 dòng `docs/TEST_MATRIX.md`, **ngay lúc commit**.
+- Mỗi việc xong: cập nhật `sprint-status.yaml` + 1 dòng `docs/tasks/TEST_MATRIX.md`, **ngay lúc commit**.

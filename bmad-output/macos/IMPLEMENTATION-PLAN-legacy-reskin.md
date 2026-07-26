@@ -125,7 +125,7 @@ Coi là "xong" chỉ khi:
 
 ```
 Bối cảnh: dự án mindful-key, thay áo cửa sổ Chuyển mã theo NOW BRAND OS. Đọc trước:
-docs/AGENT-BRIEF.md (HIẾN CHƯƠNG §2.2/2.3), bmad-output/macos/DESIGN-macos-control-panel.md §1
+docs/tasks/AGENT-BRIEF.md (HIẾN CHƯƠNG §2.2/2.3), bmad-output/macos/DESIGN-macos-control-panel.md §1
 (token màu), bmad-output/macos/DESIGN-legacy-screens-macos.md §4.3,
 platforms/apple/macos/BrandControls.h + .m (ĐỌC KỸ code thật, đây là control tự vẽ tay, không
 phải hàm tint) + BrandColors.h.
@@ -179,7 +179,7 @@ tắt + thử thêm/xoá 1 dòng thật, make test xanh, không warning mới. S
 
 ```
 Phụ thuộc: Story 1.9 đã xong (dùng lại SecondaryButton/card helper nếu cần — ĐỌC lại
-BrandControls.h/.m trước). Đọc DESIGN-legacy-screens-macos.md §4.4 + docs/BRAND-ASSETS.md.
+BrandControls.h/.m trước). Đọc DESIGN-legacy-screens-macos.md §4.4 + docs/tasks/BRAND-ASSETS.md.
 Chỉ đụng platforms/apple/macos/AboutViewController.m + asset logo (Resources/Assets.xcassets + brand/).
 
 Việc:

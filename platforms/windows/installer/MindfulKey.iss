@@ -66,7 +66,7 @@ SetupMutex=MindfulKeyboardSetupMutex
 [Languages]
 ; Inno Setup 6 KHÔNG kèm sẵn tiếng Việt (bản Vietnamese.isl là của cộng đồng, không nằm trong
 ; bộ cài chuẩn) -> khung wizard tạm dùng tiếng Anh. Chuỗi RIÊNG của app thì Việt hoá ở [Messages]
-; dưới. Chờ chủ dự án chốt có kéo Vietnamese.isl về hay không — xem docs/FRICTION-LOG.md.
+; dưới. Chờ chủ dự án chốt có kéo Vietnamese.isl về hay không — xem docs/tasks/FRICTION-LOG.md.
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Messages]

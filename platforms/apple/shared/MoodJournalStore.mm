@@ -2,7 +2,7 @@
 //  MoodJournalStore.mm
 //  mindful-key — shared (iOS container <-> keyboard extension, Round 3 story 3.1)
 //
-//  Xem MoodJournalStore.h + docs/PRIVACY-NOTE.md + bmad-output/ios/tech-spec-r3.md "Kiến trúc kho
+//  Xem MoodJournalStore.h + docs/tasks/PRIVACY-NOTE.md + bmad-output/ios/tech-spec-r3.md "Kiến trúc kho
 //  nhật ký đã chốt". Mã hóa: AES-256-CBC (CommonCrypto), IV ngẫu nhiên gắn đầu ciphertext, khóa
 //  32B trong Keychain — cùng công thức MoodStoreMac.mm, KHÁC ở chỗ payload là buffer event 16
 //  byte/event thay vì file SQLite tạm.

@@ -1,6 +1,7 @@
 # Đóng góp cho mindful-key
 
-> Đọc `docs/AGENT-BRIEF.md` (hiến chương) trước. Ưu tiên **đúng tinh thần chánh niệm** hơn nhiều tính năng.
+> Đọc `docs/01-intent.md` (tầng ý định) trước. Ưu tiên **đúng tinh thần chánh niệm** hơn nhiều tính năng.
+> Mục lục tài liệu: `docs/README.md`.
 
 ## Quy ước
 - **Conventional Commits:** `feat(...)`, `fix(...)`, `docs(...)`, `chore(release): ...`.

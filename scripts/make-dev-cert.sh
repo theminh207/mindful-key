@@ -8,7 +8,7 @@
 #
 # Phạm vi: CHỈ máy dev này. CI (GitHub Actions) không có cert → Makefile tự dò, không thấy thì rơi
 # về ad-hoc như cũ. KHÔNG liên quan Developer ID / notarize (đó là chuyện PHÁT HÀNH cho máy người
-# lạ, cần Apple Developer Program $99 — xem docs/RELEASE.md). Cert này KHÔNG giúp bản .dmg thoát
+# lạ, cần Apple Developer Program $99 — xem docs/tasks/RELEASE.md). Cert này KHÔNG giúp bản .dmg thoát
 # "damaged"; nó chỉ để bản dev ở máy mình giữ quyền.
 #
 # Gỡ bỏ khi cần: Keychain Access → login → xoá chứng chỉ "MindfulKey Dev". Rồi make build tự về ad-hoc.

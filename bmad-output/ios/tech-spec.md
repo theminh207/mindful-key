@@ -26,7 +26,7 @@
 - Decision log (riêng đội iOS): `bmad-output/ios/decision-log.md`
 - Kernel: `bmad-output/ios/SPEC.md`
 - Phân tích UX gốc: `/Users/now/Projects/mindful-keyboard/docs/MOBILE-UX-ANALYSIS.md`
-- Hiến chương: `docs/AGENT-BRIEF.md`
+- Hiến chương: `docs/tasks/AGENT-BRIEF.md`
 
 ---
 
@@ -68,7 +68,7 @@ Telex có dấu trong 2 app thật (Notes, Zalo).
 - Sóng `~` nhận diện cảm xúc trên thanh gợi ý (Round 2).
 - Gác cổng/nhịp thở trước khi gửi, kể cả bản "chỉ nhắc" (Round 2 — xem Risk R3).
 - Nhật ký cảm xúc on-device, portal, thanh toán, kho theme (Round 3+).
-- Đăng ký Apple Developer Program thật / ký thật / TestFlight (Round 1 build ad-hoc/simulator, giống cách macOS đang làm — xem `docs/INSTALL.md`).
+- Đăng ký Apple Developer Program thật / ký thật / TestFlight (Round 1 build ad-hoc/simulator, giống cách macOS đang làm — xem `docs/tasks/INSTALL.md`).
 
 ---
 
@@ -424,7 +424,7 @@ Không áp dụng nhiều — không có network call, không có auth. Chỉ c�
    `iphonesimulator16.0`; có thể hạ thấp hơn nếu chủ dự án muốn support máy cũ hơn, chưa xác nhận).
 2. Bundle ID `vn.gnh.mindfulkey.ios*` là đề xuất theo pattern `vn.gnh.mindfulkey` đã dùng cho
    macOS (`platforms/apple/project.yml`) — cần chủ dự án xác nhận.
-3. Build Round 1 vẫn ký ad-hoc / chạy simulator, giống cách macOS đang làm (`docs/INSTALL.md`)
+3. Build Round 1 vẫn ký ad-hoc / chạy simulator, giống cách macOS đang làm (`docs/tasks/INSTALL.md`)
    — chưa cần Apple Developer Program thật.
 
 ### Constraints

@@ -13,11 +13,11 @@ BỘ NÃO (callback vOnWordCommitted, xem skill openkey-engine)
 MoodBuffer (gom từ → câu, dùng chung mọi OS, thuần C++)
    │  khi gặp dấu kết câu (. ! ? / Enter) → onSentenceComplete(sentence) -> risk [0,1]
    ▼
-MoodWatcher (tính "send-risk" TRÊN MÁY — hiện lexicon có trọng số, xem docs/SEND-RISK-MODEL-SPEC.md để thay PhoBERT ONNX)
+MoodWatcher (tính "send-risk" TRÊN MÁY — hiện lexicon có trọng số, xem docs/tasks/SEND-RISK-MODEL-SPEC.md để thay PhoBERT ONNX)
    │  risk ≥ ngưỡng (0.5) → popup native nhẹ ("câu này nghe đang giận, gửi không?")
    ▼
 MoodStoreMac (SQLite mã hóa AES-256-CBC, khóa Keychain — KHÔNG đồng bộ cloud ở MVP này)
-   │  chỉ ghi nếu đã CONSENT — schema không có cột nào chứa câu chữ (xem docs/PRIVACY-NOTE.md)
+   │  chỉ ghi nếu đã CONSENT — schema không có cột nào chứa câu chữ (xem docs/tasks/PRIVACY-NOTE.md)
    ▼
 App chính: mindful_bell (hỏi tâm trạng theo lịch) + mood_journal (thống kê ngày + khuyến nghị)
    (vẫn dùng mood_log.csv plaintext cho demo CLI — bước 7/8 sẽ chuyển sang đọc MoodStoreMac)
@@ -41,13 +41,13 @@ câu chữ hiển thị — không còn là output chính.
 - Chạy thử: `bash prototype/build.sh` rồi lần lượt `./prototype/mood_demo`, `printf '1\n5\n3\n5\n4\n' | ./prototype/mindful_bell`, `./prototype/mood_journal`. Build app macOS thật: xem skill `platform-porting`.
 
 ## Nguyên tắc bắt buộc
-1. **On-device, không ngoại lệ.** Bộ gõ thấy MỌI phím người dùng gõ — câu gốc không bao giờ được rời khỏi máy. Chỉ dữ liệu cảm xúc đã tổng hợp (risk score, thống kê) mới đồng bộ cloud — mà MVP này mặc định KHÔNG đồng bộ cloud (zero telemetry, xem `docs/PRD.md`).
+1. **On-device, không ngoại lệ.** Bộ gõ thấy MỌI phím người dùng gõ — câu gốc không bao giờ được rời khỏi máy. Chỉ dữ liệu cảm xúc đã tổng hợp (risk score, thống kê) mới đồng bộ cloud — mà MVP này mặc định KHÔNG đồng bộ cloud (zero telemetry, xem `docs/tasks/PRD.md`).
 2. **Không làm chậm gõ.** Đọc send-risk = bất đồng bộ (dispatch ra khỏi CGEventTap thread, xem `g_moodQueue` trong `MoodWatchMac.mm`) + debounce, chỉ chạy ở cuối câu. Không bao giờ chen vào mạch xử lý phím của engine.
 3. **Điểm mù phải nói rõ:** engine chỉ thấy chữ khi bộ gõ bật + đang ở chế độ tiếng Việt (ô mật khẩu, chế độ tiếng Anh = không thấy). Đừng thiết kế tính năng giả định "bắt được 100%".
-4. **Nâng cấp model không được phá interface.** `onSentenceComplete(sentence) -> risk[0,1]` là hợp đồng cố định. Kế hoạch thay lexicon bằng PhoBERT ONNX on-device đã có spec đầy đủ ở `docs/SEND-RISK-MODEL-SPEC.md` (chưa implement, chỉ là fast-follow) — khi làm, chỉ đổi bên trong hàm tính risk, không đổi chữ ký.
+4. **Nâng cấp model không được phá interface.** `onSentenceComplete(sentence) -> risk[0,1]` là hợp đồng cố định. Kế hoạch thay lexicon bằng PhoBERT ONNX on-device đã có spec đầy đủ ở `docs/tasks/SEND-RISK-MODEL-SPEC.md` (chưa implement, chỉ là fast-follow) — khi làm, chỉ đổi bên trong hàm tính risk, không đổi chữ ký.
 
 ## Xử lý lỗi
-- Model sentiment lỗi/không tải được (khi đã thay PhoBERT) → rơi về lexicon heuristic ngay lập tức, ghi log việc rơi về, không được crash làm gián đoạn gõ phím. Chi tiết: `docs/SEND-RISK-MODEL-SPEC.md` mục 3-4.
+- Model sentiment lỗi/không tải được (khi đã thay PhoBERT) → rơi về lexicon heuristic ngay lập tức, ghi log việc rơi về, không được crash làm gián đoạn gõ phím. Chi tiết: `docs/tasks/SEND-RISK-MODEL-SPEC.md` mục 3-4.
 - `mood_log.csv` hỏng/thiếu cột → báo lỗi rõ ràng trong `mood_journal`, không suy diễn số liệu giả.
 
 ## Phụ thuộc

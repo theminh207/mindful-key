@@ -2,7 +2,7 @@
 // SecureField.h — [MINDFUL] cổng ô mật khẩu cho vỏ Windows.
 // File MỚI của dự án mindful-keyboard (không thuộc MindfulKey gốc).
 //
-// VÌ SAO FILE NÀY TỒN TẠI (docs/FRICTION-LOG.md 2026-07-17 "CHẶN PHÁT HÀNH", docs/QA-WINDOWS.md §5
+// VÌ SAO FILE NÀY TỒN TẠI (docs/tasks/FRICTION-LOG.md 2026-07-17 "CHẶN PHÁT HÀNH", docs/tasks/QA-WINDOWS.md §5
 // ca P1): iOS chặn đọc ô mật khẩu bằng CODE THẬT (MoodBridge_SetSecureFieldActive, platforms/
 // apple/ios/KeyboardExtension/MoodBridge.mm). macOS không cần code — hệ điều hành tự bật Secure
 // Input Mode và chặn luôn CGEventTap ở ô mật khẩu. Windows KHÔNG CÓ CƠ CHẾ TƯƠNG ĐƯƠNG:
@@ -13,7 +13,7 @@
 // chọn). UIA phải hỏi tiến trình khác qua COM — có thể chậm, có thể treo nếu app kia đứng hình.
 // Vì vậy toàn bộ việc hỏi UIA chạy trên MỘT LUỒNG RIÊNG có message loop + COM apartment riêng
 // (SecureField.cpp), KHÔNG BAO GIỜ trên luồng `SetWindowsHookEx(WH_KEYBOARD_LL)`. Luồng hook đó bị
-// Windows âm thầm gỡ nếu chạy quá `LowLevelHooksTimeout` (mặc định 300ms, xem docs/QA-WINDOWS.md
+// Windows âm thầm gỡ nếu chạy quá `LowLevelHooksTimeout` (mặc định 300ms, xem docs/tasks/QA-WINDOWS.md
 // ca T7) — cược một lệnh UIA có thể treo cả giây vào luồng đó là tự sát cho toàn bộ bộ gõ.
 //
 // FAIL-CLOSED (bắt buộc — riêng tư mặc định là cột trụ hiến chương): bất cứ lúc nào CHƯA BIẾT

@@ -6,7 +6,7 @@
 > `.claude/skills/mindful-test-design/references/telex-vni-edge-cases.md`. Không viết lại nội
 > dung — chỉ trỏ + đóng gói thành thứ tự bấm tay được, để KHÔNG đẻ thêm nguồn sự thật thứ 2/3.
 >
-> **Mỗi mục tick xong** → cập nhật đúng dòng đó trong `docs/TEST_MATRIX.md` (nâng `✅¹`/`⚠️²`
+> **Mỗi mục tick xong** → cập nhật đúng dòng đó trong `docs/tasks/TEST_MATRIX.md` (nâng `✅¹`/`⚠️²`
 > lên `✅` thật, kèm 1 câu mô tả những gì quan sát được — không chỉ tick suông).
 
 ---
@@ -113,8 +113,8 @@
 
 - [ ] Tất cả ô tick ở Phần A, B, C, E xong trên Simulator.
 - [ ] Phần D xong trên thiết bị thật (Zalo + RAM).
-- [ ] `docs/TEST_MATRIX.md`: mọi dòng iOS Round 1 chuyển từ `✅¹`/`⚠️²` sang `✅` trần, kèm 1 câu quan sát thật (không phải "đã chạy, chắc ổn").
-- [ ] Bug/lệch phát hiện khi bấm tay (nếu có) → ghi vào `docs/FRICTION-LOG.md` hoặc mở lại story tương ứng (KHÔNG tự sửa lặng lẽ nếu chạm hành vi đã khóa AC — quay lại hỏi).
+- [ ] `docs/tasks/TEST_MATRIX.md`: mọi dòng iOS Round 1 chuyển từ `✅¹`/`⚠️²` sang `✅` trần, kèm 1 câu quan sát thật (không phải "đã chạy, chắc ổn").
+- [ ] Bug/lệch phát hiện khi bấm tay (nếu có) → ghi vào `docs/tasks/FRICTION-LOG.md` hoặc mở lại story tương ứng (KHÔNG tự sửa lặng lẽ nếu chạm hành vi đã khóa AC — quay lại hỏi).
 
 ---
 *Tổng hợp 2026-07-11, không phải artifact phân tích mới — chỉ đóng gói thứ tự bấm từ story ACs + EXPERIENCE.md + telex-vni-edge-cases.md.*

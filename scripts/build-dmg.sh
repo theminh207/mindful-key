@@ -48,7 +48,7 @@ find_app() {
 
   # Dự phòng cho bản build bằng Xcode GUI (Xcode luôn đổ vào DerivedData mặc định).
   # `make build` KHÔNG còn đổ vào đây nữa — từ 2026-07-16 nó dùng -derivedDataPath
-  # platforms/apple/build (xem Makefile + docs/FRICTION-LOG.md). Bản nào còn nằm đây là
+  # platforms/apple/build (xem Makefile + docs/tasks/FRICTION-LOG.md). Bản nào còn nằm đây là
   # TÀN DƯ cũ: đừng để nó âm thầm được đóng gói thay bản mới, nên xếp cuối cùng.
   local dd="$HOME/Library/Developer/Xcode/DerivedData"
   if [[ -d "$dd" ]]; then

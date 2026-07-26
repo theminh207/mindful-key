@@ -27,7 +27,7 @@ paths:
 languages:
   communication: "Vietnamese"
   document_output: "Vietnamese"
-  # Set to match the rest of the repo (CLAUDE.md, docs/PRD.md, docs/AGENT-BRIEF.md
+  # Set to match the rest of the repo (CLAUDE.md, docs/tasks/PRD.md, docs/tasks/AGENT-BRIEF.md
   # are all Vietnamese) — override here if you want planning docs in English instead.
 
 # Delivery is COUNT-BASED: track stories remaining / completion rate.

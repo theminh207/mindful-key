@@ -31,7 +31,7 @@
 ## ✅ Dọn dẹp trước khi commit
 - [ ] Không để `printf` debug tạm, không code chết, không `// TODO`/`#if 0` trong file đã commit.
 - [ ] Rác do chính thay đổi tạo ra (case mồ côi, biến thừa) → tự dọn.
-- [ ] Ghi ca đã chứng minh vào `docs/TEST_MATRIX.md`; chỗ phải đoán → `docs/FRICTION-LOG.md`.
+- [ ] Ghi ca đã chứng minh vào `docs/tasks/TEST_MATRIX.md`; chỗ phải đoán → `docs/tasks/FRICTION-LOG.md`.
 
 ## Báo cáo cuối (mẫu, giọng mô tả)
 ```

@@ -13,16 +13,16 @@
 #
 # 2. TRƯỚC khi coi 1 story là "xong": PHẢI cập nhật CẢ HAI, NGAY LÚC COMMIT
 #    CODE (không tách lượt sau) — (a) status của chính story đó ngay trong
-#    file này, VÀ (b) 1 dòng bằng chứng mới trong `docs/TEST_MATRIX.md`.
+#    file này, VÀ (b) 1 dòng bằng chứng mới trong `docs/tasks/TEST_MATRIX.md`.
 #    Thiếu 1 trong 2 = CHƯA xong việc, dù code đã chạy sạch.
 #
 # 3. Muốn biết cái gì đã CHỨNG MINH chạy thật (không chỉ build sạch — có
-#    người gõ/nhìn thật) → đọc `docs/TEST_MATRIX.md`. KHÔNG suy diễn "build
+#    người gõ/nhìn thật) → đọc `docs/tasks/TEST_MATRIX.md`. KHÔNG suy diễn "build
 #    sạch = chạy đúng" từ file này.
 #
 # 4. Gặp chỗ phải đoán vì thiếu luật/nguồn sự thật (đặc biệt: nhận diện/pháp
 #    lý/riêng tư) → DỪNG, hỏi chủ dự án, rồi ghi NGAY 1 dòng vào
-#    `docs/FRICTION-LOG.md`. Một câu hỏi chỉ ghi trong file `.story.md` mà
+#    `docs/tasks/FRICTION-LOG.md`. Một câu hỏi chỉ ghi trong file `.story.md` mà
 #    không có dòng ở đây coi như CHƯA từng hỏi — bài học rút ra 2026-07-14
 #    (xem `bmad-output/decision-log.md` entry "Chốt điểm gai #3").
 #
@@ -345,7 +345,7 @@ v2_roadmap:
     (Story 2.6). Trạng thái ở đây và ở `epics.md` bị lỗi thời (ghi backlog dù đã done) do
     doc không theo kịp code — nay đồng bộ lại. MỌI dòng "done" trong Epic 2 đều mới ở mức
     build-verified (build sạch + make test xanh + brand-lint 0 lỗi), CHƯA có ai mở app thật
-    kiểm bằng mắt/tay — xem `docs/TEST_MATRIX.md` để biết chính xác mức bằng chứng từng dòng.
+    kiểm bằng mắt/tay — xem `docs/tasks/TEST_MATRIX.md` để biết chính xác mức bằng chứng từng dòng.
     Việc còn lại của Epic 2 KHÔNG phải code — là nghiệm thu tay 6 bước trên app thật.
   status_note_2026_07_15: >
     [CẬP NHẬT 2026-07-15] Triển khai thành công thiết lập Hotkey cho Bộ gõ (SwitchKeyStatus)
@@ -360,7 +360,7 @@ v2_roadmap:
     · chấm cam đánh dấu trạng thái đang-chọn (nghi phạm hiến chương §5 điều 6).
     → Epic 2 KHÔNG được coi là đóng. Việc sửa đi theo Epic 3 (xem `epic3_acceptance` cuối file).
     Nguồn sự thật đầy đủ: `bmad-output/macos/ACCEPTANCE-v2-2026-07-15.md`.
-    Bằng chứng đã backfill vào `docs/TEST_MATRIX.md` (khối 2026-07-15).
+    Bằng chứng đã backfill vào `docs/tasks/TEST_MATRIX.md` (khối 2026-07-15).
 
 # ---------------------------------------------------------------------------
 # EPIC 3 — Hoàn thiện theo nghiệm thu tay v2 (2026-07-15). CHƯA shard thành .story.md đầy đủ:
@@ -377,7 +377,7 @@ epic3_acceptance:
   driver_mode: "từng gói, 1 người lái; dừng-hỏi khi chạm nhận diện/pháp lý/riêng tư hoặc phát sinh ngoài plan"
   constraints:
     - "KHÔNG đụng core/ (bộ não C++ dùng chung) — giữ `make test` xanh"
-    - "Mỗi gói xong: cập nhật status ở ĐÂY + 1 dòng bằng chứng ở docs/TEST_MATRIX.md, NGAY lúc commit"
+    - "Mỗi gói xong: cập nhật status ở ĐÂY + 1 dòng bằng chứng ở docs/tasks/TEST_MATRIX.md, NGAY lúc commit"
     - "Bằng chứng của Epic 3 phải là MẮT NHÌN app thật, không nhận build-verified — chính build-verified đã để lọt cả 10 finding này"
   gates:
     - g: 1

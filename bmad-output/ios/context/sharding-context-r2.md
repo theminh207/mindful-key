@@ -7,7 +7,7 @@
 - `bmad-output/ios/tech-spec-r2.md` — **nguồn chính**: 6 story (2.1–2.6), AC seed, owned scope, deps, model, và 4 quyết định đã chốt.
 - `bmad-output/ios/decision-log.md` (2026-07-13) — Q1/Q2/Q3/Q11 chốt + phương án B (analyzer).
 - `bmad-output/ios/EXPERIENCE.md` Future B1 · `analysis/07-functional-requirements/_index.md` (FR-A08/A09/A10/A11/A15a) · `analysis/07-non-functional/_index.md` (NFR).
-- `docs/SEND-RISK-MODEL-SPEC.md` (lexicon send-risk) · `core/mood/{MoodBuffer,BreathingPause}.h` · `platforms/apple/macos/MoodWatchMac.mm` (bảng lexicon để rút — approach B).
+- `docs/tasks/SEND-RISK-MODEL-SPEC.md` (lexicon send-risk) · `core/mood/{MoodBuffer,BreathingPause}.h` · `platforms/apple/macos/MoodWatchMac.mm` (bảng lexicon để rút — approach B).
 
 ## Quyết định bake vào mọi story Track B (KHÔNG hỏi lại)
 - Q1: biên độ sóng = **ngưỡng chết ~0.3 + dâng mượt** (liên tục, không bậc). Q2: **CHỈ sóng, không chữ**.

@@ -25,8 +25,8 @@ extension, mandate cố ý hẹp: chỉ nhật ký + nhắc thụ động, khôn
 - **GPL v3**, giữ credit Mai Vũ Tuyên (OpenKey gốc) ở mọi màn Giới thiệu/header file liên quan.
 - **Riêng tư mặc định** — không gửi nội dung gõ đi đâu; dữ liệu cảm xúc mã hoá tại máy (AES-256 +
   Keychain), có consent gate.
-- Chạm nhận diện/pháp lý mà mơ hồ → **hỏi chủ dự án**, đừng tự quyết trong im lặng. Bản đầy đủ:
-  `docs/AGENT-BRIEF.md`.
+- Chạm nhận diện/pháp lý mà mơ hồ → **hỏi chủ dự án**, đừng tự quyết trong im lặng. Tầng ý định:
+  `docs/01-intent.md` (bản gốc đầy đủ: `docs/tasks/AGENT-BRIEF.md`).
 
 ## Kiến trúc: "1 bộ não + nhiều vỏ"
 
@@ -114,7 +114,7 @@ SKIP_SIGN=1 bash scripts/release.sh   # build + đóng gói macOS đầy đủ, 
 Ra asset ở `release-out/`. Kiểm nhanh: mount thử `.dmg`, `codesign -dv` (nếu ký ad-hoc) hoặc
 `spctl -a -vv` (nếu ký thật — phải thấy `accepted, source=Notarized Developer ID`).
 
-**Bẫy đã root-cause — đọc trước khi debug lại từ đầu** (bản đầy đủ: `docs/RELEASE.md` +
+**Bẫy đã root-cause — đọc trước khi debug lại từ đầu** (bản đầy đủ: `docs/tasks/RELEASE.md` +
 `CHANGELOG.md` mục Fixed của các bản 0.4.9–0.4.14, ghi lại từng sự cố CI/release có thật):
 - **GitHub Actions secrets là PER-REPO** — không tự dùng chung dù cùng 1 tài khoản Apple Developer
   hay cùng người đứng sau nhiều repo khác nhau.
@@ -134,13 +134,16 @@ Ra asset ở `release-out/`. Kiểm nhanh: mount thử `.dmg`, `codesign -dv` (n
 
 **Bản đầy đủ** (checklist lấy chứng chỉ Apple Developer ID + App Store Connect API Key, cấu trúc
 đặt tên 6 asset, cách thêm 7 secrets vào GitHub, còn thiếu gì so với pipeline tham chiếu):
-`docs/RELEASE.md`.
+`docs/tasks/RELEASE.md`.
 
 ## Nếu bạn cần thêm ngữ cảnh
 
 - `CLAUDE.md` — bản đầy đủ cho Claude Code (Hiến chương trích dẫn, routing 4 sub-agent chuyên biệt,
   kỷ luật commit/push, work discipline "4 Kỹ").
-- `docs/AGENT-BRIEF.md` — Hiến chương đầy đủ (nhận diện/pháp lý/riêng tư).
-- `docs/OPENKEY-MAP.md` — bản đồ code engine gốc theo dòng số cụ thể.
-- `docs/TEST_MATRIX.md` — sổ hành vi→bằng chứng (Engine/macOS/Windows/E2E).
-- `docs/RELEASE.md` — checklist release thật, chi tiết hơn phần CI/CD ở trên.
+- `docs/README.md` — mục lục 7 tầng tài liệu (intent · features · decisions · contracts ·
+  conventions · operations · glossary).
+- `docs/01-intent.md` — tầng ý định: lý do tồn tại + điều bất khả xâm phạm (nhận diện/pháp lý/riêng tư).
+- `docs/tasks/AGENT-BRIEF.md` — Hiến chương bản gốc, giữ làm nguồn lịch sử (code comment trỏ theo §).
+- `docs/tasks/OPENKEY-MAP.md` — bản đồ code engine gốc theo dòng số cụ thể.
+- `docs/tasks/TEST_MATRIX.md` — sổ hành vi→bằng chứng (Engine/macOS/Windows/E2E).
+- `docs/tasks/RELEASE.md` — checklist release thật, chi tiết hơn phần CI/CD ở trên.

@@ -4,7 +4,7 @@
 //
 //  [MINDFUL] Bước 6 — kho nhật ký cảm xúc: LOCAL, MÃ HÓA (AES-256-CBC, khóa trong Keychain),
 //  KHÔNG BAO GIỜ chứa văn bản gốc — schema không có cột nào chứa câu chữ, nên không thể lưu
-//  nhầm dù có bug. Xem docs/PRIVACY-NOTE.md + docs/PRD.md §5.
+//  nhầm dù có bug. Xem docs/tasks/PRIVACY-NOTE.md + docs/tasks/PRD.md §5.
 //
 
 #ifndef MoodStoreMac_h
@@ -50,7 +50,7 @@ void MoodStoreMac_LogSampleEvent(double avgAmplitude);
 // còn cảnh trả lời xong rồi biến mất khỏi mọi màn hình. Tắt được qua cờ vShowCheckinOnRiver.
 // TUẦN/THÁNG (FetchWeekSamples/FetchMonthSamples) CHƯA gộp — đó là trung bình theo NGÀY (1 chấm =
 // 1 ngày), khái niệm "chấm này tự thuật hay tự đoán" không còn ý nghĩa ở granularity đó; để ngỏ,
-// xem docs/FRICTION-LOG.md 2026-07-20.
+// xem docs/tasks/FRICTION-LOG.md 2026-07-20.
 NSArray<NSDictionary *> *MoodStoreMac_FetchTodaySamples(void);
 
 // [MINDFUL] 2026-07-16 — mẫu trong `secondsAgo` giây gần nhất, cửa sổ TRƯỢT tính từ BÂY GIỜ (khác

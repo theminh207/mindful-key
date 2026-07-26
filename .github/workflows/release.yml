@@ -11,7 +11,7 @@
 #   APPLE_API_ISSUER_ID            App Store Connect Issuer ID
 #   APPLE_API_KEY_P8_BASE64        `base64 -i AuthKey_XXXX.p8 | pbcopy`
 #
-# Xem checklist đầy đủ (kể cả phần chỉ làm thủ công được, VD lấy cert lần đầu): docs/RELEASE.md
+# Xem checklist đầy đủ (kể cả phần chỉ làm thủ công được, VD lấy cert lần đầu): docs/tasks/RELEASE.md
 name: Release
 
 on:
@@ -25,7 +25,7 @@ permissions:
 jobs:
   # Vỏ Windows build ở đây chứ không phải máy chủ dự án: máy dev là macOS, không chạy được MSVC.
   # Runner windows-latest có sẵn VS 2022 (toolset v143) mà MindfulKey.vcxproj đòi. Job này CHỈ đóng
-  # gói — nó KHÔNG ký Authenticode (chưa có chứng chỉ; xem docs/FRICTION-LOG.md), nên bộ cài tải
+  # gói — nó KHÔNG ký Authenticode (chưa có chứng chỉ; xem docs/tasks/FRICTION-LOG.md), nên bộ cài tải
   # về sẽ bị SmartScreen cảnh báo "Unknown publisher". Đúng thân phận hiện tại của bản macOS
   # (ad-hoc, chưa notarize) — không giấu.
   build-windows:
@@ -191,7 +191,7 @@ jobs:
 
       # Nếu repo chưa cấu hình secrets ký (APPLE_SIGNING_IDENTITY rỗng) -> build ad-hoc
       # (KHÔNG notarize). Cho phép ra release thử để xem pipeline chạy trước khi có Developer ID.
-      # Cấu hình đủ 7 secrets (xem docs/RELEASE.md) -> tự động chuyển sang ký thật + notarize.
+      # Cấu hình đủ 7 secrets (xem docs/tasks/RELEASE.md) -> tự động chuyển sang ký thật + notarize.
       - name: Phát hiện có secrets ký hay không
         id: signing
         env:
@@ -201,7 +201,7 @@ jobs:
             echo "available=true" >> "$GITHUB_OUTPUT"
           else
             echo "available=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::Chưa có secrets ký Apple — build AD-HOC (chưa notarize). Người tải về sẽ bị Gatekeeper chặn. Xem docs/RELEASE.md để bật ký thật."
+            echo "::warning::Chưa có secrets ký Apple — build AD-HOC (chưa notarize). Người tải về sẽ bị Gatekeeper chặn. Xem docs/tasks/RELEASE.md để bật ký thật."
           fi
 
       - name: Import Developer ID certificate vào keychain tạm
@@ -267,7 +267,7 @@ jobs:
             if [[ "${{ steps.signing.outputs.available }}" != "true" ]]; then
               echo "> ⚠️ **macOS — bản ad-hoc, CHƯA notarize.** Người tải về sẽ bị Gatekeeper chặn"
               echo "> (\"không thể xác minh nhà phát triển\"). Chỉ dùng để tự test. Bản ký thật +"
-              echo "> notarize sẽ có khi cấu hình xong Developer ID — xem docs/RELEASE.md."
+              echo "> notarize sẽ có khi cấu hình xong Developer ID — xem docs/tasks/RELEASE.md."
               echo ""
             fi
             echo "> ⚠️ **Windows — bộ cài CHƯA ký Authenticode.** SmartScreen sẽ hiện \"Windows"

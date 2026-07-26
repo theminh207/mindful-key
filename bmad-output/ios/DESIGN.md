@@ -8,7 +8,7 @@
 **Date:** 2026-07-10
 **Version:** 0.3 (draft — reconcile với `brand/tokens.json`: font hybrid, moodScale 5 bậc, radius 8, bóng teal; thêm §2.12 tab bar; chờ chủ dự án duyệt)
 
-> ⚖️ **Luật tối cao = HIẾN CHƯƠNG** (`docs/AGENT-BRIEF.md` §2.2/§2.3), đè mọi quy tắc UI
+> ⚖️ **Luật tối cao = HIẾN CHƯƠNG** (`docs/tasks/AGENT-BRIEF.md` §2.2/§2.3), đè mọi quy tắc UI
 > trong file này. Bất khả xâm phạm: KHÔNG đèn đỏ/xanh-lá mã hoá cảm xúc · KHÔNG mặt cười/
 > mếu/emoji chấm điểm · KHÔNG gamification (streak/điểm/huy hiệu) · KHÔNG copy khiển trách.
 > Nhận diện = con sóng `~` biến hình theo **biên độ**, sắc độ **trung tính**, copy **quan sát
@@ -422,4 +422,4 @@ Thanh tab đáy của **container app** — 3 mục top-level (xem EXPERIENCE §
 ---
 
 *Part of the BMAD Planning & Orchestrator plugin. Produced by the `bmad-ux` skill.*
-*Nguồn màu: `brand/tokens.json` (chính thức) + `platforms/apple/shared/BrandPalette.h`. Hiến chương: `docs/AGENT-BRIEF.md`.*
+*Nguồn màu: `brand/tokens.json` (chính thức) + `platforms/apple/shared/BrandPalette.h`. Hiến chương: `docs/tasks/AGENT-BRIEF.md`.*

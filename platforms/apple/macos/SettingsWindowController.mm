@@ -182,7 +182,7 @@ static NSAttributedString *MKJournalEyebrow(NSString *s) {
 
 // [MINDFUL] Story 3.7 — segmented control riêng cho SettingsWindowController.mm, KHÔNG tái dùng
 // `MKSegmented` (nội bộ BellSettingsView.mm) — file đó đang có thay đổi chưa ổn định từ 1 phiên
-// song song (xem docs/TEST_MATRIX.md 2026-07-15 mục F16), tránh đụng vào tránh xung đột merge.
+// song song (xem docs/tasks/TEST_MATRIX.md 2026-07-15 mục F16), tránh đụng vào tránh xung đột merge.
 // Cùng ngôn ngữ hình ảnh: pill teal cho mục đang chọn, chữ trắng; các mục khác chữ muted.
 @interface MKDateRangeSeg : NSControl
 @property (nonatomic, copy) NSArray<NSString *> *titles;

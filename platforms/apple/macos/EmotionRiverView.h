@@ -9,7 +9,7 @@
 //  View NÀY chỉ là cái KHUNG + trạng thái TRỐNG thật thà — Bước 3 (nguồn dữ liệu thật) CHƯA làm.
 //  `setSamples:` là chỗ cắm để bước sau đổ dữ liệu thật vào mà KHÔNG cần sửa layout/host.
 //
-//  Ràng buộc HIẾN CHƯƠNG khoá trong file này (docs/AGENT-BRIEF.md §2.2/2.3, decision-log dec.4):
+//  Ràng buộc HIẾN CHƯƠNG khoá trong file này (docs/tasks/AGENT-BRIEF.md §2.2/2.3, decision-log dec.4):
 //    - 1 hue teal, chỉ đổi biên độ. KHÔNG valence-color (tốt/xấu), KHÔNG số/chuỗi-ngày-liên-tục/heatmap.
 //    - CHƯA có mẫu (samples nil/rỗng) → KHÔNG vẽ đường sông/chấm giả. Hiện trạng thái trống
 //      THẬT THÀ (vd "Hồ chưa đủ nét — ngày mới bắt đầu"), không giả vờ "phẳng lặng".

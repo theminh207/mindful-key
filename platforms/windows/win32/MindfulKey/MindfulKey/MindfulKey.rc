@@ -61,7 +61,7 @@ IDI_ICON_OK_BUTTON      ICON                    "../../../../../brand/platform/w
 IDI_ICON_EXIT_BUTTON    ICON                    "../../../../../brand/platform/windows/ExitButton.ico"
 
 // CHƯA đổi: brand không có hình cho hành động "Cài đặt gốc", và bịa một cái là tự chế nhận diện.
-// Giữ icon MindfulKey gốc cho nút này — xem docs/FRICTION-LOG.md 2026-07-17.
+// Giữ icon MindfulKey gốc cho nút này — xem docs/tasks/FRICTION-LOG.md 2026-07-17.
 IDI_ICON_DEFAULT_BUTTON ICON                    "DefaultButton.ico"
 
 IDI_ICON_START_CONVERT  ICON                    "../../../../../brand/platform/windows/StartConvert.ico"

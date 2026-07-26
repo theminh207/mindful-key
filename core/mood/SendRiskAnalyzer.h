@@ -4,7 +4,7 @@
 //
 //  [MINDFUL] Chấm "send-risk": câu vừa gõ mà GỬI đi thì hại tới đâu? -> 1 điểm [0,1].
 //  CỐ Ý không phân loại "đang cảm xúc gì" — một trục PHẲNG ↔ GỢN, đúng HIẾN CHƯƠNG §2.2.
-//  Xem docs/SEND-RISK-MODEL-SPEC.md để thay lexicon bằng PhoBERT ONNX sau này.
+//  Xem docs/tasks/SEND-RISK-MODEL-SPEC.md để thay lexicon bằng PhoBERT ONNX sau này.
 //
 //  VÌ SAO Ở ĐÂY (chủ dự án chốt 2026-07-16): trước đó lexicon+công thức tồn tại HAI bản —
 //  platforms/apple/macos/MoodWatchMac.mm (gốc) và platforms/apple/shared/SendRiskAnalyzer.mm

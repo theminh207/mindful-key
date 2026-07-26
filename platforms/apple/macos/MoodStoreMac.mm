@@ -2,7 +2,7 @@
 //  MoodStoreMac.mm
 //  ModernKey
 //
-//  [MINDFUL] Xem MoodStoreMac.h + docs/PRIVACY-NOTE.md + docs/PRD.md §5.
+//  [MINDFUL] Xem MoodStoreMac.h + docs/tasks/PRIVACY-NOTE.md + docs/tasks/PRD.md §5.
 //
 //  Thiết kế mã hóa: KHÔNG dùng SQLCipher (thêm dependency nặng cho MVP) — thay vào đó, file
 //  SQLite thật chỉ tồn tại ở dạng PLAINTEXT trong 1 file tạm, trong đúng khoảng thời gian
@@ -509,7 +509,7 @@ static NSArray<NSDictionary *> *FetchSamplesBetween(sqlite3_int64 tsFrom, sqlite
         // đọc lại (kể cả Soi lại) — người dùng phát hiện đúng lỗ này. Đánh dấu "checkin"=YES để
         // tầng vẽ (EmotionRiverView/MKRiverCanvas) hiện chấm RỖNG thay chấm đặc — phân biệt tự
         // thuật vs tự đoán bằng HÌNH DẠNG, KHÔNG phải màu (cam đã khoá riêng cho "khoảnh khắc con
-        // người" — hơi thở/cảnh báo/chuông, xem docs/BRAND-ASSETS.md dòng 17/67/76; decision-log
+        // người" — hơi thở/cảnh báo/chuông, xem docs/tasks/BRAND-ASSETS.md dòng 17/67/76; decision-log
         // 2026-07-20 "Nhận diện: giữ 1 trục biên độ"). vShowCheckinOnRiver = cửa thoát cho ai
         // không muốn trộn 2 nguồn.
         if (vShowCheckinOnRiver) {

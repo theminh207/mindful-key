@@ -6,7 +6,7 @@
 # đi mượn" để build-verify vỏ Windows mà không cần ai phải có PC.
 #
 # Nó KHÔNG thay được người: gõ thử tiếng Việt ra dấu vẫn phải có mắt người nhìn
-# trên Windows thật. CI chỉ chứng minh compile + link sạch. Xem docs/TEST_MATRIX.md
+# trên Windows thật. CI chỉ chứng minh compile + link sạch. Xem docs/tasks/TEST_MATRIX.md
 # để biết hành vi nào đã có bằng chứng tới đâu.
 name: Windows
 

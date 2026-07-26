@@ -614,7 +614,7 @@ extern "C" {
         // [MINDFUL] Bước 5 — gác cổng gửi tin. Đặt NGAY ĐÂY (trước mọi xử lý tiếng Việt) để
         // không đụng tới logic gõ dấu hiện có. Chỉ can thiệp khi: Enter/Return không Shift,
         // app đang focus nằm trong allow-list, VÀ send-risk hiện tại đã vượt ngưỡng. Xem
-        // docs/BREATHING-PAUSE-CONTRACT.md — hạn chế đã biết: từ cuối cùng ngay trước Enter,
+        // docs/tasks/BREATHING-PAUSE-CONTRACT.md — hạn chế đã biết: từ cuối cùng ngay trước Enter,
         // nếu chưa có dấu cách/dấu câu trước đó, có thể chưa kịp tính vào điểm rủi ro.
         if (SendGatekeeperMac_ShouldIntercept(event, type)) {
             dispatch_async(dispatch_get_main_queue(), ^{

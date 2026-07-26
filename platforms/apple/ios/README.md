@@ -21,8 +21,8 @@ bất khả thi.** Vì vậy chủ dự án đã chốt mandate hẹp lại:
 - ❌ **KHÔNG gác cổng gửi tin xuyên app.** Nhận diện "người gác cổng" giữ ở macOS/Windows;
   iOS thể hiện cùng tinh thần ở mức "nhắc".
 
-Xem lý do đầy đủ: `docs/FRICTION-LOG.md` (dòng 2026-07-10, đã chốt) và khối "Đội iOS" trong
-`docs/TEST_MATRIX.md`.
+Xem lý do đầy đủ: `docs/tasks/FRICTION-LOG.md` (dòng 2026-07-10, đã chốt) và khối "Đội iOS" trong
+`docs/tasks/TEST_MATRIX.md`.
 
 ## Ai lo nhánh này
 

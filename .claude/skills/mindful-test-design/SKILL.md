@@ -22,7 +22,7 @@ description: Thiết kế/rà ca test cho bộ gõ chánh niệm — engine Tele
 
 ## Cửa an toàn (giữ theo harness dự án)
 Nếu việc chạm **core/ (đóng băng)**, **riêng tư dữ liệu cảm xúc**, hoặc **nhận diện** → quy chiếu
-hiến chương TRƯỚC, mơ hồ thì hỏi chủ dự án; ghi chỗ phải đoán vào `docs/FRICTION-LOG.md`.
+hiến chương TRƯỚC, mơ hồ thì hỏi chủ dự án; ghi chỗ phải đoán vào `docs/tasks/FRICTION-LOG.md`.
 
 ---
 
@@ -73,7 +73,7 @@ Xem **[references/test-done-checklist.md](references/test-done-checklist.md)** �
 ## Quan hệ với skill khác
 - Thiết kế ca **cho engine** → dùng skill này rồi sửa `tests/core/test_engine.cpp` (qua `openkey-engine` nếu đụng engine).
 - Cần **tài liệu test-case generic / BA** → `analysis/qa-test-planner` (nhưng lọc phần web).
-- Bằng chứng hành vi đã chạy → cập nhật `docs/TEST_MATRIX.md`.
+- Bằng chứng hành vi đã chạy → cập nhật `docs/tasks/TEST_MATRIX.md`.
 
 ---
 *Chắt lọc từ Anh Tester testing-kit (MIT). Đã dịch sang bối cảnh mindful-key — không bê nguyên.*

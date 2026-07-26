@@ -49,7 +49,7 @@ bằng relationship segue trong `Main.storyboard`):
 2. **Màn Convert lạc tông hệ thống:** nút "Chuyển mã" xanh dương ▶, "Đóng" xanh lá ✓ — hai màu
    AppKit mặc định, ngoài palette NOW BRAND OS.
 3. **Logo About sai nhận diện:** chữ "V" đỏ/coral to. Nhận diện đúng = sóng `~` teal + dấu ngã
-   cam (xem `docs/BRAND-ASSETS.md`). Đỏ hoàn toàn ngoài palette.
+   cam (xem `docs/tasks/BRAND-ASSETS.md`). Đỏ hoàn toàn ngoài palette.
 4. **Bug đè chữ ở About:** "Trang GitHub:" chồng lên "Dựa trên OpenKey…"; dòng "Fanpage:" trống.
 5. **Placeholder chưa dọn ở Macro:** cột bảng còn "Table View… / Table View Cell" (tên mặc định
    Interface Builder), chưa đặt nhãn tiếng Việt.
@@ -111,7 +111,7 @@ story chạy song song không conflict.
 
 ### 4.4 Màn About — Thông tin (`AboutViewController.m` + scene About + asset logo)
 - **Thay logo "V" đỏ** bằng glyph sóng `~` teal + dấu ngã cam (nguồn `brand/svg/`, xuất qua
-  `brand/export.sh`, xem `docs/BRAND-ASSETS.md`).
+  `brand/export.sh`, xem `docs/tasks/BRAND-ASSETS.md`).
 - **Vá bug đè chữ:** layout lại 2 dòng "Dựa trên OpenKey — Mai Vũ Tuyên (GPL v3)" và "Trang
   GitHub:" cho không chồng nhau; điền hoặc bỏ hẳn dòng "Fanpage:" trống.
 - Link GitHub = link teal; checkbox "Kiểm tra bản mới khi khởi động" → switch teal; nút "Kiểm

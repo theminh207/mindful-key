@@ -26,7 +26,7 @@
 //  KHÔNG test ở đây (ghi rõ để TEST_MATRIX không hiểu nhầm):
 //   · NSTimer của BellMac có tick đúng vBellInterval phút không (chờ ≥1 phút — quá chậm cho
 //     vòng test; chỉ kiểm timer ĐÃ được lên lịch qua BellMac_NextRingDate).
-//   · Vẽ EmotionRiverView / mở popover thật (cần app + mắt người, xem docs/TEST_MATRIX.md).
+//   · Vẽ EmotionRiverView / mở popover thật (cần app + mắt người, xem docs/tasks/TEST_MATRIX.md).
 //
 
 #import <Cocoa/Cocoa.h>

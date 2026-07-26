@@ -11,7 +11,7 @@
 //    Releases) — không bao giờ để nút bấm rơi vào im lặng không phản hồi.
 // 4. Chưa có SignPath (ký số) — bộ cài .exe tải về vẫn CHƯA có chữ ký, SmartScreen vẫn có thể cảnh
 //    báo "Windows đã bảo vệ PC của bạn" lúc mở. Đây là hạn chế THẬT, không phải lỗi code — hết khi
-//    D4 (SignPath) xong. Ghi trong docs/FRICTION-LOG.md.
+//    D4 (SignPath) xong. Ghi trong docs/tasks/FRICTION-LOG.md.
 //
 #include "stdafx.h"
 #include "UpdateChecker.h"
