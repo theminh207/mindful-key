@@ -34,7 +34,7 @@ gì về việc màn hình có giống thiết kế hay không**. Nó chỉ nói
 
 iOS không có gác cổng là **quyết định, không phải thiếu sót** — sandbox keyboard extension không có
 global hook và không thấy nút gửi của ứng dụng chủ. Xem
-[ADR-0009](03-decisions/ADR-0009-ios-mandate-hep.md).
+[ADR-0014](03-decisions/ADR-0014-ios-mandate-hep-do-nhip-trong-ban-phim.md).
 
 ---
 

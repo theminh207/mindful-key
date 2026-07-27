@@ -1,6 +1,6 @@
 # ADR-0003 — Send-risk là một con số, không phải phân loại cảm xúc
 
-- **Trạng thái:** Đã chốt
+- **Trạng thái:** Bị thay thế bởi [ADR-0013](ADR-0013-do-nhip-go-thay-doc-cam-xuc.md)
 - **Ngày:** không ghi lại ngày cụ thể
 - **Liên quan:** [HĐ-3](../04-contracts.md), `../tasks/PRD.md` §2
 

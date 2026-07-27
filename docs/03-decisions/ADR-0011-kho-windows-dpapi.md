@@ -1,6 +1,6 @@
 # ADR-0011 — Kho nhật ký Windows dùng tệp phẳng DPAPI
 
-- **Trạng thái:** Đã chốt
+- **Trạng thái:** Bị thay thế bởi [ADR-0013](ADR-0013-do-nhip-go-thay-doc-cam-xuc.md)
 - **Ngày:** 2026-07-17
 - **Liên quan:** [tầng Features §C](../02-features.md), [HĐ-5](../04-contracts.md)
 
