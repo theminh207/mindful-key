@@ -8,7 +8,7 @@
 | **Bắt đầu** | 2026-07-26 |
 | **Hiến chương** | [`docs/01-intent.md`](../../docs/01-intent.md) — luật tối cao, đã sửa |
 | **Issue** | [#3 → #18](https://github.com/theminh207/mindful-key/issues) trên GitHub |
-| **Trạng thái** | Phase 0 chưa bắt đầu |
+| **Trạng thái** | Phase 0 đang chạy — #3 xong, #4 #5 mở đường |
 
 ---
 
@@ -52,7 +52,7 @@ Trạng thái: `⬜ chưa bắt đầu` · `🔄 đang làm` · `✅ xong` · `�
 
 | | Issue | Việc | Chặn bởi | Người làm |
 |---|---|---|---|---|
-| ⬜ | [#3](https://github.com/theminh207/mindful-key/issues/3) | ADR "đo nhịp gõ thay đọc cảm xúc" + 4 ADR cũ thành Superseded | — | |
+| ✅ | [#3](https://github.com/theminh207/mindful-key/issues/3) | ADR "đo nhịp gõ thay đọc cảm xúc" + 5 ADR cũ bị thay thế, ADR-0009 gỡ → ADR-0014 | — | @phatnguyen-neurond |
 | ⬜ | [#4](https://github.com/theminh207/mindful-key/issues/4) | Đồng bộ tầng 02/04/06/07 theo vòng lặp mới | #3 | |
 | ⬜ | [#5](https://github.com/theminh207/mindful-key/issues/5) | Đồng bộ `docs/tasks/` + harness `.claude/` | #3 | |
 
@@ -100,8 +100,6 @@ Chưa chốt thì **đừng tự quyết trong im lặng** — hỏi chủ dự 
 
 | # | Câu hỏi | Chốt ở | Trạng thái |
 |---|---|---|---|
-| Q1 | Ngưỡng CPM mặc định là bao nhiêu? Các mức cho user chọn đặt tên gì? | #3 | ❓ chưa chốt |
-| Q2 | Cửa sổ trượt dài bao nhiêu giây? | #3 | ❓ chưa chốt |
 | Q3 | Nhịp phím lấy từ đâu — (A) từng phím ở hook bàn phím, hay (B) tại điểm kết từ qua `vOnWordCommitted`? | #6 | ❓ chưa chốt |
 | Q4 | Quy CPM về biên độ sóng `[0,1]` theo công thức nào, và đặt ở đâu để 3 vỏ không trôi lệch? | #8 | ❓ chưa chốt |
 | Q5 | Có đếm nhịp trong ô mật khẩu không? | #9 | ❓ chưa chốt |
@@ -113,6 +111,18 @@ Chưa chốt thì **đừng tự quyết trong im lặng** — hỏi chủ dự 
 
 - 2026-07-26 — Bỏ **hẳn** lớp sentiment, không giữ lại để ghi nhật ký.
 - 2026-07-26 — Đơn vị đo là **CPM (ký tự/phút)**, không phải WPM. Telex/VNI gõ dấu tốn thêm phím nên đếm "từ" bị méo.
+- 2026-07-27 *(Q1, ở #3)* — Bốn mức ngưỡng, mặc định **Rất nhanh = 400 CPM**: `Nhanh 300` ·
+  `Rất nhanh 400` · `Cực nhanh 500` · `Tắt chuông`. Tên mức mô tả **nhịp tay**, không mô tả tâm
+  người gõ — cấm mọi chữ quy về trạng thái tâm ("bình tĩnh", "mất kiểm soát"…). Chỗ nào hiện tên
+  mức thì hiện kèm con số CPM, để đọc ra đây là phép đo chứ không phải lời nhận xét.
+- 2026-07-27 *(Q2, ở #3)* — **Cửa sổ trượt 30 giây.** Ngắn hơn thì một tràng gõ dồn rồi nghỉ cũng
+  đủ vượt ngưỡng; dài hơn thì chuông tới sau khi nhịp đã lắng.
+- 2026-07-27 *(ở #3)* — `ADR-0009` **gỡ hẳn** khỏi `docs/` thay vì đánh dấu bị thay thế, vì toàn bộ
+  thân nó lập luận cho gác cổng gửi tin — thứ đã bị xoá khỏi sản phẩm. Kết luận (mandate iOS hẹp)
+  viết lại với lý lẽ mới ở `ADR-0014`. Là **ngoại lệ có ghi chú ở index**, không phải tiền lệ;
+  mặc định vẫn giữ file và đánh dấu *Bị thay thế*.
+- 2026-07-27 *(ở #3)* — `ADR-0011` (kho Windows DPAPI) cũng bị thay thế: schema "bất biến" của nó
+  chốt cột `send_risk`, cột này chết theo mô hình mới. Schema thật chốt lại ở #11.
 
 ## 6. Ba cái bẫy đã biết trước
 

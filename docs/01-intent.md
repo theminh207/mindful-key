@@ -135,8 +135,7 @@ macOS là công dân hạng nhất và không được làm loãng chất lượ
 
 Mandate iOS cố ý hẹp: sandbox chỉ cho bàn phím thấy phím gõ trong chính nó, nên **tốc độ chỉ đo
 được khi người dùng đang dùng bàn phím mindful-key**, không phải toàn hệ thống. Xem
-[ADR-0009](03-decisions/ADR-0009-ios-mandate-hep.md) — lý lẽ trong ADR viết theo mô hình gác cổng
-cũ, cần cập nhật lại theo mô hình chuông.
+[ADR-0014](03-decisions/ADR-0014-ios-mandate-hep-do-nhip-trong-ban-phim.md).
 
 ## 7. Thế nào là đủ tốt
 

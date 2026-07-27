@@ -1,6 +1,6 @@
 # ADR-0005 — Phát hiện "sắp gửi" bằng phím Enter và allow-list
 
-- **Trạng thái:** Đã chốt
+- **Trạng thái:** Bị thay thế bởi [ADR-0013](ADR-0013-do-nhip-go-thay-doc-cam-xuc.md)
 - **Ngày:** không ghi lại ngày cụ thể
 - **Liên quan:** [HĐ-1](../04-contracts.md), `../tasks/BREATHING-PAUSE-CONTRACT.md` §5
 

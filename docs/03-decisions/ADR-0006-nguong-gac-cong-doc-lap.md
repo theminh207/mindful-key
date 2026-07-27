@@ -1,6 +1,6 @@
 # ADR-0006 — Ngưỡng gác cổng không ăn theo núm Độ nhạy
 
-- **Trạng thái:** Đã chốt
+- **Trạng thái:** Bị thay thế bởi [ADR-0013](ADR-0013-do-nhip-go-thay-doc-cam-xuc.md)
 - **Ngày:** không ghi lại ngày cụ thể
 - **Liên quan:** `../tasks/MOOD-WAVE-MECHANISM.md` §5
 
