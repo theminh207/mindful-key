@@ -72,12 +72,16 @@ vào đó rồi, nên nuôi nhịp từ đấy là đường ít sửa nhất. N
 không dùng"*. Đánh đổi đã cân nhắc và bác bỏ — xem
 [ADR-0013](03-decisions/ADR-0013-do-nhip-go-thay-doc-cam-xuc.md).
 
-**Cách soi.**
+**Cách soi — cưỡng chế bằng máy, không phụ thuộc có ai đọc tài liệu hay không.** Bước
+*"Cổng HĐ-1"* trong `.github/workflows/macos.yml` quét chính các file của lớp nhịp gõ/chuông tìm
+mọi kiểu chuỗi (bỏ dòng comment) và làm **đỏ CI** nếu thấy. Không tìm thấy file nào cũng đỏ, để
+không ai vô hiệu cổng bằng cách đổi tên file.
 
-```bash
-# Không được có kết quả nào
-grep -rnE "(wstring|string|char\s*\*|NSString).*\b(Cadence|BellPolicy)\b" core/mood/
-```
+> ⚠️ **Mẫu grep ở bản đầu của hợp đồng này (PR #21) BỊ HỎNG.** Nó đòi kiểu chuỗi đứng *trước* tên
+> lớp trên cùng một dòng, nên `void TypingCadence_OnWord(const wstring&)` **lọt qua** — đã thử và
+> trượt thật khi dựng cổng ở #6. Bài học: hợp đồng kèm lệnh soi hỏng còn **tệ hơn** không kèm lệnh
+> nào, vì nó cho cảm giác an toàn giả. Mẫu thật giữ **đúng một bản**, ở workflow; đừng chép vào
+> comment trong `core/mood/` — dòng chép sẽ tự khớp và làm đỏ CI oan.
 
 ---
 

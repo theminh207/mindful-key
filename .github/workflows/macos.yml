@@ -29,6 +29,40 @@ jobs:
           bash tests/core/cadence_build.sh
           ./tests/core/test_cadence
 
+      # [MINDFUL] 2026-08-01 (#6) — CƯỠNG CHẾ HĐ-1 BẰNG MÁY.
+      #
+      # Hiến chương §4.2 hứa "sản phẩm không đọc nội dung". Lời hứa đó chỉ thật khi người đọc
+      # code nhìn thấy được rằng không có đường nào cho chữ đi vào — mà "nhìn thấy được" thì
+      # phụ thuộc vào việc CÓ AI ĐỌC hay không. Bước này biến nó thành thứ không phụ thuộc
+      # người: API lớp nhịp gõ/chuông mọc ra tham số kiểu chuỗi là CI đỏ ngay.
+      #
+      # Đây là cùng một lối nghĩ với `make brand-lint` (hiến chương §4.1 tự nói phải cưỡng chế
+      # bằng máy "không phụ thuộc vào việc có ai đọc tài liệu hay không") — nay áp cho §4.2.
+      #
+      # Pattern giữ ĐÚNG MỘT BẢN ở đây. Đừng chép nó vào comment trong core/mood/: dòng chép
+      # sẽ tự khớp và làm đỏ CI oan (đã vấp thật lúc dựng bước này).
+      #
+      # Cách soi: quét CHÍNH các file của lớp nhịp gõ/chuông tìm mọi kiểu chuỗi, bỏ dòng
+      # comment. KHÔNG dùng kiểu "tên-lớp gần kiểu-chuỗi" — mẫu đó phụ thuộc thứ tự chữ trên
+      # dòng nên `void TypingCadence_OnWord(const wstring&)` LỌT QUA (đã thử, trượt thật).
+      # Nếu không thấy file nào thì cũng ĐỎ, để không ai vô hiệu cổng bằng cách đổi tên file.
+      - name: Cổng HĐ-1 — lớp nhịp gõ không được nhận chuỗi
+        run: |
+          files=$(ls core/mood/TypingCadence.h core/mood/TypingCadence.cpp \
+                     core/mood/BellPolicy.h core/mood/BellPolicy.cpp 2>/dev/null || true)
+          if [ -z "$files" ]; then
+            echo "::error::Không tìm thấy file nào của lớp nhịp gõ/chuông — cổng HĐ-1 không soi được gì."
+            exit 1
+          fi
+          hits=$(grep -nE '(wstring|NSString|std::string|\bstring\b|char[[:space:]]*\*)' $files \
+                 | grep -vE '^[^:]+:[0-9]+:[[:space:]]*(//|\*|/\*)' || true)
+          if [ -n "$hits" ]; then
+            echo "$hits"
+            echo "::error::HĐ-1 vi phạm — lớp nhịp gõ/chuông có kiểu chuỗi. Xem docs/04-contracts.md HĐ-1: nhận chuỗi rồi chỉ dùng .length() VẪN là vi phạm."
+            exit 1
+          fi
+          echo "OK — HĐ-1 sạch: không kiểu chuỗi nào trong lớp nhịp gõ/chuông."
+
       - name: Generate Xcode project
         run: cd platforms/apple && xcodegen generate
 

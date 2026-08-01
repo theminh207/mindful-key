@@ -17,6 +17,86 @@
 
 ---
 
+## 2026-08-01 — #6 `core/mood/TypingCadence` — đo nhịp gõ (CPM) trên cửa sổ trượt
+
+**Làm gì:** Viết `core/mood/TypingCadence.{h,cpp}` — C++ thuần, một bản dùng chung 3 vỏ. Cộng
+`tests/core/test_cadence.cpp` (12 loại ca) + `cadence_build.sh`, nối vào `make test-core` **và vào
+cả hai runner CI**.
+
+**Chốt được:**
+
+- **Chữ ký: dạng LỚP, thời gian tính bằng int64 mili-giây.** Issue #6 đề xuất class với
+  `double nowSeconds`; hợp đồng HĐ-1 (merge ở #4) lại ghi `TypingCadence_OnKeystroke(int64_t tsMs)`.
+  Hoà giải: lấy **dạng lớp** từ issue (test dựng được nhiều thể hiện độc lập, không rò rỉ trạng thái
+  giữa các ca) và lấy **int64 mili-giây** từ hợp đồng (không sai số dấu phẩy động; đồng hồ đơn điệu
+  cả hai OS đều cho tick nguyên). Đã đồng bộ lại chữ ký ở `04-contracts.md`, skill và README §5 —
+  tầng 04 là quy phạm, không được nói sai so với code.
+- **Cách chống thổi phồng CPM** (issue hỏi *"cần tối thiểu bao nhiêu phím mới báo số"*): **chia cho
+  độ dài cửa sổ**, không phải cho khoảng giữa nhịp đầu và nhịp cuối. Chia theo khoảng giữa hai nhịp
+  thì gõ 2 phím cách nhau 100ms ra **1200 CPM** → chuông reo oan ngay phím thứ hai. Chia cho cửa sổ
+  thì 2 phím trong 30 giây ra đúng 4 CPM, và muốn chạm ngưỡng 400 phải gõ **thật 200 phím trong 30
+  giây**. Không có cách nào thổi phồng → **không cần** thêm luật "tối thiểu N phím". Một khái niệm
+  ít hơn thay vì một khái niệm nhiều hơn.
+- **Đánh đổi cố ý:** 30 giây đầu sau khởi động bị báo **thấp** hơn thực tế (cửa sổ chưa đầy). Đây là
+  chiều an toàn — nghiêng về **im lặng**, đúng tinh thần "chuông là lời mời, không phải kết luận".
+- **Đồng hồ nhảy lùi → xoá sạch** thay vì cố vá. Nhịp trước cú nhảy không còn so được với nhịp sau
+  nó; giữ lại là bịa dữ liệu (HĐ-8). Mất tối đa một cửa sổ.
+- **Sức chứa cố định 1024, không cấp phát động** (HĐ-3 đòi O(1), không cấp phát, chạy được trong
+  hook). Trần này cho CPM bão hoà quanh 2048 — xa trên mọi ngưỡng (cao nhất 500), nên không bao giờ
+  làm chuông câm.
+
+**Phải đoán:** không. Hai chỗ mơ hồ (chữ ký, cách chống thổi phồng) đều có căn cứ trong issue hoặc
+hợp đồng, và đã ghi rõ lý lẽ ở trên.
+
+**Kiểm chứng — lần đầu của đợt này có bằng chứng CHẠY THẬT, không phải chỉ đọc code:**
+
+| Cổng | Kết quả |
+|---|---|
+| `macos.yml` (clang) | ✅ `test_cadence` — **12/12 loại ca PASS** |
+| `windows.yml` (MSVC, Debug + Release) | ✅ biên dịch + chạy `test_cadence` |
+| Cổng HĐ-1 | ✅ xanh |
+| `brand-lint` | ✅ 0 vi phạm cứng |
+
+Đây là **lần đầu `core/mood` được biên dịch bằng MSVC** — trước nay chỉ `core/engine` đi qua đường
+đó. Bắt khác biệt clang↔MSVC ngay bây giờ thay vì để #15 (vỏ Windows) vấp phải rồi mới biết.
+
+**CI bắt được đúng thứ nó sinh ra để bắt.** Vòng đầu đỏ 3 ca ngưỡng: `typeKeys(150, 0, 100)` đặt
+nhịp tại `t = 0..14900`, rồi hỏi `currentCPM(30000)` → mép dưới cửa sổ **đúng bằng 0**, mà cửa sổ là
+nửa mở `(now-W, now]` nên nhịp tại `t=0` bị loại → 298 thay vì 300. **Lỗi test, không phải lỗi
+code** (hành vi mép đã có Loại 6 khoá riêng). Đã sửa cho nhịp trải đều gần hết cửa sổ rồi xét tại
+phím cuối — vừa đúng số vừa sát cách gõ thật.
+
+**Biến HĐ-1 từ lời hứa thành cổng máy.** Hiến chương §4.1 tự đòi luật nhận diện phải cưỡng chế bằng
+máy *"không phụ thuộc vào việc có ai đọc tài liệu hay không"*; PR này áp đúng lối nghĩ đó cho §4.2:
+thêm bước **"Cổng HĐ-1"** vào `macos.yml`, quét file lớp nhịp gõ/chuông tìm mọi kiểu chuỗi và làm đỏ
+CI nếu thấy.
+
+Dựng cổng đó lòi ra **hai lỗi trong chính hợp đồng tui viết ở #4**:
+
+1. **Mẫu grep tự khớp chính nó.** Dòng ví dụ grep nằm trong comment của `TypingCadence.h` chứa cả
+   `wstring` lẫn `Cadence` → cổng bắt luôn cái comment. Xử: pattern giữ **đúng một bản**, ở
+   workflow; header chỉ trỏ tới, không chép.
+2. **Mẫu grep HỎNG — đây là lỗi nặng hơn.** Nó đòi kiểu chuỗi đứng *trước* tên lớp trên cùng một
+   dòng, nên `void TypingCadence_OnWord(const std::wstring&)` **lọt qua** — đúng cái hình dạng vi
+   phạm dễ xảy ra nhất. Phát hiện bằng cách **thử chiều ngược**: tiêm vi phạm giả rồi xem cổng có
+   đỏ không. Cổng mới đã thử cả hai kiểu vi phạm (tên trước / kiểu chuỗi trước), cả hai đều đỏ
+   đúng, code thật thì xanh.
+
+   **Bài học:** một hợp đồng kèm lệnh soi hỏng còn **tệ hơn** không kèm lệnh nào — nó cho cảm giác
+   an toàn giả. Và cách duy nhất biết một cổng có chạy không là **tiêm vi phạm giả vào rồi xem nó
+   có đỏ**; thấy nó xanh trên code sạch không chứng minh được gì.
+
+**Còn hở:**
+- `TypingCadence` **chưa vỏ nào nối dây** — đây thuần là bộ não. Nối ở #9 (macOS) · #15 (Windows) ·
+  #17 (iOS), và cổng kiểm ô mật khẩu (HĐ-4) nằm ở phía vỏ, macOS hiện chưa có.
+- `keystrokesInWindow()` là API thêm ngoài đề xuất của issue. Giữ vì test khẳng định được bằng **số
+  nguyên chính xác** thay vì so sánh số thực, và vỏ Windows sẽ cần nó cho icon khay (#15).
+- Cổng HĐ-1 hiện chỉ liệt `TypingCadence.*` và `BellPolicy.*`. Thêm lớp mới vào `core/mood` thì phải
+  thêm tên vào danh sách — cổng cố ý **đỏ khi không tìm thấy file nào**, nhưng không tự phát hiện
+  file mới.
+
+---
+
 ## 2026-08-01 — #5 Đồng bộ docs/tasks + harness .claude
 
 **Làm gì:**

@@ -19,8 +19,12 @@
 //  │ đường ít sửa nhất — và đã bị BÁC BỎ CÓ CHỦ ĐÍCH. Vỏ phải gọi từ hook bàn phím,       │
 //  │ từng phím một. Q3, chốt 2026-08-01, spec/typing-cadence-bell/README.md §5.           │
 //  │                                                                                     │
-//  │ Hợp đồng: docs/04-contracts.md HĐ-1. Soi bằng máy:                                   │
-//  │   grep -rnE "(wstring|string|char\s*\*|NSString).*\b(Cadence|BellPolicy)\b" core/mood/│
+//  │ Hợp đồng: docs/04-contracts.md HĐ-1. Được CƯỠNG CHẾ BẰNG MÁY, không chỉ bằng lời:    │
+//  │ bước "Cổng HĐ-1" trong .github/workflows/macos.yml grep thư mục này và làm ĐỎ CI     │
+//  │ nếu có API nào của lớp nhịp gõ/chuông mọc ra tham số kiểu chuỗi.                     │
+//  │                                                                                     │
+//  │ (Mẫu grep cố ý KHÔNG chép vào đây: chính dòng chép nó sẽ tự khớp và làm đỏ CI oan —  │
+//  │  đã vấp thật khi dựng cổng này. Pattern giữ ĐÚNG MỘT BẢN, ở workflow.)               │
 //  └─────────────────────────────────────────────────────────────────────────────────────┘
 //
 //  KHÔNG I/O, KHÔNG log, KHÔNG API riêng OS, KHÔNG tự đọc đồng hồ hệ thống — thời điểm do

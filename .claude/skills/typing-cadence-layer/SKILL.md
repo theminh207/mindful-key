@@ -56,11 +56,11 @@ không dùng"*.
 
 **Cụ thể: KHÔNG tái dùng `vOnWordCommitted`.** Callback đó có chữ ký `void (*)(const wstring& word)`.
 Ba vỏ đã nối sẵn vào nó nên nuôi nhịp từ đấy là đường ít sửa nhất — và đã bị **bác bỏ có chủ đích**
-(Q3, chốt 2026-08-01). Soi:
+(Q3, chốt 2026-08-01).
 
-```bash
-grep -rnE "(wstring|string|char\s*\*|NSString).*\b(Cadence|BellPolicy)\b" core/mood/   # phải rỗng
-```
+**Cưỡng chế bằng máy:** bước *"Cổng HĐ-1"* trong `.github/workflows/macos.yml` quét các file của
+lớp này tìm mọi kiểu chuỗi (bỏ comment) và làm đỏ CI nếu thấy. Mẫu giữ đúng một bản ở workflow —
+**đừng chép vào comment trong `core/mood/`**, dòng chép sẽ tự khớp và làm đỏ CI oan.
 
 ### 2. Chuông ngân thì được, chặn thì không (HĐ-2)
 
