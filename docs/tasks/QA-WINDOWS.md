@@ -1,7 +1,7 @@
 # QA-WINDOWS — kịch bản kiểm thử trước khi đóng gói .exe cho người dùng
 
 **Lập:** 2026-07-17 · **Theo:** `.claude/skills/mindful-test-design` (Risk-Based + "verify đừng đoán")
-**Chuẩn hành vi:** `platforms/apple/macos/` · **Luật tối cao:** `docs/tasks/AGENT-BRIEF.md`
+**Chuẩn hành vi:** `platforms/apple/macos/` · **Luật tối cao:** `docs/01-intent.md`
 
 > ⚠️ **Vì sao tài liệu này tồn tại:** máy dev là macOS. CI `windows-latest` chỉ chứng minh
 > **compile + link** — nó KHÔNG chứng minh gõ ra đúng chữ, không chứng minh popup hiện đúng chỗ,

@@ -143,7 +143,7 @@ Ra asset ở `release-out/`. Kiểm nhanh: mount thử `.dmg`, `codesign -dv` (n
 - `docs/README.md` — mục lục 7 tầng tài liệu (intent · features · decisions · contracts ·
   conventions · operations · glossary).
 - `docs/01-intent.md` — tầng ý định: lý do tồn tại + điều bất khả xâm phạm (nhận diện/pháp lý/riêng tư).
-- `docs/tasks/AGENT-BRIEF.md` — Hiến chương bản gốc, giữ làm nguồn lịch sử (code comment trỏ theo §).
+- `docs/tasks/AGENT-BRIEF.md` — brief lịch sử, **không phải nguồn luật** (hiến chương là `docs/01-intent.md`). Giữ làm bối cảnh; code comment trỏ theo §.
 - `docs/tasks/OPENKEY-MAP.md` — bản đồ code engine gốc theo dòng số cụ thể.
 - `docs/tasks/TEST_MATRIX.md` — sổ hành vi→bằng chứng (Engine/macOS/Windows/E2E).
 - `docs/tasks/RELEASE.md` — checklist release thật, chi tiết hơn phần CI/CD ở trên.

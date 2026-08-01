@@ -19,7 +19,7 @@
 3. **CẤM sửa `core/`** để vá lỗi riêng Windows. Lỗi vỏ Windows sửa trong `WIN/`. Nếu thấy phải đụng
    `core/` → DỪNG, hỏi chủ dự án.
 4. **CẤM chạm nhận diện**: không thêm đèn đỏ/xanh cho cảm xúc, mặt cười, streak/điểm/huy hiệu, copy
-   khiển trách. Mơ hồ → HIẾN CHƯƠNG (`docs/tasks/AGENT-BRIEF.md`) là tối cao, hỏi chủ dự án.
+   khiển trách. Mơ hồ → hiến chương (`docs/01-intent.md`) là tối cao, hỏi chủ dự án.
 5. **Bám STYLE code sẵn có.** Việc "cho nút bấm được" = **chép y hệt mẫu khối `WM_LBUTTONUP` của
    tab 2** (`MainControlDialog.cpp:531-564`): dựng lại RECT giống hệt nhánh `WM_PAINT`, dùng điểm
    chuột thật `pt`, `PtInRect`/helper, rồi `InvalidateRect(hDlg, NULL, FALSE)`.

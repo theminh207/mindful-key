@@ -1,3 +1,29 @@
+> # ⚠️ NGUỒN NUÔI SÓNG ĐÃ ĐỔI — 2026-07-26
+>
+> **Hình học sóng ở đây vẫn đúng và vẫn dùng. Nguồn nuôi nó thì không.**
+>
+> Tài liệu này mô tả con sóng được nuôi bằng **send-risk** — điểm chấm từ việc **đọc nội dung** câu
+> vừa gõ. Sản phẩm đã bỏ hẳn hướng đó. Biên độ sóng nay lấy từ **nhịp gõ (CPM)**.
+>
+> | Phần | Còn đúng? |
+> |---|---|
+> | §1 bốn tầng · §2 chấm điểm lexicon · §5 núm Độ nhạy · §7 hướng cải thiện lexicon | ❌ **Chết theo mô hình cũ.** §7 (luật phủ định, trạng từ cường độ) sẽ **không bao giờ** được làm — hiến chương §5 liệt model sentiment là non-goal |
+> | §3 gom mẫu và vẽ | ⚠️ **Nửa sống.** *Cách* gom (một mẫu mỗi nhịp, không gõ thì không ghi) và *cách vẽ* giữ nguyên. Nhưng câu *"ghi 1 mẫu = trung bình **risk**"* là **phần nguồn** — phải đổi thành trung bình CPM. Chờ Q4 chốt công thức |
+> | §4 kho câu chữ | ⚠️ **Nửa sống.** Khung câu chữ giữ; nhưng định nghĩa *"buổi có gợn"* dựa vào ngưỡng đến từ §5 (núm Độ nhạy) — mà §5 đã chết. Ngưỡng mới là ngưỡng chuông người dùng đặt |
+> | §6 điểm mù | ⚠️ **Phần lớn chết.** 5/6 mục (phủ định · cường độ · mỉa mai · vốn từ mỏng · hai bản từ điển trôi lệch) đều là điểm mù **của lexicon** → chết theo mô hình cũ. Chỉ còn đúng: bộ gõ tắt, ô mật khẩu. Mục *"chỉ thấy khi gõ tiếng Việt"* hết áp dụng — đếm nhịp phím không phân biệt chế độ gõ |
+> | §8 hướng dẫn đọc đồ thị | 🔄 **Đã viết lại trong chính PR này** (issue #5) — bản cũ mô tả biên độ theo từ ngữ và theo trạng thái tâm, cả hai đều vi phạm mô hình mới |
+> | §9 luật cập nhật | ✅ **Giữ nguyên** |
+>
+> **Nguồn mới:** `core/mood/TypingCadence` → CPM → biên độ `[0,1]`. Công thức quy đổi CPM sang biên
+> độ **chưa chốt** — đó là câu hỏi **Q4** ở
+> [`spec/typing-cadence-bell/README.md`](../../spec/typing-cadence-bell/README.md) §5, chặn issue #8.
+> Đừng tự chọn công thức khi làm việc khác; hỏi chủ dự án.
+>
+> Ngưỡng gác cổng nhắc ở §5 (`kBreathingPauseRiskThreshold`, `core/mood/BreathingPause.cpp`) thuộc
+> về tính năng đã bị bỏ — gỡ ở issue #12.
+
+---
+
 # MOOD-WAVE-MECHANISM — cơ chế sóng cảm xúc hiện tại (macOS)
 
 > Tài liệu "một chỗ" mô tả **đúng những gì đang chạy** (đối chiếu code 2026-07-16), để chủ dự án
@@ -138,21 +164,42 @@ Trình tự đề nghị: **#0 → #1 → #2 → #3** (mỗi bước một commi
 
 ## 8. Hướng dẫn đọc đồ thị dòng sông (Dành cho người dùng)
 
-Dòng sông cảm xúc là một công cụ phản chiếu (gương soi tâm trí), không phải là công cụ chấm điểm. Dưới đây là cách đọc các tín hiệu trên dòng sông:
+Dòng sông nhịp gõ là một công cụ phản chiếu, không phải công cụ chấm điểm — nó vẽ lại **phép đo**, để bạn tự đối chiếu. Dưới đây là cách đọc các tín hiệu trên dòng sông:
 
 ### Phân biệt loại dữ liệu qua Hình dạng (Không đổi màu)
 Toàn bộ dòng sông luôn giữ nguyên màu Teal trung tính. Ứng dụng không dùng màu Đỏ (nguy hiểm) hay Xanh (an toàn) để tránh việc phán xét cảm xúc của bạn là "tốt" hay "xấu".
 - **Chấm ĐẶC (Tô kín):** Là những nhịp lấy mẫu **tự động** của hệ thống trong lúc bạn đang gõ phím.
 - **Vòng RỖNG (Khoảng trắng ở giữa):** Là những lần **bạn tự đánh giá** (Tự thuật) qua khung "Mặt hồ đang thế nào?" xuất hiện 45 giây sau mỗi tiếng chuông. 
-- *Mục đích:* Giúp bạn đối chiếu giữa những gì cơ thể/bàn phím đang thể hiện (chấm đặc) với những gì bạn thực sự nhận thức được về bản thân (vòng rỗng).
+- *Mục đích:* Giúp bạn đối chiếu giữa **nhịp tay đo được** (chấm đặc) với những gì bạn tự nhận thấy về mình (vòng rỗng). Hai thứ lệch nhau là chuyện bình thường — nhịp gõ không phải thước đo tâm trạng.
 
 ### Ý nghĩa của Cơn sóng (Biên độ)
-Trục dọc của đồ thị đại diện cho **Biên độ dao động** (sự xáo động của mặt nước):
-- **Phẳng lặng (Nằm sát trục giữa):** Bạn đang gõ phím thư giãn, từ tốn, dùng từ ngữ ôn hòa, hoặc bạn vừa tự đánh giá mình đang "Phẳng lặng" (Biên độ ~0.12).
-- **Gợn nhẹ:** Tâm trí bắt đầu có sự xáo động nhẹ (Biên độ ~0.45).
-- **Gợn sóng / Dậy sóng (Nằm cách xa trục giữa nhất):** Bạn đang gõ phím rất mạnh, nhanh, dùng phím xóa liên tục hoặc sử dụng các từ ngữ mang cảm xúc mạnh, tiêu cực. Sóng lúc này sẽ vút lên cao (hoặc chìm xuống sâu) tạo thành một cơn sóng lớn (Biên độ ~0.80).
 
-**Lưu ý quan trọng:** Cơn sóng lượn lên đỉnh hay lượn xuống đáy chỉ là nét vẽ hình sin theo thời gian. Điều bạn cần quan tâm là **khoảng cách từ điểm đó tới đường đứt nét ở giữa**. Càng xa trung tâm nghĩa là mặt hồ càng xáo động.
+> ⚠️ **Đoạn này đã viết lại 2026-08-01 (issue #5).** Bản cũ mô tả biên độ theo *"dùng từ ngữ ôn
+> hòa"* / *"từ ngữ mang cảm xúc mạnh, tiêu cực"* (giả định app đọc nội dung — nay không còn) và theo
+> *"tâm trí bắt đầu có sự xáo động"* — câu này **suy trạng thái tâm ra từ nội dung câu chữ**, tức vi
+> phạm hiến chương **§4.2** (*"không suy đoán gì từ chữ nghĩa"*). Biên độ nay mô tả **nhịp tay**.
+>
+> Nói cho chính xác: §4.1 **không** cấm ẩn dụ mặt hồ ↔ tâm — nó còn dùng chính ẩn dụ đó (*"mặt hồ
+> lặng ứng với tâm tĩnh, mặt hồ dậy sóng ứng với tâm động"*). Cái sai của bản cũ là **căn cứ** để
+> nói, không phải chữ "tâm".
+
+Trục dọc của đồ thị đại diện cho **Biên độ dao động** — đọc theo *khoảng cách tới đường giữa*, không
+theo lên hay xuống:
+
+- **Phẳng lặng** (sát trục giữa, biên độ ~0.12) — nhịp gõ chậm và đều, hoặc bạn vừa tự thuật rằng
+  mặt hồ đang phẳng lặng.
+- **Gợn nhẹ** (~0.45) — nhịp gõ nhanh hơn thường lệ một chút.
+- **Gợn sóng / Dậy sóng** (xa trục giữa nhất, ~0.80) — nhịp gõ nhanh, gần hoặc vượt ngưỡng bạn đặt.
+
+Ba mức trên mô tả **tốc độ tay bạn đang gõ** — không nói gì về tâm bạn. Nhịp nhanh có thể vì bạn
+đang chép chính tả, đang gõ lại một đoạn đã nghĩ xong, hoặc tay bạn vốn nhanh. Con sóng là **phép
+đo được vẽ ra**, không phải một lời nhận xét.
+
+> 🔧 **Chưa chốt:** công thức quy CPM về biên độ `[0,1]` là câu hỏi **Q4**, chặn issue #8. Ba con số
+> 0.12 / 0.45 / 0.80 ở trên là **mốc hình học đang dùng** (giữ được), không phải kết quả của một
+> công thức đã chốt. Đừng suy ra ngưỡng CPM từ chúng.
+
+**Lưu ý quan trọng:** Cơn sóng lượn lên đỉnh hay lượn xuống đáy chỉ là nét vẽ hình sin theo thời gian. Điều bạn cần quan tâm là **khoảng cách từ điểm đó tới đường đứt nét ở giữa**. Càng xa trung tâm nghĩa là **nhịp gõ lúc đó càng nhanh** — mặt hồ là cách vẽ phép đo, không phải lời nói về tâm bạn.
 
 ---
 

@@ -47,7 +47,7 @@ Mỗi OS có "ổ cắm" input method khác nhau — không có chuyện 1 code 
    ./prototype/test_engine       # xác nhận bộ não vẫn 5/5
    xcodebuild -project "OpenKey/Sources/OpenKey/macOS/OpenKey.xcodeproj" -scheme OpenKey -configuration Debug build
    ```
-2. UI cảm xúc (popup, tray, biểu đồ) được lắp ở tầng vỏ — logic quyết định "có nên cảnh báo không" đến từ MoodWatcher (xem skill `mood-sentiment-layer`), tầng vỏ chỉ chịu trách nhiệm "hiện lên màn hình như thế nào" theo đúng UI convention của OS đó.
+2. UI (tray, biểu đồ, màn soi lại) được lắp ở tầng vỏ — logic quyết định "có nên ngân chuông không" đến từ `core/mood/BellPolicy` (xem skill `typing-cadence-layer`), tầng vỏ chỉ chịu trách nhiệm cấp dấu thời gian phím vào, phát tiếng chuông ra, và "hiện lên màn hình như thế nào" theo đúng UI convention của OS đó. Cổng kiểm ô mật khẩu nằm ở tầng vỏ, **trước** lời gọi vào lớp nhịp (HĐ-4, fail-closed).
 3. **Gác cổng gửi tin (bước 5) đã implement** — `SendGatekeeperMac.h/.mm`, wire vào `OpenKeyCallback` (`OpenKey.mm`) ngay sau check "đừng xử lý sự kiện tự tạo". Cơ chế: bắt Enter/Return không Shift + allow-list bundle id (`com.vng.zalo`, `com.hnc.Discord` đã xác minh) thay vì AX semantic "tìm nút Gửi". Khi mở rộng allow-list cho app mới, LUÔN xác minh bundle id thật bằng `defaults read <app>/Contents/Info.plist CFBundleIdentifier`, đừng đoán theo trí nhớ. Chi tiết + hạn chế đã biết: `docs/tasks/BREATHING-PAUSE-CONTRACT.md`.
 4. Trước khi kết luận lỗi do 1 OS gây ra, cô lập bằng demo tối thiểu trong `prototype/` — nếu lỗi thực ra nằm ở engine dùng chung, chuyển sang skill `openkey-engine`, không tự sửa ở vỏ.
 

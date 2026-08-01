@@ -23,7 +23,7 @@ Engine biết chính xác lúc "một từ vừa gõ xong" qua `startNewSession(
 - `win32/OpenKey.cpp:368, 413, 639, 690`
 - `macOS/OpenKey.mm:214, 493, 541, 783`
 
-Callback dùng chung đã cắm: `vOnWordCommitted` (khai báo trong `Engine.h`, mặc định `nullptr` — không đổi hành vi gõ khi không ai đăng ký nghe). Bắn ngay trước/sau `startNewSession()`, dùng `getCharacterCode()` + `wideStringToUtf8()` để đổi keycode → chữ Unicode thật. Đây là chỗ cắm cho lớp cảm xúc (xem skill `mood-sentiment-layer`).
+Callback dùng chung đã cắm: `vOnWordCommitted` (khai báo trong `Engine.h`, mặc định `nullptr` — không đổi hành vi gõ khi không ai đăng ký nghe). Bắn ngay trước/sau `startNewSession()`, dùng `getCharacterCode()` + `wideStringToUtf8()` để đổi keycode → chữ Unicode thật. **Lớp đo nhịp gõ KHÔNG dùng callback này** — nó nuôi từ hook bàn phím của từng vỏ, từng phím một, để không nhận chuỗi ký tự nào (`docs/04-contracts.md` HĐ-1; quyết định Q3, 2026-08-01). Xem skill `typing-cadence-layer`. Callback vẫn còn cho các nơi tiêu thụ khác; phạm vi thu hẹp dần tới khi #13 gỡ nhánh đọc cảm xúc.
 
 ## Quy trình bắt buộc khi sửa engine/
 1. Đọc kỹ đoạn code liên quan trước khi sửa — engine đang chạy thật và ổn định, không "cải tiến" khi không được yêu cầu.

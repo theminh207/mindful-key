@@ -8,7 +8,7 @@
 | **Bắt đầu** | 2026-07-26 |
 | **Hiến chương** | [`docs/01-intent.md`](../../docs/01-intent.md) — luật tối cao, đã sửa |
 | **Issue** | [#3 → #18](https://github.com/theminh207/mindful-key/issues) trên GitHub |
-| **Trạng thái** | Phase 0 đang chạy — #3 #4 xong, #5 tiếp theo |
+| **Trạng thái** | **Phase 0 xong** (#3 #4 #5) — Phase 1 (#6 `TypingCadence`) tiếp theo |
 
 ---
 
@@ -54,7 +54,7 @@ Trạng thái: `⬜ chưa bắt đầu` · `🔄 đang làm` · `✅ xong` · `�
 |---|---|---|---|---|
 | ✅ | [#3](https://github.com/theminh207/mindful-key/issues/3) | ADR "đo nhịp gõ thay đọc cảm xúc" + 5 ADR cũ bị thay thế, ADR-0009 gỡ → ADR-0014 | — | @phatnguyen-neurond |
 | ✅ | [#4](https://github.com/theminh207/mindful-key/issues/4) | Đồng bộ tầng 02/04/06/07 theo vòng lặp mới | #3 | @phatnguyen-neurond |
-| ⬜ | [#5](https://github.com/theminh207/mindful-key/issues/5) | Đồng bộ `docs/tasks/` + harness `.claude/` | #3 | |
+| ✅ | [#5](https://github.com/theminh207/mindful-key/issues/5) | Đồng bộ `docs/tasks/` + harness `.claude/` | #3 | @phatnguyen-neurond |
 
 ### Phase 1 — Bộ não C++ (`core/`)
 
@@ -124,6 +124,12 @@ Chưa chốt thì **đừng tự quyết trong im lặng** — hỏi chủ dự 
   Hai lý do độc lập: chuông reo giữa lúc gõ mật khẩu là quấy rầy thuần tuý; và chuỗi thời điểm bấm
   phím lúc nhập mật khẩu là dữ liệu nhạy cảm, không thu thập là cách duy nhất chắc chắn không rò.
   Thành hợp đồng **HĐ-4** ở `docs/04-contracts.md`.
+- 2026-08-01 *(ở #5)* — **Khôi phục 4 file `.claude/agents/`** thay vì để chúng bị xoá. Tree bàn
+  giao có cả 4 bị xoá (chưa commit), nhưng `mindful-keyboard-harness/SKILL.md` bước 2 **bắt buộc**
+  đọc `.claude/agents/{name}.md` để lấy vai trò khi `subagent_type` không tự nhận diện, và 3 chỗ
+  khác cũng trỏ tới — xoá là gãy harness. Giữ tên `mood-layer-agent`, chỉ viết lại mandate theo đo
+  nhịp. Ngược lại, `.claude/rules-archive/` (7 file) **giữ nguyên việc xoá**: grep toàn repo không
+  ai trỏ tới.
 - 2026-08-01 *(ở #5)* — Skill `.claude/skills/mood-sentiment-layer/` **đổi tên thành
   `typing-cadence-layer`**, viết lại toàn bộ mandate theo đo nhịp, thay vì gỡ hẳn. Giữ chỗ đứng của
   lớp này trong bảng 4 chuyên gia để `mood-layer-agent` còn skill chuyên biệt để trỏ tới. Thi công

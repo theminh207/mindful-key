@@ -19,10 +19,38 @@
 
 Ký hiệu ô: `✅` có bằng chứng · `⚠️` một phần/gián tiếp · `❌` cần mà chưa có · `—` không áp dụng.
 
-## Bảng
+## 🔄 Đợt chuyển mô hình 2026-07-26 — đọc trước khi tra bảng
+
+Sản phẩm đã bỏ **đọc cảm xúc** và **gác cổng gửi tin**, chuyển sang **đo nhịp gõ → chuông**
+([ADR-0013](../03-decisions/ADR-0013-do-nhip-go-thay-doc-cam-xuc.md)). Bảng dưới còn nhiều hàng của
+mô hình cũ. Đọc theo hai luật sau:
+
+**1. Hàng mô hình cũ chưa đổi sang `retired` — vì code vẫn còn và vẫn chạy.** Mọi hàng nhắc
+`send-risk` · `SendRiskAnalyzer` · `MoodBuffer` · gác cổng · nhịp thở · `BreathingPause` đều thuộc
+tính năng nay là **non-goal** ([`docs/01-intent.md`](../01-intent.md) §5). Chúng sẽ chuyển sang
+`retired` **khi code bị gỡ thật**: issue #12 (gác cổng) và #13 (đọc cảm xúc). Đổi trạng thái trước
+khi gỡ code là nói dối theo hướng ngược lại — `test_send_risk` hôm nay vẫn chạy và vẫn xanh trong
+`make test-core`.
+
+> Luật *"không xóa dòng"* ở §"Khi nào cập nhật file này" vẫn nguyên hiệu lực. Issue #5 viết *"gỡ các
+> hàng ca test send-risk"*, nhưng luật của chính file này là **đổi trạng thái, giữ vết** — luật của
+> file thắng. Ghi ở `FRICTION-LOG.md` 2026-08-01.
+
+**2. Hàng mô hình mới đã thêm bên dưới với trạng thái thật: `planned`, bằng chứng `none`.** Chưa có
+dòng code nào — đừng đọc thành đã làm.
 
 | Hành vi | Engine | macOS | E2E | Bằng chứng | Trạng thái |
 |---|---|---|---|---|---|
+| **[NHỊP GÕ] `core/mood/TypingCadence` — đếm dấu thời gian phím → CPM trên cửa sổ trượt 30 giây** | ❌ | — | — | none — chưa có file. Ca kiểm phải phủ: cửa sổ trượt đúng 30s, CPM=0 khi không gõ, đồng hồ nhảy lùi không làm âm/vô lý, O(1) không cấp phát | planned (#6) |
+| **[NHỊP GÕ] Lớp nhịp gõ KHÔNG nhận tham số chuỗi (HĐ-1)** | ❌ | — | — | none — cưỡng chế bằng `grep -rnE "(wstring\|string\|char\s*\*\|NSString).*\b(Cadence\|BellPolicy)\b" core/mood/` phải rỗng. Nên thành cổng CI, không chỉ ca kiểm | planned (#6) |
+| **[NHỊP GÕ] `core/mood/BellPolicy` — ngưỡng + khoảng lặng, MỘT bản dùng chung 3 vỏ** | ❌ | — | — | none — ca kiểm phải phủ: vượt ngưỡng thì ngân, còn cooldown thì không ngân và **không dồn ngân bù**, 4 mức ngưỡng, mức "Tắt chuông" | planned (#7) |
+| **[NHỊP GÕ] Biên độ con sóng lấy nguồn từ CPM thay vì send-risk** | ❌ | ❌ | — | none — **chặn bởi Q4** (công thức quy CPM→biên độ chưa chốt) | planned (#8) |
+| **[NHỊP GÕ] macOS: nối nhịp gõ vào mạch chuông** | — | ❌ | ❌ | none | planned (#9) |
+| **[NHỊP GÕ] macOS: cổng kiểm ô mật khẩu trước khi đếm nhịp (HĐ-4, fail-closed)** | — | ❌ | ❌ | none — **macOS hiện CHƯA có cổng này**; Windows có (`MoodWatch.cpp`), iOS có (audit tĩnh). Đây là lỗ hổng riêng tư có thật, không phải việc mới | planned (#9) |
+| **[NHỊP GÕ] Người dùng chọn ngưỡng (4 mức, hiện kèm số CPM)** | — | ❌ | ❌ | none | planned (#10 macOS · #16 Windows · #18 iOS) |
+| **[NHỊP GÕ] Kho ghi số lần chuông theo schema mới + màn soi lại** | — | ❌ | ❌ | none — schema cũ còn cột `send_risk`, chết theo mô hình mới | planned (#11) |
+| **[NHỊP GÕ] Windows: nối nhịp gõ vào `Bell.cpp` + icon khay** | — | — | ❌ | none | planned (#15) |
+| **[NHỊP GÕ] iOS: đo nhịp trong keyboard extension + phát được tiếng chuông** | — | — | ❌ | none — **cần nghe-verify tay trên iPhone thật**, Simulator không dựng được custom keyboard. Research đã xác nhận `AudioServicesPlaySystemSound` chạy được (cần Full Access, đã bật sẵn) | planned (#17) |
 | Gõ Telex → Unicode, bỏ dấu cơ bản | ✅ | — | — | `tests/core/test_engine` 5 case (`make test-core`) | implemented *(chỉ unit)* |
 | Ghép vần / luật bỏ dấu nâng cao (`Vietnamese.cpp`) | ⚠️ | — | — | gián tiếp qua 5 case, chưa có case riêng | planned |
 | Tự đổi Việt/Anh theo app (`SmartSwitchKey`) | ❌ | ❌ | — | none | planned |

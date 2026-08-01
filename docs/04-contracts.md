@@ -107,8 +107,10 @@ chuỗi thời điểm bấm phím  →  CPM (số thực, ký tự mỗi phút)
 ```
 
 Đơn vị là *"tay đang chạy nhanh tới đâu"*, **không phải** suy đoán gì về tâm người gõ. Con số này
-mô tả một sự việc quan sát được; mọi diễn giải về trạng thái tâm nằm ngoài hợp đồng và bị
-[tầng Intent §4.1](01-intent.md) cấm đưa vào câu chữ.
+mô tả một sự việc quan sát được. Mọi diễn giải **suy trạng thái tâm ra từ nội dung** nằm ngoài hợp
+đồng và bị [tầng Intent §4.2](01-intent.md) cấm (*"không suy đoán gì từ chữ nghĩa"*). Ẩn dụ mặt hồ ↔
+tâm thì **được phép** — §4.1 dùng chính nó; cái bị cấm là lấy phép đo nhịp làm **kết luận** về người
+gõ, và 4 thứ §4.1 liệt kê (đèn đỏ/xanh · emoji chấm điểm · gamification · copy khiển trách).
 
 Ba tham số của phép đo, chốt ở [ADR-0013](03-decisions/ADR-0013-do-nhip-go-thay-doc-cam-xuc.md):
 

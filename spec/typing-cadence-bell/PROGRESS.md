@@ -17,6 +17,116 @@
 
 ---
 
+## 2026-08-01 — #5 Đồng bộ docs/tasks + harness .claude
+
+**Làm gì:**
+
+*Harness `.claude/`* — skill `mood-sentiment-layer` → **`typing-cadence-layer`**, viết lại toàn bộ
+mandate (luồng dữ liệu mới, 4 luật không được phá, bảng "thứ đã chết đừng sinh lại"). `mood-layer-agent`
+đổi mandate từ "lớp cảm xúc" sang "lớp đo nhịp gõ + chuông tỉnh thức". `mindful-keyboard-harness/SKILL.md`
+cập nhật bảng 4 chuyên gia + luật định tuyến. `CLAUDE.md` cập nhật bảng harness và **tạo mới bảng
+"Lịch sử thay đổi harness"** — bảng này được `SKILL.md` bước 6 viện dẫn nhưng trước giờ **chưa từng
+tồn tại**.
+
+*`docs/tasks/`* — `PRD.md` viết lại theo `Measure → Bell → Reflect` (định vị, vòng lặp, non-goals,
+metrics, riêng tư, phạm vi kỹ thuật). `PRIVACY-NOTE.md` viết lại mạnh hơn hẳn: lời hứa từ *"có đọc
+nhưng không lưu"* thành ***"không đọc"***, kèm câu chốt *"không cần tin lời hứa suông — kiểm chứng
+được bằng cách đọc mã nguồn"* trỏ vào HĐ-1. `SEND-RISK-MODEL-SPEC.md` + `BREATHING-PAUSE-CONTRACT.md`
+gắn banner **⛔ LỖI THỜI** ở đầu (giữ file, không xoá lịch sử). `MOOD-WAVE-MECHANISM.md` gắn banner
+bảng-phân-loại nói rõ phần nào chết / phần nào giữ, và **viết lại đoạn §8 hướng dẫn đọc đồ thị** —
+đoạn cũ mô tả biên độ theo *"dùng từ ngữ ôn hòa / tiêu cực"* (giả định đọc nội dung) và *"tâm trí bắt
+đầu xáo động"* (suy trạng thái tâm ra từ **nội dung** — hiến chương **§4.2** cấm: *"không suy đoán
+gì từ chữ nghĩa"*; §4.1 thì **không** cấm ẩn dụ mặt hồ ↔ tâm, nó còn dùng chính ẩn dụ đó). `AGENT-BRIEF.md` sửa dòng định vị.
+`TEST_MATRIX.md` thêm khối mở đầu + **10 hàng mô hình mới**.
+
+**Chốt được:**
+- **Khôi phục 4 agent** thay vì để xoá. `.claude/agents/` bị xoá sạch trong tree bàn giao, nhưng
+  `SKILL.md` dòng 41 **bắt buộc** đọc `.claude/agents/{name}.md`, và 3 chỗ khác cũng trỏ tới. Hỏi
+  chủ dự án → khôi phục, giữ tên `mood-layer-agent`, viết lại mandate.
+- **`.claude/rules-archive/` giữ nguyên việc xoá** — grep toàn repo: **không ai trỏ tới**.
+- **`.claude/settings.json`** (bỏ `Bash(git push:*)` khỏi ask-list) giữ, đi kèm PR này — chủ dự án
+  chốt, ghi rõ là ngoài phạm vi có chủ đích.
+
+**Phải đoán:** hai chỗ, đã ghi `FRICTION-LOG.md`.
+1. **`TEST_MATRIX.md`: issue bảo "gỡ hàng", luật của chính file bảo "giữ vết".** Mục "Khi nào cập
+   nhật file này" viết: *"Bỏ một hành vi → đổi Trạng thái sang `retired`, **không xóa dòng**"*.
+   **Luật của file thắng.** Và còn một tầng nữa: cũng **chưa** đổi sang `retired` bây giờ, vì
+   `test_send_risk` hôm nay **vẫn chạy và vẫn xanh** — đổi trạng thái trước khi gỡ code là nói dối
+   theo hướng ngược lại. Chuyển `retired` ở #12/#13 khi code biến mất thật.
+2. **FRICTION-LOG không phải changelog.** Issue bảo *"ghi 1 mục ngày đổi mô hình + lý do, để người
+   sau hiểu vì sao code cũ biến mất"*. Nhưng file này tự khai là danh sách *"chỗ phải đoán"*, không
+   phải nhật ký thay đổi. Xử: lý do "vì sao code cũ biến mất" đặt vào **banner ⛔ LỖI THỜI** ngay đầu
+   hai file chết (đúng chỗ người đọc sẽ gặp nó) + `ADR-0013`; ba mục thêm vào FRICTION-LOG đều đúng
+   thể loại "chỗ phải đoán" thật.
+
+**Vòng review bắt được 4 lỗi chặn — đã sửa hết:**
+1. **`CONTRIBUTING.md:28` còn trỏ tới skill đã xoá.** Tui grep `mood-sentiment-layer` **chỉ trong
+   `.claude/`** rồi tuyên bố "sạch" — grep hẹp hơn phạm vi thật. Grep toàn repo ra 6 kết quả, 5 hợp
+   lệ (bảng lịch sử, PROGRESS, README, file đã gắn banner lỗi thời) và **1 sai**: dòng đang chỉ
+   người đóng góp mới tới một skill không còn tồn tại. **Bài học: grep phạm vi hẹp rồi kết luận
+   "sạch" là tự lừa.**
+2. **Banner `MOOD-WAVE-MECHANISM.md` tự mâu thuẫn.** Xếp §3 và §4 vào nhóm "✅ giữ nguyên — không
+   phụ thuộc nguồn", nhưng §3 viết *"ghi 1 mẫu = trung bình **risk**"* (đúng là phần nguồn, đúng thứ
+   issue giao viết lại) và §4 định nghĩa "buổi có gợn" bằng ngưỡng đến từ §5 — mà chính bảng xếp §5
+   vào nhóm chết. Xếp cả §8 vào "giữ nguyên" trong khi **chính PR này viết lại §8**. Tách lại thành
+   ❌ / ⚠️ nửa-sống / 🔄 đã-viết-lại / ✅.
+3. **`CLAUDE.md:5` sửa ngoài phạm vi mà không khai.** Tree bàn giao gỡ mệnh đề trỏ về
+   `docs/tasks/AGENT-BRIEF.md` khỏi dòng hiến chương; tui để nguyên và chỉ khai `settings.json` là
+   ngoài phạm vi. Hệ quả: `AGENT-BRIEF.md` vẫn **tự xưng là hiến chương** trong khi CLAUDE.md đã trỏ
+   luật tối cao sang `docs/01-intent.md` → hai file cùng nhận vai luật tối cao. Xử: **hạ cấp
+   AGENT-BRIEF** thành "bản brief đầy đủ có bối cảnh lịch sử, không phải nguồn luật", kèm câu phân
+   xử "hai bên mâu thuẫn → `docs/01-intent.md` đúng".
+4. **`AGENT-BRIEF.md:41` copy mẫu là *"Hơi thở đang ngắn"*.** Sản phẩm không đo hơi thở và sẽ không —
+   tàn dư mô hình nhịp thở. Đổi thành *"Nhịp gõ vượt mức bạn đặt"*.
+
+Sửa thêm 3 chỗ nhỏ: phạm vi hợp đồng ghi "HĐ-1 → HĐ-4" trong skill và agent nhưng chính hai file đó
+viện dẫn HĐ-6 và HĐ-8 → ghi rõ; thêm mục "khôi phục 4 agent" vào §5 "Đã chốt" (session sau cần biết);
+`settings.json` thừa khoảng trắng sau `[`.
+
+**Vòng review 2 — thêm 2 lỗi chặn:**
+1. **`AGENT-BRIEF.md:1` H1 vẫn là "(HIẾN CHƯƠNG)"**, mâu thuẫn thẳng với banner ngay dưới nó. Sửa
+   banner mà quên tiêu đề — mà tiêu đề mới là dòng người ta nhìn đầu tiên.
+2. **`MOOD-WAVE-MECHANISM.md` §8 đoạn "Lưu ý quan trọng" vẫn nói *"mặt hồ càng xáo động"***, mâu
+   thuẫn với câu mới cách đó 6 dòng (*"không nói gì về tâm bạn"*). Vòng trước tui viết lại **danh
+   sách gạch đầu dòng** nhưng bỏ sót **đoạn văn ngay dưới nó**.
+
+**Vòng review 3 — bài học đáng ghi nhất của cả issue này:**
+
+Vòng 2 tui tự phát hiện mình **trích sai hiến chương**: viết *"'tâm trí xáo động' — phán xét trạng
+thái tâm, hiến chương §4.1 cấm"*. §4.1 **không** cấm điều đó — nó còn dùng chính ẩn dụ *"mặt hồ dậy
+sóng ứng với tâm động"*, và phần cấm tuyệt đối của nó liệt 4 thứ (đèn đỏ/xanh · emoji chấm điểm ·
+gamification · copy khiển trách). §4.1 **có** một phép tự kiểm phạm vi rộng (*"đang mô tả hay đang
+phán xét?"*) nên lời trích cũ **quá rộng chứ không hoàn toàn vô căn cứ**. Nhưng căn cứ chuẩn xác là
+**§4.2** (*"không suy đoán gì từ chữ nghĩa"*) — cái sai của bản cũ là **căn cứ để nói**, không phải
+chữ "tâm".
+
+Nhưng vòng 3 bắt được: tui sửa lời trích đó ở `MOOD-WAVE-MECHANISM.md` mà **để nguyên chính lời
+trích sai ấy ở `PROGRESS.md:38`** — cùng một PR, một chỗ đính chính, một chỗ vẫn sai. Và tìm ra
+**bản sao thứ ba ở `docs/04-contracts.md`** — tầng hợp đồng, trọng lượng quy phạm cao hơn `docs/tasks/`
+— cũng viện dẫn §4.1 quá rộng (do chính PR #4 của tui viết). Đã sửa cả ba, cộng `AGENTS.md:146` còn
+gọi `AGENT-BRIEF.md` là *"Hiến chương bản gốc"*, và hai câu ở §8 (*"gương soi tâm trí"*, *"những gì
+cơ thể đang thể hiện"*) vẫn suy trạng thái người từ phép đo.
+
+**Bài học:** trong một repo lấy hiến chương làm luật tối cao, **trích sai hiến chương là lỗi nặng
+hơn lỗi câu chữ** — nó tạo ra luật giả. Và khi phát hiện một lời trích sai, phải `grep` **mọi bản
+sao của nó** rồi sửa cùng lượt, chứ không sửa đúng chỗ vừa nhìn thấy. Đây là lần thứ hai trong cùng
+issue tui mắc lỗi "sửa chỗ nhìn thấy, sót chỗ còn lại" (lần đầu: grep `mood-sentiment-layer` chỉ
+trong `.claude/`).
+
+**Kiểm chứng:** `brand_lint.py` 0 vi phạm cứng. PR thuần tài liệu + harness, không đụng `core/` hay
+`platforms/`.
+
+**Còn hở:**
+- `docs/tasks/` còn nhiều file khác nhắc mô hình cũ (`OPENKEY-MAP.md`, `QA-WINDOWS.md`,
+  `WINDOWS-PARITY-TASKS.md`, `BRAND-ASSETS.md`…) — **issue #5 không liệt kê**, không đụng phần nội
+  dung. Để #14 nhặt khi rà câu chữ toàn cục. **Ngoại lệ đã xử ngay:** 3 file
+  (`ROADMAP-WINDOWS.md`, `QA-WINDOWS.md`, `WINDOWS-PARITY-TASKS.md`) trỏ `AGENT-BRIEF.md` là *"luật
+  tối cao"* — đó là orphan **do chính PR này tạo ra** khi hạ cấp AGENT-BRIEF, nên dọn luôn theo luật
+  surgical, trỏ sang `docs/01-intent.md`.
+- `bmad-output/` (tài liệu BMAD cũ) chưa rà — ngoài phạm vi, và bản thân nó tự khai là archival.
+
+---
+
 ## 2026-08-01 — #4 Đồng bộ tầng 02/04/06/07 theo vòng lặp Measure → Bell → Reflect
 
 **Làm gì:** Viết lại `04-contracts.md` từ 6 lên 8 hợp đồng — **gỡ 1** (HĐ nhịp thở, theo gác cổng),

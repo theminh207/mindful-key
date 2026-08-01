@@ -1,6 +1,6 @@
 ---
 name: ios-keyboard-extension
-description: Build/port bộ gõ chánh niệm sang iOS — Custom Keyboard Extension (App Extension), sống ở platforms/apple/ios/, test ở tests/ios/. PHẢI dùng khi việc nhắc tới bàn phím iOS, keyboard extension, App Group, Full Access, SwiftUI/UIKit trong khung bàn phím, hoặc "iOS làm được gì". Mandate cố ý HẸP (chốt 2026-07-10): nhật ký cảm xúc + nhắc chánh niệm thụ động, KHÔNG gác cổng gửi tin xuyên app (sandbox iOS chặn). KHÔNG dùng để sửa core/ (bộ não dùng chung) — lỗi riêng iOS sửa ở vỏ platforms/apple/ios/, không sửa engine.
+description: Build/port bộ gõ chánh niệm sang iOS — Custom Keyboard Extension (App Extension), sống ở platforms/apple/ios/, test ở tests/ios/. PHẢI dùng khi việc nhắc tới bàn phím iOS, keyboard extension, App Group, Full Access, SwiftUI/UIKit trong khung bàn phím, hoặc "iOS làm được gì". Mandate cố ý HẸP (chốt 2026-07-10, lý lẽ mới ở ADR-0014): đo nhịp gõ + chuông tỉnh thức + nhật ký, và CHỈ đo được khi người dùng đang dùng chính bàn phím mindful-key (sandbox iOS không cho thấy phím gõ toàn hệ thống). KHÔNG gác cổng gửi tin — nay là non-goal của cả sản phẩm, không riêng iOS. KHÔNG dùng để sửa core/ (bộ não dùng chung) — lỗi riêng iOS sửa ở vỏ platforms/apple/ios/, không sửa engine.
 ---
 
 # iOS Keyboard Extension
@@ -12,7 +12,7 @@ description: Build/port bộ gõ chánh niệm sang iOS — Custom Keyboard Exte
 ## Kiến trúc: 1 BỘ NÃO + N CÁI VỎ (iOS là vỏ thứ 5)
 ```
 core/engine   ← bộ não C++ dùng chung, KHÔNG đụng OS (xem skill openkey-engine)
-core/mood     ← gom câu + send-risk, dùng chung (xem skill mood-sentiment-layer)
+core/mood     ← đo nhịp gõ (CPM) + chính sách chuông, dùng chung (xem skill typing-cadence-layer)
 platforms/apple/macos   ← vỏ macOS (đã làm — CGEventTap, gác cổng đầy đủ)
 platforms/apple/ios     ← vỏ iOS  (chỗ này — Custom Keyboard Extension, sandbox)
 platforms/apple/shared  ← code Obj-C/Swift dùng chung 2 vỏ Apple
@@ -35,7 +35,7 @@ Keyboard extension của iOS sống trong sandbox rất chặt:
 1. **Chưa mở nhánh trước khi macOS ổn định** (Hiến chương). Kiểm `platforms/apple/ios/README.md` để biết trạng thái.
 2. **Scaffold qua XcodeGen, không sửa `.xcodeproj` tay.** Thêm target iOS extension + app chính vào `platforms/apple/project.yml` rồi `make generate` (`cd platforms/apple && xcodegen generate`). Đây là nguồn sự thật cấu hình project của repo con.
 3. **Smoke test bộ não trước** khi đụng vỏ: `make test-core` (`tests/core/test_engine` vẫn 5/5) — xác nhận chưa đụng nhầm bộ não dùng chung.
-4. **Wire bộ não vào extension:** gọi `vKeyHandleEvent()` (cửa duy nhất vào `core/engine`) từ `UIInputViewController`; nghe `vOnWordCommitted` → đẩy vào MoodBuffer (`core/mood`). Logic quyết định "đọc cảm xúc thế nào" đến từ MoodWatcher (skill `mood-sentiment-layer`); vỏ iOS chỉ lo "hiện lên khung bàn phím thế nào".
+4. **Wire bộ não vào extension:** gọi `vKeyHandleEvent()` (cửa duy nhất vào `core/engine`) từ `UIInputViewController`. Lớp nhịp gõ nuôi từ **chính chỗ nhận phím của extension** (`insertText`/`deleteBackward`) bằng dấu thời gian — **không** qua `vOnWordCommitted`, để không chuỗi ký tự nào đi vào `core/mood` (HĐ-1). Logic quyết định "có ngân chuông không" đến từ `BellPolicy` (skill `typing-cadence-layer`); vỏ iOS chỉ lo cấp dấu thời gian, phát tiếng, và "hiện lên khung bàn phím thế nào".
 5. **Test riêng iOS** ở `tests/ios/` (`make test-ios` — hiện no-op, dựng test thật khi có code). KHÔNG đụng `tests/core/`.
 6. Nghi lỗi ở bộ não dùng chung → chuyển `openkey-engine`/`engine-agent`, KHÔNG tự sửa `core/`.
 
