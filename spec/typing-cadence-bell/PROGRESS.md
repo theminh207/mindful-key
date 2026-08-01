@@ -86,6 +86,37 @@ Dựng cổng đó lòi ra **hai lỗi trong chính hợp đồng tui viết ở
    an toàn giả. Và cách duy nhất biết một cổng có chạy không là **tiêm vi phạm giả vào rồi xem nó
    có đỏ**; thấy nó xanh trên code sạch không chứng minh được gì.
 
+**Vòng review 4 — giới hạn KHÁI NIỆM, không phải lỗi vặt:**
+
+```cpp
+void noteChar(int codePoint);   // cổng XANH
+```
+
+`int` nằm trong allowlist, mà `int` thừa sức chở một codepoint Unicode. Tức allowlist **kiểu vô
+hướng** chỉ chứng minh *"không có kiểu hình dạng chuỗi"*, **không** chứng minh *"không nội dung nào
+vào"* — đúng điều HĐ-1 tuyên. Comment trong chính script tự khẳng định sai: *"không kiểu nào chở
+nổi một ký tự"*. Và đường gọi đó chính là đường thiết kế đã chốt (*"vỏ gọi từ hook, từng phím
+một"*) — chỉ cần thêm một tham số vào lời gọi có sẵn.
+
+Cộng ba lỗ cùng họ: `.hpp`/`.hh`/`.inl`/`.mm` vô hình (chỉ nhận `.h`/`.cpp`); **thư mục con** vô
+hình (`os.listdir` không đệ quy); biến thành viên trong `.h` (`int _typed[4096]`) không ai canh.
+
+**Xử — thêm lưới thứ ba: ghim bề mặt khai báo** (`scripts/hd1_pinned_api.txt`). Cách này khớp sẵn
+với một thứ **đã có**: HĐ-3 tuyên chữ ký lớp nhịp gõ là **hợp đồng đóng băng**. File ghim biến lời
+tuyên đó thành thứ kiểm được bằng máy — thêm *bất kỳ* tham số nào, kiểu gì, hay thêm một biến thành
+viên, đều đỏ cho tới khi có người chạy `--update-pin` và giải trình trong PR. Đổi `os.listdir` →
+`os.walk`, nới bộ đuôi.
+
+Kiểm lại: `noteChar(int)` · `noteChar2(int64_t)` · `int* typedChars()` · `int _typed[4096]` ·
+`std::array<int,1024>` · `ContentTap.hpp` · `core/mood/tap/ContentTap.h` — **tất cả nay đỏ**. Ba lỗ
+vòng 3 vẫn đỏ. Sáu API hợp lệ vẫn xanh.
+
+**Và ghi rõ giới hạn thật thay vì giả vờ kín.** `static int gTyped[4096]` trong `.cpp` vẫn qua được
+cả ba lưới. Nhưng nó là **kho chứa trơ**: muốn đổ dữ liệu vào phải có đường nhận từ ngoài, mà mọi
+đường như thế đều ở header và đã bị ghim. Cổng này bảo đảm **bề mặt NHẬN**, không bảo đảm từng byte
+bộ nhớ bên trong. Đã viết thẳng vào docstring — đúng bài học của chính PR này: **một hợp đồng nói
+quá thứ nó làm được còn tệ hơn không nói gì.**
+
 **Vòng review 3 — allowlist vẫn còn ba đường vào, tất cả cùng một gốc:**
 
 1. **`operator<<(const uint32_t*)` lọt.** Regex tìm tên hàm là `[A-Za-z_]\w*`, mà ngay trước `(`
