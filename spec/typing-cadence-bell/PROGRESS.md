@@ -86,7 +86,41 @@ Dựng cổng đó lòi ra **hai lỗi trong chính hợp đồng tui viết ở
    an toàn giả. Và cách duy nhất biết một cổng có chạy không là **tiêm vi phạm giả vào rồi xem nó
    có đỏ**; thấy nó xanh trên code sạch không chứng minh được gì.
 
-**Vòng review bắt được 1 lỗi chặn — và nó đúng vào chỗ đau nhất:**
+**Vòng review 2 — cổng vẫn thủng, và lần này là lỗ đáng sợ hơn:**
+
+Reviewer làm đúng cái phương pháp tui vừa tự viết ra (*"đi tìm hình dạng vi phạm có thật trong
+repo"*) nhưng grep **rộng hơn `core/mood/`** — và tìm ra `core/engine/DataType.h` có
+`typedef unsigned short Uint16` / `Uint32` / `Byte`, còn `Engine.h:198` dùng đúng chúng để trao ký
+tự ra ngoài: `Uint32 getCharacterCode(const Uint32& data)`. Nghĩa là
+`void registerKeystroke(int64_t nowMs, const Uint16* text)` là **vi phạm thật, portable, dịch được
+trên cả hai runner — và cổng cho qua XANH**. Cộng thêm `TCHAR`/`LPCWSTR` (47 chỗ dùng trong
+`platforms/windows/`), `uint16_t`, `id`.
+
+Đây là **lần thứ ba** cổng này thủng. Kết luận không thể tránh: **denylist không bao giờ đủ** — nó
+chỉ chặn được những kiểu người viết đã *nghĩ tới*, mà vi phạm thật đến từ kiểu người ta *không*
+nghĩ tới. Vá thêm tên kiểu là đuổi theo cái đuôi của chính mình.
+
+**Đảo sang allowlist.** Viết `scripts/check_hd1.py`: mọi tham số trong header của lớp nhịp
+gõ/chuông phải là `int64_t` · `int` · `double` · `bool` · `void`, và **không được là con trỏ / tham
+chiếu / mảng**. Kiểu nào khác — *kể cả kiểu chưa ai nghĩ tới* — là đỏ.
+
+Viết bằng **Python chứ không phải grep**, vì hai lý do: allowlist cần phân tích tham số (grep không
+nổi), và **máy dev chạy được python** — nên lần đầu trong cả đợt này tui **kiểm được cổng tại chỗ
+trước khi push** thay vì đẩy lên rồi chờ CI.
+
+Kiểm bằng **22 hình dạng vi phạm**: 8 ca reviewer chỉ ra lọt (`Uint16`/`Uint32`/`Byte`/`uint16_t`/
+`TCHAR`/`LPCWSTR`/`id`/`filesystem`), 7 ca vòng trước, cộng `unichar`/`string_view`/`u8string`/
+`vector<wchar_t>`/`NSMutableAttributedString`/`QString`/`jstring`/`BSTR`, và — quan trọng nhất —
+một kiểu **tự bịa** `SomeUnknownType` cùng `const int64_t&` (tham chiếu tới kiểu *được phép*).
+**Cả 22 đều đỏ**, code thật vẫn xanh. Ca `SomeUnknownType` là bằng chứng allowlist làm được thứ
+denylist không đời nào làm được.
+
+Xây cổng cũng lòi ra hai chỗ nữa: regex bắt nhầm **danh sách khởi tạo constructor** và **nơi gọi
+hàm** trong `.cpp` (`_hasLast(false)`, `keystrokesInWindow(nowMs)` — đỏ oan 3 chỗ), nên allowlist
+giới hạn vào `.h`, nơi duy nhất có mặt API; `.cpp` vẫn có lưới denylist. Và comment trong chính
+`macos.yml` vẫn còn chữ *"mọi kiểu chuỗi"* — đúng chữ tui vừa gỡ khỏi hai file khác vì nói quá.
+
+**Vòng review 1 bắt được 1 lỗi chặn — cùng một chỗ đau:**
 
 Cổng HĐ-1 tui vừa dựng **bỏ sót `const wchar_t*`** — đúng kiểu chuỗi phổ biến **nhất** trong
 `core/mood` hiện nay (`MoodPhrasing.cpp`, `SendRiskAnalyzer.cpp` dùng đầy), và đúng thứ #7

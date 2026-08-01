@@ -56,7 +56,9 @@ int TypingCadence::keystrokesInWindow(int64_t nowMs) const {
 
     int n = 0;
     for (int i = 0; i < _count; i++) {
-        // Duyệt từ ô mới nhất lùi dần. CÓ THỂ dừng sớm khi gặp ô đầu tiên ngoài cửa sổ —
+        // Duyệt từ ô mới nhất lùi dần. CÓ THỂ dừng sớm khi gặp ô đầu tiên có `t <= lowerBound`
+        // (chỉ mép DƯỚI — ô có `t > nowMs` là nhịp "tương lai" sau một cú nhảy tiến, phải BỎ QUA
+        // chứ không được dừng, vì phía sau nó vẫn còn nhịp hợp lệ) —
         // `registerKeystroke` xoá sạch mỗi khi đồng hồ nhảy lùi, nên dãy này luôn không tăng
         // theo chiều duyệt, kể cả sau khi vòng tròn quấn. Cố ý KHÔNG tối ưu: duyệt hết 1024 ô
         // là dưới một micro-giây, còn dừng sớm thì đúng-sai phụ thuộc vào một bất biến ở HÀM

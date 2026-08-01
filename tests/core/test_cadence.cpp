@@ -196,11 +196,11 @@ int main() {
         // Vòng tròn ĐẦY *và* có nhịp rơi khỏi cửa sổ cùng lúc — tổ hợp duy nhất bắt được lỗi
         // chỉ số vòng tròn khi nó gặp phép lọc mép. Loại 10 ở trên không phủ: ở đó cả 1024 ô
         // đều nằm trong cửa sổ. Ở đây gõ 1500 phím trải 60 giây (gấp đôi cửa sổ), nên vòng
-        // tròn đầy mà quá nửa số ô đã rơi ra ngoài.
+        // tròn đầy mà 274/1024 ô đã rơi ra ngoài cửa sổ (27%).
         TypingCadence c(W);
         typeKeys(c, 1500, 0, 40);          // 0 .. 59960, vòng giữ lại t = 19040 .. 59960
         // Cửa sổ tại 59960 là (29960, 59960] -> các nhịp t = 30000, 30040, ..., 59960
-        checkCount("vòng đầy + quá nửa đã rơi khỏi cửa sổ", c.keystrokesInWindow(59960), 750);
+        checkCount("vòng tròn đầy + 274/1024 ô đã rơi khỏi cửa sổ", c.keystrokesInWindow(59960), 750);
         checkCPM("và CPM tính đúng theo phần còn lại",      c.currentCPM(59960), 1500.0);
     }
     {

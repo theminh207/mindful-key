@@ -58,9 +58,13 @@ không dùng"*.
 Ba vỏ đã nối sẵn vào nó nên nuôi nhịp từ đấy là đường ít sửa nhất — và đã bị **bác bỏ có chủ đích**
 (Q3, chốt 2026-08-01).
 
-**Cưỡng chế bằng máy:** bước *"Cổng HĐ-1"* trong `.github/workflows/macos.yml` quét các file của
-lớp này tìm mọi kiểu chuỗi (bỏ comment) và làm đỏ CI nếu thấy. Mẫu giữ đúng một bản ở workflow —
-**đừng chép vào comment trong `core/mood/`**, dòng chép sẽ tự khớp và làm đỏ CI oan.
+**Cưỡng chế bằng máy — allowlist, không phải denylist.** `scripts/check_hd1.py` (chạy ở bước
+*"Cổng HĐ-1"* của `macos.yml`) đòi **mọi tham số** trong header của lớp này phải là `int64_t` ·
+`int` · `double` · `bool` · `void`, và **không được là con trỏ / tham chiếu / mảng**. Kiểu nào khác
+— kể cả kiểu chưa ai nghĩ tới — là đỏ CI.
+
+Hai bản denylist trước đều thủng (bỏ sót `const wchar_t*`, rồi bỏ sót `Uint16`/`Uint32`/`Byte` là
+typedef của chính repo). **Đừng quay lại denylist.** Chạy thử tại chỗ: `python3 scripts/check_hd1.py`.
 
 ### 2. Chuông ngân thì được, chặn thì không (HĐ-2)
 

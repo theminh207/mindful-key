@@ -75,18 +75,28 @@ vào đó rồi, nên nuôi nhịp từ đấy là đường ít sửa nhất. N
 không dùng"*. Đánh đổi đã cân nhắc và bác bỏ — xem
 [ADR-0013](03-decisions/ADR-0013-do-nhip-go-thay-doc-cam-xuc.md).
 
-**Cách soi — cưỡng chế bằng máy, không phụ thuộc có ai đọc tài liệu hay không.** Bước
-*"Cổng HĐ-1"* trong `.github/workflows/macos.yml` quét chính các file của lớp nhịp gõ/chuông tìm
-dấu hiệu kiểu chuỗi — mẫu `string|String|char`, phủ `wstring` · `std::string` · `u16string` ·
-`NSString` · `CFStringRef` · `char*` · `char[]` · `wchar_t*` — bỏ dòng comment, và làm **đỏ CI**
-nếu thấy. Không tìm thấy file nào cũng đỏ, để
-không ai vô hiệu cổng bằng cách đổi tên file.
+**Cách soi — cưỡng chế bằng máy, không phụ thuộc có ai đọc tài liệu hay không.**
+`scripts/check_hd1.py` (chạy ở bước *"Cổng HĐ-1"* trong `.github/workflows/macos.yml`) là
+**allowlist, không phải denylist**: mọi tham số trong header của lớp nhịp gõ/chuông phải là một
+trong `int64_t` · `int` · `double` · `bool` · `void`, và **không được là con trỏ, tham chiếu hay
+mảng**. Kiểu nào khác — kể cả kiểu chưa ai nghĩ tới — là **đỏ CI**. Không tìm thấy file nào cũng
+đỏ, để không ai vô hiệu cổng bằng cách đổi tên file.
 
-> ⚠️ **Mẫu grep ở bản đầu của hợp đồng này (PR #21) BỊ HỎNG.** Nó đòi kiểu chuỗi đứng *trước* tên
-> lớp trên cùng một dòng, nên `void TypingCadence_OnWord(const wstring&)` **lọt qua** — đã thử và
-> trượt thật khi dựng cổng ở #6. Bài học: hợp đồng kèm lệnh soi hỏng còn **tệ hơn** không kèm lệnh
-> nào, vì nó cho cảm giác an toàn giả. Mẫu thật giữ **đúng một bản**, ở workflow; đừng chép vào
-> comment trong `core/mood/` — dòng chép sẽ tự khớp và làm đỏ CI oan.
+> ⚠️ **Hai bản denylist trước của cổng này đều THỦNG.** Bản 1 (PR #21) đòi kiểu chuỗi đứng *trước*
+> tên lớp trên cùng một dòng → `void TypingCadence_OnWord(const wstring&)` lọt. Bản 2 liệt tên kiểu
+> → bỏ sót `const wchar_t*`, rồi sau khi vá vẫn bỏ sót **`Uint16` / `Uint32` / `Byte`** — *typedef
+> của chính repo này*, và đúng là cách `core/engine` trao ký tự ra ngoài
+> (`Engine.h`: `Uint32 getCharacterCode(const Uint32&)`). Tức hình dạng vi phạm **dễ xảy ra nhất**
+> lại là hình dạng lọt.
+>
+> **Bài học: denylist không bao giờ đủ** — nó chỉ chặn được những kiểu người viết đã *nghĩ tới*, mà
+> vi phạm thật thường đến từ kiểu người ta không nghĩ tới. Allowlist đã kiểm bằng **22 hình dạng vi
+> phạm**, gồm cả một kiểu tự bịa (`SomeUnknownType`) — cả 22 đều đỏ, code thật vẫn xanh.
+>
+> Hệ quả thực dụng: **hợp đồng kèm lệnh soi hỏng còn tệ hơn không kèm lệnh nào**, vì nó cho cảm
+> giác an toàn giả. Cách duy nhất biết một cổng có chạy hay không là **tiêm vi phạm giả vào rồi xem
+> nó có đỏ** — và tiêm những hình dạng mình *chưa* nghĩ tới, không chỉ những hình dạng mình đã tin
+> là nguy hiểm.
 
 ---
 
