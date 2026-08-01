@@ -68,8 +68,8 @@ phím cuối — vừa đúng số vừa sát cách gõ thật.
 
 **Biến HĐ-1 từ lời hứa thành cổng máy.** Hiến chương §4.1 tự đòi luật nhận diện phải cưỡng chế bằng
 máy *"không phụ thuộc vào việc có ai đọc tài liệu hay không"*; PR này áp đúng lối nghĩ đó cho §4.2:
-thêm bước **"Cổng HĐ-1"** vào `macos.yml`, quét file lớp nhịp gõ/chuông tìm mọi kiểu chuỗi và làm đỏ
-CI nếu thấy.
+thêm bước **"Cổng HĐ-1"** vào `macos.yml`. (Bản đầu là grep denylist; sau ba lần thủng nó thành
+`scripts/check_hd1.py` — allowlist — xem khối "Vòng review 2" ở trên.)
 
 Dựng cổng đó lòi ra **hai lỗi trong chính hợp đồng tui viết ở #4**:
 
@@ -137,6 +137,8 @@ Xử: nới mẫu thành `string|String|char` — cố ý **rộng**, fail-close
 phạm**, cả 7 đều đỏ, code thật vẫn xanh. Không dùng `\b` vì đó là mở rộng GNU, còn runner là BSD
 grep. Và sửa `04-contracts.md` + `TEST_MATRIX.md` bỏ chữ *"mọi kiểu chuỗi"* — nói quá so với thứ
 mẫu thật sự phủ.
+
+> Nhưng đó **vẫn là denylist**, và vòng 2 chứng minh nó vẫn thủng. Bản cuối cùng là allowlist.
 
 **Bài học chồng lên bài học:** kiểm một cổng bằng cách tiêm vi phạm là đúng, nhưng **tiêm những
 hình dạng mình đã nghĩ tới thì chỉ chứng minh được điều mình đã tin**. Muốn biết cổng có thủng
