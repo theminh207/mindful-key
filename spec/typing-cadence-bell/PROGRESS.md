@@ -35,7 +35,8 @@ nhưng không lưu"* thành ***"không đọc"***, kèm câu chốt *"không c�
 gắn banner **⛔ LỖI THỜI** ở đầu (giữ file, không xoá lịch sử). `MOOD-WAVE-MECHANISM.md` gắn banner
 bảng-phân-loại nói rõ phần nào chết / phần nào giữ, và **viết lại đoạn §8 hướng dẫn đọc đồ thị** —
 đoạn cũ mô tả biên độ theo *"dùng từ ngữ ôn hòa / tiêu cực"* (giả định đọc nội dung) và *"tâm trí bắt
-đầu xáo động"* (phán xét trạng thái tâm, hiến chương §4.1 cấm). `AGENT-BRIEF.md` sửa dòng định vị.
+đầu xáo động"* (suy trạng thái tâm ra từ **nội dung** — hiến chương **§4.2** cấm: *"không suy đoán
+gì từ chữ nghĩa"*; §4.1 thì **không** cấm ẩn dụ mặt hồ ↔ tâm, nó còn dùng chính ẩn dụ đó). `AGENT-BRIEF.md` sửa dòng định vị.
 `TEST_MATRIX.md` thêm khối mở đầu + **10 hàng mô hình mới**.
 
 **Chốt được:**
@@ -81,6 +82,34 @@ bảng-phân-loại nói rõ phần nào chết / phần nào giữ, và **viế
 Sửa thêm 3 chỗ nhỏ: phạm vi hợp đồng ghi "HĐ-1 → HĐ-4" trong skill và agent nhưng chính hai file đó
 viện dẫn HĐ-6 và HĐ-8 → ghi rõ; thêm mục "khôi phục 4 agent" vào §5 "Đã chốt" (session sau cần biết);
 `settings.json` thừa khoảng trắng sau `[`.
+
+**Vòng review 2 — thêm 2 lỗi chặn:**
+1. **`AGENT-BRIEF.md:1` H1 vẫn là "(HIẾN CHƯƠNG)"**, mâu thuẫn thẳng với banner ngay dưới nó. Sửa
+   banner mà quên tiêu đề — mà tiêu đề mới là dòng người ta nhìn đầu tiên.
+2. **`MOOD-WAVE-MECHANISM.md` §8 đoạn "Lưu ý quan trọng" vẫn nói *"mặt hồ càng xáo động"***, mâu
+   thuẫn với câu mới cách đó 6 dòng (*"không nói gì về tâm bạn"*). Vòng trước tui viết lại **danh
+   sách gạch đầu dòng** nhưng bỏ sót **đoạn văn ngay dưới nó**.
+
+**Vòng review 3 — bài học đáng ghi nhất của cả issue này:**
+
+Vòng 2 tui tự phát hiện mình **trích sai hiến chương**: viết *"'tâm trí xáo động' — phán xét trạng
+thái tâm, hiến chương §4.1 cấm"*. §4.1 **không** cấm điều đó — nó còn dùng chính ẩn dụ *"mặt hồ dậy
+sóng ứng với tâm động"*, và chỉ cấm đúng 4 thứ (đèn đỏ/xanh · emoji chấm điểm · gamification · copy
+khiển trách). Căn cứ đúng là **§4.2** (*"không suy đoán gì từ chữ nghĩa"*) — cái sai của bản cũ là
+**căn cứ để nói**, không phải chữ "tâm".
+
+Nhưng vòng 3 bắt được: tui sửa lời trích đó ở `MOOD-WAVE-MECHANISM.md` mà **để nguyên chính lời
+trích sai ấy ở `PROGRESS.md:38`** — cùng một PR, một chỗ đính chính, một chỗ vẫn sai. Và tìm ra
+**bản sao thứ ba ở `docs/04-contracts.md`** — tầng hợp đồng, trọng lượng quy phạm cao hơn `docs/tasks/`
+— cũng viện dẫn §4.1 quá rộng (do chính PR #4 của tui viết). Đã sửa cả ba, cộng `AGENTS.md:146` còn
+gọi `AGENT-BRIEF.md` là *"Hiến chương bản gốc"*, và hai câu ở §8 (*"gương soi tâm trí"*, *"những gì
+cơ thể đang thể hiện"*) vẫn suy trạng thái người từ phép đo.
+
+**Bài học:** trong một repo lấy hiến chương làm luật tối cao, **trích sai hiến chương là lỗi nặng
+hơn lỗi câu chữ** — nó tạo ra luật giả. Và khi phát hiện một lời trích sai, phải `grep` **mọi bản
+sao của nó** rồi sửa cùng lượt, chứ không sửa đúng chỗ vừa nhìn thấy. Đây là lần thứ hai trong cùng
+issue tui mắc lỗi "sửa chỗ nhìn thấy, sót chỗ còn lại" (lần đầu: grep `mood-sentiment-layer` chỉ
+trong `.claude/`).
 
 **Kiểm chứng:** `brand_lint.py` 0 vi phạm cứng. PR thuần tài liệu + harness, không đụng `core/` hay
 `platforms/`.

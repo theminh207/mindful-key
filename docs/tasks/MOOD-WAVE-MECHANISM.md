@@ -164,13 +164,13 @@ Trình tự đề nghị: **#0 → #1 → #2 → #3** (mỗi bước một commi
 
 ## 8. Hướng dẫn đọc đồ thị dòng sông (Dành cho người dùng)
 
-Dòng sông cảm xúc là một công cụ phản chiếu (gương soi tâm trí), không phải là công cụ chấm điểm. Dưới đây là cách đọc các tín hiệu trên dòng sông:
+Dòng sông nhịp gõ là một công cụ phản chiếu, không phải công cụ chấm điểm — nó vẽ lại **phép đo**, để bạn tự đối chiếu. Dưới đây là cách đọc các tín hiệu trên dòng sông:
 
 ### Phân biệt loại dữ liệu qua Hình dạng (Không đổi màu)
 Toàn bộ dòng sông luôn giữ nguyên màu Teal trung tính. Ứng dụng không dùng màu Đỏ (nguy hiểm) hay Xanh (an toàn) để tránh việc phán xét cảm xúc của bạn là "tốt" hay "xấu".
 - **Chấm ĐẶC (Tô kín):** Là những nhịp lấy mẫu **tự động** của hệ thống trong lúc bạn đang gõ phím.
 - **Vòng RỖNG (Khoảng trắng ở giữa):** Là những lần **bạn tự đánh giá** (Tự thuật) qua khung "Mặt hồ đang thế nào?" xuất hiện 45 giây sau mỗi tiếng chuông. 
-- *Mục đích:* Giúp bạn đối chiếu giữa những gì cơ thể/bàn phím đang thể hiện (chấm đặc) với những gì bạn thực sự nhận thức được về bản thân (vòng rỗng).
+- *Mục đích:* Giúp bạn đối chiếu giữa **nhịp tay đo được** (chấm đặc) với những gì bạn tự nhận thấy về mình (vòng rỗng). Hai thứ lệch nhau là chuyện bình thường — nhịp gõ không phải thước đo tâm trạng.
 
 ### Ý nghĩa của Cơn sóng (Biên độ)
 
