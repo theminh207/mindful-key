@@ -52,11 +52,17 @@ tham số kiểu chuỗi**. Nhịp gõ nuôi bằng *thời điểm bấm phím*
 
 ```cpp
 // Đúng — chỉ có dấu thời gian
-void   TypingCadence_OnKeystroke(int64_t tsMs);
-double TypingCadence_CPM(int64_t nowMs);
+class TypingCadence {
+public:
+    explicit TypingCadence(int64_t windowMs);
+    void   registerKeystroke(int64_t nowMs);
+    double currentCPM(int64_t nowMs) const;
+    int    keystrokesInWindow(int64_t nowMs) const;
+    void   reset();
+};
 
 // SAI — dù chỉ dùng .length() thì chuỗi vẫn đi qua lớp này
-void TypingCadence_OnWord(const std::wstring& word);   // ❌ cấm
+void TypingCadence::onWord(const std::wstring& word);   // ❌ cấm
 ```
 
 **Vì sao không tái dùng `vOnWordCommitted`.** Callback chốt từ của engine có sẵn và ba vỏ đã nối
@@ -137,7 +143,7 @@ Kèm theo hai ràng buộc vận hành:
 ## HĐ-4 — Không đếm nhịp trong ô mật khẩu
 
 **Ràng buộc.** Khi ô nhập đang là ô mật khẩu (secure input), vỏ **không** được gọi
-`TypingCadence_OnKeystroke`. Không đếm, không tính, không ghi.
+`TypingCadence::registerKeystroke`. Không đếm, không tính, không ghi.
 
 Hai lý do, cả hai đều đủ để một mình quyết định:
 
@@ -151,7 +157,7 @@ Hai lý do, cả hai đều đủ để một mình quyết định:
 mật khẩu và không đếm. Thà mất vài nhịp còn hơn đếm nhầm.
 
 **Cách soi.** Mỗi vỏ phải có đúng một cổng kiểm, đặt **trước** lời gọi
-`TypingCadence_OnKeystroke`, và cổng đó phải có ca kiểm.
+`TypingCadence::registerKeystroke`, và cổng đó phải có ca kiểm.
 
 ---
 

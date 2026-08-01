@@ -56,6 +56,14 @@ jobs:
             core\engine\Engine.cpp core\engine\Vietnamese.cpp ^
             core\engine\Macro.cpp core\engine\SmartSwitchKey.cpp core\engine\ConvertTool.cpp || exit /b 1
           test_engine.exe || exit /b 1
+          rem [MINDFUL] 2026-08-01 (#6) — dựng LUÔN phép đo nhịp gõ bằng MSVC trong cùng bước
+          rem (vcvars64 đã gọi ở trên, gọi lại là phí). Đây là lần đầu core/mood được biên dịch
+          rem bằng MSVC: trước nay chỉ có core/engine chạy qua đây. Bắt lỗi khác biệt clang↔MSVC
+          rem NGAY BÂY GIỜ, thay vì để #15 (vỏ Windows) vấp phải rồi mới biết. /W4 vì cổng chất
+          rem lượng #6 ghi "không thêm warning compiler mới".
+          cl /EHsc /std:c++14 /W4 /I core\mood /Fe:test_cadence.exe ^
+            tests\core\test_cadence.cpp core\mood\TypingCadence.cpp || exit /b 1
+          test_cadence.exe || exit /b 1
 
       # [MINDFUL] D1 — ghi version.env vào MindfulKey.rc TRƯỚC msbuild để .exe khai đúng phiên bản
       # (trước đây .rc hardcode nên .exe kẹt version cũ dù version.env đã bump).

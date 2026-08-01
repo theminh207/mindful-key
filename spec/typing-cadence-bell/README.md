@@ -111,8 +111,9 @@ Chưa chốt thì **đừng tự quyết trong im lặng** — hỏi chủ dự 
 **Đã chốt:**
 
 - 2026-08-01 *(Q3, ở #4)* — **Nhịp phím lấy từng phím một ở hook bàn phím**, không tái dùng
-  `vOnWordCommitted`. API là `TypingCadence_OnKeystroke(int64_t tsMs)` — **không tham số chuỗi ở bất
-  kỳ đâu**. Lý do: README §1 viết "chỉ đếm nhịp phím, không đọc ký tự" và §2 nói lời hứa riêng tư
+  `vOnWordCommitted`. API là `TypingCadence::registerKeystroke(int64_t nowMs)` — **không tham số chuỗi ở
+  bất kỳ đâu** (chữ ký chốt lại ở #6: dạng lớp thay vì hàm tự do, để test dựng được nhiều
+  thể hiện độc lập; phần bất biến — chỉ nhận dấu thời gian — không đổi). Lý do: README §1 viết "chỉ đếm nhịp phím, không đọc ký tự" và §2 nói lời hứa riêng tư
   phải *kiểm chứng được bằng cách nhìn vào code*. Nuôi từ `vOnWordCommitted(const wstring& word)`
   thì lớp nhịp vẫn **nhận** chuỗi dù chỉ dùng `.length()` — người review đọc code vẫn thấy lớp mood
   cầm text, lời hứa tụt xuống "có nhận nhưng hứa không dùng". Phụ: hook cho tín hiệu mượt (gõ giữa

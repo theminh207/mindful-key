@@ -25,8 +25,8 @@ HOOK BÀN PHÍM của từng vỏ  (macOS CGEventTap · Win32 LowLevelKeyboardPr
    │  ⚠️ cổng kiểm ô mật khẩu nằm TRƯỚC lời gọi này (HĐ-4, fail-closed)
    ▼
 core/mood/TypingCadence   — cửa sổ trượt 30 giây, trả CPM
-   │  TypingCadence_OnKeystroke(int64_t tsMs)
-   │  TypingCadence_CPM(int64_t nowMs) -> double
+   │  registerKeystroke(int64_t nowMs)
+   │  currentCPM(int64_t nowMs) -> double
    ▼
 core/mood/BellPolicy      — so CPM với ngưỡng người dùng + cooldown
    │  BellPolicy_ShouldRing(double cpm, int64_t nowMs) -> bool
@@ -45,8 +45,8 @@ Màn soi lại: đếm số lần chuông theo thời gian · biên độ con s�
 **không được có tham số kiểu chuỗi**.
 
 ```cpp
-void   TypingCadence_OnKeystroke(int64_t tsMs);        // ✅ chỉ dấu thời gian
-void   TypingCadence_OnWord(const std::wstring& word); // ❌ CẤM
+void   TypingCadence::registerKeystroke(int64_t nowMs);   // ✅ chỉ dấu thời gian
+void   TypingCadence::onWord(const std::wstring& word);   // ❌ CẤM
 ```
 
 Lời hứa riêng tư ở hiến chương §4.2 — *"sản phẩm không đọc nội dung"* — chỉ thật khi người đọc code
@@ -72,7 +72,7 @@ Cooldown nằm **trong** `BellPolicy`, không phải trong từng vỏ.
 
 ### 3. Không đếm nhịp trong ô mật khẩu (HĐ-4)
 
-Cổng kiểm đặt **trước** lời gọi `TypingCadence_OnKeystroke`, **mặc định fail-closed** — không xác
+Cổng kiểm đặt **trước** lời gọi `TypingCadence::registerKeystroke`, **mặc định fail-closed** — không xác
 định được thì coi là ô mật khẩu và không đếm. Windows đã có (`MoodWatch.cpp`), iOS đã có,
 **macOS chưa có** (bổ sung ở #9).
 

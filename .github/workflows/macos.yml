@@ -20,6 +20,15 @@ jobs:
           bash tests/core/build.sh
           ./tests/core/test_engine
 
+      # [MINDFUL] 2026-08-01 (#6) — phép đo nhịp gõ là TRÁI TIM mô hình mới, và máy dev hiện
+      # tại là Windows KHÔNG có trình biên dịch nào (g++/clang++/cl/make đều thiếu). Nghĩa là
+      # CI này là nơi DUY NHẤT ca kiểm được chạy — không có bước này thì test_cadence.cpp chỉ
+      # là file nằm im, không ai biết nó xanh hay đỏ. Xem spec/typing-cadence-bell/README.md §7.
+      - name: Regression nhịp gõ (core/mood/TypingCadence)
+        run: |
+          bash tests/core/cadence_build.sh
+          ./tests/core/test_cadence
+
       - name: Generate Xcode project
         run: cd platforms/apple && xcodegen generate
 
