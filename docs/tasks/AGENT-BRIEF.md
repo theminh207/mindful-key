@@ -20,7 +20,7 @@ Nguyên tắc:
 - **Định vị:** "Bộ gõ Tiếng Việt giúp bạn gõ trong tỉnh thức."
 - **Nền tảng ưu tiên:** macOS (Apple Silicon + Intel, universal) → Windows → Linux.
 - **Lõi kế thừa:** engine gõ Tiếng Việt OpenKey (Telex/VNI/VIQR, bảng mã, kiểm tra chính tả).
-- **Khác biệt:** một lớp "chánh niệm" phủ lên trải nghiệm gõ — nhắc nhịp thở, quan sát trạng thái tâm, không gamification, không phán xét.
+- **Khác biệt:** một lớp "chánh niệm" phủ lên trải nghiệm gõ — **đo nhịp gõ** (CPM trên cửa sổ trượt 30 giây) và **ngân một tiếng chuông** khi vượt ngưỡng người dùng tự đặt. Không đọc nội dung, không gamification, không phán xét. Vòng lặp lõi: `Measure → Bell → Reflect` (xem [`docs/01-intent.md`](../01-intent.md) §3; lý do đổi ở [`ADR-0013`](../03-decisions/ADR-0013-do-nhip-go-thay-doc-cam-xuc.md)).
 
 ## 2. NGUYÊN TẮC NHẬN DIỆN — bắt buộc tuyệt đối
 

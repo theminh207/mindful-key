@@ -8,7 +8,7 @@
 | **Bắt đầu** | 2026-07-26 |
 | **Hiến chương** | [`docs/01-intent.md`](../../docs/01-intent.md) — luật tối cao, đã sửa |
 | **Issue** | [#3 → #18](https://github.com/theminh207/mindful-key/issues) trên GitHub |
-| **Trạng thái** | Phase 0 đang chạy — #3 #4 xong, #5 tiếp theo |
+| **Trạng thái** | **Phase 0 xong** (#3 #4 #5) — Phase 1 (#6 `TypingCadence`) tiếp theo |
 
 ---
 
@@ -54,7 +54,7 @@ Trạng thái: `⬜ chưa bắt đầu` · `🔄 đang làm` · `✅ xong` · `�
 |---|---|---|---|---|
 | ✅ | [#3](https://github.com/theminh207/mindful-key/issues/3) | ADR "đo nhịp gõ thay đọc cảm xúc" + 5 ADR cũ bị thay thế, ADR-0009 gỡ → ADR-0014 | — | @phatnguyen-neurond |
 | ✅ | [#4](https://github.com/theminh207/mindful-key/issues/4) | Đồng bộ tầng 02/04/06/07 theo vòng lặp mới | #3 | @phatnguyen-neurond |
-| ⬜ | [#5](https://github.com/theminh207/mindful-key/issues/5) | Đồng bộ `docs/tasks/` + harness `.claude/` | #3 | |
+| ✅ | [#5](https://github.com/theminh207/mindful-key/issues/5) | Đồng bộ `docs/tasks/` + harness `.claude/` | #3 | @phatnguyen-neurond |
 
 ### Phase 1 — Bộ não C++ (`core/`)
 

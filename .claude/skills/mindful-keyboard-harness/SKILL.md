@@ -1,18 +1,18 @@
 ---
 name: mindful-keyboard-harness
-description: "Điều phối viên (orchestrator) của harness dự án mindful-keyboard — quyết định việc mới thuộc về chuyên gia nào trong 4 chuyên gia: engine-agent (bộ não C++/OpenKey, core/engine), mood-layer-agent (lớp cảm xúc/chánh niệm, core/mood), platform-shell-agent (vỏ macOS/Windows/Android/Linux), ios-shell-agent (vỏ iOS — keyboard extension, platforms/apple/ios). PHẢI dùng khi: bắt đầu 1 việc chưa rõ nó thuộc engine hay mood hay platform hay iOS; việc chạm tới từ 2 mảng trở lên (vd sửa engine để mood-layer dùng); kiểm tra/đồng bộ lại harness ('kiểm tra harness', 'harness còn đúng không', 'thêm agent mới'); hoặc build lộ trình đa nền tảng. Với việc RÕ RÀNG chỉ thuộc 1 mảng (ví dụ chỉ sửa 1 dòng trong Vietnamese.cpp), có thể gọi thẳng skill/agent chuyên biệt (openkey-engine, mood-sentiment-layer, platform-porting, ios-keyboard-extension) mà không cần qua đây."
+description: "Điều phối viên (orchestrator) của harness dự án mindful-keyboard — quyết định việc mới thuộc về chuyên gia nào trong 4 chuyên gia: engine-agent (bộ não C++/OpenKey, core/engine), mood-layer-agent (lớp đo nhịp gõ + chuông tỉnh thức, core/mood), platform-shell-agent (vỏ macOS/Windows/Android/Linux), ios-shell-agent (vỏ iOS — keyboard extension, platforms/apple/ios). PHẢI dùng khi: bắt đầu 1 việc chưa rõ nó thuộc engine hay mood hay platform hay iOS; việc chạm tới từ 2 mảng trở lên (vd sửa vỏ để cấp dấu thời gian phím cho mood-layer); kiểm tra/đồng bộ lại harness ('kiểm tra harness', 'harness còn đúng không', 'thêm agent mới'); hoặc build lộ trình đa nền tảng. Với việc RÕ RÀNG chỉ thuộc 1 mảng (ví dụ chỉ sửa 1 dòng trong Vietnamese.cpp), có thể gọi thẳng skill/agent chuyên biệt (openkey-engine, typing-cadence-layer, platform-porting, ios-keyboard-extension) mà không cần qua đây."
 ---
 
 # Mindful Keyboard — Harness Orchestrator
 
 ## Vì sao harness này tồn tại
-Dự án là "1 bộ não (OpenKey fork, GPL v3) + nhiều vỏ OS + 1 lớp cảm xúc trên cùng", lộ trình 5 nền tảng (macOS ① → Windows ② → Android ③ → Linux ④ → iOS ⑤). Các mảng này có ràng buộc kỹ thuật khác hẳn nhau (C++ thuần không đụng OS / on-device ML + privacy / native code từng OS / khuôn sandbox chật của iOS) nên tách thành nhiều chuyên gia thay vì 1 agent ôm hết, tránh lẫn lộn quy tắc (ví dụ: sửa 1 bug riêng iOS nhưng lại đi sửa nhầm vào bộ não `core/` dùng chung).
+Dự án là "1 bộ não (OpenKey fork, GPL v3) + nhiều vỏ OS + 1 lớp đo nhịp gõ trên cùng", lộ trình 5 nền tảng (macOS ① → Windows ② → Android ③ → Linux ④ → iOS ⑤). Các mảng này có ràng buộc kỹ thuật khác hẳn nhau (C++ thuần không đụng OS / on-device ML + privacy / native code từng OS / khuôn sandbox chật của iOS) nên tách thành nhiều chuyên gia thay vì 1 agent ôm hết, tránh lẫn lộn quy tắc (ví dụ: sửa 1 bug riêng iOS nhưng lại đi sửa nhầm vào bộ não `core/` dùng chung).
 
 ## Bốn chuyên gia
 - **engine-agent** — bộ não C++ thuần (`core/engine`): Telex/VNI, ghép vần, macro, callback dùng chung (`vOnWordCommitted`), giữ xanh `tests/core/test_engine`.
-- **mood-layer-agent** — lớp cảm xúc/chánh niệm (`core/mood`): MoodBuffer gom câu, send-risk (0-1), nhật ký, riêng tư dữ liệu cảm xúc.
-- **platform-shell-agent** — vỏ **macOS/Windows/Android/Linux** (`platforms/apple/macos`, `platforms/windows`, `platforms/android`, `platforms/linux`): bắt phím native, tray/popup, gác cổng gửi tin (macOS/Windows).
-- **ios-shell-agent** — vỏ **iOS** (`platforms/apple/ios`, `tests/ios`): Custom Keyboard Extension, sandbox. Mandate hẹp (chốt 2026-07-10): nhật ký + nhắc thụ động, KHÔNG gác cổng gửi tin (sandbox chặn).
+- **mood-layer-agent** — lớp **đo nhịp gõ + chuông tỉnh thức** (`core/mood`): `TypingCadence` (dấu thời gian phím → CPM trên cửa sổ trượt 30 giây), `BellPolicy` (ngưỡng người dùng + cooldown, dùng chung 3 vỏ), kho ghi số lần chuông, biên độ con sóng. **Không nhận chuỗi ký tự** — xem `docs/04-contracts.md` HĐ-1.
+- **platform-shell-agent** — vỏ **macOS/Windows/Android/Linux** (`platforms/apple/macos`, `platforms/windows`, `platforms/android`, `platforms/linux`): bắt phím native, tray/popup, cấp dấu thời gian phím cho lớp nhịp gõ, phát tiếng chuông, cổng kiểm ô mật khẩu.
+- **ios-shell-agent** — vỏ **iOS** (`platforms/apple/ios`, `tests/ios`): Custom Keyboard Extension, sandbox. Mandate hẹp (chốt 2026-07-10, lý lẽ mới ở ADR-0014): chỉ đo được nhịp khi người dùng đang dùng chính bàn phím mindful-key, không thấy phím gõ toàn hệ thống.
 
 ## Chế độ thực thi: SUB-AGENT (không phải Agent Teams)
 Plugin `harness` (revfactory/harness) mặc định đề xuất "Agent Teams" (`TeamCreate`/`SendMessage`/`TaskCreate`) cho việc phối hợp real-time giữa các agent. Trong môi trường hiện tại, các primitive đó **không có sẵn như tool có thể gọi**, kể cả khi đã bật cờ `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. Vì vậy harness này chạy ở **chế độ sub-agent**: dùng tool `Agent` gọi trực tiếp từng chuyên gia (`subagent_type` = tên agent tương ứng nếu môi trường hỗ trợ custom agent type, hoặc `general-purpose` kèm nội dung file `.claude/agents/{name}.md` làm system prompt nếu không), thu kết quả trả về trực tiếp cho người điều phối chính — không có hội thoại real-time giữa các chuyên gia.
@@ -26,7 +26,7 @@ Trước mọi việc, tự phân loại rủi ro rồi mới quyết cách làm
 - **high-risk** — chạm bất kỳ điều nào sau đây → **DỪNG, hỏi chủ dự án trước khi tự quyết:**
   - **Nhận diện:** con sóng `~`/dấu ngã, sắc độ, copy, biên độ (bất khả xâm phạm 2.2/2.3).
   - **Pháp lý:** giấy phép GPL v3, credit Mai Vũ Tuyên (OpenKey).
-  - **Riêng tư:** dữ liệu gõ, dữ liệu cảm xúc/mood, nơi lưu, gửi ra ngoài (iOS: Full Access + App Group cũng tính).
+  - **Riêng tư:** dữ liệu gõ, nhịp gõ + lần chuông, nơi lưu, gửi ra ngoài (iOS: Full Access + App Group cũng tính).
   - **Bộ não dùng chung:** sửa `core/engine` hay `core/mood` để vá riêng 1 OS (nguy cơ hỏng mọi OS).
 
 Đây là bản phản xạ hoá của điều hiến chương đã dặn ("chạm nhận diện/pháp lý mà mơ hồ → hỏi chủ dự án").
@@ -34,8 +34,8 @@ Trước mọi việc, tự phân loại rủi ro rồi mới quyết cách làm
 ## Quy trình
 1. **Xác định việc thuộc mảng nào** (Phase 1 rút gọn):
    - Đụng `core/engine`, Telex/VNI, macro, callback dùng chung, `tests/core/test_engine` → **engine-agent**
-   - Đụng cảm xúc/chánh niệm: `core/mood` (MoodBuffer/MoodWatcher), send-risk, mindful bell, mood journal, model sentiment, riêng tư dữ liệu cảm xúc → **mood-layer-agent**
-   - Đụng `platforms/apple/macos`, `platforms/windows`, `platforms/android`, `platforms/linux`, build native app, tray/popup/biểu đồ, gác cổng gửi tin → **platform-shell-agent**
+   - Đụng đo nhịp/chánh niệm: `core/mood` (`TypingCadence`/`BellPolicy`), CPM, cửa sổ trượt, ngưỡng chuông, cooldown, kho ghi lần chuông, biên độ sóng → **mood-layer-agent**
+   - Đụng `platforms/apple/macos`, `platforms/windows`, `platforms/android`, `platforms/linux`, build native app, tray/popup/biểu đồ, cấp dấu thời gian phím, phát tiếng chuông, cổng kiểm ô mật khẩu → **platform-shell-agent**
    - Đụng `platforms/apple/ios`, keyboard extension, App Group, Full Access, khung bàn phím iOS, `tests/ios` → **ios-shell-agent**
    - Việc chạm ≥2 mảng (vd: thêm callback mới cho mood layer) → gọi cả 2 chuyên gia liên quan, chuyên gia "chủ" (nơi code thực sự thay đổi) làm trước, chuyên gia phụ thuộc làm sau, dựa trên hợp đồng chuyên gia chủ để lại.
 2. **Gọi chuyên gia tương ứng** qua tool `Agent`, đọc file `.claude/agents/{name}.md` để lấy đúng vai trò/nguyên tắc nếu `subagent_type` không tự nhận diện tên agent.

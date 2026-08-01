@@ -1,3 +1,26 @@
+> # ⚠️ NGUỒN NUÔI SÓNG ĐÃ ĐỔI — 2026-07-26
+>
+> **Hình học sóng ở đây vẫn đúng và vẫn dùng. Nguồn nuôi nó thì không.**
+>
+> Tài liệu này mô tả con sóng được nuôi bằng **send-risk** — điểm chấm từ việc **đọc nội dung** câu
+> vừa gõ. Sản phẩm đã bỏ hẳn hướng đó. Biên độ sóng nay lấy từ **nhịp gõ (CPM)**.
+>
+> | Phần | Còn đúng? |
+> |---|---|
+> | §1 bốn tầng · §2 chấm điểm lexicon · §5 núm Độ nhạy · §7 hướng cải thiện lexicon | ❌ **Chết theo mô hình cũ.** §7 (luật phủ định, trạng từ cường độ) sẽ **không bao giờ** được làm — hiến chương §5 liệt model sentiment là non-goal |
+> | §3 gom mẫu và vẽ · §4 kho câu chữ · §8 hướng dẫn đọc đồ thị · §9 luật cập nhật | ✅ **Giữ nguyên** — đây là *hình học* và *cách trình bày*, không phụ thuộc nguồn |
+> | §6 điểm mù | ⚠️ Một phần còn đúng (bộ gõ tắt, ô mật khẩu); phần nói về "chỉ thấy khi gõ tiếng Việt" thì hết áp dụng — đếm nhịp phím không phân biệt chế độ gõ |
+>
+> **Nguồn mới:** `core/mood/TypingCadence` → CPM → biên độ `[0,1]`. Công thức quy đổi CPM sang biên
+> độ **chưa chốt** — đó là câu hỏi **Q4** ở
+> [`spec/typing-cadence-bell/README.md`](../../spec/typing-cadence-bell/README.md) §5, chặn issue #8.
+> Đừng tự chọn công thức khi làm việc khác; hỏi chủ dự án.
+>
+> Ngưỡng gác cổng nhắc ở §5 (`kBreathingPauseRiskThreshold`, `core/mood/BreathingPause.cpp`) thuộc
+> về tính năng đã bị bỏ — gỡ ở issue #12.
+
+---
+
 # MOOD-WAVE-MECHANISM — cơ chế sóng cảm xúc hiện tại (macOS)
 
 > Tài liệu "một chỗ" mô tả **đúng những gì đang chạy** (đối chiếu code 2026-07-16), để chủ dự án
@@ -147,10 +170,27 @@ Toàn bộ dòng sông luôn giữ nguyên màu Teal trung tính. Ứng dụng k
 - *Mục đích:* Giúp bạn đối chiếu giữa những gì cơ thể/bàn phím đang thể hiện (chấm đặc) với những gì bạn thực sự nhận thức được về bản thân (vòng rỗng).
 
 ### Ý nghĩa của Cơn sóng (Biên độ)
-Trục dọc của đồ thị đại diện cho **Biên độ dao động** (sự xáo động của mặt nước):
-- **Phẳng lặng (Nằm sát trục giữa):** Bạn đang gõ phím thư giãn, từ tốn, dùng từ ngữ ôn hòa, hoặc bạn vừa tự đánh giá mình đang "Phẳng lặng" (Biên độ ~0.12).
-- **Gợn nhẹ:** Tâm trí bắt đầu có sự xáo động nhẹ (Biên độ ~0.45).
-- **Gợn sóng / Dậy sóng (Nằm cách xa trục giữa nhất):** Bạn đang gõ phím rất mạnh, nhanh, dùng phím xóa liên tục hoặc sử dụng các từ ngữ mang cảm xúc mạnh, tiêu cực. Sóng lúc này sẽ vút lên cao (hoặc chìm xuống sâu) tạo thành một cơn sóng lớn (Biên độ ~0.80).
+
+> ⚠️ **Đoạn này đã viết lại 2026-08-01 (issue #5).** Bản cũ mô tả biên độ theo *"dùng từ ngữ ôn
+> hòa"* / *"từ ngữ mang cảm xúc mạnh, tiêu cực"* (giả định app đọc nội dung — nay không còn) và theo
+> *"tâm trí bắt đầu có sự xáo động"* (phán xét trạng thái tâm — hiến chương §4.1 cấm). Biên độ nay
+> mô tả **nhịp tay**, không mô tả người gõ.
+
+Trục dọc của đồ thị đại diện cho **Biên độ dao động** — đọc theo *khoảng cách tới đường giữa*, không
+theo lên hay xuống:
+
+- **Phẳng lặng** (sát trục giữa, biên độ ~0.12) — nhịp gõ chậm và đều, hoặc bạn vừa tự thuật rằng
+  mặt hồ đang phẳng lặng.
+- **Gợn nhẹ** (~0.45) — nhịp gõ nhanh hơn thường lệ một chút.
+- **Gợn sóng / Dậy sóng** (xa trục giữa nhất, ~0.80) — nhịp gõ nhanh, gần hoặc vượt ngưỡng bạn đặt.
+
+Ba mức trên mô tả **tốc độ tay bạn đang gõ** — không nói gì về tâm bạn. Nhịp nhanh có thể vì bạn
+đang chép chính tả, đang gõ lại một đoạn đã nghĩ xong, hoặc tay bạn vốn nhanh. Con sóng là **phép
+đo được vẽ ra**, không phải một lời nhận xét.
+
+> 🔧 **Chưa chốt:** công thức quy CPM về biên độ `[0,1]` là câu hỏi **Q4**, chặn issue #8. Ba con số
+> 0.12 / 0.45 / 0.80 ở trên là **mốc hình học đang dùng** (giữ được), không phải kết quả của một
+> công thức đã chốt. Đừng suy ra ngưỡng CPM từ chúng.
 
 **Lưu ý quan trọng:** Cơn sóng lượn lên đỉnh hay lượn xuống đáy chỉ là nét vẽ hình sin theo thời gian. Điều bạn cần quan tâm là **khoảng cách từ điểm đó tới đường đứt nét ở giữa**. Càng xa trung tâm nghĩa là mặt hồ càng xáo động.
 

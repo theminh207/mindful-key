@@ -1,3 +1,25 @@
+> # ⛔ LỖI THỜI — 2026-07-26
+>
+> **Toàn bộ tài liệu này mô tả một tính năng đã bị bỏ khỏi sản phẩm.**
+>
+> "Nhịp thở" là hợp đồng đứng sau **gác cổng gửi tin** — chặn tạm đúng lúc người dùng bấm gửi một
+> câu bị chấm điểm cao. Cả hai nay là **non-goal** theo hiến chương
+> [`docs/01-intent.md`](../01-intent.md) §5: *"Không gác cổng nút gửi. Sản phẩm không phát hiện
+> 'sắp gửi tin', không chen vào giữa người dùng và ứng dụng chat."*
+>
+> Thay bằng **chuông tỉnh thức theo nhịp gõ**: đo tốc độ gõ, vượt ngưỡng người dùng đặt thì ngân
+> một tiếng chuông — chỉ âm thanh, không khung nổi, không chặn phím.
+>
+> - Lý do và đánh đổi: [`ADR-0013`](../03-decisions/ADR-0013-do-nhip-go-thay-doc-cam-xuc.md)
+> - Hợp đồng thay thế: [`docs/04-contracts.md`](../04-contracts.md) **HĐ-2** (chuông ngân thì được,
+>   chặn thì không). Lưu ý số HĐ đã dịch — HĐ-1 cũ *là* hợp đồng nhịp thở này, nay HĐ-1 là hợp đồng
+>   **cấm** lớp nhịp gõ nhận nội dung. Bảng đánh số lại ở đầu `04-contracts.md`.
+> - Lộ trình gỡ code: [`spec/typing-cadence-bell/`](../../spec/typing-cadence-bell/README.md) issue #12
+>
+> **Không dùng file này làm căn cứ cho bất kỳ việc gì đang làm.** Giữ để tra lịch sử, không xoá.
+
+---
+
 # Design note: hợp đồng "nhịp thở" (Breathing Pause)
 
 > Trạng thái: **hợp đồng C++ (bước 3) VÀ UI macOS thật (bước 5) đã implement.**

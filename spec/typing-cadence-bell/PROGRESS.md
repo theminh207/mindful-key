@@ -17,6 +17,58 @@
 
 ---
 
+## 2026-08-01 — #5 Đồng bộ docs/tasks + harness .claude
+
+**Làm gì:**
+
+*Harness `.claude/`* — skill `mood-sentiment-layer` → **`typing-cadence-layer`**, viết lại toàn bộ
+mandate (luồng dữ liệu mới, 4 luật không được phá, bảng "thứ đã chết đừng sinh lại"). `mood-layer-agent`
+đổi mandate từ "lớp cảm xúc" sang "lớp đo nhịp gõ + chuông tỉnh thức". `mindful-keyboard-harness/SKILL.md`
+cập nhật bảng 4 chuyên gia + luật định tuyến. `CLAUDE.md` cập nhật bảng harness và **tạo mới bảng
+"Lịch sử thay đổi harness"** — bảng này được `SKILL.md` bước 6 viện dẫn nhưng trước giờ **chưa từng
+tồn tại**.
+
+*`docs/tasks/`* — `PRD.md` viết lại theo `Measure → Bell → Reflect` (định vị, vòng lặp, non-goals,
+metrics, riêng tư, phạm vi kỹ thuật). `PRIVACY-NOTE.md` viết lại mạnh hơn hẳn: lời hứa từ *"có đọc
+nhưng không lưu"* thành ***"không đọc"***, kèm câu chốt *"không cần tin lời hứa suông — kiểm chứng
+được bằng cách đọc mã nguồn"* trỏ vào HĐ-1. `SEND-RISK-MODEL-SPEC.md` + `BREATHING-PAUSE-CONTRACT.md`
+gắn banner **⛔ LỖI THỜI** ở đầu (giữ file, không xoá lịch sử). `MOOD-WAVE-MECHANISM.md` gắn banner
+bảng-phân-loại nói rõ phần nào chết / phần nào giữ, và **viết lại đoạn §8 hướng dẫn đọc đồ thị** —
+đoạn cũ mô tả biên độ theo *"dùng từ ngữ ôn hòa / tiêu cực"* (giả định đọc nội dung) và *"tâm trí bắt
+đầu xáo động"* (phán xét trạng thái tâm, hiến chương §4.1 cấm). `AGENT-BRIEF.md` sửa dòng định vị.
+`TEST_MATRIX.md` thêm khối mở đầu + **10 hàng mô hình mới**.
+
+**Chốt được:**
+- **Khôi phục 4 agent** thay vì để xoá. `.claude/agents/` bị xoá sạch trong tree bàn giao, nhưng
+  `SKILL.md` dòng 41 **bắt buộc** đọc `.claude/agents/{name}.md`, và 3 chỗ khác cũng trỏ tới. Hỏi
+  chủ dự án → khôi phục, giữ tên `mood-layer-agent`, viết lại mandate.
+- **`.claude/rules-archive/` giữ nguyên việc xoá** — grep toàn repo: **không ai trỏ tới**.
+- **`.claude/settings.json`** (bỏ `Bash(git push:*)` khỏi ask-list) giữ, đi kèm PR này — chủ dự án
+  chốt, ghi rõ là ngoài phạm vi có chủ đích.
+
+**Phải đoán:** hai chỗ, đã ghi `FRICTION-LOG.md`.
+1. **`TEST_MATRIX.md`: issue bảo "gỡ hàng", luật của chính file bảo "giữ vết".** Mục "Khi nào cập
+   nhật file này" viết: *"Bỏ một hành vi → đổi Trạng thái sang `retired`, **không xóa dòng**"*.
+   **Luật của file thắng.** Và còn một tầng nữa: cũng **chưa** đổi sang `retired` bây giờ, vì
+   `test_send_risk` hôm nay **vẫn chạy và vẫn xanh** — đổi trạng thái trước khi gỡ code là nói dối
+   theo hướng ngược lại. Chuyển `retired` ở #12/#13 khi code biến mất thật.
+2. **FRICTION-LOG không phải changelog.** Issue bảo *"ghi 1 mục ngày đổi mô hình + lý do, để người
+   sau hiểu vì sao code cũ biến mất"*. Nhưng file này tự khai là danh sách *"chỗ phải đoán"*, không
+   phải nhật ký thay đổi. Xử: lý do "vì sao code cũ biến mất" đặt vào **banner ⛔ LỖI THỜI** ngay đầu
+   hai file chết (đúng chỗ người đọc sẽ gặp nó) + `ADR-0013`; ba mục thêm vào FRICTION-LOG đều đúng
+   thể loại "chỗ phải đoán" thật.
+
+**Kiểm chứng:** `brand_lint.py` 0 vi phạm cứng. PR thuần tài liệu + harness, không đụng `core/` hay
+`platforms/`.
+
+**Còn hở:**
+- `docs/tasks/` còn nhiều file khác nhắc mô hình cũ (`OPENKEY-MAP.md`, `QA-WINDOWS.md`,
+  `WINDOWS-PARITY-TASKS.md`, `BRAND-ASSETS.md`…) — **issue #5 không liệt kê**, không đụng. Để #14
+  nhặt khi rà câu chữ toàn cục.
+- `bmad-output/` (tài liệu BMAD cũ) chưa rà — ngoài phạm vi, và bản thân nó tự khai là archival.
+
+---
+
 ## 2026-08-01 — #4 Đồng bộ tầng 02/04/06/07 theo vòng lặp Measure → Bell → Reflect
 
 **Làm gì:** Viết lại `04-contracts.md` từ 6 lên 8 hợp đồng — **gỡ 1** (HĐ nhịp thở, theo gác cổng),

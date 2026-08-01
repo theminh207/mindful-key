@@ -1,3 +1,21 @@
+> # ⛔ LỖI THỜI — 2026-07-26
+>
+> **Toàn bộ tài liệu này mô tả một thứ không còn tồn tại trong sản phẩm.**
+>
+> Send-risk là cách chấm điểm câu chữ bằng **đọc nội dung** người dùng gõ. Sản phẩm đã bỏ hẳn
+> hướng đó và chuyển sang **đo tốc độ gõ (CPM)** — một phép đo không cần đọc chữ. Lời hứa riêng
+> tư nhờ vậy mạnh lên từ *"chúng tôi có đọc nhưng không lưu"* thành ***"chúng tôi không đọc"***.
+>
+> - Lý do và đánh đổi đã chấp nhận: [`ADR-0013`](../03-decisions/ADR-0013-do-nhip-go-thay-doc-cam-xuc.md)
+> - Mô hình thay thế: [`docs/04-contracts.md`](../04-contracts.md) HĐ-1 → HĐ-4
+> - Lộ trình gỡ code: [`spec/typing-cadence-bell/`](../../spec/typing-cadence-bell/README.md) issue #13
+>
+> **Không dùng file này làm căn cứ cho bất kỳ việc gì đang làm.** Kế hoạch thay lexicon bằng
+> PhoBERT ONNX ở đây **sẽ không bao giờ được thực hiện** — hiến chương §5 nay liệt "model
+> sentiment" là **non-goal**. Giữ file để tra lịch sử, không xoá.
+
+---
+
 # Spec: thay lexicon bằng PhoBERT ONNX cho send-risk (chưa implement)
 
 > Trạng thái: **SPEC — chưa code.** MVP macOS ship với lexicon (`prototype/mood_demo.cpp`,
