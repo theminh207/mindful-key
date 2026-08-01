@@ -19,10 +19,11 @@
 
 ## 2026-08-01 — #4 Đồng bộ tầng 02/04/06/07 theo vòng lặp Measure → Bell → Reflect
 
-**Làm gì:** Viết lại `04-contracts.md` thành 8 hợp đồng theo mô hình mới — bỏ HĐ nhịp thở và HĐ
-send-risk, thêm **HĐ-1 "lớp nhịp gõ không được nhận nội dung"** (cấm mọi API `core/mood` có tham số
-chuỗi, kèm lệnh `grep` soi), **HĐ-2 chuông ngân-thì-được-chặn-thì-không**, **HĐ-3 hợp đồng nhịp gõ**
-(CPM · cửa sổ 30s · ngưỡng mặc định 400), **HĐ-4 không đếm trong ô mật khẩu**. Viết lại
+**Làm gì:** Viết lại `04-contracts.md` từ 6 lên 8 hợp đồng — **gỡ 1** (HĐ nhịp thở, theo gác cổng),
+**thêm 3** (**HĐ-1 "lớp nhịp gõ không được nhận nội dung"** — cấm mọi API `core/mood` có tham số
+chuỗi, kèm lệnh `grep` soi · **HĐ-2 chuông ngân-thì-được-chặn-thì-không** · **HĐ-4 không đếm trong ô
+mật khẩu**), và **giữ HĐ-3 nhưng đổi đơn vị đo** từ `câu → risk [0,1]` sang `nhịp phím → CPM`
+(cửa sổ 30s · ngưỡng mặc định 400). Bốn hợp đồng còn lại dịch số, nội dung gần như nguyên. Viết lại
 `07-glossary.md`: bỏ `send-risk`/`gác cổng`/`nhịp thở`/`allow-list`, thêm `nhịp gõ`/`CPM`/`cửa sổ
 trượt`/`ngưỡng chuông`/`cooldown`, và thêm bảng **"Thuật ngữ đã nghỉ hưu"** để người đọc code cũ tra
 ra ngay. Viết lại `02-features.md` theo mô hình mới **kèm nhãn trạng thái thật**. Sửa một dòng ở
@@ -80,8 +81,11 @@ vết duy nhất" nhưng `workflow-macos-team.drawio` có **hai** node — node 
 
 **Còn hở:**
 - **Q9** (sơ đồ) treo, chờ chủ dự án — checkbox `docs/diagrams/` của #4 **cố ý để trống**.
-- Sáu chỗ trong `docs/03-decisions/` còn trỏ số HĐ cũ, **cố ý không sửa** (tầng 03 chỉ thêm không
-  sửa) — bảng đánh số lại ở `04-contracts.md` gánh việc tra cứu. 4/6 ADR đó đã *Bị thay thế*.
+- Năm chỗ trong `docs/03-decisions/` còn trỏ số HĐ cũ (`ADR-0003` · `ADR-0004` · `ADR-0005` ·
+  `ADR-0011` ×2 = **bốn ADR**, tất cả đều đã *Bị thay thế*), **cố ý không sửa** vì tầng 03 chỉ thêm
+  không sửa — bảng đánh số lại ở `04-contracts.md` gánh việc tra cứu. Riêng `ADR-0002` là ADR duy
+  nhất còn *Đã chốt* nên **đã sửa số trực tiếp**: đó là dòng metadata "Liên quan", không phải thân
+  quyết định, và #3 đã tạo tiền lệ sửa metadata tầng 03.
 - HĐ-7 (copy chuỗi trước khi rời luồng) giữ nguyên dù phạm vi đang thu hẹp — chưa gỡ luật khi code
   chưa gỡ, đợi #13.
 

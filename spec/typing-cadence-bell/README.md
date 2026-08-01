@@ -106,7 +106,7 @@ Chưa chốt thì **đừng tự quyết trong im lặng** — hỏi chủ dự 
 | Q6 | Nhật ký cũ trên máy người dùng: xoá sạch hay giữ đọc song song? | #11 | ❓ chưa chốt |
 | Q7 | Giữ hay bỏ check-in tự thuật "Mặt hồ đang thế nào?" (người dùng tự nói, không phải máy đoán) | #11 | ❓ chưa chốt |
 | Q8 | Bàn phím iOS có phát được tiếng chuông trong app extension không? Không được thì thay bằng gì? | #17 | 🔬 đã có đáp án kỹ thuật, chờ nghe-verify tay |
-| Q9 | `docs/diagrams/` **không có** sơ đồ vòng lặp lõi (issue #4 giả định là có). Có vẽ mới `Measure → Bell → Reflect` không? Và ghi chú "gác cổng" cũ trong `workflow-macos-team.drawio` để nguyên hay sửa? | #4 → treo | ❓ chưa chốt |
+| Q9 | `docs/diagrams/` **không có** sơ đồ vòng lặp lõi (issue #4 giả định là có). Có vẽ mới `Measure → Bell → Reflect` không? Và **hai node** mô hình cũ trong `workflow-macos-team.drawio` để nguyên hay sửa — dòng 115 khai *"Gác cổng… Trái tim sản phẩm"* (nặng, khai sai tính năng số một) và dòng 134 là ghi chú trạng thái đề ngày? | #4 → treo | ❓ chưa chốt |
 
 **Đã chốt:**
 

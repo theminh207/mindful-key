@@ -41,12 +41,16 @@ gì về việc màn hình có giống thiết kế hay không**. Nó chỉ nói
 | ~~Gác cổng trước khi gửi~~ | đang gỡ (#12) | đang gỡ (#12) | **không bao giờ có** | không |
 | ~~Chấm điểm send-risk~~ | đang gỡ (#13) | đang gỡ (#13) | đang gỡ (#13) | không |
 
-Ba dòng gạch ngang là **non-goal** kể từ 2026-07-26 — xem [tầng Intent §5](01-intent.md). Chúng còn
-trong bảng vì code còn trong repo, không phải vì còn được mong muốn.
+Ba dòng gạch ngang **không phải cùng một loại**, đừng đọc gộp:
 
-Lưu ý dòng chuông: sản phẩm hôm nay **đã có tiếng chuông**, nhưng nó ngân theo *nhịp lấy mẫu định kỳ*
-và *chuỗi câu có điểm send-risk cao* — hai nguồn đều chết theo mô hình mới. Việc của #9/#15/#17 là
-**đổi nguồn nuôi chuông** sang nhịp gõ, không phải dựng tiếng chuông từ đầu.
+- **Gác cổng trước khi gửi** và **chấm điểm send-risk** là **non-goal** kể từ 2026-07-26 — xem
+  [tầng Intent §5](01-intent.md). Chúng còn trong bảng vì code còn trong repo, không phải vì còn
+  được mong muốn.
+- **Chuông theo nhịp lấy mẫu / chuỗi câu căng** thì **không** phải non-goal. Sản phẩm hôm nay đã có
+  tiếng chuông thật; chỉ có *nguồn nuôi nó* là chết — nó đang ngân theo nhịp lấy mẫu định kỳ và theo
+  chuỗi câu có điểm send-risk cao. Việc của #9/#15/#17 là **đổi nguồn sang nhịp gõ**, không phải
+  dựng tiếng chuông từ đầu. Gạch ngang ở đây nghĩa là "cơ chế kích hoạt này sắp biến mất", không
+  phải "tính năng này bị bỏ".
 
 ---
 

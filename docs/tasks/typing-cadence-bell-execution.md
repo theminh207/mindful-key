@@ -8,21 +8,18 @@
 > trước. File này chỉ giữ **hai thứ không có chỗ nào khác chứa**: thứ tự thi công đã hiệu chỉnh, và
 > kho kết quả research. Thấy chỗ nào ở đây mâu thuẫn với `spec/` → **`spec/` đúng**, sửa file này.
 
-## 1. Thứ tự thi công đã hiệu chỉnh
+## 1. Một hiệu chỉnh so với thứ tự Phase ở README §4
 
-Thứ tự số issue **không** phải thứ tự làm được. `#13` chặn bởi `#8 #9 #15 #17` (README §4) — tức
-phải đợi cả Windows và iOS chuyển xong mới gỡ được lớp đọc cảm xúc. Gỡ sớm là vỡ build hai vỏ, đúng
-cái bẫy README §6 cảnh báo (*"gỡ sớm là vỡ build"*).
+Phase 3 **không chạy liền sau Phase 2** như số thứ tự gợi ý. Phải tách đôi:
 
-```
-#4  #5          Phase 0 — docs + harness
-#6  #7  #8      Phase 1 — core C++
-#9  #10 #11     Phase 2 — macOS
-#12             Phase 3a — gỡ gác cổng (chỉ cần #9)
-#15 #16         Phase 4 — Windows
-#17 #18         Phase 5 — iOS
-#13 #14         Phase 3b — gỡ lớp đọc cảm xúc (đợi #15 + #17) + câu chữ
-```
+- **#12** (gỡ gác cổng) chỉ chặn bởi `#9` → làm được ngay sau Phase 2.
+- **#13** (gỡ lớp đọc cảm xúc) chặn bởi `#8 #9 #15 #17` → phải đợi **cả Windows và iOS** chuyển
+  xong. Gỡ sớm là vỡ build hai vỏ, đúng cái bẫy README §6 cảnh báo (*"gỡ sớm là vỡ build"*).
+- **#14** (câu chữ onboarding/riêng tư) chặn bởi `#11 #12`, nhưng đoạn hứa *"không đọc nội dung"*
+  chỉ nói được sau khi #13 xong — nên xếp cùng #13.
+
+Tức Phase 3 kẹp Phase 4 và Phase 5 ở giữa: `… → #12 → Phase 4 → Phase 5 → #13 #14`.
+Mọi thứ còn lại theo đúng README §4.
 
 ## 2. Research Findings
 

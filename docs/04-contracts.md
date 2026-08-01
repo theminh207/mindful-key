@@ -17,21 +17,27 @@
 
 ## Bảng đánh số lại (2026-08-01, issue #4)
 
-Đợt chuyển mô hình bỏ hai hợp đồng và thêm hai hợp đồng mới, nên **số thứ tự đã dịch**. Tài liệu và
-ADR viết trước 2026-08-01 trỏ tới số cũ; tra ở đây để khỏi đọc nhầm sang một hợp đồng khác hẳn.
+Đợt chuyển mô hình **gỡ 1 hợp đồng, thêm 3 hợp đồng mới, và giữ 1 số nhưng đổi nghĩa** — sáu hợp
+đồng thành tám, nên **số thứ tự đã dịch**. Tài liệu và ADR viết trước 2026-08-01 trỏ tới số cũ; tra
+ở đây để khỏi đọc nhầm sang một hợp đồng khác hẳn.
 
 | Số cũ | Tên cũ | Nay là |
 |---|---|---|
 | HĐ-1 | Nhịp thở: đánh giá thì được, chặn thì không | **Đã gỡ.** Gác cổng gửi tin là non-goal ([tầng Intent §5](01-intent.md)). Số HĐ-1 nay thuộc về *"Lớp nhịp gõ không được nhận nội dung"* — hợp đồng **cấm** đúng thứ hợp đồng cũ mô tả |
-| HĐ-2 | Khởi động an toàn | → **HĐ-5** (nguyên văn) |
-| HĐ-3 | Hợp đồng send-risk | → **HĐ-3** *"Hợp đồng nhịp gõ"* — cùng số, **khác đơn vị đo**: `câu → risk [0,1]` đổi thành `nhịp phím → CPM` |
-| HĐ-4 | Copy chuỗi trước khi rời luồng | → **HĐ-7** (nguyên văn, phạm vi đang thu hẹp) |
-| HĐ-5 | Ranh giới bộ não và vỏ | → **HĐ-6** (nguyên văn, thêm một bằng chứng) |
-| HĐ-6 | Không bịa dữ liệu | → **HĐ-8** (thêm luật không trộn hai thước đo) |
+| HĐ-2 | Khởi động an toàn | → **HĐ-5**, nội dung giữ nguyên |
+| HĐ-3 | Hợp đồng send-risk | → **HĐ-3** *"Hợp đồng nhịp gõ"* — cùng số, **khác đơn vị đo**: `câu → risk [0,1]` đổi thành `nhịp phím → CPM`. Đây là ca dễ đọc nhầm nhất |
+| HĐ-4 | Copy chuỗi trước khi rời luồng | → **HĐ-7**, thêm ghi chú phạm vi đang thu hẹp |
+| HĐ-5 | Ranh giới bộ não và vỏ | → **HĐ-6**, thêm một bằng chứng (chính sách chuông từng có 2 bản chép tay) |
+| HĐ-6 | Không bịa dữ liệu | → **HĐ-8**, thêm luật không trộn hai thước đo |
 
-Sáu chỗ còn trỏ số cũ, **cố ý không sửa** vì tầng 03 là *"chỉ thêm, không sửa"*
-([`docs/README.md`](README.md)): `ADR-0002:5` · `ADR-0003:5` · `ADR-0004:43` · `ADR-0005:5` ·
-`ADR-0011:5` · `ADR-0011:41`. Bốn trong sáu ADR đó đã mang trạng thái *Bị thay thế*.
+Ba hợp đồng **mới hoàn toàn**, không có số cũ tương ứng: **HĐ-1** (lớp nhịp gõ không nhận nội dung) ·
+**HĐ-2** (chuông ngân thì được, chặn thì không) · **HĐ-4** (không đếm trong ô mật khẩu).
+
+Sáu chỗ trong `docs/03-decisions/` còn trỏ số cũ, **cố ý không sửa** vì tầng 03 là *"chỉ thêm, không
+sửa"* ([`docs/README.md`](README.md)): `ADR-0003:5` · `ADR-0004:43` · `ADR-0005:5` · `ADR-0011:5` ·
+`ADR-0011:41` — bốn ADR, tất cả đều đã mang trạng thái *Bị thay thế*. Riêng `ADR-0002:5` là ADR duy
+nhất còn **Đã chốt** nên đã sửa số trực tiếp: đó là dòng metadata *"Liên quan"*, không phải thân
+quyết định, và issue #3 đã tạo tiền lệ sửa metadata tầng 03 (đổi Trạng thái, trỏ lại link chết).
 
 ---
 
