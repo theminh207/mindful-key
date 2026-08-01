@@ -94,9 +94,11 @@ viện dẫn HĐ-6 và HĐ-8 → ghi rõ; thêm mục "khôi phục 4 agent" và
 
 Vòng 2 tui tự phát hiện mình **trích sai hiến chương**: viết *"'tâm trí xáo động' — phán xét trạng
 thái tâm, hiến chương §4.1 cấm"*. §4.1 **không** cấm điều đó — nó còn dùng chính ẩn dụ *"mặt hồ dậy
-sóng ứng với tâm động"*, và chỉ cấm đúng 4 thứ (đèn đỏ/xanh · emoji chấm điểm · gamification · copy
-khiển trách). Căn cứ đúng là **§4.2** (*"không suy đoán gì từ chữ nghĩa"*) — cái sai của bản cũ là
-**căn cứ để nói**, không phải chữ "tâm".
+sóng ứng với tâm động"*, và phần cấm tuyệt đối của nó liệt 4 thứ (đèn đỏ/xanh · emoji chấm điểm ·
+gamification · copy khiển trách). §4.1 **có** một phép tự kiểm phạm vi rộng (*"đang mô tả hay đang
+phán xét?"*) nên lời trích cũ **quá rộng chứ không hoàn toàn vô căn cứ**. Nhưng căn cứ chuẩn xác là
+**§4.2** (*"không suy đoán gì từ chữ nghĩa"*) — cái sai của bản cũ là **căn cứ để nói**, không phải
+chữ "tâm".
 
 Nhưng vòng 3 bắt được: tui sửa lời trích đó ở `MOOD-WAVE-MECHANISM.md` mà **để nguyên chính lời
 trích sai ấy ở `PROGRESS.md:38`** — cùng một PR, một chỗ đính chính, một chỗ vẫn sai. Và tìm ra
@@ -116,8 +118,11 @@ trong `.claude/`).
 
 **Còn hở:**
 - `docs/tasks/` còn nhiều file khác nhắc mô hình cũ (`OPENKEY-MAP.md`, `QA-WINDOWS.md`,
-  `WINDOWS-PARITY-TASKS.md`, `BRAND-ASSETS.md`…) — **issue #5 không liệt kê**, không đụng. Để #14
-  nhặt khi rà câu chữ toàn cục.
+  `WINDOWS-PARITY-TASKS.md`, `BRAND-ASSETS.md`…) — **issue #5 không liệt kê**, không đụng phần nội
+  dung. Để #14 nhặt khi rà câu chữ toàn cục. **Ngoại lệ đã xử ngay:** 3 file
+  (`ROADMAP-WINDOWS.md`, `QA-WINDOWS.md`, `WINDOWS-PARITY-TASKS.md`) trỏ `AGENT-BRIEF.md` là *"luật
+  tối cao"* — đó là orphan **do chính PR này tạo ra** khi hạ cấp AGENT-BRIEF, nên dọn luôn theo luật
+  surgical, trỏ sang `docs/01-intent.md`.
 - `bmad-output/` (tài liệu BMAD cũ) chưa rà — ngoài phạm vi, và bản thân nó tự khai là archival.
 
 ---

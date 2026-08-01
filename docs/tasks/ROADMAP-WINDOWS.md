@@ -2,7 +2,7 @@
 
 **Lập ngày:** 2026-07-16 · **Chốt bởi:** chủ dự án ("nâng cấp toàn bộ rồi mới đóng gói")
 **Chuẩn hành vi:** `platforms/apple/macos/` — mọi module Windows phải khớp HÀNH VI bản Mac.
-**Luật tối cao:** `docs/tasks/AGENT-BRIEF.md` (HIẾN CHƯƠNG). Mơ hồ về nhận diện/pháp lý → hỏi chủ dự án.
+**Luật tối cao:** `docs/01-intent.md` (hiến chương). Mơ hồ về nhận diện/pháp lý → hỏi chủ dự án.
 
 ---
 
