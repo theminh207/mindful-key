@@ -89,19 +89,24 @@ int main() {
         // Ngưỡng người dùng chọn được: Nhanh 300 · Rất nhanh 400 (mặc định) · Cực nhanh 500.
         // Muốn chạm 400 CPM phải gõ THẬT 200 phím trong 30 giây — đây là bằng chứng bằng số
         // rằng ngưỡng mặc định không dễ chạm oan.
+        //
+        // Nhịp trải ĐỀU gần hết cửa sổ (giống gõ thật), và xét ngay tại phím cuối. Đừng xét
+        // tại đúng t = W: cửa sổ là nửa mở `(now - W, now]` nên nhịp tại t=0 rơi TRÚNG mép
+        // dưới và bị loại — ra 298 thay vì 300. Đó là hành vi đúng của mép (Loại 6 khoá riêng),
+        // chỉ là cách đặt câu hỏi ở đây phải khớp.
         TypingCadence c(W);
-        typeKeys(c, 150, 0, 100);
-        checkCPM("150 nhịp trong cửa sổ -> đúng mức 'Nhanh'",      c.currentCPM(W), 300.0);
+        const int64_t last = typeKeys(c, 150, 0, 200);   // 0 .. 29800
+        checkCPM("150 nhịp trải trong cửa sổ -> mức 'Nhanh'",      c.currentCPM(last), 300.0);
     }
     {
         TypingCadence c(W);
-        typeKeys(c, 200, 0, 100);
-        checkCPM("200 nhịp trong cửa sổ -> đúng mức 'Rất nhanh'",  c.currentCPM(W), 400.0);
+        const int64_t last = typeKeys(c, 200, 0, 150);   // 0 .. 29850
+        checkCPM("200 nhịp trải trong cửa sổ -> mức 'Rất nhanh'",  c.currentCPM(last), 400.0);
     }
     {
         TypingCadence c(W);
-        typeKeys(c, 250, 0, 100);
-        checkCPM("250 nhịp trong cửa sổ -> đúng mức 'Cực nhanh'",  c.currentCPM(W), 500.0);
+        const int64_t last = typeKeys(c, 250, 0, 120);   // 0 .. 29880
+        checkCPM("250 nhịp trải trong cửa sổ -> mức 'Cực nhanh'",  c.currentCPM(last), 500.0);
     }
 
     printf("\n--- Loại 5: cửa sổ trượt đẩy nhịp cũ ra ---\n");
