@@ -17,6 +17,51 @@
 
 ---
 
+## 2026-08-01 — #4 Đồng bộ tầng 02/04/06/07 theo vòng lặp Measure → Bell → Reflect
+
+**Làm gì:** Viết lại `04-contracts.md` thành 8 hợp đồng theo mô hình mới — bỏ HĐ nhịp thở và HĐ
+send-risk, thêm **HĐ-1 "lớp nhịp gõ không được nhận nội dung"** (cấm mọi API `core/mood` có tham số
+chuỗi, kèm lệnh `grep` soi), **HĐ-2 chuông ngân-thì-được-chặn-thì-không**, **HĐ-3 hợp đồng nhịp gõ**
+(CPM · cửa sổ 30s · ngưỡng mặc định 400), **HĐ-4 không đếm trong ô mật khẩu**. Viết lại
+`07-glossary.md`: bỏ `send-risk`/`gác cổng`/`nhịp thở`/`allow-list`, thêm `nhịp gõ`/`CPM`/`cửa sổ
+trượt`/`ngưỡng chuông`/`cooldown`, và thêm bảng **"Thuật ngữ đã nghỉ hưu"** để người đọc code cũ tra
+ra ngay. Viết lại `02-features.md` theo mô hình mới **kèm nhãn trạng thái thật**. Sửa một dòng ở
+`06-operations.md` và một dòng ở `docs/README.md`.
+
+**Chốt được:**
+- **Q3 — nhịp phím lấy từng phím ở hook bàn phím**, không tái dùng `vOnWordCommitted`. Lý do đầy đủ
+  ở README §5 "Đã chốt". Đã thành hợp đồng HĐ-1.
+- **Q5 — không đếm nhịp trong ô mật khẩu**, fail-closed. Đã thành hợp đồng HĐ-4. Kéo theo một việc
+  cho #9: **macOS hiện chưa có cổng kiểm này**, Windows và iOS thì có rồi.
+- **Số phận skill `mood-sentiment-layer`** (câu hỏi #5 tự đặt): đổi tên thành `typing-cadence-layer`.
+  Chốt ở đây để #5 khỏi phải hỏi lại.
+
+**Phải đoán:** hai chỗ, đã ghi `docs/tasks/FRICTION-LOG.md`.
+1. **Issue #4 giao "vẽ lại sơ đồ vòng lặp lõi 4 bước thành 3 bước" — sơ đồ đó không tồn tại.** Cả
+   hai file trong `docs/diagrams/` là sơ đồ *quy trình làm việc*, không phải *vòng lặp sản phẩm*;
+   grep `Sense|Pause|Remind|Reflect` ra 0 kết quả. **Không bịa ra sơ đồ chưa từng có.** Thành **Q9**
+   ở README §5 chờ chủ dự án chốt. Ràng buộc kèm theo: máy dev Windows không có drawio CLI, sửa
+   `.drawio` mà không regenerate được `.svg`/`.png` sẽ tạo trôi lệch nguồn ↔ bản xuất.
+2. **Tầng 02 mô tả hiện trạng, mà hiện trạng đang giữa đợt chuyển.** Issue bảo viết theo mô hình
+   mới; luật của tầng 02 lại là "code là đúng". Viết mục B theo mô hình mới **kèm nhãn "chưa khởi
+   công trên mọi vỏ"** + banner đầu file, bảng nền tảng ghi cả thứ đang chạy lẫn thứ sắp có. Giữ
+   được cả hai luật.
+
+**Kiểm chứng:** `brand_lint.py` — 0 vi phạm cứng (chi tiết ở phần cuối PR). PR thuần tài liệu, không
+đụng code, nên `macos.yml`/`windows.yml` không có gì để build khác đi. **Lưu ý máy dev là Windows và
+KHÔNG có toolchain** (`g++`/`clang++`/`cl`/`make` đều thiếu) — `make test`/`make build` không chạy
+local được, CI là cổng thật. Điều này áp cho toàn bộ đợt #4→#18, ghi ở
+`docs/tasks/typing-cadence-bell-execution.md`.
+
+**Còn hở:**
+- **Q9** (sơ đồ) treo, chờ chủ dự án — checkbox `docs/diagrams/` của #4 **cố ý để trống**.
+- `docs/05-conventions.md` còn 1 chỗ nhắc mô hình cũ — **ngoài phạm vi #4** (issue chỉ liệt kê
+  02/04/06/07 + README + diagrams). Không đụng, ghi lại đây để #5 hoặc #14 nhặt.
+- HĐ-7 (copy chuỗi trước khi rời luồng) giữ nguyên dù phạm vi đang thu hẹp — chưa gỡ luật khi code
+  chưa gỡ, đợi #13.
+
+---
+
 ## 2026-07-27 — #3 ADR: đo nhịp gõ thay cho đọc cảm xúc
 
 **Làm gì:** Viết `ADR-0013` (đo nhịp gõ thay đọc cảm xúc) và `ADR-0014` (mandate iOS hẹp, lý lẽ

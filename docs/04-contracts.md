@@ -6,38 +6,128 @@
 >
 > Mỗi hợp đồng ở đây được viết sao cho **soi được bằng `grep`**. Đó là tiêu chuẩn để một luật được
 > nhận vào tầng này: nếu không kiểm được bằng máy hoặc bằng một lệnh tìm kiếm, nó thuộc tầng khác.
+>
+> ⚠️ **Tầng này là quy phạm, không phải mô tả hiện trạng.** Theo [`docs/README.md`](README.md),
+> tầng 01–04 là nguồn đúng và **code phải sửa theo**. Các hợp đồng dưới đây đã chuyển sang vòng lặp
+> `Measure → Bell → Reflect`; code ba vỏ đang được chuyển theo ở
+> [`spec/typing-cadence-bell/`](../spec/typing-cadence-bell/README.md) (issue #6 → #18). Chỗ nào
+> code chưa khớp là **nợ đã có lịch trả**, không phải hợp đồng sai.
 
 ---
 
-## HĐ-1 — Nhịp thở: đánh giá thì được, chặn thì không
+## HĐ-1 — Lớp nhịp gõ không được nhận nội dung
 
-**Ràng buộc.** Hợp đồng `core/mood/BreathingPause.h` chỉ trả lời hai câu: *có nên hiện gì không* và
-*hiện câu chữ gì*. Nó **không có, và không được có**, bất kỳ cơ chế nào ngăn hành động gửi.
+**Đây là hợp đồng quan trọng nhất của tầng này.** Lời hứa riêng tư ở
+[tầng Intent §4.2](01-intent.md) — *"sản phẩm không đọc nội dung người dùng gõ"* — chỉ thật khi
+người đọc code **nhìn thấy được** rằng không có đường nào cho chữ đi vào.
+
+**Ràng buộc.** Mọi API của `core/mood` liên quan tới đo nhịp và quyết định chuông **không được có
+tham số kiểu chuỗi**. Nhịp gõ nuôi bằng *thời điểm bấm phím*, không phải bằng phím nào được bấm.
 
 ```cpp
-bool BreathingPause_Evaluate(double sendRisk, BreathingPausePrompt* outPrompt);
-void BreathingPause_ReportChoice(BreathingPauseChoice choice);
+// Đúng — chỉ có dấu thời gian
+void   TypingCadence_OnKeystroke(int64_t tsMs);
+double TypingCadence_CPM(int64_t nowMs);
+
+// SAI — dù chỉ dùng .length() thì chuỗi vẫn đi qua lớp này
+void TypingCadence_OnWord(const std::wstring& word);   // ❌ cấm
 ```
 
-- Trả `false` thì vỏ không làm gì cả — không có khung rỗng.
-- Trả `true` **không có nghĩa nút gửi bị khóa**. Trách nhiệm giữ ma sát mềm nằm ở phía vỏ: khung chỉ
-  được che tạm, lựa chọn "vẫn gửi" phải hoạt động ngay lập tức.
-- Hợp đồng thuần C++, không phụ thuộc framework giao diện, để mọi vỏ tự vẽ mà không phải đoán API.
+**Vì sao không tái dùng `vOnWordCommitted`.** Callback chốt từ của engine có sẵn và ba vỏ đã nối
+vào đó rồi, nên nuôi nhịp từ đấy là đường ít sửa nhất. Nhưng chữ ký của nó là
+`void (*)(const wstring& word)` — lớp nhịp sẽ **nhận** cả từ vừa gõ dù chỉ dùng độ dài. Người review
+đọc code vẫn thấy lớp mood cầm text, và lời hứa tụt từ *"không đọc"* xuống *"có nhận nhưng hứa
+không dùng"*. Đánh đổi đã cân nhắc và bác bỏ — xem
+[ADR-0013](03-decisions/ADR-0013-do-nhip-go-thay-doc-cam-xuc.md).
 
-**Vì sao tách riêng khỏi lớp nhắc thụ động.** Nhắc thụ động xảy ra ngay khi gõ xong một câu; gác
-cổng xảy ra khi vỏ phát hiện người dùng bấm gửi. Hai khoảnh khắc này dùng chung con số send-risk
-nhưng **không được gộp code**, vì giao diện khác nhau và ngưỡng có thể cần tách khi có dữ liệu thật.
+**Cách soi.**
 
-**Hạn chế đã biết, không giấu.** Điểm chèn kiểm tra nằm ngay đầu hook, trước khi engine xử lý ký tự
-Enter. Nếu từ cuối câu chưa được chốt thì điểm send-risk tại thời điểm đó có thể chưa tính từ đó.
-Đây là đánh đổi có chủ đích để không phải đụng vào hơn 900 dòng logic xử lý tiếng Việt.
-
-**Cách soi.** Mọi nơi gọi `BreathingPause_Evaluate` phải nằm sau một bước phát hiện "sắp gửi", không
-phải ở mỗi lần chốt từ.
+```bash
+# Không được có kết quả nào
+grep -rnE "(wstring|string|char\s*\*|NSString).*\b(Cadence|BellPolicy)\b" core/mood/
+```
 
 ---
 
-## HĐ-2 — Khởi động an toàn
+## HĐ-2 — Chuông: ngân thì được, chặn thì không
+
+**Ràng buộc.** Chính sách chuông `core/mood/BellPolicy.h` chỉ trả lời đúng một câu: *lúc này có nên
+ngân chuông không*. Nó **không có, và không được có**, bất kỳ cơ chế nào chạm vào luồng gõ.
+
+```cpp
+bool BellPolicy_ShouldRing(double cpm, int64_t nowMs);
+void BellPolicy_NoteRung(int64_t nowMs);          // nạp cooldown
+```
+
+- Trả `false` thì vỏ không làm gì cả — không có khung rỗng, không có thông báo im.
+- Trả `true` nghĩa là **phát một tiếng chuông, rồi thôi**. Không nuốt phím, không khóa phím, không
+  làm chậm ký tự nào, không hiện khung đòi bấm, không hỏi han.
+- Hợp đồng thuần C++, không phụ thuộc framework giao diện, để mọi vỏ tự phát tiếng mà không phải
+  đoán API.
+- Cooldown nằm **trong** `BellPolicy`, không phải trong từng vỏ — nếu để vỏ tự đếm thì ba vỏ sẽ trôi
+  lệch, đúng cái bẫy HĐ-6 mô tả.
+
+**Cách soi.** Mọi nơi gọi `BellPolicy_ShouldRing` chỉ được dẫn tới một lệnh phát tiếng. Có nhánh nào
+đi tới `swallow`/`consume`/`return TRUE` của hook bàn phím là vi phạm.
+
+---
+
+## HĐ-3 — Hợp đồng nhịp gõ
+
+**Chữ ký ổn định:**
+
+```
+chuỗi thời điểm bấm phím  →  CPM (số thực, ký tự mỗi phút)  →  có/không ngân chuông
+```
+
+Đơn vị là *"tay đang chạy nhanh tới đâu"*, **không phải** suy đoán gì về tâm người gõ. Con số này
+mô tả một sự việc quan sát được; mọi diễn giải về trạng thái tâm nằm ngoài hợp đồng và bị
+[tầng Intent §4.1](01-intent.md) cấm đưa vào câu chữ.
+
+Ba tham số của phép đo, chốt ở [ADR-0013](03-decisions/ADR-0013-do-nhip-go-thay-doc-cam-xuc.md):
+
+| Tham số | Giá trị | Vì sao |
+|---|---|---|
+| Đơn vị | **CPM**, không phải WPM | Telex/VNI gõ dấu tốn thêm phím → gom thành "từ" rồi đếm bị méo |
+| Cửa sổ trượt | **30 giây** | Ngắn hơn: một tràng gõ dồn rồi nghỉ cũng vượt ngưỡng. Dài hơn: chuông tới sau khi nhịp đã lắng |
+| Ngưỡng mặc định | **400 CPM** (`Rất nhanh`) | Người dùng đổi được bất cứ lúc nào; sản phẩm không quyết hộ |
+
+Thay cách tính bên trong thì được. Đổi chữ ký hoặc đổi ý nghĩa của con số thì **không**, vì mọi
+tầng phía sau (chính sách chuông, kho dữ liệu, biên độ sóng, câu chữ) chỉ tiêu thụ con số này.
+
+Kèm theo hai ràng buộc vận hành:
+
+- Phép đo phải **rẻ tới mức chạy thẳng trong hook bàn phím được**: cập nhật cửa sổ trượt là O(1)
+  biên độ, không cấp phát, không khóa. Đây là khác biệt lớn so với lớp chấm điểm cũ vốn buộc phải
+  đẩy sang luồng riêng.
+- Phát tiếng chuông thì **không** được chạy trong hook. Vỏ nhận `true` từ `BellPolicy` rồi đẩy việc
+  phát tiếng sang luồng khác. Chặn luồng hook là làm khựng gõ, và trên Windows còn bị hệ điều hành
+  âm thầm gỡ hook.
+
+---
+
+## HĐ-4 — Không đếm nhịp trong ô mật khẩu
+
+**Ràng buộc.** Khi ô nhập đang là ô mật khẩu (secure input), vỏ **không** được gọi
+`TypingCadence_OnKeystroke`. Không đếm, không tính, không ghi.
+
+Hai lý do, cả hai đều đủ để một mình quyết định:
+
+1. **Chuông reo giữa lúc gõ mật khẩu là hỏng trải nghiệm** — người dùng đang tập trung nhập bí mật,
+   một tiếng chuông ở đó là quấy rầy thuần túy.
+2. **Không sinh dấu vết thời gian gõ mật khẩu.** Nhịp gõ không phải nội dung, nhưng chuỗi thời điểm
+   bấm phím khi nhập mật khẩu là dữ liệu nhạy cảm theo đúng nghĩa đen của tài liệu bảo mật. Không
+   thu thập là cách duy nhất chắc chắn không rò.
+
+**Mặc định fail-closed.** Không xác định được ô hiện tại có phải ô mật khẩu không thì coi **là** ô
+mật khẩu và không đếm. Thà mất vài nhịp còn hơn đếm nhầm.
+
+**Cách soi.** Mỗi vỏ phải có đúng một cổng kiểm, đặt **trước** lời gọi
+`TypingCadence_OnKeystroke`, và cổng đó phải có ca kiểm.
+
+---
+
+## HĐ-5 — Khởi động an toàn
 
 > Ba bất biến áp cho **mọi vỏ**: macOS, Windows, iOS, và Linux sau này.
 
@@ -86,48 +176,7 @@ thoát thì có dấu vết đọc được không; nếu là dọn dẹp thì c
 
 ---
 
-## HĐ-3 — Hợp đồng send-risk
-
-**Chữ ký ổn định:**
-
-```
-câu (chuỗi) → risk (số thực trong [0, 1])
-```
-
-Đơn vị là *"gửi đi thì hại tới đâu"*, **không phải** phân loại nhiều nhãn cảm xúc.
-
-Thay cách tính bên trong thì được — lexicon hôm nay, model on-device ngày mai. Đổi chữ ký hoặc đổi ý
-nghĩa của con số thì **không**, vì mọi tầng phía sau (nhịp thở, gác cổng, kho dữ liệu, câu chữ) chỉ
-tiêu thụ con số này và không quan tâm nó được tính bằng gì.
-
-Kèm theo hai ràng buộc vận hành:
-
-- Phải chạy **ngoài** luồng hook bàn phím. Chặn luồng hook là làm khựng gõ, và trên Windows còn bị
-  hệ điều hành âm thầm gỡ hook.
-- Khi thay bằng model: đặt **timeout cứng**, vượt timeout thì rơi về lexicon ngay cho câu đó. Model
-  lỗi hoặc không tải được cũng rơi về lexicon. Không có nhánh thứ ba, không được crash, không được
-  chặn luồng gõ.
-
----
-
-## HĐ-4 — Copy chuỗi trước khi rời luồng
-
-Callback chốt từ của engine truyền tham chiếu tới một biến sống trên ngăn xếp của luồng gọi. Mọi vỏ
-phải **copy sâu** trước khi đẩy sang luồng khác.
-
-Bẫy này đã cắn iOS rồi cắn macOS trước khi thành luật. Quy ước dập tắt nó là đặt **cùng một tên
-biến** ở mọi vỏ để một lệnh `grep` soi được cả hai:
-
-```bash
-grep -rn "wordCopy" platforms/
-```
-
-Đây là lần thứ nhất trong hai lần dự án gặp mô hình "một cái bẫy nhảy giữa các vỏ"; lần thứ hai là
-HĐ-2. Cả hai được dập bằng cùng cách: viết luật một lần, đặt tên giống nhau, soi bằng một lệnh.
-
----
-
-## HĐ-5 — Ranh giới bộ não và vỏ
+## HĐ-6 — Ranh giới bộ não và vỏ
 
 **Lỗi riêng của một hệ điều hành không bao giờ được sửa trong `core/`.**
 
@@ -138,12 +187,35 @@ nhận thay đổi mà không ai kiểm. Đúng chỗ sửa là `platforms/<os>/
 được lặp lại trong hầu hết dòng bằng chứng của dự án, và nên tiếp tục như vậy.
 
 Hệ quả kèm theo: khi hai vỏ cần cùng một logic, viết một bản trong `core/` chứ không chép hai bản.
-Dự án đã trả giá cho việc này — hai bản từ điển cảm xúc từng trôi lệch nhau, khiến cùng một câu được
-cảm nhận khác nhau trên hai hệ điều hành.
+Dự án đã trả giá cho việc này hai lần:
+
+- Hai bản từ điển send-risk từng trôi lệch giữa macOS và iOS, khiến cùng một câu được chấm khác nhau
+  trên hai hệ điều hành (macOS coi dấu câu là dấu tách từ, iOS thì không).
+- Chính sách chuông từng có hai bản chép tay — `NudgeCoordinatorIOS.h` tự thú là *"sao y bản chính
+  từ macOS"*. Đây là lý do `BellPolicy` (HĐ-2) phải nằm ở `core/` **ngay từ đầu**, trước khi Windows
+  kịp thành bản thứ ba.
 
 ---
 
-## HĐ-6 — Không bịa dữ liệu
+## HĐ-7 — Copy chuỗi trước khi rời luồng
+
+Callback chốt từ của engine (`vOnWordCommitted`) truyền tham chiếu tới một biến sống trên ngăn xếp
+của luồng gọi. Mọi vỏ tiêu thụ callback này phải **copy sâu** trước khi đẩy sang luồng khác.
+
+Bẫy này đã cắn iOS rồi cắn macOS trước khi thành luật. Quy ước dập tắt nó là đặt **cùng một tên
+biến** ở mọi vỏ để một lệnh `grep` soi được cả hai:
+
+```bash
+grep -rn "wordCopy" platforms/
+```
+
+> **Phạm vi đang thu hẹp.** Theo HĐ-1, lớp nhịp gõ **không** tiêu thụ callback này nữa. Hợp đồng
+> vẫn có hiệu lực với bất kỳ nơi nào còn nhận `vOnWordCommitted`, và sẽ được xem lại khi nhánh đọc
+> cảm xúc bị gỡ hẳn (issue #13). Chưa gỡ luật khi code chưa gỡ.
+
+---
+
+## HĐ-8 — Không bịa dữ liệu
 
 Áp cho mọi thứ hiển thị cho người dùng về chính họ.
 
@@ -152,5 +224,7 @@ cảm nhận khác nhau trên hai hệ điều hành.
   trống thật.
 - Không có mẫu nào trong ngày thì câu chữ nói "chưa có nhịp nào", **không** nói "hôm nay êm". Im
   lặng của bàn phím không phải bằng chứng của bình yên.
-- Câu xoa dịu chỉ được nói khi dữ liệu thật sự đỡ. Nói bừa cho dịu tai là phán xét trá hình.
 - Câu chữ sinh **tất định**: cùng dữ liệu luôn ra cùng câu. Không AI sinh câu, không random.
+- **Không trộn thước đo.** Số liệu ghi bằng thước cũ (send-risk) và số liệu ghi bằng thước mới (CPM)
+  không được vẽ chung một đồ thị. Hai đơn vị khác nhau đặt cạnh nhau trên cùng một trục là nói dối
+  người dùng, kể cả khi hình vẽ ra trông liền mạch. Cách xử lý nhật ký cũ chốt ở issue #11.

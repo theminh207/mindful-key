@@ -43,7 +43,7 @@ Yêu cầu môi trường cho việc xuất asset: `rsvg-convert` (qua `brew ins
 
 | Lệnh | Phạm vi |
 |---|---|
-| `make test-core` | bộ não C++: engine Telex/VNI, chấm điểm send-risk |
+| `make test-core` | bộ não C++: engine Telex/VNI, chấm điểm send-risk (hai bộ sau gỡ theo #13, thay bằng ca đo nhịp gõ ở #6/#7) |
 | `make test-macos` | vỏ macOS: chuỗi gõ → nhịp → ghi → đọc, cô lập kho và Keychain |
 | `make test-ios` | vỏ iOS: bridge Telex, mood bridge, settings bridge, build-smoke extension |
 

@@ -23,7 +23,7 @@ Người mới vào dự án: **01 → 07 → 02 → 04**. Bốn tầng đó đ�
 đầu viết code hoặc phát hành.
 
 Agent hoặc công cụ tự động: đọc **01** trước mọi việc chạm nhận diện, pháp lý, riêng tư. Đọc
-**04** trước khi sửa đường khởi động hoặc lớp gác cổng.
+**04** trước khi sửa đường khởi động, lớp đo nhịp gõ, hoặc mạch chuông.
 
 ## Xếp tài liệu mới vào đâu
 
