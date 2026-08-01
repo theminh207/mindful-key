@@ -54,7 +54,15 @@ jobs:
             echo "::error::Không tìm thấy file nào của lớp nhịp gõ/chuông — cổng HĐ-1 không soi được gì."
             exit 1
           fi
-          hits=$(grep -nE '(wstring|NSString|std::string|\bstring\b|char[[:space:]]*\*)' $files \
+          # Mẫu CỐ Ý RỘNG — `string|String|char` phủ mọi hình dạng đã thử:
+          #   wstring · std::string · u16string/u32string · NSString · CFStringRef ·
+          #   char* · char[] · wchar_t* · char16_t
+          # Bản trước hẹp hơn (`char[[:space:]]*\*`) và BỎ SÓT `const wchar_t*` — đúng kiểu
+          # chuỗi phổ biến NHẤT trong core/mood hiện nay (MoodPhrasing.cpp, SendRiskAnalyzer.cpp
+          # dùng đầy) và đúng thứ #7 BellPolicy dễ viết ra: `const wchar_t* levelName`.
+          # KHÔNG dùng `\b`: đó là mở rộng của GNU grep, runner này là BSD grep.
+          # Thà bắt oan còn hơn bỏ lọt — đây là cổng riêng tư, fail-closed.
+          hits=$(grep -nE '(string|String|char)' $files \
                  | grep -vE '^[^:]+:[0-9]+:[[:space:]]*(//|\*|/\*)' || true)
           if [ -n "$hits" ]; then
             echo "$hits"

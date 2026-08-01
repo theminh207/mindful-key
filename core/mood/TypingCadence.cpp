@@ -56,9 +56,12 @@ int TypingCadence::keystrokesInWindow(int64_t nowMs) const {
 
     int n = 0;
     for (int i = 0; i < _count; i++) {
-        // Duyệt từ ô mới nhất lùi dần. Không thể dừng sớm khi gặp ô ngoài cửa sổ: sau một
-        // lần đồng hồ nhảy (hoặc khi vòng tròn quấn) thứ tự trong mảng không còn đơn điệu,
-        // nên duyệt hết cho chắc. _count ≤ 1024 nên đây vẫn là chi phí cố định, không cấp phát.
+        // Duyệt từ ô mới nhất lùi dần. CÓ THỂ dừng sớm khi gặp ô đầu tiên ngoài cửa sổ —
+        // `registerKeystroke` xoá sạch mỗi khi đồng hồ nhảy lùi, nên dãy này luôn không tăng
+        // theo chiều duyệt, kể cả sau khi vòng tròn quấn. Cố ý KHÔNG tối ưu: duyệt hết 1024 ô
+        // là dưới một micro-giây, còn dừng sớm thì đúng-sai phụ thuộc vào một bất biến ở HÀM
+        // KHÁC (nhánh reset). Đổi nhánh đó mà quên đây là sinh lỗi đếm thiếu, im lặng.
+        // Đánh đổi có chủ đích: chậm không đo được, đổi lấy đúng không phụ thuộc.
         const int idx = (_head - 1 - i + kCapacity * 2) % kCapacity;
         const int64_t t = _ts[idx];
         if (t > lowerBound && t <= nowMs) {

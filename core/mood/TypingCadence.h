@@ -31,7 +31,8 @@
 //  nơi gọi truyền vào. Nhờ vậy test được tất định, không cần sleep, không cần Simulator.
 //
 //  RẺ TỚI MỨC CHẠY THẲNG TRONG HOOK BÀN PHÍM ĐƯỢC (docs/04-contracts.md HĐ-3):
-//  `registerKeystroke` là O(1), `currentCPM` là O(số nhịp trong cửa sổ) trên mảng cố định —
+//  `registerKeystroke` là O(1), `currentCPM` là O(số nhịp ĐÃ GHI, tối đa 1024 — không phải chỉ
+//  số nhịp còn trong cửa sổ) trên mảng cố định —
 //  KHÔNG cấp phát, KHÔNG khóa, KHÔNG ngoại lệ. Đây là khác biệt lớn so với lớp chấm điểm cũ
 //  (SendRiskAnalyzer) vốn buộc phải đẩy sang luồng riêng. Nhưng PHÁT TIẾNG CHUÔNG thì vẫn
 //  KHÔNG được chạy trong hook — đó là việc của vỏ, đẩy sang luồng khác.

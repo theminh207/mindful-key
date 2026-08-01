@@ -61,8 +61,11 @@ public:
     void   reset();
 };
 
-// SAI — dù chỉ dùng .length() thì chuỗi vẫn đi qua lớp này
-void TypingCadence::onWord(const std::wstring& word);   // ❌ cấm
+// SAI — chuỗi vẫn đi qua lớp này, dù chỉ dùng .length()
+class TypingCadence {
+public:
+    void onWord(const std::wstring& word);   // ❌ cấm
+};
 ```
 
 **Vì sao không tái dùng `vOnWordCommitted`.** Callback chốt từ của engine có sẵn và ba vỏ đã nối
@@ -74,7 +77,9 @@ không dùng"*. Đánh đổi đã cân nhắc và bác bỏ — xem
 
 **Cách soi — cưỡng chế bằng máy, không phụ thuộc có ai đọc tài liệu hay không.** Bước
 *"Cổng HĐ-1"* trong `.github/workflows/macos.yml` quét chính các file của lớp nhịp gõ/chuông tìm
-mọi kiểu chuỗi (bỏ dòng comment) và làm **đỏ CI** nếu thấy. Không tìm thấy file nào cũng đỏ, để
+dấu hiệu kiểu chuỗi — mẫu `string|String|char`, phủ `wstring` · `std::string` · `u16string` ·
+`NSString` · `CFStringRef` · `char*` · `char[]` · `wchar_t*` — bỏ dòng comment, và làm **đỏ CI**
+nếu thấy. Không tìm thấy file nào cũng đỏ, để
 không ai vô hiệu cổng bằng cách đổi tên file.
 
 > ⚠️ **Mẫu grep ở bản đầu của hợp đồng này (PR #21) BỊ HỎNG.** Nó đòi kiểu chuỗi đứng *trước* tên

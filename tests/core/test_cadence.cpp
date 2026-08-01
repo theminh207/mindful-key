@@ -185,9 +185,31 @@ int main() {
         TypingCadence c(W);
         typeKeys(c, 1500, 0, 20);
         const int n = c.keystrokesInWindow(29980);
-        checkCount("tràn vòng tròn -> giữ đúng kCapacity nhịp", n, TypingCadence::kCapacity);
-        checkCPM("CPM bão hòa, vẫn TRÊN mọi ngưỡng",
-                 c.currentCPM(29980), (double)TypingCadence::kCapacity * 60000.0 / (double)W);
+        checkCount("tràn vòng tròn -> giữ đúng kCapacity nhịp", n, 1024);
+        // Số 2048 viết CỨNG, cố ý không tính lại bằng `kCapacity * 60000.0 / W` — chép lại
+        // chính công thức đang test thì ca này không khoá được gì ngoài `n == kCapacity`,
+        // thứ dòng trên đã khoá rồi.
+        checkCPM("CPM bão hòa = 2048, vẫn TRÊN mọi ngưỡng (cao nhất 500)",
+                 c.currentCPM(29980), 2048.0);
+    }
+    {
+        // Vòng tròn ĐẦY *và* có nhịp rơi khỏi cửa sổ cùng lúc — tổ hợp duy nhất bắt được lỗi
+        // chỉ số vòng tròn khi nó gặp phép lọc mép. Loại 10 ở trên không phủ: ở đó cả 1024 ô
+        // đều nằm trong cửa sổ. Ở đây gõ 1500 phím trải 60 giây (gấp đôi cửa sổ), nên vòng
+        // tròn đầy mà quá nửa số ô đã rơi ra ngoài.
+        TypingCadence c(W);
+        typeKeys(c, 1500, 0, 40);          // 0 .. 59960, vòng giữ lại t = 19040 .. 59960
+        // Cửa sổ tại 59960 là (29960, 59960] -> các nhịp t = 30000, 30040, ..., 59960
+        checkCount("vòng đầy + quá nửa đã rơi khỏi cửa sổ", c.keystrokesInWindow(59960), 750);
+        checkCPM("và CPM tính đúng theo phần còn lại",      c.currentCPM(59960), 1500.0);
+    }
+    {
+        // Nhiều phím trong CÙNG một mili-giây (đồng hồ thô, hoặc auto-repeat). Không được
+        // nuốt mất nhịp nào, cũng không được coi là đồng hồ nhảy lùi.
+        TypingCadence c(W);
+        for (int i = 0; i < 5; i++) c.registerKeystroke(7000);
+        checkCount("5 nhịp cùng một mili-giây -> đếm đủ 5", c.keystrokesInWindow(7000), 5);
+        checkCPM("và không bị coi là đồng hồ nhảy lùi",     c.currentCPM(7000), 10.0);
     }
 
     printf("\n--- Loại 11: cửa sổ khác 30s + tham số hỏng ---\n");
@@ -197,26 +219,23 @@ int main() {
         checkCPM("cửa sổ 60s, 60 nhịp -> 60 CPM", c.currentCPM(29500), 60.0);
     }
     {
-        TypingCadence c(0);       // hỏng -> kẹp về 1ms, KHÔNG chia cho 0
+        // Khoá CỨNG giá trị kẹp, không chỉ "không NaN/inf": kẹp về ĐÚNG 1ms.
+        // Chỉ khẳng định "không NaN" thì ai đó đổi kẹp sang 30000 test vẫn xanh, mà đó là
+        // đổi hành vi thật (cùng số nhịp ra CPM khác hẳn).
+        TypingCadence c(0);
+        checkCount("windowMs = 0 -> kẹp về đúng 1ms", (int)c.windowMs(), 1);
         c.registerKeystroke(5);
-        const double cpm = c.currentCPM(5);
-        if (cpm == cpm && !std::isinf(cpm)) {
-            printf("  ✅ %-52s CPM = %.0f (không NaN/inf)\n", "windowMs = 0 bị kẹp an toàn", cpm);
-        } else {
-            printf("  ❌ SAI  %-52s CPM = %f\n", "windowMs = 0 bị kẹp an toàn", cpm);
-            gFail++;
-        }
+        checkCPM("và 1 nhịp trong cửa sổ 1ms -> 60000 CPM", c.currentCPM(5), 60000.0);
     }
     {
-        TypingCadence c(-1000);   // âm -> cũng kẹp
+        TypingCadence c(-1000);
+        checkCount("windowMs âm -> cũng kẹp về đúng 1ms", (int)c.windowMs(), 1);
         c.registerKeystroke(0);
-        const double cpm = c.currentCPM(0);
-        if (cpm > 0.0 && cpm == cpm && !std::isinf(cpm)) {
-            printf("  ✅ %-52s CPM = %.0f\n", "windowMs âm bị kẹp an toàn", cpm);
-        } else {
-            printf("  ❌ SAI  %-52s CPM = %f\n", "windowMs âm bị kẹp an toàn", cpm);
-            gFail++;
-        }
+        checkCPM("và vẫn ra số hữu hạn",                   c.currentCPM(0), 60000.0);
+    }
+    {
+        TypingCadence c(W);
+        checkCount("windowMs() trả đúng giá trị đã dựng", (int)c.windowMs(), (int)W);
     }
 
     printf("\n--- Loại 12: thời điểm âm (đồng hồ đơn điệu có thể bắt đầu từ số âm) ---\n");

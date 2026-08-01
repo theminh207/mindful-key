@@ -110,6 +110,14 @@ Chưa chốt thì **đừng tự quyết trong im lặng** — hỏi chủ dự 
 
 **Đã chốt:**
 
+- 2026-08-01 *(ở #6)* — **CPM = (số nhịp trong cửa sổ) / (độ dài cửa sổ tính bằng phút)** — chia
+  cho **độ dài cửa sổ**, KHÔNG phải cho khoảng giữa nhịp đầu và nhịp cuối. Chia theo khoảng giữa
+  hai nhịp thì gõ 2 phím cách nhau 100ms ra **1200 CPM** → chuông reo oan ngay phím thứ hai. Chia
+  cho cửa sổ thì 2 phím trong 30 giây ra đúng 4 CPM, và muốn chạm ngưỡng 400 phải gõ **thật 200
+  phím trong 30 giây** — nên **không cần** thêm luật "tối thiểu N phím" như issue #6 gợi ý. Đánh đổi
+  cố ý: 30 giây đầu sau khởi động báo **thấp** hơn thực tế (cửa sổ chưa đầy), tức nghiêng về **im
+  lặng**. Đây là bất biến **xuyên issue** — cả #7 (`BellPolicy`) lẫn #8 (biên độ sóng) đều tiêu thụ
+  con số CPM này, nên đổi cách chia là đổi nghĩa của mọi thứ phía sau.
 - 2026-08-01 *(Q3, ở #4)* — **Nhịp phím lấy từng phím một ở hook bàn phím**, không tái dùng
   `vOnWordCommitted`. API là `TypingCadence::registerKeystroke(int64_t nowMs)` — **không tham số chuỗi ở
   bất kỳ đâu** (chữ ký chốt lại ở #6: dạng lớp thay vì hàm tự do, để test dựng được nhiều

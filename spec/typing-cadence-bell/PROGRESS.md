@@ -86,9 +86,49 @@ Dựng cổng đó lòi ra **hai lỗi trong chính hợp đồng tui viết ở
    an toàn giả. Và cách duy nhất biết một cổng có chạy không là **tiêm vi phạm giả vào rồi xem nó
    có đỏ**; thấy nó xanh trên code sạch không chứng minh được gì.
 
+**Vòng review bắt được 1 lỗi chặn — và nó đúng vào chỗ đau nhất:**
+
+Cổng HĐ-1 tui vừa dựng **bỏ sót `const wchar_t*`** — đúng kiểu chuỗi phổ biến **nhất** trong
+`core/mood` hiện nay (`MoodPhrasing.cpp`, `SendRiskAnalyzer.cpp` dùng đầy), và đúng thứ #7
+`BellPolicy` dễ viết ra: `const wchar_t* levelName` sẽ đi qua cổng **xanh**. Mẫu cũ có
+`char[[:space:]]*\*` — sau `char` là `_t*` chứ không phải `*`, nên trượt. Reviewer còn tìm thêm 3
+kiểu lọt nữa: `char[]`, `u16string`, `CFStringRef`.
+
+Cay ở chỗ: **đây đúng cái bài học tui vừa tự viết ra trong cùng PR** — *"lệnh soi hỏng còn tệ hơn
+không có, vì cho cảm giác an toàn giả"*. Tui viết bài học đó sau khi sửa mẫu lần một, rồi lập tức
+mắc lại lần hai ở dạng khác. Kiểm chiều-ngược lần đầu tui chỉ thử **2 hình dạng vi phạm**, và cả
+hai đều thuộc loại tui đã nghĩ tới; không thử kiểu nào mình chưa nghĩ tới.
+
+Xử: nới mẫu thành `string|String|char` — cố ý **rộng**, fail-closed. Kiểm bằng **7 hình dạng vi
+phạm**, cả 7 đều đỏ, code thật vẫn xanh. Không dùng `\b` vì đó là mở rộng GNU, còn runner là BSD
+grep. Và sửa `04-contracts.md` + `TEST_MATRIX.md` bỏ chữ *"mọi kiểu chuỗi"* — nói quá so với thứ
+mẫu thật sự phủ.
+
+**Bài học chồng lên bài học:** kiểm một cổng bằng cách tiêm vi phạm là đúng, nhưng **tiêm những
+hình dạng mình đã nghĩ tới thì chỉ chứng minh được điều mình đã tin**. Muốn biết cổng có thủng
+không thì phải đi tìm hình dạng vi phạm **có thật trong repo** — `grep` chính `core/mood/` xem code
+hiện có đang dùng những kiểu chuỗi nào, rồi thử đúng chúng.
+
+Sửa thêm theo góp ý không-chặn: comment biện minh cho "không dừng sớm" trong `keystrokesInWindow`
+**nói sai sự thật** (dãy *có* đơn điệu vì nhánh reset đã bảo đảm) — viết lại thành lý do thật, là
+cố ý không phụ thuộc bất biến ở hàm khác; khai `O()` ở header sai (`O(_count)` chứ không phải "số
+nhịp trong cửa sổ"); ca test tràn vòng tròn **chép lại chính công thức đang test** → viết cứng
+`2048.0`; hai ca `windowMs` hỏng chỉ khẳng định "không NaN" → khoá cứng giá trị kẹp là 1ms; ví dụ
+C++ "SAI" ở `04-contracts.md` không phải cú pháp khai báo hợp lệ.
+
+**Thêm 3 ca test lấp lỗ phủ** reviewer chỉ ra: vòng tròn **đầy** *và* có nhịp rơi khỏi cửa sổ cùng
+lúc (tổ hợp duy nhất bắt được lỗi chỉ số vòng khi gặp phép lọc mép — Loại 10 không phủ vì ở đó cả
+1024 ô đều trong cửa sổ); nhiều phím trong **cùng một mili-giây** (đồng hồ thô/auto-repeat, không
+được nuốt nhịp và không được coi là đồng hồ nhảy lùi); và `windowMs()` accessor.
+
 **Còn hở:**
 - `TypingCadence` **chưa vỏ nào nối dây** — đây thuần là bộ não. Nối ở #9 (macOS) · #15 (Windows) ·
   #17 (iOS), và cổng kiểm ô mật khẩu (HĐ-4) nằm ở phía vỏ, macOS hiện chưa có.
+- **Danh sách kiểu chuỗi của cổng HĐ-1 là chỗ phải đoán** — không nguồn nào định nghĩa "kiểu chuỗi"
+  gồm những gì. Đã ghi `FRICTION-LOG.md`, chờ chủ dự án chốt có cần liệt danh sách chính thức trong
+  `04-contracts.md` không, và có nên áp cổng cho **cả** `core/mood/` sau khi #13 gỡ xong.
+- Tràn `int64` ở `nowMs - _windowMs` khi `nowMs` gần `INT64_MIN` — UB về lý thuyết, không tới được
+  từ đồng hồ đơn điệu thật. Ghi để biết, không xử.
 - `keystrokesInWindow()` là API thêm ngoài đề xuất của issue. Giữ vì test khẳng định được bằng **số
   nguyên chính xác** thay vì so sánh số thực, và vỏ Windows sẽ cần nó cho icon khay (#15).
 - Cổng HĐ-1 hiện chỉ liệt `TypingCadence.*` và `BellPolicy.*`. Thêm lớp mới vào `core/mood` thì phải
