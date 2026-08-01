@@ -1,0 +1,29 @@
+# BAN GHIM BE MAT KHAI BAO — cong HD-1 (scripts/check_hd1.py)
+#
+# HD-3 tuyen chu ky cua lop nhip go la HOP DONG DONG BANG. File nay bien loi tuyen do thanh
+# thu kiem duoc bang may: moi dong khai bao trong header duoc soi phai khop DUNG mot dong o day.
+#
+# VI SAO CAN, khi da co allowlist kieu: allowlist chi chung minh "khong co kieu HINH DANG
+# CHUOI", KHONG chung minh "khong noi dung nao vao". `void noteChar(int codePoint)` di qua
+# allowlist XANH — ma `int` thua suc cho mot codepoint Unicode. Ghim chu ky dong duong do:
+# them BAT KY tham so nao, kieu gi, cung phai sua file nay — mot hanh vi hien ro trong diff
+# va buoc co nguoi doc.
+#
+# Sinh lai sau khi doi API co chu dich:  python3 scripts/check_hd1.py --update-pin
+
+core/mood/EmotionWaveAmplitude.h :: extern const double kEmotionWaveDeadZoneThreshold;
+core/mood/EmotionWaveAmplitude.h :: double EmotionWaveAmplitude(double risk);
+core/mood/TypingCadence.h :: extern const int64_t kTypingCadenceDefaultWindowMs;
+core/mood/TypingCadence.h :: static const int kCapacity = 1024;
+core/mood/TypingCadence.h :: explicit TypingCadence(int64_t windowMs);
+core/mood/TypingCadence.h :: void registerKeystroke(int64_t nowMs);
+core/mood/TypingCadence.h :: double currentCPM(int64_t nowMs) const;
+core/mood/TypingCadence.h :: int keystrokesInWindow(int64_t nowMs) const;
+core/mood/TypingCadence.h :: void reset();
+core/mood/TypingCadence.h :: int64_t windowMs() const { return _windowMs; }
+core/mood/TypingCadence.h :: int64_t _windowMs;
+core/mood/TypingCadence.h :: int64_t _ts[kCapacity];
+core/mood/TypingCadence.h :: int _head;
+core/mood/TypingCadence.h :: int _count;
+core/mood/TypingCadence.h :: int64_t _lastMs;
+core/mood/TypingCadence.h :: bool _hasLast;

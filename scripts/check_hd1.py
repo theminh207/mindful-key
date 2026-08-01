@@ -33,6 +33,26 @@ CÁCH KIỂM CỔNG NÀY (đừng bỏ qua): tiêm một khai báo vi phạm và
 script, xem nó có ĐỎ không, rồi `git checkout` lại. Thấy cổng xanh trên code sạch KHÔNG chứng
 minh được gì. Và hãy tiêm cả những hình dạng bạn CHƯA nghĩ tới — cả ba lần thủng ở trên đều lọt
 đúng vào hình dạng người viết chưa nghĩ tới.
+
+────────────────────────────────────────────────────────────────────────────────────────────────
+BA LƯỚI, VÀ GIỚI HẠN THẬT CỦA CHÚNG
+
+  1. Bản ghim bề mặt khai báo (PIN_FILE) — mạnh nhất. Mọi dòng khai báo trong header được soi
+     phải khớp đúng bản ghim. Thêm BẤT KỲ tham số nào, kiểu gì, hay thêm một biến thành viên,
+     đều làm đỏ cho tới khi có người chạy --update-pin và giải trình.
+  2. Allowlist kiểu tham số — chỉ int64_t/int/double/bool/void, không con trỏ/tham chiếu/mảng.
+  3. Denylist tên kiểu, quét cả .cpp — lưới thô, bắt biến cục bộ mang kiểu chuỗi.
+
+GIỚI HẠN, nói thẳng để không ai tưởng cổng này kín tuyệt đối:
+
+  · Lưới 2 KHÔNG chứng minh "không nội dung nào vào". `void noteChar(int codePoint)` đi qua
+    allowlist xanh — `int` thừa sức chở một codepoint Unicode. Chính lưới 1 mới chặn nó.
+  · Một vùng đệm cỡ `static int gTyped[4096];` trong .cpp thì cả ba lưới đều cho qua. Nhưng nó
+    là **kho chứa trơ**: muốn đổ dữ liệu vào phải có đường nhận từ ngoài, mà mọi đường như thế
+    đều nằm ở header và đã bị lưới 1 ghim. Nói cách khác cổng này bảo đảm **bề mặt NHẬN**, không
+    bảo đảm từng byte bộ nhớ bên trong.
+  · Macro định nghĩa ở file miễn trừ rồi dùng ở file được soi thì lách được. Đòi cố ý che giấu,
+    không phải thứ ai vô tình viết ra — và danh sách miễn trừ đang co lại theo #12/#13.
 ────────────────────────────────────────────────────────────────────────────────────────────────
 """
 
@@ -67,6 +87,15 @@ BANNED_ANYWHERE = re.compile(
 )
 
 MOOD_DIR = "core/mood"
+
+# Bộ đuôi CỐ Ý RỘNG. Bản trước chỉ nhận `.h`/`.cpp`, nên `ContentTap.hpp` / `.hh` / `.inl` /
+# `.mm` đi lọt — toàn đuôi hợp lệ, biên dịch bình thường, include bình thường.
+SOURCE_EXTS = (".h", ".hpp", ".hh", ".inl", ".cpp", ".cc", ".cxx", ".mm", ".m")
+HEADER_EXTS = (".h", ".hpp", ".hh", ".inl")
+
+# Bản ghim bề mặt khai báo. HĐ-3 tuyên chữ ký của lớp này là hợp đồng ĐÓNG BĂNG — file kia biến
+# lời tuyên đó thành thứ kiểm được bằng máy.
+PIN_FILE = "scripts/hd1_pinned_api.txt"
 
 # Phải tồn tại — nếu không thì cổng chẳng soi được gì và ta muốn ĐỎ, để không ai vô hiệu hoá
 # cổng bằng cách đổi tên file.
@@ -122,7 +151,7 @@ def check_params(path, code):
     oan 3 chỗ. `.cpp` vẫn được lưới BANNED_ANYWHERE quét.
     """
     problems = []
-    if not path.endswith(".h"):
+    if not path.endswith(HEADER_EXTS):
         return problems
 
     # Khớp cả tên thường LẪN toán tử ký hiệu. Bản trước chỉ có `[A-Za-z_]\w*`, nên
@@ -160,16 +189,55 @@ def check_params(path, code):
 
 
 def collect_files():
-    """Mọi .h/.cpp trong core/mood/, TRỪ danh sách miễn trừ của mô hình cũ."""
+    """Mọi file nguồn trong core/mood/ **và thư mục con**, TRỪ danh sách miễn trừ.
+
+    Dùng os.walk chứ KHÔNG os.listdir, và một bộ đuôi rộng chứ không chỉ `.h`/`.cpp` — bản trước
+    chỉ quét top-level với đúng hai đuôi đó, nên `core/mood/tap/ContentTap.h` và
+    `core/mood/ContentTap.hpp` đều **vô hình** với cổng. Cả hai đều là đường include hoàn toàn
+    hợp lệ.
+    """
     found = []
-    for name in sorted(os.listdir(MOOD_DIR)):
-        if not (name.endswith(".h") or name.endswith(".cpp")):
+    for root, _dirs, names in os.walk(MOOD_DIR):
+        for name in sorted(names):
+            if not name.endswith(SOURCE_EXTS):
+                continue
+            rel = os.path.join(root, name).replace("\\", "/")
+            if rel in LEGACY_EXEMPT:
+                continue
+            found.append(rel)
+    return sorted(found)
+
+
+def declaration_surface(path, code):
+    """Mọi dòng KHAI BÁO trong một header, đã chuẩn hoá khoảng trắng.
+
+    Đây là thứ được đem so với bản ghim. Gồm cả **biến thành viên** chứ không riêng hàm: một
+    `int _typed[4096];` cũng là chỗ chứa nội dung.
+    """
+    if not path.endswith(HEADER_EXTS):
+        return []
+    out = []
+    for raw in code.splitlines():
+        t = " ".join(raw.split())
+        if not t or t.startswith("#"):
             continue
-        rel = MOOD_DIR + "/" + name
-        if rel in LEGACY_EXEMPT:
+        if t in ("{", "}", "};", "public:", "private:", "protected:"):
             continue
-        found.append(rel)
-    return found
+        if "(" in t or t.endswith(";"):
+            out.append(path + " :: " + t)
+    return out
+
+
+def read_pin():
+    if not os.path.exists(PIN_FILE):
+        return None
+    lines = []
+    with open(PIN_FILE, encoding="utf-8") as fh:
+        for raw in fh:
+            t = raw.rstrip("\n")
+            if t.strip() and not t.startswith("#"):
+                lines.append(t)
+    return lines
 
 
 def main():
@@ -194,7 +262,44 @@ def main():
         return 1
 
     files = collect_files()
+
+    # ── Lưới THỨ BA: bản ghim bề mặt khai báo ────────────────────────────────────────────────
+    # Allowlist kiểu chỉ chứng minh "không có kiểu HÌNH DẠNG CHUỖI", KHÔNG chứng minh "không nội
+    # dung nào vào": `void noteChar(int codePoint)` đi qua allowlist XANH, mà `int` thừa sức chở
+    # một codepoint Unicode. Ghim chữ ký đóng đường đó — thêm BẤT KỲ tham số nào, kiểu gì, hay
+    # thêm một biến thành viên, cũng phải sửa bản ghim: một hành vi hiện rõ trong diff.
+    surface = []
+    for path in files:
+        with open(path, encoding="utf-8") as fh:
+            surface.extend(declaration_surface(path, strip_comments(fh.read())))
+
+    if "--update-pin" in sys.argv:
+        with open(PIN_FILE, encoding="utf-8") as fh:
+            head = [l for l in fh.read().splitlines() if l.startswith("#") or not l.strip()]
+        with open(PIN_FILE, "w", encoding="utf-8", newline="\n") as fh:
+            fh.write("\n".join(head).rstrip("\n") + "\n\n" + "\n".join(surface) + "\n")
+        print("Đã ghim lại %d dòng khai báo vào %s. ĐỌC KỸ DIFF trước khi commit." %
+              (len(surface), PIN_FILE))
+        return 0
+
+    pinned = read_pin()
     failed = False
+    if pinned is None:
+        print("::error::Cổng HĐ-1: thiếu %s — không có gì để đối chiếu." % PIN_FILE)
+        failed = True
+    else:
+        added = [s for s in surface if s not in pinned]
+        removed = [s for s in pinned if s not in surface]
+        for s in added:
+            print("::error::HĐ-1: khai báo MỚI chưa được ghim — `%s`. API lớp nhịp gõ là hợp đồng "
+                  "đóng băng (HĐ-3). Nếu đổi có chủ đích: chạy `python3 scripts/check_hd1.py "
+                  "--update-pin` rồi giải trình trong PR." % s)
+            failed = True
+        for s in removed:
+            print("::error::HĐ-1: khai báo đã ghim nay BIẾN MẤT — `%s`. Gỡ API cũng phải cập nhật "
+                  "bản ghim: `python3 scripts/check_hd1.py --update-pin`." % s)
+            failed = True
+
     for path in files:
         with open(path, encoding="utf-8") as fh:
             code = strip_comments(fh.read())
@@ -217,8 +322,9 @@ def main():
               ".length() VẪN là vi phạm.")
         return 1
 
-    print("OK — HĐ-1 sạch: soi %d file trong %s (miễn trừ %d file mô hình cũ), "
-          "mọi tham số đều là số vô hướng." % (len(files), MOOD_DIR, len(LEGACY_EXEMPT)))
+    print("OK — HĐ-1 sạch: soi %d file trong %s (miễn trừ %d file mô hình cũ) · "
+          "%d dòng khai báo khớp bản ghim · mọi tham số đều là số vô hướng."
+          % (len(files), MOOD_DIR, len(LEGACY_EXEMPT), len(surface)))
     return 0
 
 
