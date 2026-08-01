@@ -173,3 +173,19 @@ Mỗi lần một issue đóng lại, **cùng trong PR đó** (không để dồ
 
 Cổng chất lượng trước khi coi là xong (theo `CLAUDE.md`): `make test` xanh · `make build` sạch, không
 thêm warning · `make brand-lint` 0 vi phạm · CI xanh.
+
+### Chạy cổng đó ở đâu — khi máy dev là Windows
+
+Máy dev hiện tại **không có toolchain**: `g++`, `clang++`, `cl`, `make`, `cmake` đều thiếu (chỉ có
+`py -3`). Nên **CI là cổng kiểm chứng thật**, không phải máy local:
+
+| Cổng | Local | CI |
+|---|---|---|
+| `make test` | ❌ | ⚠️ `macos.yml` chỉ chạy `tests/core/build.sh` + `test_engine` — **không** chạy `test-macos`/`test-ios` |
+| `make build` (macOS) | ❌ | ✅ `macos.yml` — xcodebuild, ad-hoc sign |
+| Build Windows | ❌ | ✅ `windows.yml` — MSVC v143, cả Debug lẫn Release |
+| `make brand-lint` | ✅ `PYTHONIOENCODING=utf-8 py -3 scripts/brand_lint.py` | ✅ `brand-lint.yml` |
+
+**Luật:** không ghi "đã test" cho thứ chỉ CI chạy. PR nào đụng code phải **đợi CI xanh** trước khi
+review. Phần `test-macos`/`test-ios` không có ai chạy tự động — muốn chắc thì phải có người mở máy
+macOS chạy tay, và nói rõ trong PR là chưa chạy.

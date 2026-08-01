@@ -37,11 +37,16 @@ gì về việc màn hình có giống thiết kế hay không**. Nó chỉ nói
 | **Chuông theo nhịp gõ** | chưa khởi công (#9) | chưa khởi công (#15) | chưa khởi công (#17) | chưa |
 | **Người dùng chọn ngưỡng** | chưa khởi công (#10) | chưa khởi công (#16) | chưa khởi công (#18) | chưa |
 | Nhật ký + màn soi lại | có (schema cũ, đổi ở #11) | có (schema cũ, đổi ở #16) | có (schema cũ) | chưa |
+| ~~Chuông theo nhịp lấy mẫu / chuỗi câu căng~~ | có (đổi nguồn ở #9) | có (đổi nguồn ở #15) | có (đổi nguồn ở #17) | không |
 | ~~Gác cổng trước khi gửi~~ | đang gỡ (#12) | đang gỡ (#12) | **không bao giờ có** | không |
 | ~~Chấm điểm send-risk~~ | đang gỡ (#13) | đang gỡ (#13) | đang gỡ (#13) | không |
 
-Hai dòng gạch ngang là **non-goal** kể từ 2026-07-26 — xem [tầng Intent §5](01-intent.md). Chúng còn
+Ba dòng gạch ngang là **non-goal** kể từ 2026-07-26 — xem [tầng Intent §5](01-intent.md). Chúng còn
 trong bảng vì code còn trong repo, không phải vì còn được mong muốn.
+
+Lưu ý dòng chuông: sản phẩm hôm nay **đã có tiếng chuông**, nhưng nó ngân theo *nhịp lấy mẫu định kỳ*
+và *chuỗi câu có điểm send-risk cao* — hai nguồn đều chết theo mô hình mới. Việc của #9/#15/#17 là
+**đổi nguồn nuôi chuông** sang nhịp gõ, không phải dựng tiếng chuông từ đầu.
 
 ---
 

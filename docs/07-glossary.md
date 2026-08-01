@@ -6,10 +6,10 @@
 
 ## Khái niệm sản phẩm
 
-**Nhịp gõ (typing cadence)** — tốc độ tay người dùng đang gõ, tính bằng [CPM](#cpm) trên một
-[cửa sổ trượt](#cửa-sổ-trượt). Là **tín hiệu duy nhất** sản phẩm dùng. Đo bằng cách đếm thời điểm
-các lần bấm phím; **không** đọc phím nào ra ký tự gì. Nhịp gõ nói về *tay*, không nói về *tâm* —
-xem [Chuông là lời mời](#chuông-là-lời-mời-không-phải-kết-luận).
+**Nhịp gõ (typing cadence)** — tốc độ tay người dùng đang gõ, tính bằng **CPM** trên một **cửa sổ
+trượt**. Là **tín hiệu duy nhất** sản phẩm dùng. Đo bằng cách đếm thời điểm các lần bấm phím;
+**không** đọc phím nào ra ký tự gì. Nhịp gõ nói về *tay*, không nói về *tâm* — xem *Chuông là lời
+mời, không phải kết luận* bên dưới.
 
 **CPM (characters per minute)** — ký tự mỗi phút, đơn vị đo nhịp gõ. Chọn CPM chứ **không** WPM vì
 Telex/VNI gõ dấu tốn thêm phím, nên gom thành "từ" rồi đếm sẽ méo: cùng một tốc độ tay, câu nhiều
@@ -82,9 +82,9 @@ tới đường giữa*, không theo lên hay xuống.
 nhịp. Không gõ thì không ghi mẫu — **không bịa dữ liệu**. Hai mẫu cách nhau quá 1.5 lần nhịp thì đồ
 thị ngắt nét, vì quãng rời máy là quãng trống thật.
 
-**Chuông tỉnh thức (mindful bell)** — tiếng chuông ngân khi nhịp gõ vượt [ngưỡng](#ngưỡng-chuông-bell-threshold)
-người dùng đặt. **Chỉ có âm thanh**: không khung nổi, không chặn phím, không hỏi han, không đòi bấm
-gì. Tắt chuông là tắt **tiếng**, không tắt việc ghi nhận.
+**Chuông tỉnh thức (mindful bell)** — tiếng chuông ngân khi nhịp gõ vượt **ngưỡng chuông** người
+dùng đặt. **Chỉ có âm thanh**: không khung nổi, không chặn phím, không hỏi han, không đòi bấm gì.
+Tắt chuông là tắt **tiếng**, không tắt việc ghi nhận.
 
 ## Khái niệm kiến trúc
 
@@ -115,15 +115,16 @@ cột dữ liệu — luôn tiếng Anh. Chỉ chữ hiện ra cho người dùn
 
 ## Thuật ngữ đã nghỉ hưu
 
-Ba khái niệm dưới đây từng là trung tâm sản phẩm và nay **không còn tồn tại**. Giữ lại tên ở đây để
+Năm khái niệm dưới đây từng là trung tâm sản phẩm và nay **không còn tồn tại**. Giữ lại tên ở đây để
 người đọc code cũ hoặc ADR cũ tra ra ngay, khỏi tưởng mình đọc thiếu.
 
 | Từ cũ | Nghĩa cũ | Thay bằng |
 |---|---|---|
-| **Send-risk** | Số thực `[0,1]` trả lời "gửi câu này đi có làm tổn thương ai không" — chấm điểm bằng cách **đọc nội dung** | [CPM](#cpm). Sản phẩm không đọc nội dung nữa. |
+| **Send-risk** | Số thực `[0,1]` trả lời "gửi câu này đi có làm tổn thương ai không" — chấm điểm bằng cách **đọc nội dung** | **CPM**. Sản phẩm không đọc nội dung nữa. |
 | **Gác cổng (send gatekeeper)** | Chặn tạm đúng lúc người dùng bấm gửi một câu điểm cao | Không có thay thế — [tầng Intent §5](01-intent.md) liệt kê đây là **non-goal** |
 | **Nhịp thở (breathing pause)** | Hợp đồng `core/mood/BreathingPause.h` quyết định có hiện khung gác cổng không | Không có thay thế, gỡ theo gác cổng |
 | **Allow-list** | Danh sách ứng dụng chat mà gác cổng được phép hoạt động | Không có thay thế — chuông ngân ở mọi nơi, không phân biệt ứng dụng |
+| **Độ nhạy (sensitivity)** | Một núm đặt ngưỡng "thế nào là gợn" và độ dài chuỗi câu căng làm chuông ngân | **Ngưỡng chuông** (4 mức CPM). Núm cũ còn trong UI bản đang phát hành cho tới khi #10/#16/#18 thay xong |
 
 Lý do đổi và đánh đổi đã chấp nhận:
 [ADR-0013](03-decisions/ADR-0013-do-nhip-go-thay-doc-cam-xuc.md).

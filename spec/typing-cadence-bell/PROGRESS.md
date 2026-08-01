@@ -53,10 +53,35 @@ KHÔNG có toolchain** (`g++`/`clang++`/`cl`/`make` đều thiếu) — `make te
 local được, CI là cổng thật. Điều này áp cho toàn bộ đợt #4→#18, ghi ở
 `docs/tasks/typing-cadence-bell-execution.md`.
 
+**Vòng review bắt được 4 lỗi chặn — đã sửa hết:**
+1. **Đánh số lại HĐ làm mồ côi 7 tham chiếu.** Đây là orphan do chính PR tạo ra, thuộc luật
+   `.claude/rules/03-surgical-changes.md`. Nặng nhất: `ADR-0005:5` trỏ `HĐ-1` vốn là *"Nhịp thở"* —
+   nay HĐ-1 là hợp đồng **cấm** đúng thứ ADR đó mô tả. Xử: thêm **bảng đánh số lại** ở đầu
+   `04-contracts.md` (số cũ → số mới) để link cũ tra ra được, **không sửa thân ADR** vì tầng 03 là
+   *"chỉ thêm, không sửa"*. Riêng `05-conventions.md:39` là tầng 05 (sửa được) → `HĐ-5` → `HĐ-6`.
+2. **5 anchor link chết trong `07-glossary.md`.** Tui viết `[CPM](#cpm)` v.v. nhưng các thuật ngữ là
+   **chữ đậm trong đoạn văn, không phải heading**, nên GitHub không sinh anchor. Xử: bỏ link, giữ
+   chữ đậm.
+3. **Bảng nền tảng `02-features.md` khai thiếu**: bỏ mất dòng chuông đang tồn tại thật hôm nay, đọc
+   ra thành "sản phẩm chưa có chuông nào" trong khi mục C/D vẫn mô tả nhịp chuông. Xử: thêm lại dòng
+   `~~Chuông theo nhịp lấy mẫu / chuỗi câu căng~~ | có (đổi nguồn ở #9)` + đoạn giải thích rằng
+   #9/#15/#17 là **đổi nguồn nuôi chuông**, không phải dựng tiếng chuông từ đầu.
+4. **Doc theo dõi nhân đôi nguồn sự thật.** File `docs/tasks/typing-cadence-bell-execution.md` chép
+   lại Q4/Q6/Q7/Q8/Q9, decision log và bảng milestone vốn đã sống ở README §4/§5 — đúng cái bẫy §6
+   cảnh báo và trái `05-conventions.md` §3. Xử: cắt còn **hai thứ không có chỗ nào khác chứa** (thứ
+   tự thi công đã hiệu chỉnh + kho research), thêm banner "file này KHÔNG phải nguồn sự thật". Phần
+   cổng chất lượng Windows-không-toolchain chuyển về đúng chỗ: **README §7**.
+
+Sửa thêm 3 chỗ nhỏ reviewer chỉ ra: `07-glossary.md` đếm nhầm "Ba khái niệm" (thật ra 5, sau khi bổ
+sung **Độ nhạy** vào bảng đã-nghỉ-hưu); `06-operations.md` viết "hai bộ sau" trong ô chỉ liệt kê 2
+thứ (thật ra `make test-core` chạy **3** bộ) → liệt kê rõ từng bộ; dòng Q9 ở FRICTION-LOG viết "dấu
+vết duy nhất" nhưng `workflow-macos-team.drawio` có **hai** node — node dòng 115 khai hẳn *"Gác cổng
+… Trái tim sản phẩm"*, nặng hơn ghi chú dòng 134.
+
 **Còn hở:**
 - **Q9** (sơ đồ) treo, chờ chủ dự án — checkbox `docs/diagrams/` của #4 **cố ý để trống**.
-- `docs/05-conventions.md` còn 1 chỗ nhắc mô hình cũ — **ngoài phạm vi #4** (issue chỉ liệt kê
-  02/04/06/07 + README + diagrams). Không đụng, ghi lại đây để #5 hoặc #14 nhặt.
+- Sáu chỗ trong `docs/03-decisions/` còn trỏ số HĐ cũ, **cố ý không sửa** (tầng 03 chỉ thêm không
+  sửa) — bảng đánh số lại ở `04-contracts.md` gánh việc tra cứu. 4/6 ADR đó đã *Bị thay thế*.
 - HĐ-7 (copy chuỗi trước khi rời luồng) giữ nguyên dù phạm vi đang thu hẹp — chưa gỡ luật khi code
   chưa gỡ, đợi #13.
 

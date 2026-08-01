@@ -36,7 +36,7 @@ site/              landing page tĩnh
 Toàn bộ nền tảng nằm trong **một monorepo**. Lý do và điều kiện để tách sau này:
 [ADR-0002](03-decisions/ADR-0002-monorepo-mot-bo-nao-nhieu-vo.md).
 
-Ranh giới bộ não và vỏ là hợp đồng cứng — xem [HĐ-5](04-contracts.md).
+Ranh giới bộ não và vỏ là hợp đồng cứng — xem [HĐ-6](04-contracts.md).
 
 ## 3. Nguồn sự thật duy nhất
 
