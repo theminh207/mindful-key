@@ -8,8 +8,11 @@
 > | Phần | Còn đúng? |
 > |---|---|
 > | §1 bốn tầng · §2 chấm điểm lexicon · §5 núm Độ nhạy · §7 hướng cải thiện lexicon | ❌ **Chết theo mô hình cũ.** §7 (luật phủ định, trạng từ cường độ) sẽ **không bao giờ** được làm — hiến chương §5 liệt model sentiment là non-goal |
-> | §3 gom mẫu và vẽ · §4 kho câu chữ · §8 hướng dẫn đọc đồ thị · §9 luật cập nhật | ✅ **Giữ nguyên** — đây là *hình học* và *cách trình bày*, không phụ thuộc nguồn |
-> | §6 điểm mù | ⚠️ Một phần còn đúng (bộ gõ tắt, ô mật khẩu); phần nói về "chỉ thấy khi gõ tiếng Việt" thì hết áp dụng — đếm nhịp phím không phân biệt chế độ gõ |
+> | §3 gom mẫu và vẽ | ⚠️ **Nửa sống.** *Cách* gom (một mẫu mỗi nhịp, không gõ thì không ghi) và *cách vẽ* giữ nguyên. Nhưng câu *"ghi 1 mẫu = trung bình **risk**"* là **phần nguồn** — phải đổi thành trung bình CPM. Chờ Q4 chốt công thức |
+> | §4 kho câu chữ | ⚠️ **Nửa sống.** Khung câu chữ giữ; nhưng định nghĩa *"buổi có gợn"* dựa vào ngưỡng đến từ §5 (núm Độ nhạy) — mà §5 đã chết. Ngưỡng mới là ngưỡng chuông người dùng đặt |
+> | §6 điểm mù | ⚠️ Một phần còn đúng (bộ gõ tắt, ô mật khẩu); phần nói *"chỉ thấy khi gõ tiếng Việt"* hết áp dụng — đếm nhịp phím không phân biệt chế độ gõ |
+> | §8 hướng dẫn đọc đồ thị | 🔄 **Đã viết lại trong chính PR này** (issue #5) — bản cũ mô tả biên độ theo từ ngữ và theo trạng thái tâm, cả hai đều vi phạm mô hình mới |
+> | §9 luật cập nhật | ✅ **Giữ nguyên** |
 >
 > **Nguồn mới:** `core/mood/TypingCadence` → CPM → biên độ `[0,1]`. Công thức quy đổi CPM sang biên
 > độ **chưa chốt** — đó là câu hỏi **Q4** ở

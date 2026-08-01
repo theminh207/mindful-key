@@ -58,6 +58,30 @@ bảng-phân-loại nói rõ phần nào chết / phần nào giữ, và **viế
    hai file chết (đúng chỗ người đọc sẽ gặp nó) + `ADR-0013`; ba mục thêm vào FRICTION-LOG đều đúng
    thể loại "chỗ phải đoán" thật.
 
+**Vòng review bắt được 4 lỗi chặn — đã sửa hết:**
+1. **`CONTRIBUTING.md:28` còn trỏ tới skill đã xoá.** Tui grep `mood-sentiment-layer` **chỉ trong
+   `.claude/`** rồi tuyên bố "sạch" — grep hẹp hơn phạm vi thật. Grep toàn repo ra 6 kết quả, 5 hợp
+   lệ (bảng lịch sử, PROGRESS, README, file đã gắn banner lỗi thời) và **1 sai**: dòng đang chỉ
+   người đóng góp mới tới một skill không còn tồn tại. **Bài học: grep phạm vi hẹp rồi kết luận
+   "sạch" là tự lừa.**
+2. **Banner `MOOD-WAVE-MECHANISM.md` tự mâu thuẫn.** Xếp §3 và §4 vào nhóm "✅ giữ nguyên — không
+   phụ thuộc nguồn", nhưng §3 viết *"ghi 1 mẫu = trung bình **risk**"* (đúng là phần nguồn, đúng thứ
+   issue giao viết lại) và §4 định nghĩa "buổi có gợn" bằng ngưỡng đến từ §5 — mà chính bảng xếp §5
+   vào nhóm chết. Xếp cả §8 vào "giữ nguyên" trong khi **chính PR này viết lại §8**. Tách lại thành
+   ❌ / ⚠️ nửa-sống / 🔄 đã-viết-lại / ✅.
+3. **`CLAUDE.md:5` sửa ngoài phạm vi mà không khai.** Tree bàn giao gỡ mệnh đề trỏ về
+   `docs/tasks/AGENT-BRIEF.md` khỏi dòng hiến chương; tui để nguyên và chỉ khai `settings.json` là
+   ngoài phạm vi. Hệ quả: `AGENT-BRIEF.md` vẫn **tự xưng là hiến chương** trong khi CLAUDE.md đã trỏ
+   luật tối cao sang `docs/01-intent.md` → hai file cùng nhận vai luật tối cao. Xử: **hạ cấp
+   AGENT-BRIEF** thành "bản brief đầy đủ có bối cảnh lịch sử, không phải nguồn luật", kèm câu phân
+   xử "hai bên mâu thuẫn → `docs/01-intent.md` đúng".
+4. **`AGENT-BRIEF.md:41` copy mẫu là *"Hơi thở đang ngắn"*.** Sản phẩm không đo hơi thở và sẽ không —
+   tàn dư mô hình nhịp thở. Đổi thành *"Nhịp gõ vượt mức bạn đặt"*.
+
+Sửa thêm 3 chỗ nhỏ: phạm vi hợp đồng ghi "HĐ-1 → HĐ-4" trong skill và agent nhưng chính hai file đó
+viện dẫn HĐ-6 và HĐ-8 → ghi rõ; thêm mục "khôi phục 4 agent" vào §5 "Đã chốt" (session sau cần biết);
+`settings.json` thừa khoảng trắng sau `[`.
+
 **Kiểm chứng:** `brand_lint.py` 0 vi phạm cứng. PR thuần tài liệu + harness, không đụng `core/` hay
 `platforms/`.
 

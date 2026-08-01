@@ -6,7 +6,7 @@ description: Thiết kế/sửa lớp đo nhịp gõ và chính sách chuông �
 # Typing Cadence Layer
 
 > ⚖️ Luật tối cao là hiến chương `docs/01-intent.md`. Hợp đồng ràng buộc code là
-> `docs/04-contracts.md` **HĐ-1 → HĐ-4**. Lộ trình thi công ở
+> `docs/04-contracts.md` **HĐ-1 → HĐ-4** (cộng HĐ-6 ranh giới core/vỏ, HĐ-8 không bịa dữ liệu). Lộ trình thi công ở
 > `spec/typing-cadence-bell/README.md`. Mơ hồ → **hỏi chủ dự án**, đừng tự quyết.
 
 ## Vòng lặp

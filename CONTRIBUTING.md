@@ -25,4 +25,4 @@ make run       # build rồi mở app dev
 ```
 
 ## Harness
-Việc liên quan engine/mood/platform: dùng skill `mindful-keyboard-harness` để điều phối đúng chuyên gia (`openkey-engine` / `mood-sentiment-layer` / `platform-porting`). Không sửa `core/engine/` để vá lỗi riêng 1 OS.
+Việc liên quan engine/mood/platform: dùng skill `mindful-keyboard-harness` để điều phối đúng chuyên gia (`openkey-engine` / `typing-cadence-layer` / `platform-porting`). Không sửa `core/engine/` để vá lỗi riêng 1 OS.

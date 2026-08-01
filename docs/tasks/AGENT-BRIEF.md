@@ -1,7 +1,9 @@
 # Agent Brief — Dự án `mindful-keyboard` (HIẾN CHƯƠNG)
 
-> Đây là hiến chương (constitution) của dự án. Mọi quyết định kỹ thuật và thiết kế đều phải quy chiếu về nó.
-> `CLAUDE.md` trích các điều bất khả xâm phạm; bản đầy đủ nằm ở đây.
+> ⚠️ **Không còn là hiến chương.** Từ 2026-07-26, hiến chương của dự án là
+> [`docs/01-intent.md`](../01-intent.md) — bản quy phạm, ngắn và có hiệu lực. File này giữ vai trò
+> **bản brief đầy đủ có bối cảnh lịch sử** mà agent đọc để hiểu nền, không phải nguồn luật. Hai bên
+> mâu thuẫn → `docs/01-intent.md` đúng.
 
 ---
 
@@ -38,7 +40,7 @@ Cùng MỘT biểu tượng, biến thiên theo biên độ — không thêm m�
 
 ### 2.3 Thay thế đúng tinh thần
 - ✅ Dùng **biên độ sóng** và **sắc độ trung tính** (thang xanh-nước/xám-đá, không bão hòa) để diễn tả trạng thái — mô tả, không đánh giá.
-- ✅ Copy quan sát: "Mặt hồ đang gợn sóng", "Hơi thở đang ngắn" — nêu hiện tượng, để người dùng tự nhận biết.
+- ✅ Copy quan sát: "Mặt hồ đang gợn sóng", "Nhịp gõ vượt mức bạn đặt" — nêu hiện tượng đo được, để người dùng tự nhận biết. (Ví dụ cũ "Hơi thở đang ngắn" đã bỏ: sản phẩm không đo hơi thở, và sẽ không.)
 - ✅ Icon app: giữ mạch `~`/dấu-ngã làm dấu ấn thị giác chủ đạo (thay vai chữ "V" trong About OpenKey bằng con sóng của mình).
 
 > Tự kiểm mọi đề xuất UI: *"Cái này đang mô tả hay đang phán xét?"* Nếu phán xét → loại bỏ.

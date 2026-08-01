@@ -124,6 +124,12 @@ Chưa chốt thì **đừng tự quyết trong im lặng** — hỏi chủ dự 
   Hai lý do độc lập: chuông reo giữa lúc gõ mật khẩu là quấy rầy thuần tuý; và chuỗi thời điểm bấm
   phím lúc nhập mật khẩu là dữ liệu nhạy cảm, không thu thập là cách duy nhất chắc chắn không rò.
   Thành hợp đồng **HĐ-4** ở `docs/04-contracts.md`.
+- 2026-08-01 *(ở #5)* — **Khôi phục 4 file `.claude/agents/`** thay vì để chúng bị xoá. Tree bàn
+  giao có cả 4 bị xoá (chưa commit), nhưng `mindful-keyboard-harness/SKILL.md` bước 2 **bắt buộc**
+  đọc `.claude/agents/{name}.md` để lấy vai trò khi `subagent_type` không tự nhận diện, và 3 chỗ
+  khác cũng trỏ tới — xoá là gãy harness. Giữ tên `mood-layer-agent`, chỉ viết lại mandate theo đo
+  nhịp. Ngược lại, `.claude/rules-archive/` (7 file) **giữ nguyên việc xoá**: grep toàn repo không
+  ai trỏ tới.
 - 2026-08-01 *(ở #5)* — Skill `.claude/skills/mood-sentiment-layer/` **đổi tên thành
   `typing-cadence-layer`**, viết lại toàn bộ mandate theo đo nhịp, thay vì gỡ hẳn. Giữ chỗ đứng của
   lớp này trong bảng 4 chuyên gia để `mood-layer-agent` còn skill chuyên biệt để trỏ tới. Thi công

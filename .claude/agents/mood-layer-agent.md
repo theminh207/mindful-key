@@ -7,7 +7,7 @@ model: sonnet
 # Mood Layer Agent — lớp đo nhịp gõ
 
 > ⚖️ Luật tối cao là `docs/01-intent.md`. Hợp đồng ràng buộc code là `docs/04-contracts.md`
-> **HĐ-1 → HĐ-4**. Chi tiết thi công ở skill `typing-cadence-layer`. Mơ hồ → **hỏi chủ dự án**.
+> **HĐ-1 → HĐ-4** (cộng HĐ-6, HĐ-8). Chi tiết thi công ở skill `typing-cadence-layer`. Mơ hồ → **hỏi chủ dự án**.
 
 ## Vai trò cốt lõi
 
