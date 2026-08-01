@@ -8,7 +8,7 @@
 | **Bắt đầu** | 2026-07-26 |
 | **Hiến chương** | [`docs/01-intent.md`](../../docs/01-intent.md) — luật tối cao, đã sửa |
 | **Issue** | [#3 → #18](https://github.com/theminh207/mindful-key/issues) trên GitHub |
-| **Trạng thái** | Phase 0 đang chạy — #3 xong, #4 #5 mở đường |
+| **Trạng thái** | Phase 0 đang chạy — #3 #4 xong, #5 tiếp theo |
 
 ---
 
@@ -53,7 +53,7 @@ Trạng thái: `⬜ chưa bắt đầu` · `🔄 đang làm` · `✅ xong` · `�
 | | Issue | Việc | Chặn bởi | Người làm |
 |---|---|---|---|---|
 | ✅ | [#3](https://github.com/theminh207/mindful-key/issues/3) | ADR "đo nhịp gõ thay đọc cảm xúc" + 5 ADR cũ bị thay thế, ADR-0009 gỡ → ADR-0014 | — | @phatnguyen-neurond |
-| ⬜ | [#4](https://github.com/theminh207/mindful-key/issues/4) | Đồng bộ tầng 02/04/06/07 theo vòng lặp mới | #3 | |
+| ✅ | [#4](https://github.com/theminh207/mindful-key/issues/4) | Đồng bộ tầng 02/04/06/07 theo vòng lặp mới | #3 | @phatnguyen-neurond |
 | ⬜ | [#5](https://github.com/theminh207/mindful-key/issues/5) | Đồng bộ `docs/tasks/` + harness `.claude/` | #3 | |
 
 ### Phase 1 — Bộ não C++ (`core/`)
@@ -100,15 +100,34 @@ Chưa chốt thì **đừng tự quyết trong im lặng** — hỏi chủ dự 
 
 | # | Câu hỏi | Chốt ở | Trạng thái |
 |---|---|---|---|
-| Q3 | Nhịp phím lấy từ đâu — (A) từng phím ở hook bàn phím, hay (B) tại điểm kết từ qua `vOnWordCommitted`? | #6 | ❓ chưa chốt |
+| Q3 | Nhịp phím lấy từ đâu — (A) từng phím ở hook bàn phím, hay (B) tại điểm kết từ qua `vOnWordCommitted`? | #6 | ✅ chốt 2026-08-01 → (A) |
 | Q4 | Quy CPM về biên độ sóng `[0,1]` theo công thức nào, và đặt ở đâu để 3 vỏ không trôi lệch? | #8 | ❓ chưa chốt |
-| Q5 | Có đếm nhịp trong ô mật khẩu không? | #9 | ❓ chưa chốt |
+| Q5 | Có đếm nhịp trong ô mật khẩu không? | #9 | ✅ chốt 2026-08-01 → không đếm |
 | Q6 | Nhật ký cũ trên máy người dùng: xoá sạch hay giữ đọc song song? | #11 | ❓ chưa chốt |
 | Q7 | Giữ hay bỏ check-in tự thuật "Mặt hồ đang thế nào?" (người dùng tự nói, không phải máy đoán) | #11 | ❓ chưa chốt |
-| Q8 | Bàn phím iOS có phát được tiếng chuông trong app extension không? Không được thì thay bằng gì? | #17 | ❓ chưa chốt |
+| Q8 | Bàn phím iOS có phát được tiếng chuông trong app extension không? Không được thì thay bằng gì? | #17 | 🔬 đã có đáp án kỹ thuật, chờ nghe-verify tay |
+| Q9 | `docs/diagrams/` **không có** sơ đồ vòng lặp lõi (issue #4 giả định là có). Có vẽ mới `Measure → Bell → Reflect` không? Và **hai node** mô hình cũ trong `workflow-macos-team.drawio` để nguyên hay sửa — dòng 115 khai *"Gác cổng… Trái tim sản phẩm"* (nặng, khai sai tính năng số một) và dòng 134 là ghi chú trạng thái đề ngày? | #4 → treo | ❓ chưa chốt |
 
 **Đã chốt:**
 
+- 2026-08-01 *(Q3, ở #4)* — **Nhịp phím lấy từng phím một ở hook bàn phím**, không tái dùng
+  `vOnWordCommitted`. API là `TypingCadence_OnKeystroke(int64_t tsMs)` — **không tham số chuỗi ở bất
+  kỳ đâu**. Lý do: README §1 viết "chỉ đếm nhịp phím, không đọc ký tự" và §2 nói lời hứa riêng tư
+  phải *kiểm chứng được bằng cách nhìn vào code*. Nuôi từ `vOnWordCommitted(const wstring& word)`
+  thì lớp nhịp vẫn **nhận** chuỗi dù chỉ dùng `.length()` — người review đọc code vẫn thấy lớp mood
+  cầm text, lời hứa tụt xuống "có nhận nhưng hứa không dùng". Phụ: hook cho tín hiệu mượt (gõ giữa
+  từ dài vẫn có nhịp) và Telex `aa`→`â` tính 2 nhịp, đúng nghĩa "nhịp tay". Đánh đổi bị bỏ: phương
+  án (B) ít sửa hơn vì 3 vỏ đã nối sẵn callback đó. Thành hợp đồng **HĐ-1** ở `docs/04-contracts.md`.
+- 2026-08-01 *(Q5, ở #4)* — **Không đếm nhịp trong ô mật khẩu**, mặc định **fail-closed** (không
+  xác định được thì coi là ô mật khẩu). Giữ nguyên hành vi Windows đang có (`MoodWatch.cpp:47` đã
+  loại ô mật khẩu khỏi `MoodBuffer`) và áp cho cả 3 vỏ — macOS hiện **chưa có**, phải bổ sung ở #9.
+  Hai lý do độc lập: chuông reo giữa lúc gõ mật khẩu là quấy rầy thuần tuý; và chuỗi thời điểm bấm
+  phím lúc nhập mật khẩu là dữ liệu nhạy cảm, không thu thập là cách duy nhất chắc chắn không rò.
+  Thành hợp đồng **HĐ-4** ở `docs/04-contracts.md`.
+- 2026-08-01 *(ở #5)* — Skill `.claude/skills/mood-sentiment-layer/` **đổi tên thành
+  `typing-cadence-layer`**, viết lại toàn bộ mandate theo đo nhịp, thay vì gỡ hẳn. Giữ chỗ đứng của
+  lớp này trong bảng 4 chuyên gia để `mood-layer-agent` còn skill chuyên biệt để trỏ tới. Thi công
+  ở #5.
 - 2026-07-26 — Bỏ **hẳn** lớp sentiment, không giữ lại để ghi nhật ký.
 - 2026-07-26 — Đơn vị đo là **CPM (ký tự/phút)**, không phải WPM. Telex/VNI gõ dấu tốn thêm phím nên đếm "từ" bị méo.
 - 2026-07-27 *(Q1, ở #3)* — Bốn mức ngưỡng, mặc định **Rất nhanh = 400 CPM**: `Nhanh 300` ·
@@ -154,3 +173,19 @@ Mỗi lần một issue đóng lại, **cùng trong PR đó** (không để dồ
 
 Cổng chất lượng trước khi coi là xong (theo `CLAUDE.md`): `make test` xanh · `make build` sạch, không
 thêm warning · `make brand-lint` 0 vi phạm · CI xanh.
+
+### Chạy cổng đó ở đâu — khi máy dev là Windows
+
+Máy dev hiện tại **không có toolchain**: `g++`, `clang++`, `cl`, `make`, `cmake` đều thiếu (chỉ có
+`py -3`). Nên **CI là cổng kiểm chứng thật**, không phải máy local:
+
+| Cổng | Local | CI |
+|---|---|---|
+| `make test` | ❌ | ⚠️ `macos.yml` chỉ chạy `tests/core/build.sh` + `test_engine` — **không** chạy `test-macos`/`test-ios` |
+| `make build` (macOS) | ❌ | ✅ `macos.yml` — xcodebuild, ad-hoc sign |
+| Build Windows | ❌ | ✅ `windows.yml` — MSVC v143, cả Debug lẫn Release |
+| `make brand-lint` | ✅ `PYTHONIOENCODING=utf-8 py -3 scripts/brand_lint.py` | ✅ `brand-lint.yml` |
+
+**Luật:** không ghi "đã test" cho thứ chỉ CI chạy. PR nào đụng code phải **đợi CI xanh** trước khi
+review. Phần `test-macos`/`test-ios` không có ai chạy tự động — muốn chắc thì phải có người mở máy
+macOS chạy tay, và nói rõ trong PR là chưa chạy.

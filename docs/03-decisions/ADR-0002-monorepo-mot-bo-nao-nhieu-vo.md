@@ -2,7 +2,7 @@
 
 - **Trạng thái:** Đã chốt
 - **Ngày:** không ghi lại ngày cụ thể
-- **Liên quan:** `../tasks/REPO-TOPOLOGY.md`, [HĐ-5](../04-contracts.md)
+- **Liên quan:** `../tasks/REPO-TOPOLOGY.md`, [HĐ-6](../04-contracts.md) *(số cũ HĐ-5, đánh số lại 2026-08-01 ở #4)*
 
 ## Bối cảnh
 

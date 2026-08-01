@@ -17,6 +17,80 @@
 
 ---
 
+## 2026-08-01 — #4 Đồng bộ tầng 02/04/06/07 theo vòng lặp Measure → Bell → Reflect
+
+**Làm gì:** Viết lại `04-contracts.md` từ 6 lên 8 hợp đồng — **gỡ 1** (HĐ nhịp thở, theo gác cổng),
+**thêm 3** (**HĐ-1 "lớp nhịp gõ không được nhận nội dung"** — cấm mọi API `core/mood` có tham số
+chuỗi, kèm lệnh `grep` soi · **HĐ-2 chuông ngân-thì-được-chặn-thì-không** · **HĐ-4 không đếm trong ô
+mật khẩu**), và **giữ HĐ-3 nhưng đổi đơn vị đo** từ `câu → risk [0,1]` sang `nhịp phím → CPM`
+(cửa sổ 30s · ngưỡng mặc định 400). Bốn hợp đồng còn lại dịch số, nội dung gần như nguyên. Viết lại
+`07-glossary.md`: bỏ `send-risk`/`gác cổng`/`nhịp thở`/`allow-list`, thêm `nhịp gõ`/`CPM`/`cửa sổ
+trượt`/`ngưỡng chuông`/`cooldown`, và thêm bảng **"Thuật ngữ đã nghỉ hưu"** để người đọc code cũ tra
+ra ngay. Viết lại `02-features.md` theo mô hình mới **kèm nhãn trạng thái thật**. Sửa một dòng ở
+`06-operations.md` và một dòng ở `docs/README.md`.
+
+**Chốt được:**
+- **Q3 — nhịp phím lấy từng phím ở hook bàn phím**, không tái dùng `vOnWordCommitted`. Lý do đầy đủ
+  ở README §5 "Đã chốt". Đã thành hợp đồng HĐ-1.
+- **Q5 — không đếm nhịp trong ô mật khẩu**, fail-closed. Đã thành hợp đồng HĐ-4. Kéo theo một việc
+  cho #9: **macOS hiện chưa có cổng kiểm này**, Windows và iOS thì có rồi.
+- **Số phận skill `mood-sentiment-layer`** (câu hỏi #5 tự đặt): đổi tên thành `typing-cadence-layer`.
+  Chốt ở đây để #5 khỏi phải hỏi lại.
+
+**Phải đoán:** hai chỗ, đã ghi `docs/tasks/FRICTION-LOG.md`.
+1. **Issue #4 giao "vẽ lại sơ đồ vòng lặp lõi 4 bước thành 3 bước" — sơ đồ đó không tồn tại.** Cả
+   hai file trong `docs/diagrams/` là sơ đồ *quy trình làm việc*, không phải *vòng lặp sản phẩm*;
+   grep `Sense|Pause|Remind|Reflect` ra 0 kết quả. **Không bịa ra sơ đồ chưa từng có.** Thành **Q9**
+   ở README §5 chờ chủ dự án chốt. Ràng buộc kèm theo: máy dev Windows không có drawio CLI, sửa
+   `.drawio` mà không regenerate được `.svg`/`.png` sẽ tạo trôi lệch nguồn ↔ bản xuất.
+2. **Tầng 02 mô tả hiện trạng, mà hiện trạng đang giữa đợt chuyển.** Issue bảo viết theo mô hình
+   mới; luật của tầng 02 lại là "code là đúng". Viết mục B theo mô hình mới **kèm nhãn "chưa khởi
+   công trên mọi vỏ"** + banner đầu file, bảng nền tảng ghi cả thứ đang chạy lẫn thứ sắp có. Giữ
+   được cả hai luật.
+
+**Kiểm chứng:** `brand_lint.py` — 0 vi phạm cứng (chi tiết ở phần cuối PR). PR thuần tài liệu, không
+đụng code, nên `macos.yml`/`windows.yml` không có gì để build khác đi. **Lưu ý máy dev là Windows và
+KHÔNG có toolchain** (`g++`/`clang++`/`cl`/`make` đều thiếu) — `make test`/`make build` không chạy
+local được, CI là cổng thật. Điều này áp cho toàn bộ đợt #4→#18, ghi ở
+`docs/tasks/typing-cadence-bell-execution.md`.
+
+**Vòng review bắt được 4 lỗi chặn — đã sửa hết:**
+1. **Đánh số lại HĐ làm mồ côi 7 tham chiếu.** Đây là orphan do chính PR tạo ra, thuộc luật
+   `.claude/rules/03-surgical-changes.md`. Nặng nhất: `ADR-0005:5` trỏ `HĐ-1` vốn là *"Nhịp thở"* —
+   nay HĐ-1 là hợp đồng **cấm** đúng thứ ADR đó mô tả. Xử: thêm **bảng đánh số lại** ở đầu
+   `04-contracts.md` (số cũ → số mới) để link cũ tra ra được, **không sửa thân ADR** vì tầng 03 là
+   *"chỉ thêm, không sửa"*. Riêng `05-conventions.md:39` là tầng 05 (sửa được) → `HĐ-5` → `HĐ-6`.
+2. **5 anchor link chết trong `07-glossary.md`.** Tui viết `[CPM](#cpm)` v.v. nhưng các thuật ngữ là
+   **chữ đậm trong đoạn văn, không phải heading**, nên GitHub không sinh anchor. Xử: bỏ link, giữ
+   chữ đậm.
+3. **Bảng nền tảng `02-features.md` khai thiếu**: bỏ mất dòng chuông đang tồn tại thật hôm nay, đọc
+   ra thành "sản phẩm chưa có chuông nào" trong khi mục C/D vẫn mô tả nhịp chuông. Xử: thêm lại dòng
+   `~~Chuông theo nhịp lấy mẫu / chuỗi câu căng~~ | có (đổi nguồn ở #9)` + đoạn giải thích rằng
+   #9/#15/#17 là **đổi nguồn nuôi chuông**, không phải dựng tiếng chuông từ đầu.
+4. **Doc theo dõi nhân đôi nguồn sự thật.** File `docs/tasks/typing-cadence-bell-execution.md` chép
+   lại Q4/Q6/Q7/Q8/Q9, decision log và bảng milestone vốn đã sống ở README §4/§5 — đúng cái bẫy §6
+   cảnh báo và trái `05-conventions.md` §3. Xử: cắt còn **hai thứ không có chỗ nào khác chứa** (thứ
+   tự thi công đã hiệu chỉnh + kho research), thêm banner "file này KHÔNG phải nguồn sự thật". Phần
+   cổng chất lượng Windows-không-toolchain chuyển về đúng chỗ: **README §7**.
+
+Sửa thêm 3 chỗ nhỏ reviewer chỉ ra: `07-glossary.md` đếm nhầm "Ba khái niệm" (thật ra 5, sau khi bổ
+sung **Độ nhạy** vào bảng đã-nghỉ-hưu); `06-operations.md` viết "hai bộ sau" trong ô chỉ liệt kê 2
+thứ (thật ra `make test-core` chạy **3** bộ) → liệt kê rõ từng bộ; dòng Q9 ở FRICTION-LOG viết "dấu
+vết duy nhất" nhưng `workflow-macos-team.drawio` có **hai** node — node dòng 115 khai hẳn *"Gác cổng
+… Trái tim sản phẩm"*, nặng hơn ghi chú dòng 134.
+
+**Còn hở:**
+- **Q9** (sơ đồ) treo, chờ chủ dự án — checkbox `docs/diagrams/` của #4 **cố ý để trống**.
+- Năm chỗ trong `docs/03-decisions/` còn trỏ số HĐ cũ (`ADR-0003` · `ADR-0004` · `ADR-0005` ·
+  `ADR-0011` ×2 = **bốn ADR**, tất cả đều đã *Bị thay thế*), **cố ý không sửa** vì tầng 03 chỉ thêm
+  không sửa — bảng đánh số lại ở `04-contracts.md` gánh việc tra cứu. Riêng `ADR-0002` là ADR duy
+  nhất còn *Đã chốt* nên **đã sửa số trực tiếp**: đó là dòng metadata "Liên quan", không phải thân
+  quyết định, và #3 đã tạo tiền lệ sửa metadata tầng 03.
+- HĐ-7 (copy chuỗi trước khi rời luồng) giữ nguyên dù phạm vi đang thu hẹp — chưa gỡ luật khi code
+  chưa gỡ, đợi #13.
+
+---
+
 ## 2026-07-27 — #3 ADR: đo nhịp gõ thay cho đọc cảm xúc
 
 **Làm gì:** Viết `ADR-0013` (đo nhịp gõ thay đọc cảm xúc) và `ADR-0014` (mandate iOS hẹp, lý lẽ
