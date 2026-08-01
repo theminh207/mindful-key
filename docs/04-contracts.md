@@ -77,10 +77,14 @@ không dùng"*. Đánh đổi đã cân nhắc và bác bỏ — xem
 
 **Cách soi — cưỡng chế bằng máy, không phụ thuộc có ai đọc tài liệu hay không.**
 `scripts/check_hd1.py` (chạy ở bước *"Cổng HĐ-1"* trong `.github/workflows/macos.yml`) là
-**allowlist, không phải denylist**: mọi tham số trong header của lớp nhịp gõ/chuông phải là một
+**allowlist, không phải denylist**: mọi tham số trong **header** của lớp nhịp gõ/chuông phải là một
 trong `int64_t` · `int` · `double` · `bool` · `void`, và **không được là con trỏ, tham chiếu hay
-mảng**. Kiểu nào khác — kể cả kiểu chưa ai nghĩ tới — là **đỏ CI**. Không tìm thấy file nào cũng
-đỏ, để không ai vô hiệu cổng bằng cách đổi tên file.
+mảng**. Kiểu nào khác — kể cả kiểu chưa ai nghĩ tới — là **đỏ CI**.
+
+Phạm vi nói cho chính xác: cổng quét **mọi `.h`/`.cpp` trong `core/mood/`** trừ danh sách miễn trừ
+của mô hình cũ (đang chờ #12/#13 gỡ) — nên **file mới thêm vào cũng bị soi ngay**, không cần ai nhớ
+đăng ký. Allowlist tham số chỉ áp cho `.h` (nơi duy nhất có mặt API); `.cpp` đi qua một lưới
+denylist phụ. Thiếu file bắt buộc, hoặc danh sách miễn trừ trỏ tới file đã biến mất, cũng đỏ.
 
 > ⚠️ **Hai bản denylist trước của cổng này đều THỦNG.** Bản 1 (PR #21) đòi kiểu chuỗi đứng *trước*
 > tên lớp trên cùng một dòng → `void TypingCadence_OnWord(const wstring&)` lọt. Bản 2 liệt tên kiểu

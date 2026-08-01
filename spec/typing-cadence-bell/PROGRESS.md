@@ -86,6 +86,35 @@ Dựng cổng đó lòi ra **hai lỗi trong chính hợp đồng tui viết ở
    an toàn giả. Và cách duy nhất biết một cổng có chạy không là **tiêm vi phạm giả vào rồi xem nó
    có đỏ**; thấy nó xanh trên code sạch không chứng minh được gì.
 
+**Vòng review 3 — allowlist vẫn còn ba đường vào, tất cả cùng một gốc:**
+
+1. **`operator<<(const uint32_t*)` lọt.** Regex tìm tên hàm là `[A-Za-z_]\w*`, mà ngay trước `(`
+   của `operator<<` là `<<` — không khớp gì cả, nên **cả danh sách tham số đi lọt**. Áp cho mọi
+   toán tử ký hiệu: `<<` `()` `+=` `[]`. Và `uint32_t` **thiếu** ở lưới denylist phụ, nên không có
+   gì đỡ. Đúng con bug "quên một kiểu" đã giết bản denylist — vẫn còn nguyên trong cái lưới đáng
+   lẽ để đỡ lưng allowlist.
+2. **File mới trong `core/mood/` hoàn toàn vô hình.** Danh sách file được soi là 4 đường dẫn
+   **cứng**, nên `core/mood/ContentTap.h` chứa `const uint32_t*` đi qua **xanh**. Chốt chặn "không
+   tìm thấy file nào → đỏ" chỉ chống *đổi tên*, không chống *thêm file*. Mà lộ trình sắp tới có
+   "kho ghi lần chuông" là file mới.
+3. **Hàm tự do trong `.cpp`** nhận `const uint32_t*` — cùng gốc với (1).
+
+**Xử — đảo luôn cả cách chọn file:** thay danh sách *file-được-soi* (phải nhớ mà thêm) bằng danh
+sách **miễn trừ** (co lại dần, cạn khi #13 xong). Cổng nay quét **mọi `.h`/`.cpp` trong
+`core/mood/`** trừ 7 file của mô hình cũ — nên file mới **bị soi ngay**, không cần ai nhớ đăng ký.
+Thêm `operator\s*[^\s(]+` vào regex tên hàm; thêm `uint32_t` + `unsigned short` vào lưới phụ. Và
+để danh sách miễn trừ không mục ruỗng: trỏ tới file đã biến mất cũng **đỏ**, nhắc dọn.
+
+Sửa luôn ba chỗ **bắt oan** reviewer chỉ ra: `charsPerMinute()` và `charCount()` bị đỏ vì `char`
+không có ranh giới từ — mà đơn vị của chính lớp này *là* characters-per-minute, tức cổng đang cấm
+gọi đúng tên miền; và tham số có **giá trị mặc định là định danh** (`bool on = true`,
+`int64_t ms = kTypingCadenceDefaultWindowMs`) bị đẩy tên vào ô "kiểu" → đỏ oan, đúng thứ #7
+`BellPolicy` rất dễ vấp. Cộng một lỗi vận hành: script **crash trên chính máy dev** vì console
+cp1252 không in nổi tiếng Việt — mà "chạy được tại máy dev" là lý do tồn tại của nó.
+
+Kiểm lại toàn bộ: 3 lỗ vòng 3 **đóng**, 8 ca vòng 2 **vẫn đỏ**, 6 API hợp lệ (gồm cả chữ ký dự kiến
+của `BellPolicy`) **không còn bị bắt oan**.
+
 **Vòng review 2 — cổng vẫn thủng, và lần này là lỗ đáng sợ hơn:**
 
 Reviewer làm đúng cái phương pháp tui vừa tự viết ra (*"đi tìm hình dạng vi phạm có thật trong

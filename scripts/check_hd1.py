@@ -7,26 +7,32 @@ Hiến chương §4.2 hứa "sản phẩm KHÔNG ĐỌC nội dung người dùn
 đọc code NHÌN THẤY ĐƯỢC rằng không có đường nào cho chữ đi vào — mà "nhìn thấy được" thì phụ
 thuộc vào việc CÓ AI ĐỌC hay không. Script này biến nó thành thứ không phụ thuộc người.
 
-Hợp đồng: docs/04-contracts.md HĐ-1.
+Hợp đồng: docs/04-contracts.md HĐ-1.  ·  Chạy tại chỗ: python3 scripts/check_hd1.py
 
 ────────────────────────────────────────────────────────────────────────────────────────────────
 VÌ SAO LÀ ALLOWLIST, KHÔNG PHẢI DENYLIST
 
-Hai bản trước của cổng này đều là denylist (liệt kê tên kiểu chuỗi bị cấm) và **cả hai đều thủng**:
+Cổng này đã thủng BA LẦN, mỗi lần một kiểu, tất cả đều khi còn là denylist:
 
-  · Bản 1 — mẫu đòi kiểu chuỗi đứng TRƯỚC tên lớp trên cùng một dòng, nên
-    `void TypingCadence_OnWord(const wstring&)` lọt.
-  · Bản 2 — mẫu `string|String|char` bỏ sót `const wchar_t*`... rồi sau khi vá vẫn bỏ sót
-    `Uint16` / `Uint32` / `Byte` — TYPEDEF CỦA CHÍNH REPO NÀY, và đúng là cách `core/engine`
-    trao ký tự ra ngoài (`Engine.h`: `Uint32 getCharacterCode(const Uint32&)`). Tức hình dạng
-    vi phạm DỄ XẢY RA NHẤT lại là hình dạng lọt.
+  1. Mẫu đòi kiểu chuỗi đứng TRƯỚC tên lớp trên cùng một dòng
+     → `void TypingCadence_OnWord(const wstring&)` lọt.
+  2. Mẫu `string|String|char` bỏ sót `const wchar_t*`.
+  3. Sau khi vá (2) vẫn bỏ sót `Uint16` / `Uint32` / `Byte` — TYPEDEF CỦA CHÍNH REPO NÀY, và
+     đúng là cách core/engine trao ký tự ra ngoài (Engine.h: `Uint32 getCharacterCode(const
+     Uint32&)`). Tức hình dạng vi phạm DỄ XẢY RA NHẤT lại là hình dạng lọt.
 
 Bài học: **denylist không bao giờ đủ** — nó chỉ chặn được những kiểu người viết đã NGHĨ TỚI, mà
-vi phạm thật thường đến từ kiểu người ta không nghĩ tới. Nên đảo chiều: liệt kê thứ ĐƯỢC PHÉP.
+vi phạm thật thường đến từ kiểu người ta không nghĩ tới. Vá thêm tên kiểu là đuổi theo cái đuôi
+của chính mình. Nên đảo chiều: liệt kê thứ ĐƯỢC PHÉP.
 
-API của lớp này cố ý bé và đóng băng (HĐ-3 gọi chữ ký là hợp đồng ổn định), nên allowlist là
-khả thi. Thêm một kiểu mới vào API sẽ làm CI đỏ cho tới khi có người sửa file này — đó là **ma
-sát có chủ đích**, đúng chỗ đáng có ma sát nhất trong toàn bộ dự án.
+API của lớp này cố ý bé và đóng băng (HĐ-3 gọi chữ ký là hợp đồng ổn định), nên allowlist khả
+thi. Thêm kiểu mới vào API sẽ làm CI đỏ cho tới khi có người sửa file này — **ma sát có chủ
+đích**, đúng chỗ đáng có ma sát nhất trong dự án.
+
+CÁCH KIỂM CỔNG NÀY (đừng bỏ qua): tiêm một khai báo vi phạm vào core/mood/TypingCadence.h, chạy
+script, xem nó có ĐỎ không, rồi `git checkout` lại. Thấy cổng xanh trên code sạch KHÔNG chứng
+minh được gì. Và hãy tiêm cả những hình dạng bạn CHƯA nghĩ tới — cả ba lần thủng ở trên đều lọt
+đúng vào hình dạng người viết chưa nghĩ tới.
 ────────────────────────────────────────────────────────────────────────────────────────────────
 """
 
@@ -34,26 +40,59 @@ import os
 import re
 import sys
 
-# Chỉ những kiểu này được phép xuất hiện trong tham số. Toàn số vô hướng — không kiểu nào
-# trong đây chở nổi một ký tự.
+# Máy dev của dự án là Windows, console cp1252 — thông điệp tiếng Việt dưới đây làm script chết
+# bằng UnicodeEncodeError nếu không ép UTF-8. Điểm bán hàng của file này là "chạy được tại máy
+# dev" (máy đó không có trình biên dịch nào, nhưng có python), nên nó phải chạy trơn ở đó.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
+# Chỉ những kiểu này được phép làm tham số. Toàn số vô hướng — không kiểu nào chở nổi một ký tự.
 ALLOWED_PARAM_TYPES = {"int64_t", "int", "double", "bool", "void"}
 
-# Lưới thứ hai, quét TOÀN file (không chỉ tham số) để bắt biến thành viên / biến cục bộ chở nội
+# Lưới THỨ HAI, quét toàn file (không chỉ tham số) để bắt biến thành viên / biến cục bộ chở nội
 # dung. Vẫn là denylist nên KHÔNG đủ một mình — nó chỉ đứng sau allowlist.
+#
+# `\bchar\b` có ranh giới từ, KHÔNG phải `char` trần: đơn vị của chính lớp này là
+# *characters*-per-minute, nên `charsPerMinute()` / `charCount()` là tên hợp lệ và từng bị bắt
+# oan. Các kiểu ký tự khác phải liệt riêng.
+#
+# `uint32_t` từng THIẾU ở đây và đó là lỗ thật: `operator<<(const uint32_t*)` lọt cả allowlist
+# (vì tên toán tử không khớp regex tên hàm) lẫn lưới này.
 BANNED_ANYWHERE = re.compile(
-    r"(string|String|char|Uint8|Uint16|Uint32|Byte|TCHAR|LPSTR|LPWSTR|LPCSTR|LPCWSTR|LPTSTR|"
-    r"BSTR|unichar|CFString|NSAttributed|\bid\b|uint8_t|uint16_t|filesystem|QString|jstring)"
+    r"(string|String|\bchar\b|wchar_t|char16_t|char32_t|unichar|"
+    r"\bUint8\b|\bUint16\b|\bUint32\b|\bByte\b|"
+    r"uint8_t|uint16_t|uint32_t|\bunsigned\s+short\b|"
+    r"TCHAR|LPSTR|LPWSTR|LPCSTR|LPCWSTR|LPTSTR|BSTR|CFString|NSAttributed|\bid\b|"
+    r"filesystem|QString|jstring)"
 )
 
-FILES = [
-    "core/mood/TypingCadence.h",
-    "core/mood/TypingCadence.cpp",
-    "core/mood/BellPolicy.h",
-    "core/mood/BellPolicy.cpp",
-]
+MOOD_DIR = "core/mood"
+
+# Phải tồn tại — nếu không thì cổng chẳng soi được gì và ta muốn ĐỎ, để không ai vô hiệu hoá
+# cổng bằng cách đổi tên file.
+REQUIRED = ["core/mood/TypingCadence.h", "core/mood/TypingCadence.cpp"]
+
+# Miễn trừ CÓ THỜI HẠN: file của mô hình CŨ (đọc cảm xúc), đang chờ #12/#13 gỡ. Chúng có kiểu
+# chuỗi một cách hợp pháp vì chúng *là* lớp đọc nội dung.
+#
+# Cố ý làm DANH SÁCH MIỄN TRỪ (co lại dần, và cạn khi #13 xong) thay vì danh sách file-được-soi
+# (phải nhớ mà thêm). Bản trước liệt cứng 4 đường dẫn được soi, nên một file MỚI trong
+# core/mood/ hoàn toàn VÔ HÌNH với cổng — thêm `ContentTap.h` chứa `const uint32_t*` thì cổng
+# vẫn xanh. Lộ trình sắp tới có "kho ghi lần chuông" là file mới, sẽ dính ngay.
+LEGACY_EXEMPT = {
+    "core/mood/SendRiskAnalyzer.h",
+    "core/mood/SendRiskAnalyzer.cpp",
+    "core/mood/MoodBuffer.h",
+    "core/mood/MoodBuffer.cpp",
+    "core/mood/MoodPhrasing.h",
+    "core/mood/MoodPhrasing.cpp",
+    "core/mood/BreathingPause.h",
+}
+
+CONTROL_KEYWORDS = ("if", "for", "while", "switch", "return", "sizeof", "catch")
 
 
-def strip_comments(src: str) -> str:
+def strip_comments(src):
     """Bỏ /* */ và // — thay bằng khoảng trắng để số dòng không đổi."""
     out = []
     i, n = 0, len(src)
@@ -74,30 +113,39 @@ def strip_comments(src: str) -> str:
     return "".join(out)
 
 
-def check_params(path: str, code: str):
+def check_params(path, code):
     """Allowlist: mọi tham số phải là kiểu vô hướng được phép, KHÔNG con trỏ/tham chiếu/mảng.
 
-    CHỈ chạy trên `.h`. Đó là nơi DUY NHẤT có mặt API — thứ nhận dữ liệu từ bên ngoài vào. Chạy
-    cả trên `.cpp` thì regex bắt nhầm **danh sách khởi tạo constructor** (`_hasLast(false)`) và
-    **nơi gọi hàm** (`keystrokesInWindow(nowMs)`) vì chúng cũng có dạng `ten(...)` — đã thử và
-    đỏ oan 3 chỗ. `.cpp` vẫn được lưới denylist BANNED_ANYWHERE quét.
+    CHỈ chạy trên `.h` — nơi duy nhất có mặt API, tức thứ nhận dữ liệu từ ngoài vào. Chạy cả
+    trên `.cpp` thì regex bắt nhầm **danh sách khởi tạo constructor** (`_hasLast(false)`) và
+    **nơi gọi hàm** (`keystrokesInWindow(nowMs)`) vì chúng cũng có dạng `ten(...)` — đã thử, đỏ
+    oan 3 chỗ. `.cpp` vẫn được lưới BANNED_ANYWHERE quét.
     """
     problems = []
     if not path.endswith(".h"):
         return problems
-    # Chỉ nhìn khai báo hàm: `<kiểu trả về> ten(...)`. Đủ cho một header API bé.
-    for m in re.finditer(r"\b([A-Za-z_]\w*)\s*\(([^;{)]*)\)", code):
-        fname, params = m.group(1), m.group(2)
-        if fname in ("if", "for", "while", "switch", "return", "sizeof"):
+
+    # Khớp cả tên thường LẪN toán tử ký hiệu. Bản trước chỉ có `[A-Za-z_]\w*`, nên
+    # `void operator<<(const uint32_t*)` KHÔNG khớp gì cả (ngay trước `(` là `<<`) và cả danh
+    # sách tham số đi lọt. Cùng lỗ đó áp cho `operator()`, `operator+=`, `operator[]`.
+    for m in re.finditer(r"(operator\s*[^\s(]+|\b[A-Za-z_]\w*)\s*\(([^;{)]*)\)", code):
+        fname = m.group(1).strip()
+        params = m.group(2)
+        if fname in CONTROL_KEYWORDS:
             continue
         line = code[: m.start()].count("\n") + 1
+
         for raw in params.split(","):
             p = raw.strip()
             if not p:
                 continue
             if "*" in p or "&" in p or "[" in p:
-                problems.append((line, fname, p, "con trỏ / tham chiếu / mảng — API này chỉ nhận số vô hướng"))
+                problems.append((line, fname, p,
+                                 "con trỏ / tham chiếu / mảng — API này chỉ nhận số vô hướng"))
                 continue
+            # Cắt giá trị mặc định trước khi tách token: với `bool on = true` thì `true` không
+            # phải kiểu, mà token cuối bị coi là TÊN nên `on` bị đẩy vào ô "kiểu" → đỏ oan.
+            p = p.split("=", 1)[0].strip()
             toks = [t for t in re.findall(r"[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*", p) if t != "const"]
             if not toks:
                 continue
@@ -105,18 +153,47 @@ def check_params(path: str, code: str):
             type_toks = toks[:-1] if len(toks) > 1 else toks
             for t in type_toks:
                 if t not in ALLOWED_PARAM_TYPES:
-                    problems.append((line, fname, p, "kiểu `%s` không nằm trong allowlist %s"
+                    problems.append((line, fname, p,
+                                     "kiểu `%s` không nằm trong allowlist %s"
                                      % (t, sorted(ALLOWED_PARAM_TYPES))))
     return problems
 
 
-def main() -> int:
-    files = [f for f in FILES if os.path.exists(f)]
-    if not files:
-        print("::error::Cổng HĐ-1: không tìm thấy file nào của lớp nhịp gõ/chuông — "
-              "cổng không soi được gì. Đổi tên file thì phải sửa FILES trong scripts/check_hd1.py.")
+def collect_files():
+    """Mọi .h/.cpp trong core/mood/, TRỪ danh sách miễn trừ của mô hình cũ."""
+    found = []
+    for name in sorted(os.listdir(MOOD_DIR)):
+        if not (name.endswith(".h") or name.endswith(".cpp")):
+            continue
+        rel = MOOD_DIR + "/" + name
+        if rel in LEGACY_EXEMPT:
+            continue
+        found.append(rel)
+    return found
+
+
+def main():
+    if not os.path.isdir(MOOD_DIR):
+        print("::error::Cổng HĐ-1: không thấy thư mục %s — cổng không soi được gì." % MOOD_DIR)
         return 1
 
+    missing = [f for f in REQUIRED if not os.path.exists(f)]
+    if missing:
+        print("::error::Cổng HĐ-1: thiếu file bắt buộc %s. Đổi tên/gỡ file thì phải sửa "
+              "REQUIRED trong scripts/check_hd1.py — đừng để cổng im lặng không soi gì."
+              % ", ".join(missing))
+        return 1
+
+    # Miễn trừ đã cạn thì phải dọn, không để danh sách mục ruỗng. Khi #13 gỡ xong lớp đọc cảm
+    # xúc, bước này sẽ đỏ đúng một lần để nhắc xoá dòng tương ứng.
+    stale = sorted(p for p in LEGACY_EXEMPT if not os.path.exists(p))
+    if stale:
+        print("::error::Cổng HĐ-1: LEGACY_EXEMPT còn trỏ tới file không còn tồn tại: %s. "
+              "Gỡ khỏi scripts/check_hd1.py — danh sách miễn trừ phải co lại theo #12/#13."
+              % ", ".join(stale))
+        return 1
+
+    files = collect_files()
     failed = False
     for path in files:
         with open(path, encoding="utf-8") as fh:
@@ -140,8 +217,8 @@ def main() -> int:
               ".length() VẪN là vi phạm.")
         return 1
 
-    print("OK — HĐ-1 sạch: %d file, mọi tham số đều là số vô hướng, không kiểu chuỗi nào."
-          % len(files))
+    print("OK — HĐ-1 sạch: soi %d file trong %s (miễn trừ %d file mô hình cũ), "
+          "mọi tham số đều là số vô hướng." % (len(files), MOOD_DIR, len(LEGACY_EXEMPT)))
     return 0
 
 

@@ -20,11 +20,12 @@
 //  │ từng phím một. Q3, chốt 2026-08-01, spec/typing-cadence-bell/README.md §5.           │
 //  │                                                                                     │
 //  │ Hợp đồng: docs/04-contracts.md HĐ-1. Được CƯỠNG CHẾ BẰNG MÁY, không chỉ bằng lời:    │
-//  │ bước "Cổng HĐ-1" trong .github/workflows/macos.yml grep thư mục này và làm ĐỎ CI     │
-//  │ nếu có API nào của lớp nhịp gõ/chuông mọc ra tham số kiểu chuỗi.                     │
+//  │ scripts/check_hd1.py (chạy ở bước "Cổng HĐ-1" của macos.yml) là ALLOWLIST — mọi      │
+//  │ tham số trong header phải là int64_t/int/double/bool/void, không con trỏ/tham        │
+//  │ chiếu/mảng. Kiểu nào khác, kể cả kiểu chưa ai nghĩ tới, là ĐỎ CI.                    │
 //  │                                                                                     │
-//  │ (Mẫu grep cố ý KHÔNG chép vào đây: chính dòng chép nó sẽ tự khớp và làm đỏ CI oan —  │
-//  │  đã vấp thật khi dựng cổng này. Pattern giữ ĐÚNG MỘT BẢN, ở workflow.)               │
+//  │ Chạy tại chỗ: python3 scripts/check_hd1.py                                          │
+//  │ (Đừng chép mẫu vào đây — cổng từng có bản grep tự khớp chính dòng comment chép nó.)  │
 //  └─────────────────────────────────────────────────────────────────────────────────────┘
 //
 //  KHÔNG I/O, KHÔNG log, KHÔNG API riêng OS, KHÔNG tự đọc đồng hồ hệ thống — thời điểm do
