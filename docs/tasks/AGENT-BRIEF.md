@@ -1,4 +1,4 @@
-# Agent Brief — Dự án `mindful-keyboard` (HIẾN CHƯƠNG)
+# Agent Brief — Dự án `mindful-keyboard` (brief lịch sử — KHÔNG phải nguồn luật)
 
 > ⚠️ **Không còn là hiến chương.** Từ 2026-07-26, hiến chương của dự án là
 > [`docs/01-intent.md`](../01-intent.md) — bản quy phạm, ngắn và có hiệu lực. File này giữ vai trò

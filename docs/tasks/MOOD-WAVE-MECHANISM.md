@@ -10,7 +10,7 @@
 > | §1 bốn tầng · §2 chấm điểm lexicon · §5 núm Độ nhạy · §7 hướng cải thiện lexicon | ❌ **Chết theo mô hình cũ.** §7 (luật phủ định, trạng từ cường độ) sẽ **không bao giờ** được làm — hiến chương §5 liệt model sentiment là non-goal |
 > | §3 gom mẫu và vẽ | ⚠️ **Nửa sống.** *Cách* gom (một mẫu mỗi nhịp, không gõ thì không ghi) và *cách vẽ* giữ nguyên. Nhưng câu *"ghi 1 mẫu = trung bình **risk**"* là **phần nguồn** — phải đổi thành trung bình CPM. Chờ Q4 chốt công thức |
 > | §4 kho câu chữ | ⚠️ **Nửa sống.** Khung câu chữ giữ; nhưng định nghĩa *"buổi có gợn"* dựa vào ngưỡng đến từ §5 (núm Độ nhạy) — mà §5 đã chết. Ngưỡng mới là ngưỡng chuông người dùng đặt |
-> | §6 điểm mù | ⚠️ Một phần còn đúng (bộ gõ tắt, ô mật khẩu); phần nói *"chỉ thấy khi gõ tiếng Việt"* hết áp dụng — đếm nhịp phím không phân biệt chế độ gõ |
+> | §6 điểm mù | ⚠️ **Phần lớn chết.** 5/6 mục (phủ định · cường độ · mỉa mai · vốn từ mỏng · hai bản từ điển trôi lệch) đều là điểm mù **của lexicon** → chết theo mô hình cũ. Chỉ còn đúng: bộ gõ tắt, ô mật khẩu. Mục *"chỉ thấy khi gõ tiếng Việt"* hết áp dụng — đếm nhịp phím không phân biệt chế độ gõ |
 > | §8 hướng dẫn đọc đồ thị | 🔄 **Đã viết lại trong chính PR này** (issue #5) — bản cũ mô tả biên độ theo từ ngữ và theo trạng thái tâm, cả hai đều vi phạm mô hình mới |
 > | §9 luật cập nhật | ✅ **Giữ nguyên** |
 >
@@ -176,8 +176,12 @@ Toàn bộ dòng sông luôn giữ nguyên màu Teal trung tính. Ứng dụng k
 
 > ⚠️ **Đoạn này đã viết lại 2026-08-01 (issue #5).** Bản cũ mô tả biên độ theo *"dùng từ ngữ ôn
 > hòa"* / *"từ ngữ mang cảm xúc mạnh, tiêu cực"* (giả định app đọc nội dung — nay không còn) và theo
-> *"tâm trí bắt đầu có sự xáo động"* (phán xét trạng thái tâm — hiến chương §4.1 cấm). Biên độ nay
-> mô tả **nhịp tay**, không mô tả người gõ.
+> *"tâm trí bắt đầu có sự xáo động"* — câu này **suy trạng thái tâm ra từ nội dung câu chữ**, tức vi
+> phạm hiến chương **§4.2** (*"không suy đoán gì từ chữ nghĩa"*). Biên độ nay mô tả **nhịp tay**.
+>
+> Nói cho chính xác: §4.1 **không** cấm ẩn dụ mặt hồ ↔ tâm — nó còn dùng chính ẩn dụ đó (*"mặt hồ
+> lặng ứng với tâm tĩnh, mặt hồ dậy sóng ứng với tâm động"*). Cái sai của bản cũ là **căn cứ** để
+> nói, không phải chữ "tâm".
 
 Trục dọc của đồ thị đại diện cho **Biên độ dao động** — đọc theo *khoảng cách tới đường giữa*, không
 theo lên hay xuống:
@@ -195,7 +199,7 @@ Ba mức trên mô tả **tốc độ tay bạn đang gõ** — không nói gì 
 > 0.12 / 0.45 / 0.80 ở trên là **mốc hình học đang dùng** (giữ được), không phải kết quả của một
 > công thức đã chốt. Đừng suy ra ngưỡng CPM từ chúng.
 
-**Lưu ý quan trọng:** Cơn sóng lượn lên đỉnh hay lượn xuống đáy chỉ là nét vẽ hình sin theo thời gian. Điều bạn cần quan tâm là **khoảng cách từ điểm đó tới đường đứt nét ở giữa**. Càng xa trung tâm nghĩa là mặt hồ càng xáo động.
+**Lưu ý quan trọng:** Cơn sóng lượn lên đỉnh hay lượn xuống đáy chỉ là nét vẽ hình sin theo thời gian. Điều bạn cần quan tâm là **khoảng cách từ điểm đó tới đường đứt nét ở giữa**. Càng xa trung tâm nghĩa là **nhịp gõ lúc đó càng nhanh** — mặt hồ là cách vẽ phép đo, không phải lời nói về tâm bạn.
 
 ---
 
