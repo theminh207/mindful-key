@@ -17,6 +17,222 @@
 
 ---
 
+## 2026-08-01 — #6 `core/mood/TypingCadence` — đo nhịp gõ (CPM) trên cửa sổ trượt
+
+**Làm gì:** Viết `core/mood/TypingCadence.{h,cpp}` — C++ thuần, một bản dùng chung 3 vỏ. Cộng
+`tests/core/test_cadence.cpp` (12 loại ca) + `cadence_build.sh`, nối vào `make test-core` **và vào
+cả hai runner CI**.
+
+**Chốt được:**
+
+- **Chữ ký: dạng LỚP, thời gian tính bằng int64 mili-giây.** Issue #6 đề xuất class với
+  `double nowSeconds`; hợp đồng HĐ-1 (merge ở #4) lại ghi `TypingCadence_OnKeystroke(int64_t tsMs)`.
+  Hoà giải: lấy **dạng lớp** từ issue (test dựng được nhiều thể hiện độc lập, không rò rỉ trạng thái
+  giữa các ca) và lấy **int64 mili-giây** từ hợp đồng (không sai số dấu phẩy động; đồng hồ đơn điệu
+  cả hai OS đều cho tick nguyên). Đã đồng bộ lại chữ ký ở `04-contracts.md`, skill và README §5 —
+  tầng 04 là quy phạm, không được nói sai so với code.
+- **Cách chống thổi phồng CPM** (issue hỏi *"cần tối thiểu bao nhiêu phím mới báo số"*): **chia cho
+  độ dài cửa sổ**, không phải cho khoảng giữa nhịp đầu và nhịp cuối. Chia theo khoảng giữa hai nhịp
+  thì gõ 2 phím cách nhau 100ms ra **1200 CPM** → chuông reo oan ngay phím thứ hai. Chia cho cửa sổ
+  thì 2 phím trong 30 giây ra đúng 4 CPM, và muốn chạm ngưỡng 400 phải gõ **thật 200 phím trong 30
+  giây**. Không có cách nào thổi phồng → **không cần** thêm luật "tối thiểu N phím". Một khái niệm
+  ít hơn thay vì một khái niệm nhiều hơn.
+- **Đánh đổi cố ý:** 30 giây đầu sau khởi động bị báo **thấp** hơn thực tế (cửa sổ chưa đầy). Đây là
+  chiều an toàn — nghiêng về **im lặng**, đúng tinh thần "chuông là lời mời, không phải kết luận".
+- **Đồng hồ nhảy lùi → xoá sạch** thay vì cố vá. Nhịp trước cú nhảy không còn so được với nhịp sau
+  nó; giữ lại là bịa dữ liệu (HĐ-8). Mất tối đa một cửa sổ.
+- **Sức chứa cố định 1024, không cấp phát động** (HĐ-3 đòi O(1), không cấp phát, chạy được trong
+  hook). Trần này cho CPM bão hoà quanh 2048 — xa trên mọi ngưỡng (cao nhất 500), nên không bao giờ
+  làm chuông câm.
+
+**Phải đoán:** không. Hai chỗ mơ hồ (chữ ký, cách chống thổi phồng) đều có căn cứ trong issue hoặc
+hợp đồng, và đã ghi rõ lý lẽ ở trên.
+
+**Kiểm chứng — lần đầu của đợt này có bằng chứng CHẠY THẬT, không phải chỉ đọc code:**
+
+| Cổng | Kết quả |
+|---|---|
+| `macos.yml` (clang) | ✅ `test_cadence` — **12/12 loại ca PASS** |
+| `windows.yml` (MSVC, Debug + Release) | ✅ biên dịch + chạy `test_cadence` |
+| Cổng HĐ-1 | ✅ xanh |
+| `brand-lint` | ✅ 0 vi phạm cứng |
+
+Đây là **lần đầu `core/mood` được biên dịch bằng MSVC** — trước nay chỉ `core/engine` đi qua đường
+đó. Bắt khác biệt clang↔MSVC ngay bây giờ thay vì để #15 (vỏ Windows) vấp phải rồi mới biết.
+
+**CI bắt được đúng thứ nó sinh ra để bắt.** Vòng đầu đỏ 3 ca ngưỡng: `typeKeys(150, 0, 100)` đặt
+nhịp tại `t = 0..14900`, rồi hỏi `currentCPM(30000)` → mép dưới cửa sổ **đúng bằng 0**, mà cửa sổ là
+nửa mở `(now-W, now]` nên nhịp tại `t=0` bị loại → 298 thay vì 300. **Lỗi test, không phải lỗi
+code** (hành vi mép đã có Loại 6 khoá riêng). Đã sửa cho nhịp trải đều gần hết cửa sổ rồi xét tại
+phím cuối — vừa đúng số vừa sát cách gõ thật.
+
+**Biến HĐ-1 từ lời hứa thành cổng máy.** Hiến chương §4.1 tự đòi luật nhận diện phải cưỡng chế bằng
+máy *"không phụ thuộc vào việc có ai đọc tài liệu hay không"*; PR này áp đúng lối nghĩ đó cho §4.2:
+thêm bước **"Cổng HĐ-1"** vào `macos.yml`. (Bản đầu là grep denylist; sau ba lần thủng nó thành
+`scripts/check_hd1.py` — allowlist — xem khối "Vòng review 2" ở trên.)
+
+Dựng cổng đó lòi ra **hai lỗi trong chính hợp đồng tui viết ở #4**:
+
+1. **Mẫu grep tự khớp chính nó.** Dòng ví dụ grep nằm trong comment của `TypingCadence.h` chứa cả
+   `wstring` lẫn `Cadence` → cổng bắt luôn cái comment. Xử: pattern giữ **đúng một bản**, ở
+   workflow; header chỉ trỏ tới, không chép.
+2. **Mẫu grep HỎNG — đây là lỗi nặng hơn.** Nó đòi kiểu chuỗi đứng *trước* tên lớp trên cùng một
+   dòng, nên `void TypingCadence_OnWord(const std::wstring&)` **lọt qua** — đúng cái hình dạng vi
+   phạm dễ xảy ra nhất. Phát hiện bằng cách **thử chiều ngược**: tiêm vi phạm giả rồi xem cổng có
+   đỏ không. Cổng mới đã thử cả hai kiểu vi phạm (tên trước / kiểu chuỗi trước), cả hai đều đỏ
+   đúng, code thật thì xanh.
+
+   **Bài học:** một hợp đồng kèm lệnh soi hỏng còn **tệ hơn** không kèm lệnh nào — nó cho cảm giác
+   an toàn giả. Và cách duy nhất biết một cổng có chạy không là **tiêm vi phạm giả vào rồi xem nó
+   có đỏ**; thấy nó xanh trên code sạch không chứng minh được gì.
+
+**Vòng review 4 — giới hạn KHÁI NIỆM, không phải lỗi vặt:**
+
+```cpp
+void noteChar(int codePoint);   // cổng XANH
+```
+
+`int` nằm trong allowlist, mà `int` thừa sức chở một codepoint Unicode. Tức allowlist **kiểu vô
+hướng** chỉ chứng minh *"không có kiểu hình dạng chuỗi"*, **không** chứng minh *"không nội dung nào
+vào"* — đúng điều HĐ-1 tuyên. Comment trong chính script tự khẳng định sai: *"không kiểu nào chở
+nổi một ký tự"*. Và đường gọi đó chính là đường thiết kế đã chốt (*"vỏ gọi từ hook, từng phím
+một"*) — chỉ cần thêm một tham số vào lời gọi có sẵn.
+
+Cộng ba lỗ cùng họ: `.hpp`/`.hh`/`.inl`/`.mm` vô hình (chỉ nhận `.h`/`.cpp`); **thư mục con** vô
+hình (`os.listdir` không đệ quy); biến thành viên trong `.h` (`int _typed[4096]`) không ai canh.
+
+**Xử — thêm lưới thứ ba: ghim bề mặt khai báo** (`scripts/hd1_pinned_api.txt`). Cách này khớp sẵn
+với một thứ **đã có**: HĐ-3 tuyên chữ ký lớp nhịp gõ là **hợp đồng đóng băng**. File ghim biến lời
+tuyên đó thành thứ kiểm được bằng máy — thêm *bất kỳ* tham số nào, kiểu gì, hay thêm một biến thành
+viên, đều đỏ cho tới khi có người chạy `--update-pin` và giải trình trong PR. Đổi `os.listdir` →
+`os.walk`, nới bộ đuôi.
+
+Kiểm lại: `noteChar(int)` · `noteChar2(int64_t)` · `int* typedChars()` · `int _typed[4096]` ·
+`std::array<int,1024>` · `ContentTap.hpp` · `core/mood/tap/ContentTap.h` — **tất cả nay đỏ**. Ba lỗ
+vòng 3 vẫn đỏ. Sáu API hợp lệ vẫn xanh.
+
+**Và ghi rõ giới hạn thật thay vì giả vờ kín.** `static int gTyped[4096]` trong `.cpp` vẫn qua được
+cả ba lưới. Nhưng nó là **kho chứa trơ**: muốn đổ dữ liệu vào phải có đường nhận từ ngoài, mà mọi
+đường như thế đều ở header và đã bị ghim. Cổng này bảo đảm **bề mặt NHẬN**, không bảo đảm từng byte
+bộ nhớ bên trong. Đã viết thẳng vào docstring — đúng bài học của chính PR này: **một hợp đồng nói
+quá thứ nó làm được còn tệ hơn không nói gì.**
+
+**Vòng review 3 — allowlist vẫn còn ba đường vào, tất cả cùng một gốc:**
+
+1. **`operator<<(const uint32_t*)` lọt.** Regex tìm tên hàm là `[A-Za-z_]\w*`, mà ngay trước `(`
+   của `operator<<` là `<<` — không khớp gì cả, nên **cả danh sách tham số đi lọt**. Áp cho mọi
+   toán tử ký hiệu: `<<` `()` `+=` `[]`. Và `uint32_t` **thiếu** ở lưới denylist phụ, nên không có
+   gì đỡ. Đúng con bug "quên một kiểu" đã giết bản denylist — vẫn còn nguyên trong cái lưới đáng
+   lẽ để đỡ lưng allowlist.
+2. **File mới trong `core/mood/` hoàn toàn vô hình.** Danh sách file được soi là 4 đường dẫn
+   **cứng**, nên `core/mood/ContentTap.h` chứa `const uint32_t*` đi qua **xanh**. Chốt chặn "không
+   tìm thấy file nào → đỏ" chỉ chống *đổi tên*, không chống *thêm file*. Mà lộ trình sắp tới có
+   "kho ghi lần chuông" là file mới.
+3. **Hàm tự do trong `.cpp`** nhận `const uint32_t*` — cùng gốc với (1).
+
+**Xử — đảo luôn cả cách chọn file:** thay danh sách *file-được-soi* (phải nhớ mà thêm) bằng danh
+sách **miễn trừ** (co lại dần, cạn khi #13 xong). Cổng nay quét **mọi `.h`/`.cpp` trong
+`core/mood/`** trừ 7 file của mô hình cũ — nên file mới **bị soi ngay**, không cần ai nhớ đăng ký.
+Thêm `operator\s*[^\s(]+` vào regex tên hàm; thêm `uint32_t` + `unsigned short` vào lưới phụ. Và
+để danh sách miễn trừ không mục ruỗng: trỏ tới file đã biến mất cũng **đỏ**, nhắc dọn.
+
+Sửa luôn ba chỗ **bắt oan** reviewer chỉ ra: `charsPerMinute()` và `charCount()` bị đỏ vì `char`
+không có ranh giới từ — mà đơn vị của chính lớp này *là* characters-per-minute, tức cổng đang cấm
+gọi đúng tên miền; và tham số có **giá trị mặc định là định danh** (`bool on = true`,
+`int64_t ms = kTypingCadenceDefaultWindowMs`) bị đẩy tên vào ô "kiểu" → đỏ oan, đúng thứ #7
+`BellPolicy` rất dễ vấp. Cộng một lỗi vận hành: script **crash trên chính máy dev** vì console
+cp1252 không in nổi tiếng Việt — mà "chạy được tại máy dev" là lý do tồn tại của nó.
+
+Kiểm lại toàn bộ: 3 lỗ vòng 3 **đóng**, 8 ca vòng 2 **vẫn đỏ**, 6 API hợp lệ (gồm cả chữ ký dự kiến
+của `BellPolicy`) **không còn bị bắt oan**.
+
+**Vòng review 2 — cổng vẫn thủng, và lần này là lỗ đáng sợ hơn:**
+
+Reviewer làm đúng cái phương pháp tui vừa tự viết ra (*"đi tìm hình dạng vi phạm có thật trong
+repo"*) nhưng grep **rộng hơn `core/mood/`** — và tìm ra `core/engine/DataType.h` có
+`typedef unsigned short Uint16` / `Uint32` / `Byte`, còn `Engine.h:198` dùng đúng chúng để trao ký
+tự ra ngoài: `Uint32 getCharacterCode(const Uint32& data)`. Nghĩa là
+`void registerKeystroke(int64_t nowMs, const Uint16* text)` là **vi phạm thật, portable, dịch được
+trên cả hai runner — và cổng cho qua XANH**. Cộng thêm `TCHAR`/`LPCWSTR` (47 chỗ dùng trong
+`platforms/windows/`), `uint16_t`, `id`.
+
+Đây là **lần thứ ba** cổng này thủng. Kết luận không thể tránh: **denylist không bao giờ đủ** — nó
+chỉ chặn được những kiểu người viết đã *nghĩ tới*, mà vi phạm thật đến từ kiểu người ta *không*
+nghĩ tới. Vá thêm tên kiểu là đuổi theo cái đuôi của chính mình.
+
+**Đảo sang allowlist.** Viết `scripts/check_hd1.py`: mọi tham số trong header của lớp nhịp
+gõ/chuông phải là `int64_t` · `int` · `double` · `bool` · `void`, và **không được là con trỏ / tham
+chiếu / mảng**. Kiểu nào khác — *kể cả kiểu chưa ai nghĩ tới* — là đỏ.
+
+Viết bằng **Python chứ không phải grep**, vì hai lý do: allowlist cần phân tích tham số (grep không
+nổi), và **máy dev chạy được python** — nên lần đầu trong cả đợt này tui **kiểm được cổng tại chỗ
+trước khi push** thay vì đẩy lên rồi chờ CI.
+
+Kiểm bằng **22 hình dạng vi phạm**: 8 ca reviewer chỉ ra lọt (`Uint16`/`Uint32`/`Byte`/`uint16_t`/
+`TCHAR`/`LPCWSTR`/`id`/`filesystem`), 7 ca vòng trước, cộng `unichar`/`string_view`/`u8string`/
+`vector<wchar_t>`/`NSMutableAttributedString`/`QString`/`jstring`/`BSTR`, và — quan trọng nhất —
+một kiểu **tự bịa** `SomeUnknownType` cùng `const int64_t&` (tham chiếu tới kiểu *được phép*).
+**Cả 22 đều đỏ**, code thật vẫn xanh. Ca `SomeUnknownType` là bằng chứng allowlist làm được thứ
+denylist không đời nào làm được.
+
+Xây cổng cũng lòi ra hai chỗ nữa: regex bắt nhầm **danh sách khởi tạo constructor** và **nơi gọi
+hàm** trong `.cpp` (`_hasLast(false)`, `keystrokesInWindow(nowMs)` — đỏ oan 3 chỗ), nên allowlist
+giới hạn vào `.h`, nơi duy nhất có mặt API; `.cpp` vẫn có lưới denylist. Và comment trong chính
+`macos.yml` vẫn còn chữ *"mọi kiểu chuỗi"* — đúng chữ tui vừa gỡ khỏi hai file khác vì nói quá.
+
+**Vòng review 1 bắt được 1 lỗi chặn — cùng một chỗ đau:**
+
+Cổng HĐ-1 tui vừa dựng **bỏ sót `const wchar_t*`** — đúng kiểu chuỗi phổ biến **nhất** trong
+`core/mood` hiện nay (`MoodPhrasing.cpp`, `SendRiskAnalyzer.cpp` dùng đầy), và đúng thứ #7
+`BellPolicy` dễ viết ra: `const wchar_t* levelName` sẽ đi qua cổng **xanh**. Mẫu cũ có
+`char[[:space:]]*\*` — sau `char` là `_t*` chứ không phải `*`, nên trượt. Reviewer còn tìm thêm 3
+kiểu lọt nữa: `char[]`, `u16string`, `CFStringRef`.
+
+Cay ở chỗ: **đây đúng cái bài học tui vừa tự viết ra trong cùng PR** — *"lệnh soi hỏng còn tệ hơn
+không có, vì cho cảm giác an toàn giả"*. Tui viết bài học đó sau khi sửa mẫu lần một, rồi lập tức
+mắc lại lần hai ở dạng khác. Kiểm chiều-ngược lần đầu tui chỉ thử **2 hình dạng vi phạm**, và cả
+hai đều thuộc loại tui đã nghĩ tới; không thử kiểu nào mình chưa nghĩ tới.
+
+Xử: nới mẫu thành `string|String|char` — cố ý **rộng**, fail-closed. Kiểm bằng **7 hình dạng vi
+phạm**, cả 7 đều đỏ, code thật vẫn xanh. Không dùng `\b` vì đó là mở rộng GNU, còn runner là BSD
+grep. Và sửa `04-contracts.md` + `TEST_MATRIX.md` bỏ chữ *"mọi kiểu chuỗi"* — nói quá so với thứ
+mẫu thật sự phủ.
+
+> Nhưng đó **vẫn là denylist**, và vòng 2 chứng minh nó vẫn thủng. Bản cuối cùng là allowlist.
+
+**Bài học chồng lên bài học:** kiểm một cổng bằng cách tiêm vi phạm là đúng, nhưng **tiêm những
+hình dạng mình đã nghĩ tới thì chỉ chứng minh được điều mình đã tin**. Muốn biết cổng có thủng
+không thì phải đi tìm hình dạng vi phạm **có thật trong repo** — `grep` chính `core/mood/` xem code
+hiện có đang dùng những kiểu chuỗi nào, rồi thử đúng chúng.
+
+Sửa thêm theo góp ý không-chặn: comment biện minh cho "không dừng sớm" trong `keystrokesInWindow`
+**nói sai sự thật** (dãy *có* đơn điệu vì nhánh reset đã bảo đảm) — viết lại thành lý do thật, là
+cố ý không phụ thuộc bất biến ở hàm khác; khai `O()` ở header sai (`O(_count)` chứ không phải "số
+nhịp trong cửa sổ"); ca test tràn vòng tròn **chép lại chính công thức đang test** → viết cứng
+`2048.0`; hai ca `windowMs` hỏng chỉ khẳng định "không NaN" → khoá cứng giá trị kẹp là 1ms; ví dụ
+C++ "SAI" ở `04-contracts.md` không phải cú pháp khai báo hợp lệ.
+
+**Thêm 3 ca test lấp lỗ phủ** reviewer chỉ ra: vòng tròn **đầy** *và* có nhịp rơi khỏi cửa sổ cùng
+lúc (tổ hợp duy nhất bắt được lỗi chỉ số vòng khi gặp phép lọc mép — Loại 10 không phủ vì ở đó cả
+1024 ô đều trong cửa sổ); nhiều phím trong **cùng một mili-giây** (đồng hồ thô/auto-repeat, không
+được nuốt nhịp và không được coi là đồng hồ nhảy lùi); và `windowMs()` accessor.
+
+**Còn hở:**
+- `TypingCadence` **chưa vỏ nào nối dây** — đây thuần là bộ não. Nối ở #9 (macOS) · #15 (Windows) ·
+  #17 (iOS), và cổng kiểm ô mật khẩu (HĐ-4) nằm ở phía vỏ, macOS hiện chưa có.
+- **Danh sách kiểu chuỗi của cổng HĐ-1 là chỗ phải đoán** — không nguồn nào định nghĩa "kiểu chuỗi"
+  gồm những gì. Đã ghi `FRICTION-LOG.md`, chờ chủ dự án chốt có cần liệt danh sách chính thức trong
+  `04-contracts.md` không, và có nên áp cổng cho **cả** `core/mood/` sau khi #13 gỡ xong.
+- Tràn `int64` ở `nowMs - _windowMs` khi `nowMs` gần `INT64_MIN` — UB về lý thuyết, không tới được
+  từ đồng hồ đơn điệu thật. Ghi để biết, không xử.
+- `keystrokesInWindow()` là API thêm ngoài đề xuất của issue. Giữ vì test khẳng định được bằng **số
+  nguyên chính xác** thay vì so sánh số thực, và vỏ Windows sẽ cần nó cho icon khay (#15).
+- Cổng HĐ-1 hiện chỉ liệt `TypingCadence.*` và `BellPolicy.*`. Thêm lớp mới vào `core/mood` thì phải
+  thêm tên vào danh sách — cổng cố ý **đỏ khi không tìm thấy file nào**, nhưng không tự phát hiện
+  file mới.
+
+---
+
 ## 2026-08-01 — #5 Đồng bộ docs/tasks + harness .claude
 
 **Làm gì:**

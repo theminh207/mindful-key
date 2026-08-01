@@ -52,11 +52,20 @@ tham số kiểu chuỗi**. Nhịp gõ nuôi bằng *thời điểm bấm phím*
 
 ```cpp
 // Đúng — chỉ có dấu thời gian
-void   TypingCadence_OnKeystroke(int64_t tsMs);
-double TypingCadence_CPM(int64_t nowMs);
+class TypingCadence {
+public:
+    explicit TypingCadence(int64_t windowMs);
+    void   registerKeystroke(int64_t nowMs);
+    double currentCPM(int64_t nowMs) const;
+    int    keystrokesInWindow(int64_t nowMs) const;
+    void   reset();
+};
 
-// SAI — dù chỉ dùng .length() thì chuỗi vẫn đi qua lớp này
-void TypingCadence_OnWord(const std::wstring& word);   // ❌ cấm
+// SAI — chuỗi vẫn đi qua lớp này, dù chỉ dùng .length()
+class TypingCadence {
+public:
+    void onWord(const std::wstring& word);   // ❌ cấm
+};
 ```
 
 **Vì sao không tái dùng `vOnWordCommitted`.** Callback chốt từ của engine có sẵn và ba vỏ đã nối
@@ -66,12 +75,32 @@ vào đó rồi, nên nuôi nhịp từ đấy là đường ít sửa nhất. N
 không dùng"*. Đánh đổi đã cân nhắc và bác bỏ — xem
 [ADR-0013](03-decisions/ADR-0013-do-nhip-go-thay-doc-cam-xuc.md).
 
-**Cách soi.**
+**Cách soi — cưỡng chế bằng máy, không phụ thuộc có ai đọc tài liệu hay không.**
+`scripts/check_hd1.py` (chạy ở bước *"Cổng HĐ-1"* trong `.github/workflows/macos.yml`) là
+**allowlist, không phải denylist**: mọi tham số trong **header** của lớp nhịp gõ/chuông phải là một
+trong `int64_t` · `int` · `double` · `bool` · `void`, và **không được là con trỏ, tham chiếu hay
+mảng**. Kiểu nào khác — kể cả kiểu chưa ai nghĩ tới — là **đỏ CI**.
 
-```bash
-# Không được có kết quả nào
-grep -rnE "(wstring|string|char\s*\*|NSString).*\b(Cadence|BellPolicy)\b" core/mood/
-```
+Phạm vi nói cho chính xác: cổng quét **mọi `.h`/`.cpp` trong `core/mood/`** trừ danh sách miễn trừ
+của mô hình cũ (đang chờ #12/#13 gỡ) — nên **file mới thêm vào cũng bị soi ngay**, không cần ai nhớ
+đăng ký. Allowlist tham số chỉ áp cho `.h` (nơi duy nhất có mặt API); `.cpp` đi qua một lưới
+denylist phụ. Thiếu file bắt buộc, hoặc danh sách miễn trừ trỏ tới file đã biến mất, cũng đỏ.
+
+> ⚠️ **Hai bản denylist trước của cổng này đều THỦNG.** Bản 1 (PR #21) đòi kiểu chuỗi đứng *trước*
+> tên lớp trên cùng một dòng → `void TypingCadence_OnWord(const wstring&)` lọt. Bản 2 liệt tên kiểu
+> → bỏ sót `const wchar_t*`, rồi sau khi vá vẫn bỏ sót **`Uint16` / `Uint32` / `Byte`** — *typedef
+> của chính repo này*, và đúng là cách `core/engine` trao ký tự ra ngoài
+> (`Engine.h`: `Uint32 getCharacterCode(const Uint32&)`). Tức hình dạng vi phạm **dễ xảy ra nhất**
+> lại là hình dạng lọt.
+>
+> **Bài học: denylist không bao giờ đủ** — nó chỉ chặn được những kiểu người viết đã *nghĩ tới*, mà
+> vi phạm thật thường đến từ kiểu người ta không nghĩ tới. Allowlist đã kiểm bằng **22 hình dạng vi
+> phạm**, gồm cả một kiểu tự bịa (`SomeUnknownType`) — cả 22 đều đỏ, code thật vẫn xanh.
+>
+> Hệ quả thực dụng: **hợp đồng kèm lệnh soi hỏng còn tệ hơn không kèm lệnh nào**, vì nó cho cảm
+> giác an toàn giả. Cách duy nhất biết một cổng có chạy hay không là **tiêm vi phạm giả vào rồi xem
+> nó có đỏ** — và tiêm những hình dạng mình *chưa* nghĩ tới, không chỉ những hình dạng mình đã tin
+> là nguy hiểm.
 
 ---
 
@@ -137,7 +166,7 @@ Kèm theo hai ràng buộc vận hành:
 ## HĐ-4 — Không đếm nhịp trong ô mật khẩu
 
 **Ràng buộc.** Khi ô nhập đang là ô mật khẩu (secure input), vỏ **không** được gọi
-`TypingCadence_OnKeystroke`. Không đếm, không tính, không ghi.
+`TypingCadence::registerKeystroke`. Không đếm, không tính, không ghi.
 
 Hai lý do, cả hai đều đủ để một mình quyết định:
 
@@ -151,7 +180,7 @@ Hai lý do, cả hai đều đủ để một mình quyết định:
 mật khẩu và không đếm. Thà mất vài nhịp còn hơn đếm nhầm.
 
 **Cách soi.** Mỗi vỏ phải có đúng một cổng kiểm, đặt **trước** lời gọi
-`TypingCadence_OnKeystroke`, và cổng đó phải có ca kiểm.
+`TypingCadence::registerKeystroke`, và cổng đó phải có ca kiểm.
 
 ---
 

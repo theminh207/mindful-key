@@ -20,6 +20,32 @@ jobs:
           bash tests/core/build.sh
           ./tests/core/test_engine
 
+      # [MINDFUL] 2026-08-01 (#6) — phép đo nhịp gõ là TRÁI TIM mô hình mới, và máy dev hiện
+      # tại là Windows KHÔNG có trình biên dịch nào (g++/clang++/cl/make đều thiếu). Nghĩa là
+      # CI này là nơi DUY NHẤT ca kiểm được chạy — không có bước này thì test_cadence.cpp chỉ
+      # là file nằm im, không ai biết nó xanh hay đỏ. Xem spec/typing-cadence-bell/README.md §7.
+      - name: Regression nhịp gõ (core/mood/TypingCadence)
+        run: |
+          bash tests/core/cadence_build.sh
+          ./tests/core/test_cadence
+
+      # [MINDFUL] 2026-08-02 (#6) — CƯỠNG CHẾ HĐ-1 BẰNG MÁY.
+      #
+      # Hiến chương §4.2 hứa "sản phẩm không đọc nội dung". Lời hứa đó chỉ thật khi người đọc
+      # code nhìn thấy được rằng không có đường nào cho chữ đi vào — mà "nhìn thấy được" thì
+      # phụ thuộc vào việc CÓ AI ĐỌC hay không. Bước này biến nó thành thứ không phụ thuộc
+      # người. Cùng lối nghĩ với `make brand-lint` (hiến chương §4.1 tự đòi cưỡng chế bằng máy
+      # "không phụ thuộc vào việc có ai đọc tài liệu hay không") — nay áp cho §4.2.
+      #
+      # Logic nằm ở scripts/check_hd1.py, KHÔNG inline ở đây: nó là ALLOWLIST cần phân tích
+      # tham số, viết bằng grep không nổi — và để chạy được tại máy dev (máy đó không có trình
+      # biên dịch nào, nhưng có python).
+      #
+      # Hai bản trước của cổng này là denylist và CẢ HAI ĐỀU THỦNG (chi tiết trong script).
+      # Bài học: denylist chỉ chặn được kiểu người viết đã nghĩ tới.
+      - name: Cổng HĐ-1 — lớp nhịp gõ không được nhận chuỗi
+        run: python3 scripts/check_hd1.py
+
       - name: Generate Xcode project
         run: cd platforms/apple && xcodegen generate
 

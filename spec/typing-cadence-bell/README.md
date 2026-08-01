@@ -8,7 +8,7 @@
 | **Bắt đầu** | 2026-07-26 |
 | **Hiến chương** | [`docs/01-intent.md`](../../docs/01-intent.md) — luật tối cao, đã sửa |
 | **Issue** | [#3 → #18](https://github.com/theminh207/mindful-key/issues) trên GitHub |
-| **Trạng thái** | **Phase 0 xong** (#3 #4 #5) — Phase 1 (#6 `TypingCadence`) tiếp theo |
+| **Trạng thái** | Phase 1 đang chạy — #6 `TypingCadence` xong, #7 `BellPolicy` tiếp theo |
 
 ---
 
@@ -60,7 +60,7 @@ Trạng thái: `⬜ chưa bắt đầu` · `🔄 đang làm` · `✅ xong` · `�
 
 | | Issue | Việc | Chặn bởi | Người làm |
 |---|---|---|---|---|
-| ⬜ | [#6](https://github.com/theminh207/mindful-key/issues/6) | `core/mood/TypingCadence` — đo CPM trên cửa sổ trượt | #3 | |
+| ✅ | [#6](https://github.com/theminh207/mindful-key/issues/6) | `core/mood/TypingCadence` — đo CPM trên cửa sổ trượt | #3 | @phatnguyen-neurond |
 | ⬜ | [#7](https://github.com/theminh207/mindful-key/issues/7) | `core/mood/BellPolicy` — chính sách reo chuông dùng chung 3 vỏ | #6 | |
 | ⬜ | [#8](https://github.com/theminh207/mindful-key/issues/8) | Con sóng đổi nguồn: biên độ theo nhịp gõ | #6 | |
 
@@ -110,9 +110,18 @@ Chưa chốt thì **đừng tự quyết trong im lặng** — hỏi chủ dự 
 
 **Đã chốt:**
 
+- 2026-08-01 *(ở #6)* — **CPM = (số nhịp trong cửa sổ) / (độ dài cửa sổ tính bằng phút)** — chia
+  cho **độ dài cửa sổ**, KHÔNG phải cho khoảng giữa nhịp đầu và nhịp cuối. Chia theo khoảng giữa
+  hai nhịp thì gõ 2 phím cách nhau 100ms ra **1200 CPM** → chuông reo oan ngay phím thứ hai. Chia
+  cho cửa sổ thì 2 phím trong 30 giây ra đúng 4 CPM, và muốn chạm ngưỡng 400 phải gõ **thật 200
+  phím trong 30 giây** — nên **không cần** thêm luật "tối thiểu N phím" như issue #6 gợi ý. Đánh đổi
+  cố ý: 30 giây đầu sau khởi động báo **thấp** hơn thực tế (cửa sổ chưa đầy), tức nghiêng về **im
+  lặng**. Đây là bất biến **xuyên issue** — cả #7 (`BellPolicy`) lẫn #8 (biên độ sóng) đều tiêu thụ
+  con số CPM này, nên đổi cách chia là đổi nghĩa của mọi thứ phía sau.
 - 2026-08-01 *(Q3, ở #4)* — **Nhịp phím lấy từng phím một ở hook bàn phím**, không tái dùng
-  `vOnWordCommitted`. API là `TypingCadence_OnKeystroke(int64_t tsMs)` — **không tham số chuỗi ở bất
-  kỳ đâu**. Lý do: README §1 viết "chỉ đếm nhịp phím, không đọc ký tự" và §2 nói lời hứa riêng tư
+  `vOnWordCommitted`. API là `TypingCadence::registerKeystroke(int64_t nowMs)` — **không tham số chuỗi ở
+  bất kỳ đâu** (chữ ký chốt lại ở #6: dạng lớp thay vì hàm tự do, để test dựng được nhiều
+  thể hiện độc lập; phần bất biến — chỉ nhận dấu thời gian — không đổi). Lý do: README §1 viết "chỉ đếm nhịp phím, không đọc ký tự" và §2 nói lời hứa riêng tư
   phải *kiểm chứng được bằng cách nhìn vào code*. Nuôi từ `vOnWordCommitted(const wstring& word)`
   thì lớp nhịp vẫn **nhận** chuỗi dù chỉ dùng `.length()` — người review đọc code vẫn thấy lớp mood
   cầm text, lời hứa tụt xuống "có nhận nhưng hứa không dùng". Phụ: hook cho tín hiệu mượt (gõ giữa
