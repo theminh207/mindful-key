@@ -8,7 +8,7 @@
 | **Bắt đầu** | 2026-07-26 |
 | **Hiến chương** | [`docs/01-intent.md`](../../docs/01-intent.md) — luật tối cao, đã sửa |
 | **Issue** | [#3 → #18](https://github.com/theminh207/mindful-key/issues) trên GitHub |
-| **Trạng thái** | Phase 1 đang chạy — #6 `TypingCadence` xong, #7 `BellPolicy` xong, #8 (con sóng) tiếp theo |
+| **Trạng thái** | Phase 1 xong — #6 `TypingCadence`, #7 `BellPolicy`, #8 (con sóng) đều xong. Phase 2 (macOS, #9) tiếp theo |
 
 ---
 
@@ -62,7 +62,7 @@ Trạng thái: `⬜ chưa bắt đầu` · `🔄 đang làm` · `✅ xong` · `�
 |---|---|---|---|---|
 | ✅ | [#6](https://github.com/theminh207/mindful-key/issues/6) | `core/mood/TypingCadence` — đo CPM trên cửa sổ trượt | #3 | @phatnguyen-neurond |
 | ✅ | [#7](https://github.com/theminh207/mindful-key/issues/7) | `core/mood/BellPolicy` — chính sách reo chuông dùng chung 3 vỏ | #6 | @phatnguyen-neurond |
-| ⬜ | [#8](https://github.com/theminh207/mindful-key/issues/8) | Con sóng đổi nguồn: biên độ theo nhịp gõ | #6 | |
+| ✅ | [#8](https://github.com/theminh207/mindful-key/issues/8) | Con sóng đổi nguồn: biên độ theo nhịp gõ | #6 | @phatnguyen-neurond |
 
 ### Phase 2 — macOS (công dân hạng nhất, chạy thật trước)
 
@@ -101,7 +101,6 @@ Chưa chốt thì **đừng tự quyết trong im lặng** — hỏi chủ dự 
 | # | Câu hỏi | Chốt ở | Trạng thái |
 |---|---|---|---|
 | Q3 | Nhịp phím lấy từ đâu — (A) từng phím ở hook bàn phím, hay (B) tại điểm kết từ qua `vOnWordCommitted`? | #6 | ✅ chốt 2026-08-01 → (A) |
-| Q4 | Quy CPM về biên độ sóng `[0,1]` theo công thức nào, và đặt ở đâu để 3 vỏ không trôi lệch? | #8 | ❓ chưa chốt |
 | Q5 | Có đếm nhịp trong ô mật khẩu không? | #9 | ✅ chốt 2026-08-01 → không đếm |
 | Q6 | Nhật ký cũ trên máy người dùng: xoá sạch hay giữ đọc song song? | #11 | ❓ chưa chốt |
 | Q7 | Giữ hay bỏ check-in tự thuật "Mặt hồ đang thế nào?" (người dùng tự nói, không phải máy đoán) | #11 | ❓ chưa chốt |
@@ -116,6 +115,22 @@ Chưa chốt thì **đừng tự quyết trong im lặng** — hỏi chủ dự 
 > lập luận đầy đủ nhưng **chưa được chủ dự án duyệt**. Khác hẳn mục không nhãn — mục không nhãn là
 > chủ dự án đã gật đầu. Xem `docs/tasks/typing-cadence-bell-execution.md` §2 cho lập luận đầy đủ.
 
+- 🟡 2026-08-02 *(ở #8, Q4, **chốt tạm** — agent tự chọn công thức + hằng số, chờ chủ dự án nhìn
+  sóng thật duyệt)* — **Quy CPM về biên độ sóng bằng bão hoà tiệm cận Hill n=2, đặt trong
+  `core/mood/CadenceWaveAmplitude(cpm, thresholdCpm)`** — nhận **hai tham số thô** (không để vỏ tự
+  chia `cpm/threshold`): vùng chết là **tỉ lệ** `kCadenceWaveDeadZoneRatio = 0.3` so với ngưỡng
+  (không phải một giá trị CPM tuyệt đối, để tự co giãn theo 3 mức ngưỡng người dùng chọn); trên
+  vùng chết, biên độ = `s² / (s² + k)` với `s = cpm/threshold - 0.3`, `k = kCadenceWaveSaturationK
+  = 0.1225`. Ba phương án khác đã cân nhắc (tuyến tính kẹp, smoothstep đỉnh-tại-ngưỡng) đều **kẹp
+  cứng biên độ = 1.0 ngay tại CPM == ngưỡng** — nghĩa là 400/500/800/2000 CPM (ngưỡng 400) trông y
+  hệt nhau trên sóng, mất đúng thứ thông tin "gợn nhẹ khác dậy sóng" mà tính năng này tồn tại vì
+  nó. Bão hoà tiệm cận giữ đơn điệu liên tục xuyên suốt, không bao giờ "phẳng lì" ở 1.0: 800 CPM
+  (~0.959) và 2000 CPM (~0.995) vẫn phân biệt được, chỉ khác biệt nhỏ dần — mất thông tin có chủ
+  đích ở vùng xa, không phải lỗi. **Vì sao chỉ là `chốt tạm`:** hằng `k = 0.1225` suy ngược từ mốc
+  "biên độ 0.80 đúng tại ngưỡng" ở `docs/tasks/MOOD-WAVE-MECHANISM.md:192` — nhưng chính tài liệu
+  đó ghi rõ ba mốc 0.12/0.45/0.80 là "mốc hình học đang dùng, KHÔNG PHẢI kết quả của công thức đã
+  chốt", tức là mục tiêu hiệu chỉnh chứ chưa có ai gõ thật để kiểm. Lập luận đầy đủ + bảng 3
+  phương án + nguồn: `docs/tasks/typing-cadence-bell-execution.md` §2 "2026-08-02 — Q4".
 - 2026-08-02 *(ở #7)* — **`BellPolicy` là LỚP, không phải hai hàm tự do.** Hợp đồng HĐ-2 cũ và
   issue #7 đều phác thảo `BellPolicy_ShouldRing(...)` + `BellPolicy_NoteRung(...)` (hàm tự do).
   Cooldown + trạng thái chống rung là **state**; hàm tự do buộc giữ state đó trong biến toàn cục,

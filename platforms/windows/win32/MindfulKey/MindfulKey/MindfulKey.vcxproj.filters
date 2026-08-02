@@ -99,7 +99,7 @@
     <ClInclude Include="..\..\..\..\..\core\mood\BreathingPause.h">
       <Filter>mood</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\core\mood\EmotionWaveAmplitude.h">
+    <ClInclude Include="..\..\..\..\..\core\mood\CadenceWaveAmplitude.h">
       <Filter>mood</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\core\mood\MoodBuffer.h">
@@ -203,7 +203,7 @@
     <ClCompile Include="..\..\..\..\..\core\mood\BreathingPause.cpp">
       <Filter>mood</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\core\mood\EmotionWaveAmplitude.cpp">
+    <ClCompile Include="..\..\..\..\..\core\mood\CadenceWaveAmplitude.cpp">
       <Filter>mood</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\core\mood\MoodBuffer.cpp">

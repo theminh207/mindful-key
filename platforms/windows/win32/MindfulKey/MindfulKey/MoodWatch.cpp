@@ -28,7 +28,6 @@
 #include "MoodStore.h"     // consent hỏi lúc BẬT (MoodWatch_Toggle), không phải lúc khởi động
 #include "../../../../../core/mood/MoodBuffer.h"
 #include "../../../../../core/mood/SendRiskAnalyzer.h"
-#include "../../../../../core/mood/EmotionWaveAmplitude.h"
 #include "SystemTrayHelper.h"
 #include <thread>
 #include <mutex>
@@ -284,10 +283,14 @@ static void analyzeOnWorker(const wstring& word) {
     // NudgeCoordinator), mức 5 "Cuộn" = "kích hoạt lớp nhịp thở" (gác cổng). Nên mức 4-5 bắt đầu
     // đúng ở ngưỡng gợn — và như vậy nó tự tôn trọng lựa chọn Độ nhạy của người dùng.
     //
-    // Còn EmotionWaveAmplitude() lo phần dead-zone 0.3 + dâng mượt: dưới đó mặt hồ PHẲNG TUYỆT ĐỐI,
-    // không rung rinh vì một chữ hơi nặng.
-    if (EmotionWaveAmplitude(scored.risk) > 0.0 &&
-        scored.risk >= NudgeCoordinator_RippleThreshold()) {
+    // TODO(#13) — EmotionWaveAmplitude(risk) đã đổi thành CadenceWaveAmplitude(cpm, thresholdCpm)
+    // (issue #8): tham số không còn là risk [0,1] mà là (cpm, ngưỡng CPM), nên không còn cách nào
+    // gọi hàm đó ở đây mà giữ đúng nghĩa — risk của mô hình cũ không phải cpm, và HĐ-8 cấm trộn
+    // hai thước đo. Bỏ hẳn điều kiện dead-zone riêng: NudgeCoordinator_RippleThreshold() luôn >=
+    // 0.4 (xem NudgeCoordinator.cpp — Ít nhạy 0.6 / Vừa 0.5 / Nhạy 0.4), tức LUÔN cao hơn dead-zone
+    // 0.3 mà EmotionWaveAmplitude() từng kiểm, nên điều kiện dưới đây giữ NGUYÊN hành vi thật —
+    // không phải rút gọn liều lĩnh. Toàn bộ khối GĐ6 này thuộc nhánh đọc cảm xúc, sẽ gỡ cùng #13.
+    if (scored.risk >= NudgeCoordinator_RippleThreshold()) {
         SystemTrayHelper::showWaveAlert();   // an toàn từ luồng worker: nó chỉ PostMessage
     }
 

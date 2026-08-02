@@ -38,13 +38,15 @@ generate:        ## Sinh .xcodeproj từ platforms/apple/project.yml (XcodeGen)
 
 test: test-core test-macos test-ios  ## Chạy test cả 3 đội (core + macos + ios)
 
-test-core:       ## Regression bộ não dùng chung (đội core sở hữu): engine Telex/VNI + đo nhịp gõ + chính sách chuông (+ send-risk/phrasing, gỡ theo #13/#14)
+test-core:       ## Regression bộ não dùng chung (đội core sở hữu): engine Telex/VNI + đo nhịp gõ + chính sách chuông + biên độ sóng (+ send-risk/phrasing, gỡ theo #13/#14)
 	bash tests/core/build.sh
 	./tests/core/test_engine
 	bash tests/core/cadence_build.sh
 	./tests/core/test_cadence
 	bash tests/core/bell_policy_build.sh
 	./tests/core/test_bell_policy
+	bash tests/core/cadence_wave_build.sh
+	./tests/core/test_cadence_wave
 	bash tests/core/send_risk_build.sh
 	./tests/core/test_send_risk
 	bash tests/core/phrasing_build.sh
@@ -53,15 +55,13 @@ test-core:       ## Regression bộ não dùng chung (đội core sở hữu): e
 test-macos:      ## Test riêng vỏ macOS (đội macOS sở hữu): E2E tầng dữ liệu chuỗi nhịp lấy mẫu (gõ→nhịp→ghi→đọc, host, cô lập kho + keychain)
 	bash tests/macos/mood_pipeline_build.sh
 
-test-ios:        ## Test riêng vỏ iOS: bridge Telex (host) + mood bridge (host) + settings bridge (host) + emotion wave amplitude (host) + nudge coordinator/chuông nhắc nghỉ (host) + mood journal store (host) + build-smoke extension (iphonesimulator)
+test-ios:        ## Test riêng vỏ iOS: bridge Telex (host) + mood bridge (host) + settings bridge (host) + nudge coordinator/chuông nhắc nghỉ (host) + mood journal store (host) + build-smoke extension (iphonesimulator)
 	bash tests/ios/build.sh
 	./tests/ios/bridge_test
 	bash tests/ios/mood_bridge_build.sh
 	./tests/ios/mood_bridge_test
 	bash tests/ios/settings_bridge_build.sh
 	./tests/ios/settings_bridge_test
-	bash tests/ios/emotion_wave_build.sh
-	./tests/ios/emotion_wave_test
 	bash tests/ios/nudge_coordinator_ios_build.sh
 	./tests/ios/nudge_coordinator_ios_test
 	bash tests/ios/mood_journal_store_build.sh

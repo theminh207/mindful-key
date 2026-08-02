@@ -17,6 +17,72 @@
 
 ---
 
+## 2026-08-02 — #8 Con sóng đổi nguồn: biên độ theo nhịp gõ (CPM) thay vì send-risk
+
+**Làm gì:** Đổi tên `core/mood/EmotionWaveAmplitude.{h,cpp}` → `CadenceWaveAmplitude.{h,cpp}`
+(`git mv`, giữ lịch sử) và đổi chữ ký từ `EmotionWaveAmplitude(double risk)` một tham số sang
+`CadenceWaveAmplitude(double cpm, double thresholdCpm)` hai tham số, theo đúng công thức đã research
+ở Q4 (`docs/tasks/typing-cadence-bell-execution.md` §2). Quét toàn repo (`git grep`) và sửa **mọi**
+nơi gọi/tham chiếu tên cũ: iOS (`KeyboardViewController.mm`, `SuggestionBarView.h`,
+`NudgeCoordinatorIOS.h` — comment), Windows (`MoodWatch.cpp` + `MindfulKey.vcxproj` +
+`.vcxproj.filters`), `.claude/agents/mood-layer-agent.md`. Dời `tests/ios/emotion_wave_test.mm` →
+`tests/core/test_cadence_wave.cpp` (viết lại HOÀN TOÀN cho chữ ký mới, không chỉ đổi tên biến) +
+`tests/core/cadence_wave_build.sh`, nối vào `make test-core` + `.github/workflows/macos.yml`, gỡ
+`tests/ios/emotion_wave_build.sh` và 2 dòng tương ứng khỏi `make test-ios`. Thêm neo hợp đồng
+"Tắt chuông không ảnh hưởng biên độ sóng" vào `docs/04-contracts.md` HĐ-3 (caveat #2 của Q4, chưa
+có chỗ neo trước #8).
+
+**Chốt được:**
+
+- **Công thức Q4 chuyển từ "chưa chốt" sang `🟡 chốt tạm`** (README §5): bão hoà tiệm cận Hill n=2,
+  `amplitude = s²/(s²+k)` với `s = cpm/thresholdCpm - 0.3`, `k = kCadenceWaveSaturationK = 0.1225`.
+  Nhận **hai tham số thô** (không để vỏ tự chia `cpm/threshold`) vì HĐ-6 cấm chia nhỏ logic ra
+  nhiều vỏ — đúng bẫy lexicon send-risk từng trôi lệch macOS/iOS. Vùng chết là **tỉ lệ**
+  (`kCadenceWaveDeadZoneRatio = 0.3`) so với ngưỡng, không phải giá trị CPM tuyệt đối, để tự co
+  giãn theo 3 mức ngưỡng người dùng chọn (300/400/500). Bão hoà tiệm cận thay vì kẹp cứng tại
+  ngưỡng: giữ phân biệt được CPM 400/500/800/2000 (biên độ ~0.8/0.881/0.959/0.994) thay vì cả bốn
+  cùng vẽ ra 1.0. **Vì sao chỉ là chốt tạm:** `k=0.1225` suy ngược từ mốc "0.80 đúng tại ngưỡng"
+  (`MOOD-WAVE-MECHANISM.md:192`), nhưng chính tài liệu đó ghi rõ ba mốc 0.12/0.45/0.80 là mục tiêu
+  hiệu chỉnh, chưa ai gõ thật để kiểm.
+- **"Tắt chuông" không có nhánh trong core.** Hàm luôn đòi `thresholdCpm` cụ thể; vỏ giữ hai giá
+  trị tách biệt `bellEnabled` và `waveReferenceThresholdCpm` — nay đã ghi thành hợp đồng ở HĐ-3.
+
+**Phải đoán:** hai chỗ, đã ghi `docs/tasks/FRICTION-LOG.md` 2026-08-02.
+
+1. **macOS đang có bản logic biên độ sóng THỨ HAI, không đi qua core.** `EmotionWaveView.mm` tự có
+   `EaseInOut()` (smoothstep riêng) + hai ngưỡng trạng thái cứng (0.05/0.50) khác hẳn core (0.3);
+   `EmotionRiverView.mm` còn vẽ thẳng từ `risk` cũ, chưa đổi sang CPM. Đây đúng bẫy README §6
+   ("một mảnh logic hai bản"), nhưng là do macOS **chưa nối dây** (#9), không phải đã trôi lệch từ
+   một bản dùng chung. Không tự ý viết lại view macOS trong #8 (ngoài phạm vi, thuộc #9) — chỉ ghi
+   phát hiện lại để #9 xử khi nối `TypingCadence`/`BellPolicy` vào macOS.
+2. **Nơi gọi iOS/Windows chưa có CPM thật để truyền** (TypingCadence/BellPolicy chưa nối dây, việc
+   của #9/#15/#17). iOS: thay bằng `CadenceWaveAmplitude(0.0, 0.0)` (hằng số, không phải biến
+   `risk` cũ) kèm `TODO(#17)` — sóng giữ phẳng. Windows (`MoodWatch.cpp`): bỏ hẳn điều kiện
+   `EmotionWaveAmplitude(risk) > 0.0` (không còn cách gọi có nghĩa — risk không phải cpm, HĐ-8 cấm
+   trộn thước đo), giữ nguyên điều kiện còn lại vì `NudgeCoordinator_RippleThreshold()` luôn ∈
+   {0.4, 0.5, 0.6} > 0.3 nên hành vi thật của khối code legacy (sẽ gỡ ở #13) không đổi.
+
+**Kiểm chứng — máy dev KHÔNG có trình biên dịch nào (`g++`/`clang++`/`cl`/`make` đều thiếu), nên
+KHÔNG build/chạy được `test_cadence_wave` ở local. CI là cổng thật, CHƯA CHẠY tại thời điểm viết
+mục này** (PR chưa mở):**
+
+| Cổng | Kết quả |
+|---|---|
+| `py -3 scripts/check_hd1.py` | ✅ xanh tại chỗ — bản ghim `scripts/hd1_pinned_api.txt` đã cập nhật (2 dòng đổi: tên file + chữ ký), đọc kỹ diff trước khi cập nhật |
+| `PYTHONIOENCODING=utf-8 py -3 scripts/brand_lint.py` | ✅ xanh tại chỗ — 223 file, 9 cảnh báo (đều pre-existing ở `BrandColors.h`, không liên quan thay đổi này) |
+| `tests/core/test_cadence_wave` (build + chạy) | ⏳ CHƯA chạy — chờ CI `macos.yml` |
+| `xcodebuild` (macOS + iOS build với tên file mới) | ⏳ CHƯA chạy — chờ CI |
+| MSVC build Windows (`MoodWatch.cpp` + `.vcxproj` đổi tên) | ⏳ CHƯA chạy — chờ CI `windows.yml` |
+
+**Còn hở:**
+
+- Nối `EmotionWaveView`/`EmotionRiverView` (macOS) vào `CadenceWaveAmplitude` thật — #9.
+- Nối placeholder iOS (`CadenceWaveAmplitude(0.0, 0.0)`) thành CPM thật — #17.
+- Gỡ khối GĐ6 trong `MoodWatch.cpp` (Windows, đọc cảm xúc cũ) — #13.
+- Bản ghim vùng chết `k=0.1225` chờ chủ dự án nhìn sóng thật ở vài mốc CPM trước khi khoá cứng.
+
+---
+
 ## 2026-08-02 — #7 `core/mood/BellPolicy` — chính sách reo chuông dùng chung 3 vỏ
 
 **Làm gì:** Viết `core/mood/BellPolicy.{h,cpp}` — C++ thuần, một bản dùng chung 3 vỏ. Cộng

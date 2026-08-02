@@ -50,7 +50,7 @@ tên mức thì hiện kèm con số CPM. Tránh chữ **"quá"** — *"gõ quá
 
 - **Input:** yêu cầu thêm/sửa logic đo nhịp, chính sách chuông, schema kho ghi, thống kê màn soi
   lại, hoặc câu hỏi về riêng tư của lớp này.
-- **Output:** thay đổi trong `core/mood/` (`TypingCadence`, `BellPolicy`, `EmotionWaveAmplitude`) và
+- **Output:** thay đổi trong `core/mood/` (`TypingCadence`, `BellPolicy`, `CadenceWaveAmplitude`) và
   ca kiểm tương ứng trong `tests/core/`. Mọi thay đổi schema phải nêu rõ có phá kho cũ trên máy
   người dùng hay không.
 

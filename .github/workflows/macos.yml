@@ -37,6 +37,16 @@ jobs:
           bash tests/core/bell_policy_build.sh
           ./tests/core/test_bell_policy
 
+      # [MINDFUL] 2026-08-02 (#8) — biên độ con sóng `~` đổi nguồn từ send-risk sang CPM.
+      # Bản test CŨ (tests/ios/emotion_wave_test.mm) test hàm `EmotionWaveAmplitude(risk)` một
+      # tham số [0,1] — CHƯA từng chạy trong CI (`macos.yml` không có bước `test-ios`, chỉ chạy
+      # khi ai đó gọi `make test-ios` tay trên máy macOS thật). Dời về tests/core/ và nối vào CI
+      # ở đây là LẦN ĐẦU đường cong này được CI xác nhận, không chỉ "code nằm im chờ ai đó chạy".
+      - name: Regression biên độ con sóng (core/mood/CadenceWaveAmplitude)
+        run: |
+          bash tests/core/cadence_wave_build.sh
+          ./tests/core/test_cadence_wave
+
       # [MINDFUL] 2026-08-02 (#6) — CƯỠNG CHẾ HĐ-1 BẰNG MÁY.
       #
       # Hiến chương §4.2 hứa "sản phẩm không đọc nội dung". Lời hứa đó chỉ thật khi người đọc
