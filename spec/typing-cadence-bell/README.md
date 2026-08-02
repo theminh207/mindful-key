@@ -8,7 +8,7 @@
 | **Bắt đầu** | 2026-07-26 |
 | **Hiến chương** | [`docs/01-intent.md`](../../docs/01-intent.md) — luật tối cao, đã sửa |
 | **Issue** | [#3 → #18](https://github.com/theminh207/mindful-key/issues) trên GitHub |
-| **Trạng thái** | Phase 1 đang chạy — #6 `TypingCadence` xong, #7 `BellPolicy` tiếp theo |
+| **Trạng thái** | Phase 1 đang chạy — #6 `TypingCadence` xong, #7 `BellPolicy` xong, #8 (con sóng) tiếp theo |
 
 ---
 
@@ -61,7 +61,7 @@ Trạng thái: `⬜ chưa bắt đầu` · `🔄 đang làm` · `✅ xong` · `�
 | | Issue | Việc | Chặn bởi | Người làm |
 |---|---|---|---|---|
 | ✅ | [#6](https://github.com/theminh207/mindful-key/issues/6) | `core/mood/TypingCadence` — đo CPM trên cửa sổ trượt | #3 | @phatnguyen-neurond |
-| ⬜ | [#7](https://github.com/theminh207/mindful-key/issues/7) | `core/mood/BellPolicy` — chính sách reo chuông dùng chung 3 vỏ | #6 | |
+| ✅ | [#7](https://github.com/theminh207/mindful-key/issues/7) | `core/mood/BellPolicy` — chính sách reo chuông dùng chung 3 vỏ | #6 | @phatnguyen-neurond |
 | ⬜ | [#8](https://github.com/theminh207/mindful-key/issues/8) | Con sóng đổi nguồn: biên độ theo nhịp gõ | #6 | |
 
 ### Phase 2 — macOS (công dân hạng nhất, chạy thật trước)
@@ -110,6 +110,36 @@ Chưa chốt thì **đừng tự quyết trong im lặng** — hỏi chủ dự 
 
 **Đã chốt:**
 
+- 2026-08-02 *(ở #7)* — **`BellPolicy` là LỚP, không phải hai hàm tự do.** Hợp đồng HĐ-2 cũ và
+  issue #7 đều phác thảo `BellPolicy_ShouldRing(...)` + `BellPolicy_NoteRung(...)` (hàm tự do).
+  Cooldown + trạng thái chống rung là **state**; hàm tự do buộc giữ state đó trong biến toàn cục,
+  khiến ba vỏ dùng chung một biến (test dính nhau, không dựng được nhiều thể hiện độc lập) — đúng
+  tiền lệ đã chốt cho `TypingCadence` ở #6 (Q3). Gộp thêm "hỏi" và "báo đã reo" thành **một** hàm
+  `evaluate()` trả thẳng `bool` (bỏ luôn `struct BellDecision` issue đề xuất, vì `cpmAtDecision` là
+  thông tin nơi gọi đã có sẵn) — loại hẳn kiểu lỗi "vỏ hỏi rồi quên báo lại". `docs/04-contracts.md`
+  HĐ-2 đã cập nhật khối code + giải trình.
+- 2026-08-02 *(ở #7)* — **Chống rung dùng biên trễ (hysteresis) 10% dưới ngưỡng**, không phải
+  "tụt xuống dưới ngưỡng" đơn thuần (margin 0). Sau khi đã reo, CPM phải tụt xuống dưới
+  `thresholdCpm * 0.9` mới được coi là một đợt vượt ngưỡng mới. Lý do chọn có biên thay vì margin
+  0: CPM dao động sát ngưỡng là chuyện thường (nhịp gõ người không phẳng lì); với margin 0, một cú
+  tụt rất nhỏ (1-2 CPM, đúng mức nhiễu một phím trên cửa sổ 30 giây) đã đủ "tái vũ trang", khiến
+  hai gợn nhịp sát nhau vẫn tách thành hai đợt và reo hai lần cách nhau vài giây — đúng thứ chống
+  rung phải ngăn. 10% cho ngưỡng mặc định 400 nghĩa là phải tụt xuống dưới 360 (~20 phím/30 giây)
+  mới tính là dịu lại. Hằng số phơi ra làm `extern const double kBellPolicyHysteresisFactor` để
+  test khoá được bằng số thật, không phải hằng chết chôn trong `.cpp`.
+- 2026-08-02 *(ở #7)* — **Cơ chế "đã vũ trang" (armed) tách biệt hoàn toàn khỏi cooldown.** Một
+  tràng gõ nhanh dài liên tục (CPM không bao giờ tụt) chỉ reo **đúng một lần** dù cooldown hết hạn
+  giữa chừng — vì cổng "đã vũ trang" (cổng 3) chặn trước khi cổng cooldown (cổng 6) kịp được xét.
+  Nếu chỉ dựa vào cooldown (không có cổng vũ trang riêng), streak dài hơn thời lượng cooldown sẽ
+  reo lặp lại nhiều lần — sai với checklist issue #7 ("reo đúng 1 lần cho một tràng gõ nhanh dài
+  liên tục").
+- 2026-08-02 *(ở #7)* — **Ca biên CPM == ngưỡng: CÓ reo** (so sánh là `>=`, không phải `>`).
+  Ngưỡng do chính người dùng đặt; "đạt đúng mức mình đặt" phải tính là đã tới, không phải còn thiếu
+  một chút.
+- 2026-08-02 *(ở #7)* — **Tắt chuông (`enabled=false`) và tạm hoãn (`snoozed=true`) KHÔNG tiêu lượt
+  vũ trang.** Nếu CPM vượt ngưỡng trong lúc tắt/hoãn, cơ hội reo vẫn còn nguyên khi bật/hết hoãn —
+  không phải chờ CPM tụt xuống rồi vượt lại từ đầu. Việc bật/tắt là quyết định của người dùng, tách
+  biệt khỏi tín hiệu nhịp gõ.
 - 2026-08-01 *(ở #6)* — **CPM = (số nhịp trong cửa sổ) / (độ dài cửa sổ tính bằng phút)** — chia
   cho **độ dài cửa sổ**, KHÔNG phải cho khoảng giữa nhịp đầu và nhịp cuối. Chia theo khoảng giữa
   hai nhịp thì gõ 2 phím cách nhau 100ms ra **1200 CPM** → chuông reo oan ngay phím thứ hai. Chia
