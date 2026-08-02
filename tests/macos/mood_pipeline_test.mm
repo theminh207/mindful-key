@@ -41,7 +41,7 @@
 //     TypingCadenceMac_IsSecureFieldActive() (hàm CHỨA logic gate), không gọi được đường thật
 //     "gõ trong ô mật khẩu → không đếm nhịp" vì đường đó nằm trong OpenKey.mm/CGEventTap, cần app
 //     + Accessibility thật, không link/giả lập được ở host test.
-//   · Cooldown 45s thật của BellPolicy (kMKBellCooldownMs) — cần chờ 45 giây thật hoặc giả timestamp
+//   · Cooldown 45s thật của BellPolicy (kBellPolicyDefaultCooldownMs) — cần chờ 45 giây thật hoặc giả timestamp
 //     lùi rất xa; core/test_bell_policy.cpp đã khoá hành vi này ở tầng unit, không lặp lại ở đây.
 //
 
@@ -52,6 +52,7 @@
 #import "MoodStoreMac.h"
 #import "BellMac.h"
 #import "TypingCadenceMac.h"
+#import "NudgeCoordinatorMac.h"
 
 // MoodWatchMac.mm gán vào con trỏ này (bình thường Engine.cpp định nghĩa) — test không link
 // engine nên tự định nghĩa. Chuỗi engine→OnWord đã có tests/core che; ở đây vào thẳng OnWord.
@@ -334,14 +335,29 @@ int main(void) {
         BOOL secureNow = TypingCadenceMac_IsSecureFieldActive();
         printf("  IsSecureEventInputEnabled() lúc chạy test: %s (môi trường CI bình thường -> NO)\n",
                secureNow ? "YES" : "NO");
-        expectTrue("gọi cổng ô mật khẩu không crash (tới được dòng này là qua)", YES);
+        // Khẳng định `YES` hằng thì luôn xanh kể cả khi hàm hỏng — vô giá trị. Kiểm thứ kiểm được:
+        // giá trị trả về là BOOL hợp lệ, và ỔN ĐỊNH giữa hai lời gọi liên tiếp (cổng chạy trong
+        // hook bàn phím nên không được có trạng thái lạ giữa hai phím kề nhau).
+        //
+        // ⚠️ Đây là SMOKE, không phải kiểm hành vi. Ca "gõ trong ô mật khẩu thật -> CPM không tăng"
+        // KHÔNG dựng được ở host test: nó đòi một ô mật khẩu thật đang focus của một app khác.
+        // Cần người cầm máy macOS — xem TEST_MATRIX.md.
+        expectTrue("cổng ô mật khẩu trả BOOL hợp lệ", secureNow == YES || secureNow == NO);
+        expectTrue("cổng ô mật khẩu ổn định giữa 2 lời gọi liền nhau",
+                   TypingCadenceMac_IsSecureFieldActive() == secureNow);
 
         // ===== Ca 10: TypingCadenceMac — tắt chuông (vBell=0) + gõ nhanh vượt ngưỡng -> KHÔNG reo =====
         // HĐ-2: enabled=false thì evaluate() không bao giờ trả true, dù CPM vượt ngưỡng xa cỡ nào.
         printf("\n-- Ca 10: vBell=0 + gõ nhanh vượt ngưỡng thấp (test) -> KHÔNG reo --\n");
         TypingCadenceMac_Init();
         // Ngưỡng THẤP riêng cho test — không cần dựng cảnh gõ 200+ phím/30s mới chạm ngưỡng thật.
+        // PHẢI gọi ReloadThreshold sau khi ghi: ngưỡng được CACHE (HĐ-3, hook không đọc prefs mỗi
+        // phím), nên chỉ ghi UserDefaults thôi thì cache vẫn giữ 400 và Ca 11 sẽ "xanh" mà không
+        // kiểm được gì — 21 phím trong ~1 giây chỉ ra ~42 CPM, không bao giờ chạm 400.
         [[NSUserDefaults standardUserDefaults] setDouble:10.0 forKey:@"vBellThresholdCPM"];
+        TypingCadenceMac_ReloadThreshold();
+        expectTrue("ngưỡng test đã vào cache (10 CPM, không phải mặc định 400)",
+                   TypingCadenceMac_ThresholdCPM() == 10.0);
         vBell = 0;
         expectTrue("trước khi gõ -> NudgeCoordinatorMac_ShouldNudge còn YES (chưa ai reo)",
                    NudgeCoordinatorMac_ShouldNudge());

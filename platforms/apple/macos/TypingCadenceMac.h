@@ -24,6 +24,11 @@
 #ifndef TypingCadenceMac_h
 #define TypingCadenceMac_h
 
+// Tự đứng được, không dựa vào thứ tự import ở nơi gọi (cùng quy ước BellMac.h/MoodStoreMac.h):
+// `BOOL` cần Foundation, `int64_t` cần stdint.
+#import <Foundation/Foundation.h>
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -47,8 +52,17 @@ void TypingCadenceMac_Init(void);
 // focus): đó là một lời gọi IPC sang tiến trình khác — không "rẻ tới mức chạy trong hook" (HĐ-3),
 // khác hẳn API Carbon này vốn chỉ đọc một cờ hệ thống nội bộ, không IPC, không cấp phát.
 //
-// FAIL-CLOSED (HĐ-4): IsSecureEventInputEnabled() luôn trả một Boolean thật (không có nhánh
-// "không xác định được"), nên không cần thêm nhánh mặc định ở đây.
+// ⚠️ KHOẢNG HỞ CÒN LẠI — nói thẳng thay vì lý luận cho nó biến mất.
+// `IsSecureEventInputEnabled()` trả lời câu hỏi *"có tiến trình nào TRONG HỆ THỐNG đang bật secure
+// input không"*, KHÔNG phải *"ô đang focus có phải ô mật khẩu không"*. Hai chiều sai lệch khác nhau
+// hẳn về hậu quả:
+//   · Báo THỪA (app khác bật secure input trong lúc ta gõ chỗ khác) → ta bỏ đếm vài nhịp.
+//     Vô hại, và đúng chiều fail-closed HĐ-4 đòi ("thà mất vài nhịp còn hơn đếm nhầm").
+//   · Báo THIẾU → ô mật khẩu kiểu Electron/webview/`NSTextField` tự vẽ che ký tự mà KHÔNG gọi
+//     `EnableSecureEventInput` sẽ VẪN BỊ ĐẾM NHỊP. Đây là khoảng hở thật, chưa bịt.
+// Nói cách khác: API này không diễn đạt được "không chắc", nhưng điều đó KHÔNG có nghĩa là không
+// có sự không chắc. Nó là phương án rẻ nhất đúng-được-phần-lớn trên macOS (Accessibility là IPC,
+// vi phạm HĐ-3); phần còn hở phải được ghi ra, không được coi là đã kín.
 BOOL TypingCadenceMac_IsSecureFieldActive(void);
 
 // [MINDFUL] Gọi TỪ HOOK BÀN PHÍM, TỪNG PHÍM MỘT (Q3). RẺ — TypingCadence và BellPolicy đều KHÔNG
@@ -64,11 +78,13 @@ void TypingCadenceMac_RegisterKeystroke(int64_t nowMs);
 // UserDefaults rồi trôi lệch (HĐ-6). #10 chưa xây UI chọn ngưỡng nên luôn rơi về
 // kCadenceWaveDefaultThresholdCPM (400.0) — HĐ-3 nói rõ đây là mặc định KHỞI ĐIỂM, không phải hằng
 // cố định; #10 sẽ đọc/ghi cùng khoá UserDefaults này khi có UI thật.
+//
+// ĐỌC TỪ CACHE, KHÔNG chạm UserDefaults — hàm này bị gọi trong hook bàn phím mỗi phím (HĐ-3).
 double TypingCadenceMac_ThresholdCPM(void);
 
-// CPM tại "bây giờ" (cửa sổ trượt kết thúc tại thời điểm gọi) — dùng cho con sóng khi #11 nối dây,
-// để tránh dựng một instance TypingCadence thứ hai chỉ để đọc (đúng bẫy HĐ-6 "hai bản logic").
-double TypingCadenceMac_CurrentCPM(void);
+// Nạp lại ngưỡng từ UserDefaults vào cache. Gọi lúc khởi động và mỗi khi cài đặt chuông đổi
+// (`BellMac_ApplySettings`). KHÔNG gọi từ hook bàn phím — đây là chỗ duy nhất chạm prefs.
+void TypingCadenceMac_ReloadThreshold(void);
 
 #ifdef __cplusplus
 }

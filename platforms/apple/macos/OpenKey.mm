@@ -618,15 +618,30 @@ extern "C" {
         // nhịp tay không phân biệt ngôn ngữ đang gõ), TRỪ khi đang trong ô mật khẩu (HĐ-4,
         // fail-closed — cổng `TypingCadenceMac_IsSecureFieldActive()`, xem TypingCadenceMac.h/.mm
         // cho lý do đặt cổng ở đó thay vì ngay đây: cần chỗ ca kiểm host chạm tới được, mà file này
-        // không link được vào test host — kéo cả Engine theo). Chỉ đếm kCGEventKeyDown — KeyUp
-        // không tính, mỗi phím vật lý chỉ tạo đúng 1 nhịp lúc nhấn xuống.
+        // không link được vào test host — kéo cả Engine theo).
+        //
+        // LOẠI AUTO-REPEAT (`kCGKeyboardEventAutorepeat`): macOS phát kCGEventKeyDown LẶP LẠI
+        // ~15-30 lần/giây khi người dùng GIỮ một phím. Không lọc thì giữ Backspace/mũi tên 10 giây
+        // sinh 150-300 "nhịp" từ ĐÚNG MỘT phím vật lý → 300-600 CPM → chuông reo báo tay đang gõ
+        // nhanh trong lúc người dùng không gõ gì cả. Đó là bịa dữ liệu (HĐ-8). Chỉ SAU khi lọc cờ
+        // này thì câu "mỗi phím vật lý đúng 1 nhịp lúc nhấn xuống" mới thành thật.
+        //
+        // THỜI ĐIỂM LẤY TỪ CHÍNH SỰ KIỆN (`CGEventGetTimestamp`), không phải `[NSDate date]`:
+        // (a) rẻ hơn — không cấp phát NSObject, không message send, đúng lời hứa "không cấp phát"
+        // ngay dưới đây; (b) ĐƠN ĐIỆU (đếm từ lúc máy khởi động), trong khi `timeIntervalSince1970`
+        // là đồng hồ treo tường — một cú NTP hay đổi múi giờ kéo lùi sẽ làm
+        // `TypingCadence::registerKeystroke` tưởng đồng hồ nhảy lùi và `reset()` sạch cửa sổ.
         //
         // RẺ tới mức chạy thẳng ở đây (HĐ-3): TypingCadence + BellPolicy bên trong
-        // TypingCadenceMac_RegisterKeystroke đều không cấp phát/khoá/ngoại lệ. Chỉ dòng PHÁT TIẾNG
-        // (khi BellPolicy bảo reo) mới bị đẩy sang main queue bên trong hàm đó — không phải việc
-        // của nơi gọi ở đây.
-        if (type == kCGEventKeyDown && !TypingCadenceMac_IsSecureFieldActive()) {
-            int64_t nowMs = (int64_t)([[NSDate date] timeIntervalSince1970] * 1000.0);
+        // TypingCadenceMac_RegisterKeystroke không cấp phát/khoá/ngoại lệ. Nói cho chính xác thì
+        // KHÔNG phải O(1): `currentCPM` là O(số nhịp ĐÃ GHI, tối đa 1024) — nhưng 1024 vòng lặp số
+        // nguyên là vài µs, ở 400 CPM (~6,7 phím/giây) tức ~20 µs mỗi giây, thấp hơn timeout của
+        // CGEventTap khoảng năm bậc độ lớn. Chỉ dòng PHÁT TIẾNG (khi BellPolicy bảo reo) mới bị đẩy
+        // sang main queue bên trong hàm đó — không phải việc của nơi gọi ở đây.
+        if (type == kCGEventKeyDown &&
+            CGEventGetIntegerValueField(event, kCGKeyboardEventAutorepeat) == 0 &&
+            !TypingCadenceMac_IsSecureFieldActive()) {
+            int64_t nowMs = (int64_t)(CGEventGetTimestamp(event) / 1000000ULL);
             TypingCadenceMac_RegisterKeystroke(nowMs);
         }
 

@@ -9,6 +9,7 @@
 #import <UserNotifications/UserNotifications.h>
 #include "BellMac.h"
 #include "NudgeCoordinatorMac.h"
+#include "TypingCadenceMac.h"
 #import "BrandColors.h"
 
 int vBell = 0;
@@ -259,9 +260,12 @@ static void bellTick(NSTimer *timer) {
 }
 
 void BellMac_RingForFastTyping(void) {
+    // [MINDFUL] KHÔNG kiểm `NudgeCoordinatorMac_ShouldNudge()` ở đây — cổng đó đã được hỏi TRƯỚC
+    // `BellPolicy::evaluate()` trong TypingCadenceMac.mm (gộp vào tham số `snoozed`). Kiểm lại ở
+    // đây là dựng cooldown THỨ HAI sau quyết định, và hậu quả không phải "chuông im một lần" mà là
+    // "chuông câm dài": evaluate() đã tiêu lượt vũ trang rồi, nên phải chờ CPM tụt dưới 0.9×ngưỡng
+    // mới có cơ hội lại. Xem giải trình đầy đủ ở TypingCadenceMac.mm.
     if (!vBell || isSnoozed())
-        return;
-    if (!NudgeCoordinatorMac_ShouldNudge())
         return;
 
     static NSInteger idx = 0;
@@ -304,6 +308,12 @@ NSDate * BellMac_NextRingDate(void) {
 }
 
 void BellMac_ApplySettings() {
+    // [MINDFUL] (#9) Ngưỡng CPM của chuông nhịp gõ được CACHE trong TypingCadenceMac (hook bàn phím
+    // đọc nó mỗi phím — không được chạm UserDefaults ở đó, HĐ-3). Đây là nơi đã đọc lại toàn bộ
+    // prefs chuông, nên cũng là nơi đúng để làm mới cache — nếu không, người dùng đổi ngưỡng ở #10
+    // sẽ không có hiệu lực cho tới lần khởi động sau.
+    TypingCadenceMac_ReloadThreshold();
+
     dispatch_async(dispatch_get_main_queue(), ^{
         if (g_bellTimer != nil) {
             [g_bellTimer invalidate];

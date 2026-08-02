@@ -107,7 +107,10 @@ Chưa chốt thì **đừng tự quyết trong im lặng** — hỏi chủ dự 
 | Q8 | Bàn phím iOS có phát được tiếng chuông trong app extension không? Không được thì thay bằng gì? | #17 | 🔬 đã có đáp án kỹ thuật, chờ nghe-verify tay |
 | Q9 | `docs/diagrams/` **không có** sơ đồ vòng lặp lõi (issue #4 giả định là có). Có vẽ mới `Measure → Bell → Reflect` không? Và **hai node** mô hình cũ trong `workflow-macos-team.drawio` để nguyên hay sửa — dòng 115 khai *"Gác cổng… Trái tim sản phẩm"* (nặng, khai sai tính năng số một) và dòng 134 là ghi chú trạng thái đề ngày? | #4 → treo | ❓ chưa chốt |
 | Q10 | **Cooldown mặc định cho chuông theo mô hình CPM là bao nhiêu?** 45 giây đang chạy ở `NudgeCoordinatorMac`/`IOS` là của **mô hình cũ** (đếm chuỗi câu căng liên tiếp) — không có lý do gì để tự động đúng cho phép đo nhịp gõ. `BellPolicy` cố ý **không** bake số nào vào core; vỏ truyền vào constructor. Chốt một lần ở #9 trước khi ba vỏ tự đoán ba con số. | #9 | 🟡 chốt tạm 2026-08-02 → **giữ 45s, dùng chung 3 vỏ** |
-| Q14 | `EmotionRiverView` (thẻ "Ngay bây giờ", `GatekeeperCardView`) vẫn vẽ thẳng từ `risk`/`MoodStoreMac` (send-risk) — CPM thật (`TypingCadenceMac_CurrentCPM`) đã có ở #9 nhưng CHƯA cắm vào view này. Cắt sang nguồn mới bây giờ đòi schema kho mới (thuộc #11) + câu ngày-hình-dạng CPM (`MoodPhrasingMac` nay vẫn theo risk); cắt nửa vời sẽ trộn 2 thước đo trên 1 đồ thị (HĐ-8 cấm). Có nên #11 làm TRỌN việc này (đổi cả kho lẫn view), hay tách thêm 1 issue riêng? | #11 | ❓ chưa chốt |
+| Q12 | macOS `EmotionWaveView`/`EmotionRiverView` **không** gọi hàm sóng dùng chung — tự có `EaseInOut()` riêng + hai ngưỡng cứng `0.05`/`0.50`. Đổi sang gọi thẳng `CadenceWaveAmplitude`, hay giữ ngưỡng UI riêng làm tầng tách biệt? | #9 | 🟡 chốt tạm 2026-08-02 → **một nửa**: `EmotionWaveView` giữ nguyên (easing animation, không phải bản sao công thức). Nửa còn lại (`EmotionRiverView` còn vẽ từ `risk`) tách thành **Q14** |
+| Q15 | **Chuông nhịp gõ KHÔNG tôn trọng giờ chuông.** `BellMac_RingForFastTyping` không gọi `isInBellRange()`, trong khi `bellTick()` và `BellMac_PlayCheckinChime` đều gọi (comment ở đó nói rõ: *"thiếu chỗ này thì sẽ kêu lúc 3h sáng giữa giờ yên lặng"*). Đây là **lỗ có sẵn**, thừa kế nguyên từ `RingForTenseStreak` — nhưng tần suất kích hoạt vừa đổi từ "3 câu căng liên tiếp" sang "mỗi phím", nên hậu quả thực tế khác hẳn. Chuông nhịp gõ có phải tôn trọng giờ chuông không? | #10 | ❓ chưa chốt — **cố ý không sửa lén ở #9** |
+| Q16 | Cổng ô mật khẩu macOS dùng `IsSecureEventInputEnabled()`, trả lời *"có tiến trình nào trong hệ thống đang bật secure input"* chứ không phải *"ô đang focus có phải ô mật khẩu"*. Báo thừa thì vô hại (đúng chiều fail-closed), nhưng **báo thiếu** thì ô mật khẩu kiểu Electron/webview tự vẽ che ký tự **vẫn bị đếm nhịp**. Chấp nhận khoảng hở này, hay bịt thêm bằng Accessibility (IPC, vi phạm HĐ-3 "rẻ tới mức chạy trong hook")? | #10 | ❓ chưa chốt |
+| Q14 | `EmotionRiverView` (thẻ "Ngay bây giờ", `GatekeeperCardView`) vẫn vẽ thẳng từ `risk`/`MoodStoreMac` (send-risk) — mạch CPM thật đã chạy ở #9 nhưng CHƯA cắm vào view này (#9 cố ý **không** để lại hàm đọc CPM đầu cơ — sẽ thêm khi có nơi gọi thật). Cắt sang nguồn mới bây giờ đòi schema kho mới (thuộc #11) + câu ngày-hình-dạng CPM (`MoodPhrasingMac` nay vẫn theo risk); cắt nửa vời sẽ trộn 2 thước đo trên 1 đồ thị (HĐ-8 cấm). Có nên #11 làm TRỌN việc này (đổi cả kho lẫn view), hay tách thêm 1 issue riêng? | #11 | ❓ chưa chốt |
 | Q13 | **Không CI nào build target bàn phím iOS (`MindfulKeyKeyboard`)** — `macos.yml` chỉ build `-scheme MindfulKey` (app macOS). Mọi thay đổi trong `KeyboardExtension/` hiện chỉ được kiểm bằng mắt. Có thêm một job CI build extension cho iphonesimulator (`tests/ios/build_smoke.sh` đã có sẵn) không? | #17 | ❓ chưa chốt |
 | Q11 | `BellPolicy` có nối vào `windows.yml` (MSVC) không? `macos.yml` đã chạy `test_bell_policy`; `windows.yml` chỉ build vỏ, không chạy test core. Nối thì bắt được lỗi portability MSVC sớm; không nối thì CI nhanh hơn. | #15 | ❓ chưa chốt |
 
@@ -117,6 +120,18 @@ Chưa chốt thì **đừng tự quyết trong im lặng** — hỏi chủ dự 
 > lập luận đầy đủ nhưng **chưa được chủ dự án duyệt**. Khác hẳn mục không nhãn — mục không nhãn là
 > chủ dự án đã gật đầu. Xem `docs/tasks/typing-cadence-bell-execution.md` §2 cho lập luận đầy đủ.
 
+- 🟡 2026-08-02 *(ở #9, Q10, **chốt tạm** — agent tự quyết, chờ chủ dự án gõ thật)* — **Cooldown giữ
+  45 giây, dùng chung cả ba vỏ.** Không tìm thấy lý do nào cho con số 45 cũ (`git log --all -S
+  "kCooldownSeconds"` chỉ ra một commit *"Initial commit"*) — nhưng giữ lại có lập luận, không phải
+  quán tính: với cổng vũ trang (tụt dưới `0.9 × ngưỡng` mới được reo lại) cộng cửa sổ trượt 30 giây,
+  một chu kỳ *"gõ nhanh → nghỉ tay ngắn → gõ nhanh lại"* **tự nó** đã mất ~15–30 giây mới vượt ngưỡng
+  lần nữa. Nên cooldown **dưới ~20–30 giây gần như vô nghĩa** (cơ chế khác đã chặn trước), còn 45
+  giây cắt thêm ~15–30 giây thật — có tác dụng, mà vẫn xa mức "ép nghỉ" hàng phút kiểu công cụ chống
+  RSI, đúng tinh thần *"chuông là lời mời, không phải kết luận"*. Hằng đặt ở **core**
+  (`kBellPolicyDefaultCooldownMs`) chứ không để mỗi vỏ tự viết `45000` — cùng lý do đã áp cho
+  `kCadenceWaveDefaultThresholdCPM` ở #8; vỏ vẫn là nơi **truyền** giá trị vào constructor. Còn `🟡`
+  vì **chưa ai gõ thật** để nghe 45 giây có đúng nhịp không. Lập luận đầy đủ + nguồn ở
+  `docs/tasks/typing-cadence-bell-execution.md` §2.
 - 🟡 2026-08-02 *(ở #9, Q12, **chốt tạm** — agent tự quyết, chờ chủ dự án duyệt)* — **Q12 tách làm
   hai nửa, chỉ nửa đầu chốt được ở #9:**
   1. **`EmotionWaveView.mm` giữ nguyên `EaseInOut()` + hai ngưỡng `0.05`/`0.50`.** Đọc kỹ code:
