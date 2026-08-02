@@ -17,6 +17,87 @@
 
 ---
 
+## 2026-08-02 — #7 `core/mood/BellPolicy` — chính sách reo chuông dùng chung 3 vỏ
+
+**Làm gì:** Viết `core/mood/BellPolicy.{h,cpp}` — C++ thuần, một bản dùng chung 3 vỏ. Cộng
+`tests/core/test_bell_policy.cpp` (7 loại ca) + `bell_policy_build.sh`, nối vào `make test-core` và
+vào `.github/workflows/macos.yml`. Cập nhật `docs/04-contracts.md` HĐ-2 cho khớp code thật (khối
+code cũ là hai hàm tự do, phác thảo — chưa từng có code).
+
+**Chốt được:**
+
+- **Chữ ký: dạng LỚP, một hàm `evaluate()` trả `bool`.** HĐ-2 cũ và issue #7 đều phác thảo hai hàm
+  tự do (`BellPolicy_ShouldRing` + `BellPolicy_NoteRung`), issue còn đề xuất trả `struct
+  BellDecision`. Đổi cả ba: (1) **lớp thay hàm tự do** — cùng lý do `TypingCadence` đã chốt ở #6
+  (cooldown + trạng thái chống rung là *state*, hàm tự do buộc giữ trong biến toàn cục, ba vỏ dùng
+  chung một biến thì test dính nhau); (2) **một hàm thay hai hàm** — gộp "hỏi" và "báo đã reo" để
+  loại hẳn kiểu lỗi "vỏ hỏi rồi quên báo lại" (cooldown/chống rung không bao giờ nạp) hoặc ngược lại
+  (core nghĩ đã reo, vỏ thì im); (3) **bỏ `struct BellDecision`** — `cpmAtDecision` là thông tin nơi
+  gọi đã có sẵn (chính là tham số `cpm` nó vừa truyền vào), trả lại là thừa. Đã cập nhật khối code +
+  giải trình ở `docs/04-contracts.md` HĐ-2, đúng tiền lệ HĐ-1 đã ghi lại việc `TypingCadence` thành
+  lớp.
+- **Thời điểm: `int64_t nowMs`, không phải `double nowSeconds` như issue phác thảo.** Cùng đơn vị
+  với `TypingCadence::registerKeystroke(int64_t nowMs)` — vỏ có sẵn một mốc mili-giây từ hook bàn
+  phím, dùng lại nguyên con số đó cho cả hai lớp thay vì đổi đơn vị + chịu sai số dấu phẩy động ở
+  một hợp đồng lõi.
+- **Cơ chế chống rung: hysteresis 10% dưới ngưỡng** (`kBellPolicyHysteresisFactor = 0.9`, hằng
+  `extern` để test khoá được bằng số thật, không phải hằng chết chôn trong `.cpp`). Sau khi đã reo,
+  CPM phải tụt xuống dưới `thresholdCpm * 0.9` mới được coi là một đợt vượt ngưỡng mới. Chọn có biên
+  thay vì margin 0 ("chỉ cần tụt dưới ngưỡng"): CPM dao động sát ngưỡng là chuyện thường, và với
+  margin 0 một cú tụt 1-2 CPM (đúng mức nhiễu một phím trên cửa sổ 30 giây) đã đủ "tái vũ trang" —
+  hai gợn nhịp sát nhau vẫn tách thành hai đợt và reo hai lần cách nhau vài giây, đúng thứ chống
+  rung phải ngăn. 10% cho ngưỡng mặc định 400 nghĩa là phải tụt xuống dưới 360 (~20 phím/30 giây).
+- **Cơ chế "đã vũ trang" (armed) TÁCH BIỆT hoàn toàn khỏi cooldown** — đây là điểm dễ vấp nhất. Nếu
+  chỉ dựa vào cooldown (không có cổng vũ trang riêng), một tràng gõ nhanh dài liên tục sẽ reo lặp
+  lại mỗi khi cooldown hết hạn — sai với checklist issue #7 ("reo đúng 1 lần cho một tràng gõ nhanh
+  dài liên tục", kể cả khi tràng đó dài hơn cooldown). Cổng "đã vũ trang" (cổng 3) chặn TRƯỚC khi
+  cổng cooldown (cổng 6) kịp được xét, nên hai cơ chế không thể thay thế cho nhau — `test_bell_policy.cpp`
+  Loại 1 khoá đúng ca hồi quy này (streak trải dài qua mốc t=45000, tức đúng lúc cooldown hết, vẫn im).
+- **Ca biên CPM == ngưỡng: CÓ reo** (so sánh `>=`, không phải `>`). Ngưỡng do chính người dùng đặt —
+  "đạt đúng mức mình đặt" phải tính là đã tới, không phải còn thiếu một chút.
+- **Tắt chuông / tạm hoãn KHÔNG tiêu lượt vũ trang.** Nếu CPM vượt ngưỡng trong lúc tắt/hoãn, cơ hội
+  reo vẫn còn nguyên khi bật lại/hết hoãn — không phải chờ CPM tụt xuống rồi vượt lại từ đầu. Việc
+  bật/tắt là quyết định người dùng, tách biệt khỏi tín hiệu nhịp gõ.
+- **Không bake một giá trị cooldown mặc định vào core.** Constructor nhận `cooldownMs` từ vỏ; core
+  không tự chọn con số. 45 giây đang chạy ở `NudgeCoordinatorMac`/`IOS` là cho MÔ HÌNH CŨ (đếm chuỗi
+  câu căng liên tiếp) — chưa có quyết định nào chốt lại số cho mô hình CPM mới, ghi ở
+  `FRICTION-LOG.md` để #9 xin chốt trước khi ba vỏ tự đoán ba con số khác nhau.
+
+**Phải đoán:** ba chỗ, đã ghi `docs/tasks/FRICTION-LOG.md`.
+1. Biên trễ chống rung (10%) và hướng chọn ca biên CPM==ngưỡng (`>=`) — issue chỉ nói "cân nhắc",
+   không cho con số hay hướng, nên đã tự chọn + ghi lý do đầy đủ (đã chốt).
+2. Con số cooldown mặc định cho mô hình CPM mới — chưa ai chốt, cố ý KHÔNG bake vào core, để #9 xin
+   chốt trước khi nối dây thật (còn mở).
+3. Chỉ nối `macos.yml`, không nối `windows.yml` — issue #7 chỉ ghi rõ `macos.yml`, dù tiền lệ #6 đã
+   nối cả hai runner. Bám sát chữ issue thay vì tự mở rộng phạm vi; `BellPolicy` dùng subset C++14
+   đơn giản như `TypingCadence` nên rủi ro khác biệt clang↔MSVC thấp nhưng **chưa được chứng minh**
+   (còn mở).
+
+**Kiểm chứng — máy dev KHÔNG có trình biên dịch nào (`g++`/`clang++`/`cl`/`make` đều thiếu), nên
+KHÔNG build/chạy được `test_bell_policy` ở local. CI là cổng thật, và **đã chạy**:**
+
+| Cổng | Kết quả |
+|---|---|
+| `macos.yml` — `test_bell_policy` | ✅ [run 30726639383](https://github.com/theminh207/mindful-key/actions/runs/30726639383) — `g++ -std=c++14 -Wall -Wextra` **không warning nào**, mọi ca PASS. Xcode cũng compile `BellPolicy.cpp` vào target app macOS, sạch |
+| `windows.yml` (MSVC v143) | ✅ Debug + Release — nhưng chỉ build vỏ, **không** chạy `test_bell_policy` (xem "Phải đoán" #3 / Q11) |
+| Cổng HĐ-1 (`py -3 scripts/check_hd1.py`) | ✅ chạy tại chỗ — xanh, 23 dòng khai báo khớp bản ghim (7 dòng mới của `BellPolicy.h`) |
+| Cổng HĐ-1 — kiểm chiều-ngược | ✅ tiêm 1 vi phạm giả (`const wchar_t* debugLabel` thêm vào `evaluate`) → cổng đỏ đúng cả 3 lưới (ghim/allowlist/denylist), sau đó revert → xanh lại |
+| `brand_lint.py` | ✅ 223 file, 9 cảnh báo (9 cảnh báo là hardcode màu có sẵn ở `BrandColors.h`, không do PR này) |
+
+**Còn hở:**
+- `BellPolicy` **chưa vỏ nào nối dây** — thuần là bộ não, giống `TypingCadence` sau #6. Nối ở #9
+  (macOS) · #15 (Windows) · #17 (iOS).
+- Chưa nối `windows.yml` (xem "Phải đoán" #3) — `BellPolicy` chưa từng biên dịch bằng MSVC.
+- Cooldown mặc định cho mô hình CPM mới chưa chốt (xem "Phải đoán" #2) — nay là **Q10** ở README §5,
+  cần chốt trước #9.
+- Hai con số **`🟡 chốt tạm`** (biên trễ 10%; ca biên `>=`) là do agent tự chọn trong phiên chạy tự
+  động, **chưa được chủ dự án duyệt** — lập luận đầy đủ ở
+  `docs/tasks/typing-cadence-bell-execution.md` §2.
+- Chưa ai **nghe thử** chuông reo theo nhịp thật: `BellPolicy` mới chỉ được chứng minh bằng ca kiểm
+  tất định. Mốc 360 CPM có đúng là "đã chậm tay lại" hay không thì chỉ tay người gõ mới trả lời được.
+
+---
+
 ## 2026-08-01 — #6 `core/mood/TypingCadence` — đo nhịp gõ (CPM) trên cửa sổ trượt
 
 **Làm gì:** Viết `core/mood/TypingCadence.{h,cpp}` — C++ thuần, một bản dùng chung 3 vỏ. Cộng

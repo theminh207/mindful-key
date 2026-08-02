@@ -38,11 +38,13 @@ generate:        ## Sinh .xcodeproj từ platforms/apple/project.yml (XcodeGen)
 
 test: test-core test-macos test-ios  ## Chạy test cả 3 đội (core + macos + ios)
 
-test-core:       ## Regression bộ não dùng chung (đội core sở hữu): engine Telex/VNI + đo nhịp gõ (+ send-risk/phrasing, gỡ theo #13/#14)
+test-core:       ## Regression bộ não dùng chung (đội core sở hữu): engine Telex/VNI + đo nhịp gõ + chính sách chuông (+ send-risk/phrasing, gỡ theo #13/#14)
 	bash tests/core/build.sh
 	./tests/core/test_engine
 	bash tests/core/cadence_build.sh
 	./tests/core/test_cadence
+	bash tests/core/bell_policy_build.sh
+	./tests/core/test_bell_policy
 	bash tests/core/send_risk_build.sh
 	./tests/core/test_send_risk
 	bash tests/core/phrasing_build.sh

@@ -11,6 +11,13 @@
 #
 # Sinh lai sau khi doi API co chu dich:  python3 scripts/check_hd1.py --update-pin
 
+core/mood/BellPolicy.h :: extern const double kBellPolicyHysteresisFactor;
+core/mood/BellPolicy.h :: explicit BellPolicy(int64_t cooldownMs);
+core/mood/BellPolicy.h :: bool evaluate(double cpm, double thresholdCpm, int64_t nowMs, bool enabled, bool snoozed);
+core/mood/BellPolicy.h :: int64_t _cooldownMs;
+core/mood/BellPolicy.h :: int64_t _lastRungMs;
+core/mood/BellPolicy.h :: bool _hasRung;
+core/mood/BellPolicy.h :: bool _armed;
 core/mood/EmotionWaveAmplitude.h :: extern const double kEmotionWaveDeadZoneThreshold;
 core/mood/EmotionWaveAmplitude.h :: double EmotionWaveAmplitude(double risk);
 core/mood/TypingCadence.h :: extern const int64_t kTypingCadenceDefaultWindowMs;

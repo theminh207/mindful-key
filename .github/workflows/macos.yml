@@ -29,6 +29,14 @@ jobs:
           bash tests/core/cadence_build.sh
           ./tests/core/test_cadence
 
+      # [MINDFUL] 2026-08-02 (#7) — chính sách chuông (BellPolicy) là bước kế tiếp của
+      # TypingCadence trong vòng lặp Measure → Bell → Reflect, và cùng lý do ở trên: máy dev
+      # Windows không có trình biên dịch nào, nên CI này là nơi DUY NHẤT ca kiểm được chạy.
+      - name: Regression chính sách chuông (core/mood/BellPolicy)
+        run: |
+          bash tests/core/bell_policy_build.sh
+          ./tests/core/test_bell_policy
+
       # [MINDFUL] 2026-08-02 (#6) — CƯỠNG CHẾ HĐ-1 BẰNG MÁY.
       #
       # Hiến chương §4.2 hứa "sản phẩm không đọc nội dung". Lời hứa đó chỉ thật khi người đọc

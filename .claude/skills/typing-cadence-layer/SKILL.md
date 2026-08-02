@@ -28,9 +28,11 @@ core/mood/TypingCadence   — cửa sổ trượt 30 giây, trả CPM
    │  registerKeystroke(int64_t nowMs)
    │  currentCPM(int64_t nowMs) -> double
    ▼
-core/mood/BellPolicy      — so CPM với ngưỡng người dùng + cooldown
-   │  BellPolicy_ShouldRing(double cpm, int64_t nowMs) -> bool
-   │  BellPolicy_NoteRung(int64_t nowMs)
+core/mood/BellPolicy      — so CPM với ngưỡng người dùng + cooldown + chống rung
+   │  BellPolicy(int64_t cooldownMs)
+   │  evaluate(double cpm, double thresholdCpm, int64_t nowMs, bool enabled, bool snoozed) -> bool
+   │  ⚠️ MỘT lời gọi duy nhất — trả `true` là core ĐÃ tự ghi nhận đã reo, vỏ không phải
+   │     gọi thêm hàm "báo đã reo" nào nữa (chốt ở #7)
    ▼
 VỎ phát MỘT tiếng chuông  (đẩy ra khỏi luồng hook)  +  ghi một dòng vào kho
    ▼
@@ -68,7 +70,7 @@ typedef của chính repo). **Đừng quay lại denylist.** Chạy thử tại 
 
 ### 2. Chuông ngân thì được, chặn thì không (HĐ-2)
 
-`BellPolicy_ShouldRing` trả `true` nghĩa là **phát một tiếng chuông, rồi thôi**. Không nuốt phím,
+`BellPolicy::evaluate` trả `true` nghĩa là **phát một tiếng chuông, rồi thôi**. Không nuốt phím,
 không khóa phím, không làm chậm ký tự nào, không hiện khung đòi bấm, không hỏi han. Trả `false` thì
 vỏ **không làm gì cả** — không có khung rỗng, không có thông báo im.
 

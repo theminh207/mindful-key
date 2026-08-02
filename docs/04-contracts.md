@@ -110,9 +110,26 @@ denylist phụ. Thiếu file bắt buộc, hoặc danh sách miễn trừ trỏ 
 ngân chuông không*. Nó **không có, và không được có**, bất kỳ cơ chế nào chạm vào luồng gõ.
 
 ```cpp
-bool BellPolicy_ShouldRing(double cpm, int64_t nowMs);
-void BellPolicy_NoteRung(int64_t nowMs);          // nạp cooldown
+class BellPolicy {
+public:
+    explicit BellPolicy(int64_t cooldownMs);
+    bool evaluate(double cpm, double thresholdCpm, int64_t nowMs, bool enabled, bool snoozed);
+};
 ```
+
+> ⚠️ **Chữ ký ở trên đã đổi so với bản đầu của hợp đồng này** (`bool BellPolicy_ShouldRing(double
+> cpm, int64_t nowMs)` + `void BellPolicy_NoteRung(int64_t nowMs)`, hai hàm tự do) — chốt ở issue #7,
+> giải trình đầy đủ ở `core/mood/BellPolicy.h`. Tóm tắt hai chỗ đổi:
+> 1. **Dạng lớp, không phải hàm tự do** — cùng lý do `TypingCadence` đã chốt thành lớp ở #6 (HĐ-1):
+>    cooldown + trạng thái chống rung là *state*, hàm tự do buộc giữ state đó trong biến toàn cục,
+>    khiến ba vỏ dùng chung một biến và test không dựng được nhiều thể hiện độc lập.
+> 2. **Một hàm `evaluate()`, không phải hai hàm `ShouldRing`/`NoteRung`** — gộp "hỏi" và "báo đã
+>    reo" thành một lời gọi để loại bỏ hẳn kiểu lỗi "vỏ hỏi rồi quên báo lại" (cooldown/chống rung
+>    không bao giờ nạp) hoặc "báo lại mà không thực sự phát tiếng" (core và vỏ lệch trạng thái).
+>
+> Nội dung tuyên bố của hợp đồng — *ngân thì được, chặn thì không*; cooldown nằm trong core — **không
+> đổi**, chỉ hình dạng API đổi. Tầng 04 là quy phạm nên khối code phải khớp code thật; xem lịch sử ở
+> `spec/typing-cadence-bell/PROGRESS.md` mục #7.
 
 - Trả `false` thì vỏ không làm gì cả — không có khung rỗng, không có thông báo im.
 - Trả `true` nghĩa là **phát một tiếng chuông, rồi thôi**. Không nuốt phím, không khóa phím, không
@@ -120,10 +137,25 @@ void BellPolicy_NoteRung(int64_t nowMs);          // nạp cooldown
 - Hợp đồng thuần C++, không phụ thuộc framework giao diện, để mọi vỏ tự phát tiếng mà không phải
   đoán API.
 - Cooldown nằm **trong** `BellPolicy`, không phải trong từng vỏ — nếu để vỏ tự đếm thì ba vỏ sẽ trôi
-  lệch, đúng cái bẫy HĐ-6 mô tả.
+  lệch, đúng cái bẫy HĐ-6 mô tả. Con số cooldown cụ thể vẫn do vỏ truyền vào constructor — lớp này
+  không tự bịa ra một mặc định.
+- **Chống rung (hysteresis):** sau khi đã reo, `cpm` phải tụt xuống dưới `thresholdCpm *
+  kBellPolicyHysteresisFactor` (0.9, tức 10% dưới ngưỡng) thì mới được coi là một đợt vượt ngưỡng
+  mới. Nói cho chính xác thứ **cổng vũ trang** giữ và thứ **độ lớn biên trễ** giữ là hai chuyện
+  khác nhau — lẫn hai cái này là hiểu sai cả cơ chế:
+  - Thứ giữ *"một tràng gõ nhanh dài liên tục chỉ reo đúng một lần"* là **cổng vũ trang**, không
+    phải độ lớn biên trễ. Kể cả với biên trễ bằng 0, tràng gõ liên tục (cpm luôn ≥ ngưỡng) vẫn chỉ
+    reo một lần, vì cổng vũ trang chặn trước khi cooldown kịp được xét.
+  - Thứ **độ lớn biên trễ** giữ là ca khác: hai gợn nhịp sát nhau, giữa chúng cpm tụt **nhẹ** dưới
+    ngưỡng. Với biên trễ 0, một cú tụt 1–2 CPM (đúng mức nhiễu một phím lẻ trên cửa sổ 30 giây) đã
+    đủ tái vũ trang → reo hai lần cách nhau vài giây.
+- **Tiền điều kiện `thresholdCpm > 0`.** Mức *"Tắt chuông"* biểu đạt bằng `enabled = false`,
+  **không** bằng `thresholdCpm = 0`. Truyền 0 thì cổng chống rung (`cpm < 0`) không bao giờ đúng →
+  chuông reo một lần rồi câm vĩnh viễn. Core cố ý không kẹp giá trị này; hợp đồng nói rõ thay vì
+  dựng thêm nhánh xử một trạng thái vốn đã có đường biểu đạt đúng.
 
-**Cách soi.** Mọi nơi gọi `BellPolicy_ShouldRing` chỉ được dẫn tới một lệnh phát tiếng. Có nhánh nào
-đi tới `swallow`/`consume`/`return TRUE` của hook bàn phím là vi phạm.
+**Cách soi.** Mọi nơi gọi `BellPolicy::evaluate` chỉ được dẫn tới một lệnh phát tiếng khi kết quả là
+`true`. Có nhánh nào đi tới `swallow`/`consume`/`return TRUE` của hook bàn phím là vi phạm.
 
 ---
 
