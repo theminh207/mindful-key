@@ -130,8 +130,21 @@ int main() {
         double huge = CadenceWaveAmplitude(1e12, T);
         checkTrue("cpm=1e12 -> khong NaN", !std::isnan(huge));
         checkTrue("cpm=1e12 -> khong Inf", !std::isinf(huge));
-        checkTrue("cpm=1e12 -> < 1.0 (bao hoa TIEM CAN, khong bao gio CHAM 1.0)", huge < 1.0);
-        checkTrue("cpm=1e12 -> nhung phai rat gan 1.0", huge > 0.999999);
+        // KHONG kiem "< 1.0". Ve TOAN HOC thi s^2/(s^2+k) tiem can 1.0 va khong bao gio cham;
+        // ve SO THUC DAU PHAY DONG thi co. Voi cpm=1e12, s ~ 2.5e9 nen s^2 ~ 6.25e18, ma ULP
+        // cua double o do lon do la ~1024 -- lon hon k=0.1225 hang nghin lan. Nen `s*s + k`
+        // lam tron ve DUNG BANG `s*s`, va thuong ra DUNG BANG 1.0. Bat "< 1.0" la doi mot dieu
+        // IEEE754 khong the giu (CI da do dung o day, run 30727859811).
+        //
+        // Hop dong THAT su quan trong voi noi goi la KHONG VUOT QUA 1.0 -- view nhan gia tri nay
+        // roi nhan voi bien do pixel toi da, vuot 1.0 la ve tran khung. Do la thu kiem o day.
+        checkTrue("cpm=1e12 -> khong bao gio VUOT 1.0 (view nhan gia tri nay de nhan pixel)", huge <= 1.0);
+        checkTrue("cpm=1e12 -> phai rat gan 1.0", huge > 0.999999);
+        // Bao hoa bang 1.0 chi xay ra o vung KHONG THE CO THAT: TypingCadence bao hoa quanh
+        // 2048 CPM (kCapacity=1024 tren cua so 30s), tai do bien do moi la ~0.995. Muon cham
+        // 1.0 that su phai gia lap cpm lon hon hang ty lan ky luc go cua nguoi.
+        checkTrue("o dai CPM CO THAT (<= 2048) thi van chua cham 1.0",
+                  CadenceWaveAmplitude(2048.0, T) < 1.0);
 
         // 800 va 2000 (Loai 3) van khac nhau ro -- KHONG "phang li" o 1.0, dung y do thiet ke.
         checkTrue("800 CPM va 2000 CPM van phan biet duoc (khong phang li o 1.0)",

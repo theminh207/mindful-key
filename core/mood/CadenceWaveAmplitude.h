@@ -60,7 +60,17 @@ extern const double kCadenceWaveDeadZoneRatio; // 0.3
 //   - cpm < kCadenceWaveDeadZoneRatio * thresholdCpm  -> 0.0 (vùng chết, gồm cả cpm âm)
 //   - trên vùng chết                                  -> tăng ĐƠN ĐIỆU, LIÊN TỤC, bão hoà tiệm cận
 //                                                        về 1.0 khi cpm vượt ngưỡng rất xa, KHÔNG
-//                                                        bao giờ chạm hay vượt 1.0
+//                                                        BAO GIỜ VƯỢT QUÁ 1.0
+//
+// Nói cho chính xác về cái mốc 1.0, vì chỗ này dễ hứa quá tay: về TOÁN HỌC hàm tiệm cận 1.0 và
+// không bao giờ chạm. Về SỐ THỰC DẤU PHẨY ĐỘNG thì có chạm — với cpm đủ lớn, `s*s` vượt xa tới
+// mức `s*s + k` làm tròn về đúng `s*s`, và thương ra ĐÚNG 1.0. Ngưỡng đó nằm ở vùng không thể có
+// thật: `TypingCadence` bão hoà quanh 2048 CPM, mà tại 2048 (ngưỡng 400) biên độ mới ~0.995.
+// Muốn chạm 1.0 phải giả lập cpm lớn hơn kỷ lục gõ của người hàng tỷ lần.
+//
+// Nên hợp đồng nơi gọi được dựa vào là **không bao giờ VƯỢT QUÁ 1.0** (nơi gọi nhân giá trị này
+// với biên độ pixel tối đa — vượt 1.0 là vẽ tràn khung), KHÔNG phải "không bao giờ bằng 1.0".
+// Bản đầu của test khẳng định `< 1.0` và CI đã đỏ đúng ở đó.
 //   - cpm == thresholdCpm                             -> ~0.80 (🟡 chốt tạm, xem giải trình ở trên)
 //
 // `thresholdCpm <= 0` không crash/NaN — kẹp về 1.0 nội bộ trước khi chia (cùng phong cách kẹp
