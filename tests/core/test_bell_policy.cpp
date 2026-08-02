@@ -123,6 +123,39 @@ int main() {
         checkBool("reo lần 2 ngay sau, không bị cooldown chặn",        p.evaluate(450.0, THRESHOLD, 2, true, false), true);
     }
 
+    printf("\n--- Loại 8: tái vũ trang chạy TRƯỚC cổng enabled/snoozed ---\n");
+    {
+        // BellPolicy.h khẳng định cổng 1 (chống rung) chạy trước MỌI cổng khác, kể cả
+        // enabled/snoozed — vì tái vũ trang là tín hiệu thuần về NHỊP GÕ, không phải về cấu hình.
+        // Loại 4/5 không khoá được điều này (chúng không hạ CPM), nên nếu ai đó dời cổng 1 xuống
+        // sau cổng enabled thì mọi ca khác vẫn xanh. Ca này là thứ duy nhất đỏ lên.
+        BellPolicy p(COOLDOWN);
+        checkBool("t=0 cpm=450 -> reo lần 1",                             p.evaluate(450.0, THRESHOLD, 0, true, false), true);
+        checkBool("t=1000 cpm=300 nhưng ĐANG TẮT -> vẫn tái vũ trang",    p.evaluate(300.0, THRESHOLD, 1000, false, false), false);
+        checkBool("t=50000 cpm=450, bật lại -> reo (đã vũ trang lúc đang tắt)", p.evaluate(450.0, THRESHOLD, 50000, true, false), true);
+    }
+    {
+        // Y hệt, nhưng bằng snoozed thay vì enabled.
+        BellPolicy p(COOLDOWN);
+        checkBool("t=0 cpm=450 -> reo lần 1",                             p.evaluate(450.0, THRESHOLD, 0, true, false), true);
+        checkBool("t=1000 cpm=300 nhưng ĐANG HOÃN -> vẫn tái vũ trang",   p.evaluate(300.0, THRESHOLD, 1000, true, true), false);
+        checkBool("t=50000 cpm=450, hết hoãn -> reo",                     p.evaluate(450.0, THRESHOLD, 50000, true, false), true);
+    }
+
+    printf("\n--- Loại 9: đồng hồ nhảy LÙI không được làm chuông câm dài ---\n");
+    {
+        // Đổi múi giờ / NTP kéo lùi / máy ngủ dậy. Không xử thì `nowMs - _lastRungMs` ÂM, luôn nhỏ
+        // hơn cooldown, chuông câm suốt cả khoảng bị nhảy lùi. Cùng ca TypingCadence.cpp đã xử.
+        BellPolicy p(COOLDOWN);
+        checkBool("t=100000 cpm=450 -> reo lần 1",                        p.evaluate(450.0, THRESHOLD, 100000, true, false), true);
+        checkBool("t=101000 cpm=300 -> tái vũ trang",                     p.evaluate(300.0, THRESHOLD, 101000, true, false), false);
+        // Đồng hồ nhảy lùi 96 giây. Mốc cooldown bị kéo về hiện tại -> vẫn phải chờ đủ cooldown,
+        // KHÔNG reo ngay (không có chuyện nhảy lùi thành "thưởng" một tiếng chuông sớm).
+        checkBool("t=5000 (nhảy lùi 96s) cpm=450 -> chưa reo, mốc kéo về hiện tại", p.evaluate(450.0, THRESHOLD, 5000, true, false), false);
+        // Đủ 45000ms sau mốc đã kéo về. KHÔNG có bản vá thì phải chờ tới t=145000 mới reo được.
+        checkBool("t=50000 cpm=450 -> reo lần 2 (không phải chờ tới 145000)", p.evaluate(450.0, THRESHOLD, 50000, true, false), true);
+    }
+
     if (gFail == 0)
         printf("\n=== XONG — TẤT CẢ PASS ===\n");
     else

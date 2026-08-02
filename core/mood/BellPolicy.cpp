@@ -48,6 +48,15 @@ bool BellPolicy::evaluate(double cpm, double thresholdCpm, int64_t nowMs, bool e
         return false;
     }
 
+    // ĐỒNG HỒ NHẢY LÙI — cùng ca TypingCadence.cpp đã xử có chủ đích (`nowMs < _lastMs -> reset()`),
+    // và hai lớp dùng CHUNG một nguồn nowMs từ hook bàn phím, nên bỏ qua ở đây là để lại một lỗ mà
+    // lớp kia đã bịt. Đổi múi giờ / NTP kéo lùi / máy ngủ dậy đều làm `nowMs - _lastRungMs` ÂM →
+    // luôn nhỏ hơn _cooldownMs → chuông CÂM suốt cả khoảng bị nhảy lùi (có thể hàng giờ).
+    // Kéo mốc về hiện tại là cách rẻ nhất: mất nhiều nhất một lần chờ cooldown, không bao giờ câm dài.
+    if (_hasRung && nowMs < _lastRungMs) {
+        _lastRungMs = nowMs;
+    }
+
     // Cổng 6 — khoảng lặng tối thiểu kể từ LẦN REO THẬT gần nhất. Không tính các lần "suýt reo"
     // bị cổng 3/4/5 chặn ở trên — cooldown chỉ đếm từ tiếng chuông thật đã phát.
     if (_hasRung && (nowMs - _lastRungMs) < _cooldownMs) {

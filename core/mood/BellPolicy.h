@@ -56,9 +56,20 @@
 // nhỏ (chỉ 1-2 CPM, đúng mức nhiễu của một phím đơn lẻ trên cửa sổ 30 giây) đã đủ để "tái vũ
 // trang" chuông, khiến hai gợn nhịp sát nhau vẫn tách thành hai đợt riêng và reo hai lần cách
 // nhau vài giây — đúng thứ "chống rung" phải ngăn. 0.9 (10% dưới ngưỡng) cho ngưỡng mặc định 400
-// nghĩa là phải tụt xuống dưới 360 — mất thật khoảng 20 phím/30 giây — mới tính là "đã dịu lại":
-// đủ xa nhiễu một phím, nhưng vẫn đủ gần để phản ứng kịp khi người dùng THẬT SỰ chậm tay lại.
+// nghĩa là phải tụt xuống dưới 360 — mất thật khoảng 20 phím/30 giây — mới tính là "đã chậm tay
+// lại": đủ xa nhiễu một phím, nhưng vẫn đủ gần để phản ứng kịp khi người dùng THẬT SỰ chậm tay lại.
+//
+// Cố ý viết "đã chậm tay lại", KHÔNG phải "đã dịu lại"/"đã bình tĩnh": lớp này chỉ biết nhịp tay,
+// không biết gì về tâm người gõ (HĐ-3). Comment cũng phải giữ luật đó — câu chữ trong code là thứ
+// người viết UI sau đọc rồi chép thẳng ra màn hình.
 extern const double kBellPolicyHysteresisFactor;   // 0.9
+
+// TIỀN ĐIỀU KIỆN CỦA `thresholdCpm`: phải > 0. Mức "Tắt chuông" (Q1) biểu đạt bằng `enabled=false`,
+// **KHÔNG** bằng `thresholdCpm=0`. Vì sao phải nói ra: với `thresholdCpm=0` thì cổng chống rung là
+// `cpm < 0` — không bao giờ đúng — nên chuông reo đúng MỘT lần rồi CÂM VĨNH VIỄN. Đây là ca một vỏ
+// (#9/#15/#17) rất dễ tự nghĩ ra khi implement "Tắt chuông". Cố ý KHÔNG thêm code kẹp: thêm nhánh
+// xử một trạng thái đã có đường biểu đạt đúng là dựng lỗi cho tình huống bất khả
+// (.claude/rules/02-simplicity-first.md). Nói rõ ở hợp đồng rẻ hơn và không giấu lỗi.
 
 class BellPolicy {
 public:

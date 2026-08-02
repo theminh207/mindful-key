@@ -176,9 +176,10 @@ phép nói**.
 
 ## Khoảng trống lớn nhất hiện nay
 
-1. **Vòng lặp lõi mới chưa có dòng code nào.** `Measure → Bell → Reflect` đã là luật ở tầng 01 và
-   tầng 04, nhưng `core/mood/TypingCadence` và `core/mood/BellPolicy` chưa tồn tại. Đây là khoảng
-   cách lớn nhất giữa ý định và hiện thực tính đến 2026-08-01.
+1. **Vòng lặp lõi mới đã có bộ não, nhưng chưa vỏ nào nối dây.** `core/mood/TypingCadence` (#6) và
+   `core/mood/BellPolicy` (#7) đã tồn tại và có ca kiểm chạy ở CI — nhưng cả hai vẫn là bộ não rời:
+   không vỏ nào (macOS/Windows/iOS) gọi tới chúng, nên người dùng chưa thấy gì đổi. Nối dây ở #9
+   (macOS) · #15 (Windows) · #17 (iOS). Tính đến 2026-08-02.
 2. **Lời hứa riêng tư chưa được phép nói.** `SendRiskAnalyzer` còn trong repo và còn được nạp vào
    app, nên câu "không đọc nội dung" hiện vẫn là quảng cáo. Issue #13 đóng khoảng cách này, nhưng
    phải đợi cả ba vỏ chuyển xong.

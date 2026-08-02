@@ -141,8 +141,18 @@ public:
   không tự bịa ra một mặc định.
 - **Chống rung (hysteresis):** sau khi đã reo, `cpm` phải tụt xuống dưới `thresholdCpm *
   kBellPolicyHysteresisFactor` (0.9, tức 10% dưới ngưỡng) thì mới được coi là một đợt vượt ngưỡng
-  mới. Không có biên trễ này thì một tràng gõ nhanh dài liên tục sẽ reo nhiều lần thay vì đúng một
-  lần mỗi khi cooldown hết.
+  mới. Nói cho chính xác thứ **cổng vũ trang** giữ và thứ **độ lớn biên trễ** giữ là hai chuyện
+  khác nhau — lẫn hai cái này là hiểu sai cả cơ chế:
+  - Thứ giữ *"một tràng gõ nhanh dài liên tục chỉ reo đúng một lần"* là **cổng vũ trang**, không
+    phải độ lớn biên trễ. Kể cả với biên trễ bằng 0, tràng gõ liên tục (cpm luôn ≥ ngưỡng) vẫn chỉ
+    reo một lần, vì cổng vũ trang chặn trước khi cooldown kịp được xét.
+  - Thứ **độ lớn biên trễ** giữ là ca khác: hai gợn nhịp sát nhau, giữa chúng cpm tụt **nhẹ** dưới
+    ngưỡng. Với biên trễ 0, một cú tụt 1–2 CPM (đúng mức nhiễu một phím lẻ trên cửa sổ 30 giây) đã
+    đủ tái vũ trang → reo hai lần cách nhau vài giây.
+- **Tiền điều kiện `thresholdCpm > 0`.** Mức *"Tắt chuông"* biểu đạt bằng `enabled = false`,
+  **không** bằng `thresholdCpm = 0`. Truyền 0 thì cổng chống rung (`cpm < 0`) không bao giờ đúng →
+  chuông reo một lần rồi câm vĩnh viễn. Core cố ý không kẹp giá trị này; hợp đồng nói rõ thay vì
+  dựng thêm nhánh xử một trạng thái vốn đã có đường biểu đạt đúng.
 
 **Cách soi.** Mọi nơi gọi `BellPolicy::evaluate` chỉ được dẫn tới một lệnh phát tiếng khi kết quả là
 `true`. Có nhánh nào đi tới `swallow`/`consume`/`return TRUE` của hook bàn phím là vi phạm.

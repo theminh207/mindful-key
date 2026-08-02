@@ -74,12 +74,12 @@ code cũ là hai hàm tự do, phác thảo — chưa từng có code).
    (còn mở).
 
 **Kiểm chứng — máy dev KHÔNG có trình biên dịch nào (`g++`/`clang++`/`cl`/`make` đều thiếu), nên
-CHƯA build/chạy được `test_bell_policy` ở local. CI (`macos.yml`) là cổng thật, chưa chạy vì PR chưa
-lên:**
+KHÔNG build/chạy được `test_bell_policy` ở local. CI là cổng thật, và **đã chạy**:**
 
 | Cổng | Kết quả |
 |---|---|
-| `macos.yml` (clang) — `test_bell_policy` | **chưa chạy** — chờ CI, chỉ mới đọc code kỹ + tính tay từng ca trong lúc viết |
+| `macos.yml` — `test_bell_policy` | ✅ [run 30726639383](https://github.com/theminh207/mindful-key/actions/runs/30726639383) — `g++ -std=c++14 -Wall -Wextra` **không warning nào**, mọi ca PASS. Xcode cũng compile `BellPolicy.cpp` vào target app macOS, sạch |
+| `windows.yml` (MSVC v143) | ✅ Debug + Release — nhưng chỉ build vỏ, **không** chạy `test_bell_policy` (xem "Phải đoán" #3 / Q11) |
 | Cổng HĐ-1 (`py -3 scripts/check_hd1.py`) | ✅ chạy tại chỗ — xanh, 23 dòng khai báo khớp bản ghim (7 dòng mới của `BellPolicy.h`) |
 | Cổng HĐ-1 — kiểm chiều-ngược | ✅ tiêm 1 vi phạm giả (`const wchar_t* debugLabel` thêm vào `evaluate`) → cổng đỏ đúng cả 3 lưới (ghim/allowlist/denylist), sau đó revert → xanh lại |
 | `brand_lint.py` | ✅ 223 file, 9 cảnh báo (9 cảnh báo là hardcode màu có sẵn ở `BrandColors.h`, không do PR này) |
@@ -88,9 +88,13 @@ lên:**
 - `BellPolicy` **chưa vỏ nào nối dây** — thuần là bộ não, giống `TypingCadence` sau #6. Nối ở #9
   (macOS) · #15 (Windows) · #17 (iOS).
 - Chưa nối `windows.yml` (xem "Phải đoán" #3) — `BellPolicy` chưa từng biên dịch bằng MSVC.
-- Cooldown mặc định cho mô hình CPM mới chưa chốt (xem "Phải đoán" #2) — cần chốt trước #9.
-- `test_bell_policy.cpp` chưa từng chạy thật (xem "Kiểm chứng") — rủi ro lỗi cú pháp C++ chỉ lộ ra ở
-  CI, đã đọc lại kỹ nhưng không thay thế được một lần biên dịch thật.
+- Cooldown mặc định cho mô hình CPM mới chưa chốt (xem "Phải đoán" #2) — nay là **Q10** ở README §5,
+  cần chốt trước #9.
+- Hai con số **`🟡 chốt tạm`** (biên trễ 10%; ca biên `>=`) là do agent tự chọn trong phiên chạy tự
+  động, **chưa được chủ dự án duyệt** — lập luận đầy đủ ở
+  `docs/tasks/typing-cadence-bell-execution.md` §2.
+- Chưa ai **nghe thử** chuông reo theo nhịp thật: `BellPolicy` mới chỉ được chứng minh bằng ca kiểm
+  tất định. Mốc 360 CPM có đúng là "đã chậm tay lại" hay không thì chỉ tay người gõ mới trả lời được.
 
 ---
 
