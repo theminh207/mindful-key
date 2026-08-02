@@ -66,10 +66,11 @@ int main() {
         const double T = 400.0;
         // Quet r = cpm/threshold tu 0.30 (mep vung chet) den 6.0 (rat xa nguong), buoc 0.01.
         // Ham la don dieu tang chat tren toan mien s > 0 (dao ham s^2/(s^2+k) luon duong) --
-        // khong duoc co diem nao cur <= prev, va khong duoc co buoc nhay > 0.05 (dao ham cuc dai
-        // quanh s ~ sqrt(k/3) ~ 0.20, uoc luong ~0.91/don vi s -> voi buoc 0.01 thi buoc toi da
-        // ~0.0091, con xa duoi 0.05 -- nguong 0.05 du chat de bat loi "bac thang", du rong de
-        // khong bao dong gia vi sai so dau phay dong).
+        // khong duoc co diem nao cur <= prev, va khong duoc co buoc nhay > 0.05.
+        // Dao ham f'(s) = 2*s*k/(s^2+k)^2, cuc dai tai s = sqrt(k/3) = 0.20207, gia tri 1.8557
+        // /don vi s -> voi buoc 0.01 thi buoc toi da ~0.0186 (do that: maxJump = 0.018552).
+        // Nguong 0.05 nam giua: du chat de bat loi "bac thang", du rong de khong bao dong gia vi
+        // sai so dau phay dong.
         bool monotonic = true;
         double maxJump = 0.0;
         double prev = CadenceWaveAmplitude(0.30 * T, T);

@@ -422,11 +422,16 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
         return;
     }
     // TODO(#17): TypingCadence + ngưỡng người dùng chọn CHƯA nối dây ở iOS — việc đó thuộc #17.
-    // Placeholder nghiêng về im lặng (HĐ-8, không bịa dữ liệu): cpm=0 luôn rơi vào vùng chết của
-    // CadenceWaveAmplitude bất kể ngưỡng nào (kể cả thresholdCpm=0, hàm tự kẹp về 1.0 nội bộ), nên
-    // sóng giữ PHẲNG cho tới khi #17 truyền CPM thật vào đây — không hiển thị giá trị bịa từ
-    // send-risk cũ.
-    double amplitude = CadenceWaveAmplitude(0.0, 0.0);
+    // Placeholder nghiêng về im lặng (HĐ-8, không bịa dữ liệu): cpm=0 rơi vào vùng chết với MỌI
+    // ngưỡng, nên sóng giữ PHẲNG cho tới khi #17 truyền CPM thật vào — không hiển thị giá trị bịa
+    // từ send-risk cũ.
+    //
+    // Truyền ngưỡng mặc định 400, KHÔNG truyền 0: `CadenceWaveAmplitude.h` nói rõ việc kẹp
+    // `thresholdCpm <= 0` là kẹp AN TOÀN VẬN HÀNH, *không phải* một cách biểu đạt — và HĐ-3 đòi vỏ
+    // giữ `waveReferenceThresholdCpm` (mặc định 400) tách biệt khỏi cờ bật/tắt chuông. Dựa vào
+    // nhánh kẹp để lấy kết quả mong muốn là dùng lưới an toàn làm API; hai cách cho cùng một con
+    // số 0.0 ở đây, nên không có lý do gì chọn cách sai hợp đồng.
+    double amplitude = CadenceWaveAmplitude(0.0, kCadenceWaveDefaultThresholdCPM);
     [self.suggestionBar setWaveAmplitude:amplitude];
 }
 

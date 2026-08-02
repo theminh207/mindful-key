@@ -20,7 +20,9 @@
 ## 2026-08-02 — #8 Con sóng đổi nguồn: biên độ theo nhịp gõ (CPM) thay vì send-risk
 
 **Làm gì:** Đổi tên `core/mood/EmotionWaveAmplitude.{h,cpp}` → `CadenceWaveAmplitude.{h,cpp}`
-(`git mv`, giữ lịch sử) và đổi chữ ký từ `EmotionWaveAmplitude(double risk)` một tham số sang
+(dùng `git mv`, nhưng nói cho đúng: nội dung viết lại nhiều tới mức `git log --follow` **không**
+lần được về file cũ — similarity detection không ghép cặp nổi) và đổi chữ ký từ
+`EmotionWaveAmplitude(double risk)` một tham số sang
 `CadenceWaveAmplitude(double cpm, double thresholdCpm)` hai tham số, theo đúng công thức đã research
 ở Q4 (`docs/tasks/typing-cadence-bell-execution.md` §2). Quét toàn repo (`git grep`) và sửa **mọi**
 nơi gọi/tham chiếu tên cũ: iOS (`KeyboardViewController.mm`, `SuggestionBarView.h`,
@@ -63,16 +65,26 @@ có chỗ neo trước #8).
    {0.4, 0.5, 0.6} > 0.3 nên hành vi thật của khối code legacy (sẽ gỡ ở #13) không đổi.
 
 **Kiểm chứng — máy dev KHÔNG có trình biên dịch nào (`g++`/`clang++`/`cl`/`make` đều thiếu), nên
-KHÔNG build/chạy được `test_cadence_wave` ở local. CI là cổng thật, CHƯA CHẠY tại thời điểm viết
-mục này** (PR chưa mở):**
+KHÔNG build/chạy được gì ở local. CI là cổng thật, và đã chạy **hai vòng**:**
 
 | Cổng | Kết quả |
 |---|---|
 | `py -3 scripts/check_hd1.py` | ✅ xanh tại chỗ — bản ghim `scripts/hd1_pinned_api.txt` đã cập nhật (2 dòng đổi: tên file + chữ ký), đọc kỹ diff trước khi cập nhật |
 | `PYTHONIOENCODING=utf-8 py -3 scripts/brand_lint.py` | ✅ xanh tại chỗ — 223 file, 9 cảnh báo (đều pre-existing ở `BrandColors.h`, không liên quan thay đổi này) |
-| `tests/core/test_cadence_wave` (build + chạy) | ⏳ CHƯA chạy — chờ CI `macos.yml` |
-| `xcodebuild` (macOS + iOS build với tên file mới) | ⏳ CHƯA chạy — chờ CI |
-| MSVC build Windows (`MoodWatch.cpp` + `.vcxproj` đổi tên) | ⏳ CHƯA chạy — chờ CI `windows.yml` |
+| `tests/core/test_cadence_wave` (build + chạy) | 🔴→✅ vòng 1 [run 30726…9811](https://github.com/theminh207/mindful-key/actions/runs/30727859811) **ĐỎ**, vòng 2 [run 30727992450](https://github.com/theminh207/mindful-key/actions/runs/30727992450) xanh — xem "Vòng CI đỏ" bên dưới |
+| `xcodebuild` — app macOS (`-scheme MindfulKey`) | ✅ [run 30727992450](https://github.com/theminh207/mindful-key/actions/runs/30727992450) |
+| `xcodebuild` — **bàn phím iOS (`MindfulKeyKeyboard`)** | ❌ **KHÔNG CI nào build target này.** `macos.yml` chỉ build `-scheme MindfulKey` (app macOS). Mà `KeyboardViewController.mm` — file duy nhất `#import "CadenceWaveAmplitude.h"` mới — chỉ biên dịch trong target đó. `project.yml` có `sources: ../../core/mood` + `HEADER_SEARCH_PATHS` nên **về lý** sẽ chạy, nhưng "về lý" không phải "đã kiểm". Muốn chắc: mở máy macOS chạy `make test-ios` (có `build_smoke.sh` build extension cho iphonesimulator) |
+| MSVC build Windows (`MoodWatch.cpp` + `.vcxproj` đổi tên) | ✅ Debug + Release, [run 30727992448](https://github.com/theminh207/mindful-key/actions/runs/30727992448) |
+
+**Vòng CI đỏ (đáng giữ lại):** vòng 1 đỏ đúng một ca — test khẳng định `cpm=1e12 -> < 1.0`
+("bão hoà tiệm cận, không bao giờ CHẠM 1.0"). Khẳng định đó **đúng về toán học, sai về IEEE754**:
+`s ≈ 2.5e9` → `s² ≈ 6.25e18`, mà ULP của `double` ở độ lớn đó là ~1024 — lớn hơn `k = 0.1225`
+hàng nghìn lần — nên `s*s + k` làm tròn về **đúng** `s*s` và thương ra **đúng 1.0**. Đổi thành
+`<= 1.0`: hợp đồng thật sự quan trọng với nơi gọi là **không vượt quá** 1.0 (view nhân giá trị này
+với biên độ pixel tối đa; vượt 1.0 là vẽ tràn khung), chứ "không bao giờ *bằng* 1.0" chưa bao giờ
+là thứ ai cần. Thêm một ca khoá đúng chỗ có nghĩa: tại **2048 CPM** (trần bão hoà thật của
+`TypingCadence`) biên độ mới ~0.995 — trong mọi dải CPM có thật, đường cong vẫn phân biệt được đến
+cùng. Lời hứa quá tay trong header cũng đã sửa cho khớp sự thật.
 
 **Còn hở:**
 

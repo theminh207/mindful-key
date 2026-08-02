@@ -14,10 +14,12 @@
 > | §8 hướng dẫn đọc đồ thị | 🔄 **Đã viết lại trong chính PR này** (issue #5) — bản cũ mô tả biên độ theo từ ngữ và theo trạng thái tâm, cả hai đều vi phạm mô hình mới |
 > | §9 luật cập nhật | ✅ **Giữ nguyên** |
 >
-> **Nguồn mới:** `core/mood/TypingCadence` → CPM → biên độ `[0,1]`. Công thức quy đổi CPM sang biên
-> độ **chưa chốt** — đó là câu hỏi **Q4** ở
-> [`spec/typing-cadence-bell/README.md`](../../spec/typing-cadence-bell/README.md) §5, chặn issue #8.
-> Đừng tự chọn công thức khi làm việc khác; hỏi chủ dự án.
+> **Nguồn mới:** `core/mood/TypingCadence` → CPM → biên độ `[0,1]`, qua
+> `core/mood/CadenceWaveAmplitude(double cpm, double thresholdCpm)`. Công thức (Q4) đã
+> **🟡 chốt tạm ở issue #8** — bão hoà tiệm cận `s²/(s²+k)` với vùng chết là **tỉ lệ** `0.3 ×`
+> ngưỡng. Xem [`spec/typing-cadence-bell/README.md`](../../spec/typing-cadence-bell/README.md) §5.
+> Nhãn `🟡 chốt tạm` = hằng `k` chưa được chủ dự án duyệt bằng mắt trên sóng thật. Đừng tự đổi công
+> thức; nó nằm **một chỗ duy nhất** trong `core/mood` để ba vỏ không trôi lệch.
 >
 > Ngưỡng gác cổng nhắc ở §5 (`kBreathingPauseRiskThreshold`, `core/mood/BreathingPause.cpp`) thuộc
 > về tính năng đã bị bỏ — gỡ ở issue #12.
@@ -195,9 +197,14 @@ Ba mức trên mô tả **tốc độ tay bạn đang gõ** — không nói gì 
 đang chép chính tả, đang gõ lại một đoạn đã nghĩ xong, hoặc tay bạn vốn nhanh. Con sóng là **phép
 đo được vẽ ra**, không phải một lời nhận xét.
 
-> 🔧 **Chưa chốt:** công thức quy CPM về biên độ `[0,1]` là câu hỏi **Q4**, chặn issue #8. Ba con số
-> 0.12 / 0.45 / 0.80 ở trên là **mốc hình học đang dùng** (giữ được), không phải kết quả của một
-> công thức đã chốt. Đừng suy ra ngưỡng CPM từ chúng.
+> 🟡 **Chốt tạm ở #8:** công thức quy CPM về biên độ `[0,1]` (Q4) nay là
+> `s = cpm/ngưỡng − 0.3`; `s ≤ 0 → 0`; ngược lại `s²/(s² + 0.1225)`. Ba con số 0.12 / 0.45 / 0.80 ở
+> trên **không mâu thuẫn** với nó: 0.80 rơi đúng tại `cpm == ngưỡng` (chính là mốc dùng để hiệu
+> chỉnh hằng `0.1225`), 0.45 ứng ~247 CPM và 0.12 ứng ~172 CPM ở ngưỡng 400. Nhưng chúng vẫn là
+> **mốc hình học**, không phải ngưỡng sản phẩm — đừng suy ra ngưỡng CPM từ chúng.
+>
+> Còn `🟡` vì hằng `0.1225` được suy ngược từ chính mốc 0.80 ở tài liệu này, tức nó là **mục tiêu
+> hiệu chỉnh chứ không phải bằng chứng**. Cần chủ dự án nhìn sóng thật ở vài mốc CPM rồi mới khoá.
 
 **Lưu ý quan trọng:** Cơn sóng lượn lên đỉnh hay lượn xuống đáy chỉ là nét vẽ hình sin theo thời gian. Điều bạn cần quan tâm là **khoảng cách từ điểm đó tới đường đứt nét ở giữa**. Càng xa trung tâm nghĩa là **nhịp gõ lúc đó càng nhanh** — mặt hồ là cách vẽ phép đo, không phải lời nói về tâm bạn.
 

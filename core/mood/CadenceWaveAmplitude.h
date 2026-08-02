@@ -56,6 +56,18 @@ extern "C" {
 // ở trên. cpm < 0.3 * thresholdCpm luôn cho biên độ = 0.0 ("mặt hồ phẳng").
 extern const double kCadenceWaveDeadZoneRatio; // 0.3
 
+// Ngưỡng tham chiếu MẶC ĐỊNH của sóng, dùng khi người dùng chưa từng chọn ngưỡng nào — cùng con số
+// với ngưỡng chuông mặc định `Rất nhanh` đã chốt ở ADR-0013 (docs/04-contracts.md HĐ-3).
+//
+// Vì sao là hằng ở CORE chứ không phải mỗi vỏ tự viết `400.0`: cả ba vỏ (#9 macOS · #15 Windows ·
+// #17 iOS) đều cần đúng con số này, và "một con số chép vào ba vỏ rồi trôi lệch" là kiểu hỏng dự án
+// đã trả giá bốn lần (lexicon send-risk · bảng màu · câu chữ · hình dạng ngày — xem đầu file này và
+// README §6). Đặt ở đây thì `git grep kCadenceWaveDefaultThresholdCPM` thấy hết mọi nơi dùng.
+//
+// Đây là mặc định KHỞI ĐIỂM, không phải giá trị cố định: ngưỡng thuộc về người dùng, vỏ đọc lựa
+// chọn thật từ settings và truyền vào — chỉ rơi về hằng này khi chưa có lựa chọn nào.
+extern const double kCadenceWaveDefaultThresholdCPM; // 400.0
+
 // (cpm, thresholdCpm) -> biên độ CHUẨN HOÁ [0.0, 1.0]:
 //   - cpm < kCadenceWaveDeadZoneRatio * thresholdCpm  -> 0.0 (vùng chết, gồm cả cpm âm)
 //   - trên vùng chết                                  -> tăng ĐƠN ĐIỆU, LIÊN TỤC, bão hoà tiệm cận

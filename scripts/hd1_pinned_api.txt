@@ -19,6 +19,7 @@ core/mood/BellPolicy.h :: int64_t _lastRungMs;
 core/mood/BellPolicy.h :: bool _hasRung;
 core/mood/BellPolicy.h :: bool _armed;
 core/mood/CadenceWaveAmplitude.h :: extern const double kCadenceWaveDeadZoneRatio;
+core/mood/CadenceWaveAmplitude.h :: extern const double kCadenceWaveDefaultThresholdCPM;
 core/mood/CadenceWaveAmplitude.h :: double CadenceWaveAmplitude(double cpm, double thresholdCpm);
 core/mood/TypingCadence.h :: extern const int64_t kTypingCadenceDefaultWindowMs;
 core/mood/TypingCadence.h :: static const int kCapacity = 1024;

@@ -9,6 +9,9 @@
 
 const double kCadenceWaveDeadZoneRatio = 0.3;
 
+// Cùng con số với ngưỡng chuông mặc định `Rất nhanh` (ADR-0013 / HĐ-3) — xem giải trình ở header.
+const double kCadenceWaveDefaultThresholdCPM = 400.0;
+
 // 🟡 CHỐT TẠM (xem CadenceWaveAmplitude.h) — hiệu chỉnh để amplitude == 0.80 đúng tại cpm ==
 // thresholdCpm (s == 1 - kCadenceWaveDeadZoneRatio == 0.7): 0.7^2 / (0.7^2 + k) = 0.8
 // => k = 0.49 * 0.25 = 0.1225.
