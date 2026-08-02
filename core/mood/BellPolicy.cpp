@@ -9,6 +9,9 @@
 
 const double kBellPolicyHysteresisFactor = 0.9;   // 10% dưới ngưỡng mới tái vũ trang — xem header
 
+// 🟡 chốt tạm (Q10) — 45 giây, dùng chung cả ba vỏ. Xem giải trình đầy đủ ở header.
+const int64_t kBellPolicyDefaultCooldownMs = 45000;
+
 BellPolicy::BellPolicy(int64_t cooldownMs)
     : _cooldownMs(cooldownMs > 0 ? cooldownMs : 0),
       _lastRungMs(0),

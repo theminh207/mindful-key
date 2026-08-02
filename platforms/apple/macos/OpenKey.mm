@@ -14,6 +14,7 @@
 #import "MoodWatchMac.h"
 #import "SendGatekeeperMac.h"
 #import "BellMac.h"
+#import "TypingCadenceMac.h"
 
 #define FRONT_APP [[NSWorkspace sharedWorkspace] frontmostApplication].bundleIdentifier
 #define OTHER_CONTROL_KEY (_flag & kCGEventFlagMaskCommand) || (_flag & kCGEventFlagMaskControl) || \
@@ -88,7 +89,7 @@ extern "C" {
     vector<Byte> savedSmartSwitchKeyData; ////use for smart switch key
     
     NSString* _frontMostApp = @"UnknownApp";
-    
+
     void OpenKeyInit() {
         //load saved data
         vFreeMark = 0;//(int)[[NSUserDefaults standardUserDefaults] integerForKey:@"FreeMark"];
@@ -124,6 +125,7 @@ extern "C" {
         NSNumber *moodValue = [prefs objectForKey:@"vMoodWatch"];
         vMoodWatch = moodValue == nil ? 1 : (int)[moodValue integerValue];
         MoodWatchMac_Init();
+        TypingCadenceMac_Init();
 
         eventBackSpaceDown = CGEventCreateKeyboardEvent (myEventSource, 51, true);
         eventBackSpaceUp = CGEventCreateKeyboardEvent (myEventSource, 51, false);
@@ -609,6 +611,23 @@ extern "C" {
         //dont handle my event
         if (CGEventGetIntegerValueField(event, kCGEventSourceStateID) == CGEventSourceGetSourceStateID(myEventSource)) {
             return event;
+        }
+
+        // [MINDFUL] Nhịp gõ (issue #9, Q3) — ĐẶT TRƯỚC MỌI xử lý khác trong hook, kể cả gác cổng
+        // gửi tin bên dưới: đếm MỌI phím vật lý xuống thật (kể cả chế độ tiếng Anh/macro/hotkey —
+        // nhịp tay không phân biệt ngôn ngữ đang gõ), TRỪ khi đang trong ô mật khẩu (HĐ-4,
+        // fail-closed — cổng `TypingCadenceMac_IsSecureFieldActive()`, xem TypingCadenceMac.h/.mm
+        // cho lý do đặt cổng ở đó thay vì ngay đây: cần chỗ ca kiểm host chạm tới được, mà file này
+        // không link được vào test host — kéo cả Engine theo). Chỉ đếm kCGEventKeyDown — KeyUp
+        // không tính, mỗi phím vật lý chỉ tạo đúng 1 nhịp lúc nhấn xuống.
+        //
+        // RẺ tới mức chạy thẳng ở đây (HĐ-3): TypingCadence + BellPolicy bên trong
+        // TypingCadenceMac_RegisterKeystroke đều không cấp phát/khoá/ngoại lệ. Chỉ dòng PHÁT TIẾNG
+        // (khi BellPolicy bảo reo) mới bị đẩy sang main queue bên trong hàm đó — không phải việc
+        // của nơi gọi ở đây.
+        if (type == kCGEventKeyDown && !TypingCadenceMac_IsSecureFieldActive()) {
+            int64_t nowMs = (int64_t)([[NSDate date] timeIntervalSince1970] * 1000.0);
+            TypingCadenceMac_RegisterKeystroke(nowMs);
         }
 
         // [MINDFUL] Bước 5 — gác cổng gửi tin. Đặt NGAY ĐÂY (trước mọi xử lý tiếng Việt) để

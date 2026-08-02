@@ -8,6 +8,12 @@
 #     tạm, không đụng kho thật của người dùng (env HOME KHÔNG dùng được — NSHomeDirectory/
 #     URLForDirectory lấy home qua getpwuid, phớt lờ $HOME). Binary app thật không định nghĩa
 #     macro nên không có nhánh env này. Test tự abort nếu env không trỏ vào thư mục tạm.
+#
+# [MINDFUL] 2026-08-02 (issue #9) — thêm TypingCadenceMac.mm (mạch nhịp gõ → BellPolicy → BellMac,
+# CỘNG cổng ô mật khẩu TypingCadenceMac_IsSecureFieldActive) + 3 file core/mood mà nó cần link
+# (TypingCadence.cpp, BellPolicy.cpp, CadenceWaveAmplitude.cpp — chỉ CadenceWaveAmplitude.cpp cấp
+# hằng kCadenceWaveDefaultThresholdCPM, KHÔNG dùng hàm CadenceWaveAmplitude() ở ca test này) +
+# framework Carbon (IsSecureEventInputEnabled).
 set -e
 HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$HERE/../.."
@@ -26,8 +32,10 @@ clang++ -std=c++14 -fobjc-arc \
   "$MAC/MoodStoreMac.mm" \
   "$MAC/BellMac.mm" \
   "$MAC/NudgeCoordinatorMac.mm" \
+  "$MAC/TypingCadenceMac.mm" \
   "$CORE/mood/MoodBuffer.cpp" "$CORE/mood/SendRiskAnalyzer.cpp" \
-  -framework Cocoa -framework Security -framework UserNotifications -lsqlite3 \
+  "$CORE/mood/TypingCadence.cpp" "$CORE/mood/BellPolicy.cpp" "$CORE/mood/CadenceWaveAmplitude.cpp" \
+  -framework Cocoa -framework Carbon -framework Security -framework UserNotifications -lsqlite3 \
   -o "$HERE/mood_pipeline_test"
 echo "OK -> $HERE/mood_pipeline_test"
 

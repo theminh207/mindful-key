@@ -17,6 +17,71 @@
 
 ---
 
+## 2026-08-02 — #9 macOS: nối nhịp gõ vào mạch chuông (thay nguồn send-risk)
+
+**Làm gì:** Thêm `platforms/apple/macos/TypingCadenceMac.{h,mm}` — module vỏ MỚI giữ 1 instance
+`core/mood/TypingCadence` + 1 instance `core/mood/BellPolicy` (dựng lười trong `Init()`, tránh phụ
+thuộc thứ tự khởi tạo static xuyên TU — HĐ-5). Nối `TypingCadenceMac_RegisterKeystroke(nowMs)` vào
+`OpenKeyCallback` (`OpenKey.mm`), NGAY SAU cổng "đừng xử lý sự kiện tự tạo" và TRƯỚC gác cổng gửi
+tin, chạy trên MỌI `kCGEventKeyDown` (không phân biệt tiếng Việt/Anh/macro/hotkey). Cổng ô mật
+khẩu HĐ-4 (`TypingCadenceMac_IsSecureFieldActive`, bọc `IsSecureEventInputEnabled()` của Carbon)
+đặt TRONG `TypingCadenceMac` (không phải `OpenKey.mm`) — lý do: `OpenKey.mm` kéo theo toàn bộ
+`core/engine`, không link nổi vào test host, nên đặt cổng ở module test được thay vì module không
+test được. Đổi tên `BellMac_RingForTenseStreak` → `BellMac_RingForFastTyping` (+ đổi hẳn 3 câu
+prompt, vì câu cũ nói "câu nghe nặng" — đọc nội dung — không còn đúng sự thật khi chuông chỉ đo tốc
+độ), thêm `BellMac_IsSnoozed()` (accessor cho state có sẵn, không dựng đồng hồ thứ hai). Gỡ
+`NudgeCoordinatorMac_TenseStreakTrigger()` + khối đếm `g_tenseStreak` trong `MoodWatchMac.mm`
+(cùng include "BellMac.h" mồ côi theo). Sửa 1 dòng copy sai sự thật ở `BellSettingsView.mm` ("Độ
+nhạy... dùng chung cho chuông" — không còn đúng).
+
+**Chốt được:**
+
+- **Q12 (bảng §5): chốt MỘT NỬA** — `EmotionWaveView` giữ nguyên (không phải "hai bản logic thật",
+  xem lý giải ở §5); `EmotionRiverView` (nguồn risk) CHƯA cắt sang CPM, dời sang Q14/#11 vì cắt
+  nửa vời sẽ vi phạm HĐ-8 (trộn 2 thước đo 1 đồ thị). Xem §5 cho lập luận đầy đủ, `🟡 chốt tạm`.
+- **KHÔNG gỡ `NudgeCoordinatorMac_RippleThreshold()`** dù issue #9 checklist ghi "gỡ cả 2 hàm" —
+  đây là **sửa một tiền đề sai của issue**, không phải bỏ sót: `git grep RippleThreshold` cho
+  thấy `MoodPhrasingMac_DayShapeSentence`/`ReflectionScreenMac` (câu quan sát ngày, nhật ký
+  send-risk còn sống) vẫn gọi hàm này — xoá sẽ vỡ build 2 file đó. Giữ lại, sửa comment nói rõ nó
+  CÒN SỐNG chỉ vì lý do đó, để #13 biết gỡ cùng lúc với nhánh send-risk.
+- **Q10 KHÔNG chốt ở #9** (đúng dự đoán của README) — nghiên cứu song song, chưa có số. Đặt
+  `kMKBellCooldownMs = 45000` **đúng một chỗ** (`TypingCadenceMac.mm`, `static const`, kèm 🟡
+  comment), không rải ra nơi khác.
+
+**Phải đoán** (ghi `docs/tasks/FRICTION-LOG.md` 2026-08-02):
+
+1. Không có API nào để BellPolicy "báo đã reo" ra ngoài (đúng chủ đích HĐ-2) — nên test wiring ở
+   mức vỏ chỉ quan sát được gián tiếp qua `NudgeCoordinatorMac_ShouldNudge()` đổi trạng thái, không
+   khẳng định trực tiếp "chuông đã kêu".
+2. `TypingCadenceMac_ThresholdCPM()` đọc `NSUserDefaults` MỖI PHÍM (không cache) — #10 chưa xây UI
+   nên chưa có gì để cache/invalidate; nếu sau này đo được đây là điểm nghẽn thật, #10 nên cân nhắc
+   cache theo notification đổi setting thay vì đọc mỗi lần.
+
+**Kiểm chứng — máy dev KHÔNG có trình biên dịch (`clang++`/`cl`/`make` đều thiếu), KHÔNG build/chạy
+được gì ở local:**
+
+| Cổng | Kết quả |
+|---|---|
+| `py -3 scripts/check_hd1.py` | ✅ chạy tại chỗ — xanh (file mới không chạm `core/mood/`, gate không quét `platforms/`) |
+| `PYTHONIOENCODING=utf-8 py -3 scripts/brand_lint.py` | ✅ chạy tại chỗ — xanh |
+| `git diff --stat core/` | **rỗng** — không sửa dòng nào trong `core/` |
+| `make build` (`xcodebuild -scheme MindfulKey`) | ❌ **CHƯA CHẠY** — cần macOS thật, CI (`macos.yml`) là cổng thật duy nhất, sẽ chạy khi PR mở |
+| `tests/macos/mood_pipeline_test.mm` (Ca 9-11 mới) | ❌ **CHƯA CHẠY BỞI AI** — `macos.yml` không gọi `test-macos`/`tests/macos/mood_pipeline_build.sh` (đúng như README §7 đã cảnh báo từ #7/#8); chỉ đọc bằng mắt + suy luận thủ công qua `BellPolicy.cpp` (đã đọc lại để xác nhận `_armed(true)` khởi tạo, khớp giả định test) |
+| `make run` → gõ thật → nghe chuông | ❌ **CHƯA CHẠY** — cần máy macOS thật |
+| Objective-C++ syntax (import/selector/khai báo `.h` khớp `.mm`) | ✅ đọc lại bằng mắt sau mỗi lần sửa, không phát hiện lệch |
+
+**Còn hở (cho #10/#11/#13):**
+
+- #10: xây UI chọn ngưỡng (`vBellThresholdCPM` — khoá đã dùng tạm ở `TypingCadenceMac_ThresholdCPM`,
+  #10 nên tái dùng đúng khoá này, đừng đặt khoá thứ hai).
+- #10: chốt số cooldown thật (Q10), sửa đúng 1 dòng ở `TypingCadenceMac.mm`.
+- #11: Q14 — cắt `EmotionRiverView`/`GatekeeperCardView`/`MoodPhrasingMac` sang nguồn CPM, cùng lúc
+  với schema kho mới.
+- #13: gỡ `NudgeCoordinatorMac_RippleThreshold()` cùng lúc với nhánh send-risk
+  (`MoodPhrasingMac`/`ReflectionScreenMac`/`SensitivityCardView`).
+
+---
+
 ## 2026-08-02 — #8 Con sóng đổi nguồn: biên độ theo nhịp gõ (CPM) thay vì send-risk
 
 **Làm gì:** Đổi tên `core/mood/EmotionWaveAmplitude.{h,cpp}` → `CadenceWaveAmplitude.{h,cpp}`

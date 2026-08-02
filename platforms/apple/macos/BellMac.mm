@@ -141,14 +141,16 @@ static NSString *PROMPTS[] = {
 };
 static const int PROMPT_COUNT = sizeof(PROMPTS) / sizeof(PROMPTS[0]);
 
-// [MINDFUL] Bước 7 — câu riêng cho lúc rung vì phát hiện CHUỖI câu căng thẳng (khác câu rung
-// theo lịch cố định ở trên): nói thẳng lý do rung, không giả vờ đây là chuông định kỳ.
-static NSString *PROMPTS_TENSE_STREAK[] = {
-    @"Nãy giờ có vẻ căng. Một hơi thở chứ? Không cần vội trả lời ai cả.",
-    @"Vài câu gõ gần đây nghe hơi nặng. Dừng một nhịp, để đầu óc dịu lại đã.",
-    @"Có vẻ bạn đang dồn nén. Rời bàn phím 1 phút, quay lại sẽ rõ ràng hơn.",
+// [MINDFUL] 2026-08-02 (issue #9) — câu riêng cho lúc rung vì NHỊP GÕ nhanh (khác câu rung theo
+// lịch cố định ở trên): nói về TAY đang gõ nhanh, KHÔNG suy diễn gì về tâm người gõ (HĐ-3 cấm quy
+// tốc độ gõ thành trạng thái tâm). Thay hẳn PROMPTS_TENSE_STREAK cũ — bản cũ nói "câu nghe nặng"
+// (đọc nội dung), không còn đúng sự thật vì chuông giờ không đọc chữ nào cả.
+static NSString *PROMPTS_FAST_TYPING[] = {
+    @"Tay bạn đang gõ khá nhanh. Một hơi thở chứ? Không cần vội trả lời ai cả.",
+    @"Nhịp gõ vừa rồi khá dồn dập. Dừng một nhịp, để tay thả lỏng đã.",
+    @"Bàn phím đang chạy nhanh. Rời tay 1 phút, quay lại sẽ thong thả hơn.",
 };
-static const int PROMPTS_TENSE_STREAK_COUNT = sizeof(PROMPTS_TENSE_STREAK) / sizeof(PROMPTS_TENSE_STREAK[0]);
+static const int PROMPTS_FAST_TYPING_COUNT = sizeof(PROMPTS_FAST_TYPING) / sizeof(PROMPTS_FAST_TYPING[0]);
 
 static BOOL isInBellRange(NSInteger hour) {
     if (vBellFrom <= vBellTo)
@@ -256,7 +258,7 @@ static void bellTick(NSTimer *timer) {
     NudgeCoordinatorMac_MarkNudged();
 }
 
-void BellMac_RingForTenseStreak(void) {
+void BellMac_RingForFastTyping(void) {
     if (!vBell || isSnoozed())
         return;
     if (!NudgeCoordinatorMac_ShouldNudge())
@@ -264,8 +266,14 @@ void BellMac_RingForTenseStreak(void) {
 
     static NSInteger idx = 0;
     idx++;
-    showBellPrompt(PROMPTS_TENSE_STREAK[idx % PROMPTS_TENSE_STREAK_COUNT]);
+    showBellPrompt(PROMPTS_FAST_TYPING[idx % PROMPTS_FAST_TYPING_COUNT]);
     NudgeCoordinatorMac_MarkNudged();
+}
+
+// [MINDFUL] 2026-08-02 (issue #9) — xem hợp đồng ở BellMac.h. Đọc thẳng `isSnoozed()` nội bộ đã
+// có ở trên, không dựng biến/đồng hồ thứ hai.
+BOOL BellMac_IsSnoozed(void) {
+    return isSnoozed();
 }
 
 void BellMac_Snooze(int minutes) {

@@ -35,13 +35,22 @@ void BellMac_ApplySettings();
 // tắt nhật ký của người dùng khi họ chỉ muốn yên tĩnh.
 extern NSString * const kMKMoodBeatNotification;
 
-// [MINDFUL] Bước 7 — chuông data-driven. Gọi từ MoodWatchMac khi phát hiện 1 chuỗi câu căng
-// thẳng liên tiếp (không chờ tới lịch cố định). Tự tôn trọng cooldown dùng chung với nhắc thụ
-// động (xem NudgeCoordinatorMac) và trạng thái snooze.
-void BellMac_RingForTenseStreak(void);
+// [MINDFUL] 2026-08-02 (issue #9) — chuông data-driven, nay đọc NHỊP GÕ (CPM) thay vì chuỗi câu
+// căng thẳng. Gọi từ TypingCadenceMac khi core/mood/BellPolicy::evaluate() trả true (tay đang gõ
+// nhanh hơn ngưỡng người dùng chọn) — không chờ tới lịch cố định. Đổi tên từ
+// `BellMac_RingForTenseStreak`: tên cũ mô tả ĐÚNG mô hình cũ (đọc nội dung câu để đoán "căng
+// thẳng"), sai với mô hình mới (chỉ đo tốc độ tay, không đọc chữ — HĐ-1/HĐ-3). Tự tôn trọng
+// cooldown dùng chung với nhắc thụ động (xem NudgeCoordinatorMac) và trạng thái snooze.
+void BellMac_RingForFastTyping(void);
 
-// Tạm hoãn chuông (kể cả rung theo lịch lẫn theo chuỗi căng thẳng) trong N phút — "dễ tắt tạm".
+// Tạm hoãn chuông (kể cả rung theo lịch lẫn theo nhịp gõ nhanh) trong N phút — "dễ tắt tạm".
 void BellMac_Snooze(int minutes);
+
+// [MINDFUL] 2026-08-02 (issue #9) — TypingCadenceMac cần biết đang tạm hoãn hay không để truyền
+// đúng `snoozed` vào BellPolicy::evaluate (HĐ-2: tắt/tạm hoãn KHÔNG được tiêu lượt "đã vũ trang").
+// Đọc thẳng trạng thái NỘI BỘ đã có của BellMac (g_snoozeUntil) — KHÔNG dựng một đồng hồ/biến đếm
+// thứ hai (đúng bẫy đã ghi ở kMKMoodBeatNotification phía trên: "ba đồng hồ rời nhau trôi lệch").
+BOOL BellMac_IsSnoozed(void);
 
 // [MINDFUL] Story 1.5 — nghe thử âm chuông đang chọn (âm + âm lượng đọc tươi từ UserDefaults:
 // vBellSoundName / vBellVolume). Dùng cho "nghe thử khi chọn" ở BellSettingsView (EXPERIENCE Journey B).

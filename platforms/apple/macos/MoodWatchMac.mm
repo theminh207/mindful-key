@@ -14,7 +14,6 @@
 #include "MoodBuffer.h"
 #include "SendRiskAnalyzer.h"
 #include "MoodWatchMac.h"
-#include "BellMac.h"
 #include "NudgeCoordinatorMac.h"
 #import "MoodStoreMac.h"
 
@@ -38,11 +37,6 @@ static double g_lastSendRisk = -1.0;
 // tests/core/test_send_risk.cpp. File này giữ nguyên hành vi cũ (đã đối chiếu từng con số), chỉ
 // còn lo phần CHÍNH SÁCH RIÊNG của vỏ macOS: ngưỡng, cooldown, popup, chuông, lấy mẫu.
 static const double kSendRiskThreshold = 0.5;
-
-// [MINDFUL] Bước 7 — chuông data-driven: rung sau 1 CHUỖI câu căng thẳng liên tiếp, không chỉ
-// theo lịch cố định. Ngưỡng thấp hơn kSendRiskThreshold có chủ đích — đây là phát hiện "đang
-// dồn nén dần", không phải "chuẩn bị gửi thứ gây hại", nên bắt sớm hơn hợp lý.
-static int g_tenseStreak = 0;
 
 static double g_sampleSum = 0.0;
 static int g_sampleCount = 0;
@@ -180,19 +174,9 @@ static void analyzeRecentTextAsync(const wstring& word) {
         g_sampleSum += risk;
         g_sampleCount++;
 
-        // [MINDFUL] Bước 7 — đếm chuỗi câu căng thẳng liên tiếp, độc lập với ngưỡng cảnh báo
-        // thụ động bên dưới. Câu dịu lại (risk thấp) reset chuỗi — "chuỗi" nghĩa là LIÊN TỤC.
-        if (risk >= NudgeCoordinatorMac_RippleThreshold()) {
-            g_tenseStreak++;
-        } else {
-            g_tenseStreak = 0;
-        }
-        if (g_tenseStreak >= NudgeCoordinatorMac_TenseStreakTrigger()) {
-            g_tenseStreak = 0; // reset ngay để không rung lại liên tục cho cùng 1 đợt căng thẳng
-            dispatch_async(dispatch_get_main_queue(), ^{
-                BellMac_RingForTenseStreak();
-            });
-        }
+        // [MINDFUL] 2026-08-02 (issue #9) — chuông "chuỗi câu căng thẳng" đã GỠ khỏi đây. Chuông
+        // nay đọc NHỊP GÕ (CPM), nối thẳng từ hook bàn phím qua TypingCadenceMac (xem OpenKey.mm +
+        // TypingCadenceMac.mm), không còn đi qua g_tenseStreak/BellMac_RingForTenseStreak nữa.
 
         if (risk < kSendRiskThreshold)
             return;

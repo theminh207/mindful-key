@@ -1124,13 +1124,12 @@ static NSString *StringFromHotkey(int hotkey) {
     _seg.action = @selector(onSensitivity:);
     [self addSubview:_seg];
 
-    // [MINDFUL] 2026-07-16 — câu cũ ghi "dùng chung cho NHẬT KÝ LẤY MẪU và chuông" và đó là NÓI SAI:
-    // tra hết nơi dùng thì Độ nhạy chỉ chạm chuông (chuỗi câu căng liên tiếp). Nó KHÔNG đổi cách lấy
-    // mẫu — điểm ghi lên sông vẫn là risk thô trung bình, không qua ngưỡng nào. Nay ngưỡng này còn
-    // điều khiển thêm CÂU QUAN SÁT (thẻ Gác cổng + màn Soi lại), nên câu chữ sửa lại cho đúng sự
-    // thật mới. CỐ Ý nói rõ "không đổi gác cổng": ngưỡng gác cổng đóng cứng 0.5 trong core/, người
-    // dùng dễ tưởng chọn "Nhạy" là gác cổng chặn sớm hơn — không hề.
-    _noteIdentify = [self label:@"Quyết định khi nào mặt hồ được coi là gợn — dùng chung cho chuông và các câu quan sát. Không đổi ngưỡng gác cổng."
+    // [MINDFUL] 2026-08-02 (issue #9) — câu SỬA LẠI LẦN NỮA: từ #9, chuông không còn đọc "chuỗi
+    // câu căng liên tiếp" (nó đọc CPM qua BellPolicy, không liên quan Độ nhạy ở đây), nên câu cũ
+    // "dùng chung cho chuông và các câu quan sát" đã thành NÓI SAI. Độ nhạy nay CHỈ còn điều khiển
+    // câu quan sát (thẻ Gác cổng + màn Soi lại — nhật ký send-risk cũ, việc gỡ hẳn thuộc #13).
+    // Giữ nguyên câu "không đổi gác cổng": ngưỡng gác cổng đóng cứng 0.5 trong core/, không đổi.
+    _noteIdentify = [self label:@"Quyết định khi nào mặt hồ được coi là gợn cho các câu quan sát. Không đổi ngưỡng gác cổng, không đổi chuông."
                            font:[self fCaption] color:[Brand muted]];
     _noteIdentify.lineBreakMode = NSLineBreakByWordWrapping;
     _noteIdentify.maximumNumberOfLines = 3;
