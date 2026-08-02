@@ -20,7 +20,7 @@
 //
 //  KIẾN TRÚC — tách THUẦN (đếm số câu liên tiếp + gate + cooldown, Foundation-only, host-testable)
 //  khỏi HIỆU ỨNG THẬT (haptic + âm, UIKit/AudioToolbox-only, chỉ verify thủ công trên
-//  Simulator/thiết bị) — đúng pattern đã dùng ở KeyboardBridge/EmotionWaveAmplitude. File .mm dùng
+//  Simulator/thiết bị) — đúng pattern đã dùng ở KeyboardBridge/CadenceWaveAmplitude. File .mm dùng
 //  `TARGET_OS_IPHONE` để phần hiệu ứng tự biến mất khi biên dịch cho test host macOS (không cần
 //  file thứ 2).
 //

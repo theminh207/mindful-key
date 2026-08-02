@@ -34,7 +34,7 @@ riêng → PR → một agent review riêng → CI xanh → merge → đóng iss
 | # | Issue | Agent thi công | Nhánh | PR | CI | Review | Xong |
 |---|---|---|---|---|---|---|---|
 | 1 | #7 BellPolicy | `mood-layer-agent` | `feat/core-bell-policy` | [#24](https://github.com/theminh207/mindful-key/pull/24) | ✅ 4/4 | FAIL → sửa 3 lỗi chặn → PASS | |
-| 2 | #8 Biên độ sóng | `mood-layer-agent` | | | | | |
+| 2 | #8 Biên độ sóng | `mood-layer-agent` | `feat/core-cadence-wave-amplitude` | | | | |
 | 3 | #9 macOS mạch chuông | `platform-shell-agent` | | | | | |
 | 4 | #10 macOS ngưỡng | `platform-shell-agent` | | | | | |
 | 5 | #11 macOS kho + soi lại | `platform-shell-agent` | | | | | |
@@ -57,7 +57,7 @@ riêng → PR → một agent review riêng → CI xanh → merge → đóng iss
 3. Agent review là **agent sạch**, không thấy quá trình thi công — để nó đọc diff bằng mắt người
    lạ, không bị mồi bởi lý lẽ của người viết.
 
-**Câu hỏi mở còn chặn đường:** Q4 (chặn #8) · Q6, Q7 (chặn #11). Q8 đã có đáp án ở §2.
+**Câu hỏi mở còn chặn đường:** Q6, Q7 (chặn #11). Q4 đã chốt tạm ở #8 (§2 dưới + README §5). Q8 đã có đáp án ở §2.
 
 ## 2. Research Findings
 

@@ -193,6 +193,14 @@ Kèm theo hai ràng buộc vận hành:
   phát tiếng sang luồng khác. Chặn luồng hook là làm khựng gõ, và trên Windows còn bị hệ điều hành
   âm thầm gỡ hook.
 
+**"Tắt chuông" không làm biến mất biên độ sóng.** `core/mood/CadenceWaveAmplitude(cpm,
+thresholdCpm)` (issue #8) luôn đòi một `thresholdCpm` cụ thể — không có nhánh "off" nào trong core.
+Con sóng `~` là nhận diện lõi (tầng Intent §4.1), độc lập với việc `BellPolicy` có phát ra tiếng hay
+không. Mỗi vỏ vì vậy phải giữ **hai giá trị tách biệt**: `bellEnabled` (bool, chỉ tắt tiếng) và
+`waveReferenceThresholdCpm` (double, ngưỡng tham chiếu của sóng, mặc định 400) — tắt chuông chỉ đặt
+`bellEnabled = false`, ngưỡng tham chiếu của sóng giữ nguyên giá trị đã chọn lần cuối. Chi tiết lưu
+trữ cụ thể thuộc về #10/#16/#18.
+
 ---
 
 ## HĐ-4 — Không đếm nhịp trong ô mật khẩu

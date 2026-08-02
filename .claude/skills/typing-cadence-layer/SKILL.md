@@ -37,6 +37,17 @@ core/mood/BellPolicy      — so CPM với ngưỡng người dùng + cooldown +
 VỎ phát MỘT tiếng chuông  (đẩy ra khỏi luồng hook)  +  ghi một dòng vào kho
    ▼
 Màn soi lại: đếm số lần chuông theo thời gian · biên độ con sóng `~`
+
+Nhánh SONG SONG (không đi qua BellPolicy — sóng vẽ liên tục, không chỉ lúc chuông reo):
+
+core/mood/CadenceWaveAmplitude  — CPM + ngưỡng -> biên độ sóng `~` trong [0,1]
+   │  CadenceWaveAmplitude(double cpm, double thresholdCpm) -> double
+   │  kCadenceWaveDeadZoneRatio (0.3 — TỈ LỆ so với ngưỡng, không phải CPM tuyệt đối)
+   │  kCadenceWaveDefaultThresholdCPM (400.0 — dùng khi người dùng chưa chọn ngưỡng)
+   │  ⚠️ Vỏ truyền CẢ HAI số thô. TUYỆT ĐỐI không tự chia cpm/threshold rồi truyền tỉ lệ —
+   │     phép chia phải nằm MỘT chỗ trong core, nếu không ba vỏ sẽ trôi lệch (chốt ở #8)
+   │  ⚠️ "Tắt chuông" chỉ tắt TIẾNG. Sóng vẫn vẽ — nó là nhận diện lõi, độc lập với chuông.
+   │     Vỏ giữ `waveReferenceThresholdCpm` tách biệt khỏi `bellEnabled` (HĐ-3)
 ```
 
 ## Bốn luật không được phá

@@ -18,14 +18,17 @@
 #import "MoodBridge.h"
 #import "MacroBridge.h"
 #import "Macro.h"   // story 2.4: addMacro() — file này (.mm) đã link core/engine, gọi C++ trực tiếp
-#import "EmotionWaveAmplitude.h"   // story 2.5: hàm thuần risk -> biên độ sóng (Q1)
+#import "CadenceWaveAmplitude.h"   // story 2.5 (đổi nguồn #8): hàm thuần cpm+ngưỡng -> biên độ sóng
 
-// Story 2.5 (AC#1/#4): nhịp poll giá trị send-risk từ MoodBridge để cập nhật con sóng ambient.
-// 300ms — đủ thấp để KHÔNG chạm mạch xử lý phím (chỉ đọc 1 std::atomic<double> + 1 hàm thuần mỗi
-// tick, không có I/O/khoá), đủ nhanh để sóng cảm thấy "sống" trong 1 câu đang gõ. Giá trị cụ thể
-// không bị khoá bởi AC nào — [Inference] chọn theo tinh thần "ambient, không chặn" (NFR-11),
-// KHÔNG đồng bộ với debounce cuối câu bên trong MoodBridge (đọc độc lập, luôn đọc giá trị mới
-// nhất đã có, không chờ).
+// Story 2.5 (AC#1/#4): nhịp poll để cập nhật con sóng ambient. 300ms — đủ thấp để KHÔNG chạm mạch
+// xử lý phím (chỉ đọc 1 giá trị + 1 hàm thuần mỗi tick, không có I/O/khoá), đủ nhanh để sóng cảm
+// thấy "sống" trong 1 câu đang gõ. Giá trị cụ thể không bị khoá bởi AC nào — [Inference] chọn theo
+// tinh thần "ambient, không chặn" (NFR-11).
+//
+// [MINDFUL] 2026-08-02 (#8) — nguồn nuôi cũ (MoodBridge_LastSendRisk(), đọc nội dung câu) đã chết
+// theo ADR-0013. TypingCadence/BellPolicy CHƯA nối dây ở iOS (việc đó thuộc #17), nên tick dưới
+// đây tạm thời chỉ gọi CadenceWaveAmplitude với placeholder nghiêng về im lặng — xem
+// mk_updateEmotionWave.
 static const NSTimeInterval kEmotionWavePollInterval = 0.3;
 
 typedef NS_ENUM(NSInteger, KVCShiftState) {
@@ -398,10 +401,9 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
     self.emotionWaveTimer = timer;
 }
 
-// Mỗi tick: tự kiểm cổng ô bảo mật NGAY TẠI THỜI ĐIỂM VẼ (không tin risk đã tính từ trước — xem
-// Dev Notes story 2.5 "race giữa debounce async và chuyển field"), rồi đọc risk mới nhất + hàm
-// biên độ thuần, rồi giao cho view VẼ. Không đọc/không phân tích nội dung gõ ở đây — chỉ đọc 1
-// giá trị đã tính sẵn (MoodBridge_LastSendRisk(), atomic, không side-effect).
+// Mỗi tick: tự kiểm cổng ô bảo mật NGAY TẠI THỜI ĐIỂM VẼ (không tin trạng thái đã tính từ trước —
+// xem Dev Notes story 2.5 "race giữa debounce async và chuyển field"), rồi giao cho view VẼ.
+// Không đọc/không phân tích nội dung gõ ở đây.
 - (void)mk_updateEmotionWave {
     if (!self.hasFullAccess) {
         // Edge case Testing story 2.5: mất Full Access GIỮA phiên gõ (hiếm nhưng có thể) — dừng
@@ -414,13 +416,22 @@ static NSArray<NSString *> *KVCRow(NSString *chars) {
         return;
     }
     if ([self mk_isSecureField]) {
-        // AC#6: ô bảo mật -> không đọc risk, không cập nhật theo giá trị cũ — dập hẳn về 0 (chứ
-        // không phải "đứng yên ở giá trị risk trước đó", đúng "không hiện hoạt động sóng nào").
+        // AC#6: ô bảo mật -> dập hẳn về 0 (chứ không phải "đứng yên ở giá trị trước đó", đúng
+        // "không hiện hoạt động sóng nào").
         [self.suggestionBar setWaveAmplitude:0.0];
         return;
     }
-    double risk = MoodBridge_LastSendRisk();
-    double amplitude = EmotionWaveAmplitude(risk);
+    // TODO(#17): TypingCadence + ngưỡng người dùng chọn CHƯA nối dây ở iOS — việc đó thuộc #17.
+    // Placeholder nghiêng về im lặng (HĐ-8, không bịa dữ liệu): cpm=0 rơi vào vùng chết với MỌI
+    // ngưỡng, nên sóng giữ PHẲNG cho tới khi #17 truyền CPM thật vào — không hiển thị giá trị bịa
+    // từ send-risk cũ.
+    //
+    // Truyền ngưỡng mặc định 400, KHÔNG truyền 0: `CadenceWaveAmplitude.h` nói rõ việc kẹp
+    // `thresholdCpm <= 0` là kẹp AN TOÀN VẬN HÀNH, *không phải* một cách biểu đạt — và HĐ-3 đòi vỏ
+    // giữ `waveReferenceThresholdCpm` (mặc định 400) tách biệt khỏi cờ bật/tắt chuông. Dựa vào
+    // nhánh kẹp để lấy kết quả mong muốn là dùng lưới an toàn làm API; hai cách cho cùng một con
+    // số 0.0 ở đây, nên không có lý do gì chọn cách sai hợp đồng.
+    double amplitude = CadenceWaveAmplitude(0.0, kCadenceWaveDefaultThresholdCPM);
     [self.suggestionBar setWaveAmplitude:amplitude];
 }
 

@@ -20,6 +20,7 @@ tests/core/test_send_risk
 tests/core/test_phrasing
 tests/core/test_cadence
 tests/core/test_bell_policy
+tests/core/test_cadence_wave
 
 # Build artifact của tests/ios
 tests/ios/bridge_test

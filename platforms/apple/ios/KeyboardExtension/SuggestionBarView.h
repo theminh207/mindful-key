@@ -26,8 +26,9 @@ FOUNDATION_EXPORT const CGFloat SuggestionBarViewHeight;
 - (void)setSuggestions:(NSArray<NSString *> *)suggestions;
 
 // Story 2.5 (AC#1/#2/#3): đặt biên độ sóng ambient CHUẨN HOÁ [0.0, 1.0] — giá trị đã qua
-// EmotionWaveAmplitude(risk) (Q1: ngưỡng chết + dâng mượt). View CHỈ vẽ hình sóng theo biên độ
-// này (màu teal cố định, không chữ, không nhánh màu theo risk) — KHÔNG tự đọc MoodBridge, KHÔNG
+// CadenceWaveAmplitude(cpm, thresholdCpm) (issue #8: ngưỡng chết + dâng mượt theo nhịp gõ, đổi
+// nguồn từ risk cũ). View CHỈ vẽ hình sóng theo biên độ này (màu teal cố định, không chữ, không
+// nhánh màu theo giá trị) — KHÔNG tự đọc MoodBridge, KHÔNG
 // tự kiểm Full Access/mk_isSecureField. Nơi gọi (KeyboardViewController) chịu trách nhiệm toàn bộ
 // việc gác cổng (AC#6/#7: không Full Access thì KHÔNG BAO GIỜ gọi hàm này; ô bảo mật thì gọi với
 // amplitude 0.0) TRƯỚC khi gọi — lazy-tạo layer sóng ở lần gọi đầu tiên, nên chưa từng gọi hàm
