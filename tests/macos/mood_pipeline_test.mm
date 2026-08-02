@@ -28,6 +28,22 @@
 //     vòng test; chỉ kiểm timer ĐÃ được lên lịch qua BellMac_NextRingDate).
 //   · Vẽ EmotionRiverView / mở popover thật (cần app + mắt người, xem docs/tasks/TEST_MATRIX.md).
 //
+//  [MINDFUL] 2026-08-02 (issue #9) — Ca 9-11 thêm mạch MỚI (song song, KHÔNG thay chuỗi trên):
+//
+//      hook bàn phím (TypingCadenceMac_RegisterKeystroke, gọi trực tiếp ở đây thay vì qua
+//      OpenKey.mm/CGEventTap thật — OpenKey.mm kéo theo toàn bộ Engine, không link nổi vào test
+//      host này) → core/mood/TypingCadence → core/mood/BellPolicy → BellMac_RingForFastTyping
+//      → NudgeCoordinatorMac_ShouldNudge/MarkNudged (quan sát GIÁN TIẾP qua đây: không có API nào
+//      trả "chuông vừa reo" trực tiếp — HĐ-2 cố ý không thêm, xem BellPolicy.h).
+//
+//  KHÔNG test ở Ca 9-11 (cũng ghi rõ để TEST_MATRIX không hiểu nhầm):
+//   · Cổng ô mật khẩu THẬT trong OpenKeyCallback (OpenKey.mm) — Ca 9 chỉ gọi được
+//     TypingCadenceMac_IsSecureFieldActive() (hàm CHỨA logic gate), không gọi được đường thật
+//     "gõ trong ô mật khẩu → không đếm nhịp" vì đường đó nằm trong OpenKey.mm/CGEventTap, cần app
+//     + Accessibility thật, không link/giả lập được ở host test.
+//   · Cooldown 45s thật của BellPolicy (kBellPolicyDefaultCooldownMs) — cần chờ 45 giây thật hoặc giả timestamp
+//     lùi rất xa; core/test_bell_policy.cpp đã khoá hành vi này ở tầng unit, không lặp lại ở đây.
+//
 
 #import <Cocoa/Cocoa.h>
 #import <Security/Security.h>
@@ -35,6 +51,8 @@
 #import "MoodWatchMac.h"
 #import "MoodStoreMac.h"
 #import "BellMac.h"
+#import "TypingCadenceMac.h"
+#import "NudgeCoordinatorMac.h"
 
 // MoodWatchMac.mm gán vào con trỏ này (bình thường Engine.cpp định nghĩa) — test không link
 // engine nên tự định nghĩa. Chuỗi engine→OnWord đã có tests/core che; ở đây vào thẳng OnWord.
@@ -308,6 +326,60 @@ int main(void) {
                    [BellMac_SoundIdFromStored(kBellSoundIdCustom) isEqualToString:kBellSoundIdCustom]);
         expectTrue("'__silent__'         → giữ nguyên, KHÔNG bị dịch thành tiếng nào",
                    [BellMac_SoundIdFromStored(kBellSoundMuteName) isEqualToString:kBellSoundMuteName]);
+
+        // ===== Ca 9: cổng ô mật khẩu (HĐ-4) — gọi được, trả về giá trị hợp lệ =====
+        // Không ép được secure input BẬT/TẮT từ host test (cần một ô NSSecureTextField thật đang
+        // focus) — chỉ xác nhận hàm gọi được, không crash, và ghi lại giá trị quan sát để người
+        // đọc log biết môi trường CI lúc chạy có đang ở secure input hay không.
+        printf("\n-- Ca 9: TypingCadenceMac_IsSecureFieldActive() -- gọi được, không crash --\n");
+        BOOL secureNow = TypingCadenceMac_IsSecureFieldActive();
+        printf("  IsSecureEventInputEnabled() lúc chạy test: %s (môi trường CI bình thường -> NO)\n",
+               secureNow ? "YES" : "NO");
+        // Khẳng định `YES` hằng thì luôn xanh kể cả khi hàm hỏng — vô giá trị. Kiểm thứ kiểm được:
+        // giá trị trả về là BOOL hợp lệ, và ỔN ĐỊNH giữa hai lời gọi liên tiếp (cổng chạy trong
+        // hook bàn phím nên không được có trạng thái lạ giữa hai phím kề nhau).
+        //
+        // ⚠️ Đây là SMOKE, không phải kiểm hành vi. Ca "gõ trong ô mật khẩu thật -> CPM không tăng"
+        // KHÔNG dựng được ở host test: nó đòi một ô mật khẩu thật đang focus của một app khác.
+        // Cần người cầm máy macOS — xem TEST_MATRIX.md.
+        expectTrue("cổng ô mật khẩu trả BOOL hợp lệ", secureNow == YES || secureNow == NO);
+        expectTrue("cổng ô mật khẩu ổn định giữa 2 lời gọi liền nhau",
+                   TypingCadenceMac_IsSecureFieldActive() == secureNow);
+
+        // ===== Ca 10: TypingCadenceMac — tắt chuông (vBell=0) + gõ nhanh vượt ngưỡng -> KHÔNG reo =====
+        // HĐ-2: enabled=false thì evaluate() không bao giờ trả true, dù CPM vượt ngưỡng xa cỡ nào.
+        printf("\n-- Ca 10: vBell=0 + gõ nhanh vượt ngưỡng thấp (test) -> KHÔNG reo --\n");
+        TypingCadenceMac_Init();
+        // Ngưỡng THẤP riêng cho test — không cần dựng cảnh gõ 200+ phím/30s mới chạm ngưỡng thật.
+        // PHẢI gọi ReloadThreshold sau khi ghi: ngưỡng được CACHE (HĐ-3, hook không đọc prefs mỗi
+        // phím), nên chỉ ghi UserDefaults thôi thì cache vẫn giữ 400 và Ca 11 sẽ "xanh" mà không
+        // kiểm được gì — 21 phím trong ~1 giây chỉ ra ~42 CPM, không bao giờ chạm 400.
+        [[NSUserDefaults standardUserDefaults] setDouble:10.0 forKey:@"vBellThresholdCPM"];
+        TypingCadenceMac_ReloadThreshold();
+        expectTrue("ngưỡng test đã vào cache (10 CPM, không phải mặc định 400)",
+                   TypingCadenceMac_ThresholdCPM() == 10.0);
+        vBell = 0;
+        expectTrue("trước khi gõ -> NudgeCoordinatorMac_ShouldNudge còn YES (chưa ai reo)",
+                   NudgeCoordinatorMac_ShouldNudge());
+        long long cadenceBaseMs = (long long)([[NSDate date] timeIntervalSince1970] * 1000.0);
+        for (int i = 0; i < 20; i++) {
+            // 20 phím trong ~1 giây -> CPM vượt xa ngưỡng test (10) trên cửa sổ trượt 30 giây.
+            TypingCadenceMac_RegisterKeystroke(cadenceBaseMs + i * 50);
+        }
+        // Bơm run loop cho block dispatch_async(main queue) bên trong RegisterKeystroke kịp chạy
+        // (nếu evaluate() trả true) — cùng kỹ thuật Ca 7 đã dùng cho BellMac_ApplySettings.
+        [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
+        expectTrue("vBell=0 -> KHÔNG reo, ShouldNudge vẫn YES", NudgeCoordinatorMac_ShouldNudge());
+
+        // ===== Ca 11: bật lại chuông -> reo NGAY, không cần gõ thêm tràng mới =====
+        // HĐ-2: tắt chuông KHÔNG tiêu lượt "đã vũ trang" — Ca 10 đã vượt ngưỡng trong lúc tắt, nên
+        // bật lại phải reo ngay ở cú vượt ngưỡng KẾ TIẾP, không phải chờ CPM tụt rồi vượt lại từ đầu.
+        printf("\n-- Ca 11: bật lại vBell=1 -> reo NGAY (đã vũ trang từ Ca 10, tắt chuông không tiêu) --\n");
+        vBell = 1;
+        TypingCadenceMac_RegisterKeystroke(cadenceBaseMs + 20 * 50 + 50);
+        [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
+        expectTrue("bật chuông lại -> reo ngay, ShouldNudge chuyển NO (BellMac_RingForFastTyping đã chạy)",
+                   !NudgeCoordinatorMac_ShouldNudge());
 
         // Dọn: xóa kho fake-home (build.sh cũng rm -rf cả HOME tạm).
         MoodStoreMac_SetConsent(NO);

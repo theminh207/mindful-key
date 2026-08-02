@@ -33,9 +33,9 @@ riêng → PR → một agent review riêng → CI xanh → merge → đóng iss
 
 | # | Issue | Agent thi công | Nhánh | PR | CI | Review | Xong |
 |---|---|---|---|---|---|---|---|
-| 1 | #7 BellPolicy | `mood-layer-agent` | `feat/core-bell-policy` | [#24](https://github.com/theminh207/mindful-key/pull/24) | ✅ 4/4 | FAIL → sửa 3 lỗi chặn → PASS | |
-| 2 | #8 Biên độ sóng | `mood-layer-agent` | `feat/core-cadence-wave-amplitude` | | | | |
-| 3 | #9 macOS mạch chuông | `platform-shell-agent` | | | | | |
+| 1 | #7 BellPolicy | `mood-layer-agent` | `feat/core-bell-policy` | [#24](https://github.com/theminh207/mindful-key/pull/24) | ✅ 4/4 | FAIL → sửa 3 lỗi chặn → PASS | ✅ merged |
+| 2 | #8 Biên độ sóng | `mood-layer-agent` | `feat/core-cadence-wave-amplitude` | [#25](https://github.com/theminh207/mindful-key/pull/25) | 🔴→✅ | FAIL → sửa 3 lỗi chặn → PASS | ✅ merged |
+| 3 | #9 macOS mạch chuông | `platform-shell-agent` | `feat/macos-cadence-bell` | | | | |
 | 4 | #10 macOS ngưỡng | `platform-shell-agent` | | | | | |
 | 5 | #11 macOS kho + soi lại | `platform-shell-agent` | | | | | |
 | 6 | #12 Gỡ gác cổng | `platform-shell-agent` | | | | | |
@@ -88,6 +88,57 @@ Lý lẽ chọn: ngưỡng do **chính người dùng** đặt, nên "đạt đ�
 **Vì sao chỉ là `chốt tạm`:** hướng ngược lại (`>`) cũng bảo vệ được, bằng đúng tinh thần *"chuông
 là lời mời để ý, không phải kết luận"* — nghiêng về im lặng khi lưỡng lự. Hai hướng đều có lý; đây
 là chỗ chủ dự án nên tự chọn chứ không phải agent.
+
+### 2026-08-02 — Q10: cooldown mặc định cho mô hình CPM là bao nhiêu?
+
+> Nguồn: `task-researcher`. Confidence: **medium** (không có benchmark ngành cho đúng loại tương
+> tác này). **Trạng thái: 🟡 chốt tạm, thi công ở #9.**
+
+**Đáp án: giữ 45000 ms (45 giây), dùng CHUNG một con số cho cả ba vỏ.**
+
+**Gốc gác số 45 cũ: không tìm thấy lý do.** `git log --all -S "kCooldownSeconds"` chỉ ra một commit
+"Initial commit"; không ADR, không PROGRESS, không comment nào giải thích vì sao 45 chứ không phải
+30 hay 60. Đây là kết luận, không phải giả định — và là lý do câu hỏi này tồn tại.
+
+**Lập luận chính không đến từ nguồn ngoài mà từ tương tác nội tại `BellPolicy` × `TypingCadence`**
+(phần không tra Google được):
+
+Cổng vũ trang đòi CPM tụt dưới `0.9 × ngưỡng` (= 360 với ngưỡng 400) mới được reo lại. Dựng kịch
+bản bằng số — người gõ đều 400 CPM (≈6.67 phím/giây), dừng T giây, rồi gõ lại:
+
+- **Dừng bao lâu thì tái vũ trang?** Cửa sổ trượt quên phím cũ gần như tuyến tính:
+  `CPM(t) = 400 × (30−t)/30`. Giải `CPM(t) = 360` → **t ≈ 3 giây**. Một nhịp nghỉ tay rất tự nhiên
+  (ngẫm câu, với tay) đã đủ tái vũ trang.
+- **Gõ lại bao lâu thì vượt 400 lần nữa?** Gõ lại đúng 400 CPM thì CPM nằm lì ở 360 gần hết chu kỳ
+  rồi mới vọt lên ở giây thứ 30 (cửa sổ cần trọn 30 giây để quên hẳn cú dừng). Gõ lại nhanh hơn —
+  ví dụ 500 CPM, rất hợp lý khi vừa nghỉ tay xong — thì **≈12 giây**.
+- **Kết luận số:** một chu kỳ "gõ nhanh → nghỉ ngắn → gõ nhanh lại" tự nó đã mất **~15–30 giây** mới
+  vượt ngưỡng lần nữa, hoàn toàn do cổng vũ trang + cửa sổ 30 giây. Nên **cooldown dưới ~20–30 giây
+  gần như vô nghĩa** (cơ chế khác đã chặn từ trước), còn **45 giây cắt thêm ~15–30 giây thật** — tức
+  có tác dụng, không phải số trang trí.
+
+**Vì sao không kéo dài hơn:** công cụ chống RSI (Workrave) đặt micro-pause 3 phút / nghỉ 45 phút —
+thang **phút**, vì mục tiêu là ngăn mỏi cơ tích luỹ. Kéo chuông lên thang đó biến nó thành "ép
+nghỉ", lệch tinh thần §4.3 (*"chuông là lời mời để ý, không phải kết luận"*).
+
+**Vì sao không cho người dùng chỉnh:** `.claude/rules/02-simplicity-first.md` cấm thêm cấu hình
+không ai yêu cầu. Hiến chương đã trao **ngưỡng CPM** cho người dùng (4 mức); không có yêu cầu nào
+về việc trao thêm quyền chỉnh cooldown.
+
+**Vì sao ba vỏ dùng chung một số:** CPM là phép đo thuần, không phụ thuộc OS — không có lý do kỹ
+thuật nào để lệch. Lệch số chính là bẫy README §6 (`NudgeCoordinatorIOS.h` từng *"sao y bản chính
+từ macOS"*). Thi công: hằng `kBellPolicyDefaultCooldownMs` đặt ở `core/mood/BellPolicy.h`, vỏ vẫn là
+nơi **truyền** giá trị vào constructor (core không tự đọc settings) — chỉ con số mặc định dùng chung.
+
+**Caveat:** toán trên giả định phím rải **đều** trong cửa sổ; gõ người thật có cụm và khoảng dừng
+không đều, nên 3s/12s/15–30s là **bậc độ lớn**, không phải hằng số chính xác. Và **chưa ai gõ thật
+để kiểm** — đúng caveat đã áp cho hysteresis 0.9 ở #7. Không có tài liệu ngoài đời nào đo trực tiếp
+"khoảng cách tối thiểu giữa hai lần chuông nhịp-gõ"; Workrave và tài liệu notification-fatigue chỉ
+cho biết **thứ tự độ lớn hợp lý**, nên confidence là medium.
+
+**Nguồn:** [Workrave — Timers settings](https://workrave.org/docs/settings/timers/) ·
+repo `core/mood/BellPolicy.{h,cpp}`, `core/mood/TypingCadence.h`,
+`platforms/apple/macos/NudgeCoordinatorMac.mm:11` (`kCooldownSeconds = 45.0`, mô hình cũ).
 
 ### 2026-08-02 — Q4: quy CPM về biên độ con sóng `~` bằng công thức nào, đặt ở đâu?
 

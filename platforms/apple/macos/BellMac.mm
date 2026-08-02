@@ -9,6 +9,7 @@
 #import <UserNotifications/UserNotifications.h>
 #include "BellMac.h"
 #include "NudgeCoordinatorMac.h"
+#include "TypingCadenceMac.h"
 #import "BrandColors.h"
 
 int vBell = 0;
@@ -141,14 +142,16 @@ static NSString *PROMPTS[] = {
 };
 static const int PROMPT_COUNT = sizeof(PROMPTS) / sizeof(PROMPTS[0]);
 
-// [MINDFUL] Bước 7 — câu riêng cho lúc rung vì phát hiện CHUỖI câu căng thẳng (khác câu rung
-// theo lịch cố định ở trên): nói thẳng lý do rung, không giả vờ đây là chuông định kỳ.
-static NSString *PROMPTS_TENSE_STREAK[] = {
-    @"Nãy giờ có vẻ căng. Một hơi thở chứ? Không cần vội trả lời ai cả.",
-    @"Vài câu gõ gần đây nghe hơi nặng. Dừng một nhịp, để đầu óc dịu lại đã.",
-    @"Có vẻ bạn đang dồn nén. Rời bàn phím 1 phút, quay lại sẽ rõ ràng hơn.",
+// [MINDFUL] 2026-08-02 (issue #9) — câu riêng cho lúc rung vì NHỊP GÕ nhanh (khác câu rung theo
+// lịch cố định ở trên): nói về TAY đang gõ nhanh, KHÔNG suy diễn gì về tâm người gõ (HĐ-3 cấm quy
+// tốc độ gõ thành trạng thái tâm). Thay hẳn PROMPTS_TENSE_STREAK cũ — bản cũ nói "câu nghe nặng"
+// (đọc nội dung), không còn đúng sự thật vì chuông giờ không đọc chữ nào cả.
+static NSString *PROMPTS_FAST_TYPING[] = {
+    @"Tay bạn đang gõ khá nhanh. Một hơi thở chứ? Không cần vội trả lời ai cả.",
+    @"Nhịp gõ vừa rồi khá dồn dập. Dừng một nhịp, để tay thả lỏng đã.",
+    @"Bàn phím đang chạy nhanh. Rời tay 1 phút, quay lại sẽ thong thả hơn.",
 };
-static const int PROMPTS_TENSE_STREAK_COUNT = sizeof(PROMPTS_TENSE_STREAK) / sizeof(PROMPTS_TENSE_STREAK[0]);
+static const int PROMPTS_FAST_TYPING_COUNT = sizeof(PROMPTS_FAST_TYPING) / sizeof(PROMPTS_FAST_TYPING[0]);
 
 static BOOL isInBellRange(NSInteger hour) {
     if (vBellFrom <= vBellTo)
@@ -256,16 +259,25 @@ static void bellTick(NSTimer *timer) {
     NudgeCoordinatorMac_MarkNudged();
 }
 
-void BellMac_RingForTenseStreak(void) {
+void BellMac_RingForFastTyping(void) {
+    // [MINDFUL] KHÔNG kiểm `NudgeCoordinatorMac_ShouldNudge()` ở đây — cổng đó đã được hỏi TRƯỚC
+    // `BellPolicy::evaluate()` trong TypingCadenceMac.mm (gộp vào tham số `snoozed`). Kiểm lại ở
+    // đây là dựng cooldown THỨ HAI sau quyết định, và hậu quả không phải "chuông im một lần" mà là
+    // "chuông câm dài": evaluate() đã tiêu lượt vũ trang rồi, nên phải chờ CPM tụt dưới 0.9×ngưỡng
+    // mới có cơ hội lại. Xem giải trình đầy đủ ở TypingCadenceMac.mm.
     if (!vBell || isSnoozed())
-        return;
-    if (!NudgeCoordinatorMac_ShouldNudge())
         return;
 
     static NSInteger idx = 0;
     idx++;
-    showBellPrompt(PROMPTS_TENSE_STREAK[idx % PROMPTS_TENSE_STREAK_COUNT]);
+    showBellPrompt(PROMPTS_FAST_TYPING[idx % PROMPTS_FAST_TYPING_COUNT]);
     NudgeCoordinatorMac_MarkNudged();
+}
+
+// [MINDFUL] 2026-08-02 (issue #9) — xem hợp đồng ở BellMac.h. Đọc thẳng `isSnoozed()` nội bộ đã
+// có ở trên, không dựng biến/đồng hồ thứ hai.
+BOOL BellMac_IsSnoozed(void) {
+    return isSnoozed();
 }
 
 void BellMac_Snooze(int minutes) {
@@ -296,6 +308,12 @@ NSDate * BellMac_NextRingDate(void) {
 }
 
 void BellMac_ApplySettings() {
+    // [MINDFUL] (#9) Ngưỡng CPM của chuông nhịp gõ được CACHE trong TypingCadenceMac (hook bàn phím
+    // đọc nó mỗi phím — không được chạm UserDefaults ở đó, HĐ-3). Đây là nơi đã đọc lại toàn bộ
+    // prefs chuông, nên cũng là nơi đúng để làm mới cache — nếu không, người dùng đổi ngưỡng ở #10
+    // sẽ không có hiệu lực cho tới lần khởi động sau.
+    TypingCadenceMac_ReloadThreshold();
+
     dispatch_async(dispatch_get_main_queue(), ^{
         if (g_bellTimer != nil) {
             [g_bellTimer invalidate];

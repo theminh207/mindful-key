@@ -20,18 +20,8 @@ void NudgeCoordinatorMac_MarkNudged(void) {
     g_lastNudgeAt = [NSDate timeIntervalSinceReferenceDate];
 }
 
-// [MINDFUL] Story 1.5 — xem hợp đồng ở NudgeCoordinatorMac.h. Default 3 khi chưa từng lưu
-// vBellSensitivity để giữ nguyên hành vi hiện tại.
-int NudgeCoordinatorMac_TenseStreakTrigger(void) {
-    NSInteger sensitivity = [[NSUserDefaults standardUserDefaults] integerForKey:@"vBellSensitivity"];
-    switch (sensitivity) {
-        case 1:  return 5;   // Ít nhạy — cần chuỗi dài hơn mới rung
-        case 3:  return 2;   // Nhạy — rung sớm hơn
-        case 2:              // Vừa
-        default: return 3;   // gồm cả trường hợp chưa từng lưu (integerForKey trả 0)
-    }
-}
-
+// [MINDFUL] 2026-08-02 (issue #9) — xem hợp đồng ở NudgeCoordinatorMac.h. Còn sống chỉ cho
+// MoodPhrasingMac/ReflectionScreenMac (nhật ký send-risk cũ), KHÔNG còn liên quan chuông.
 double NudgeCoordinatorMac_RippleThreshold(void) {
     NSInteger sensitivity = [[NSUserDefaults standardUserDefaults] integerForKey:@"vBellSensitivity"];
     switch (sensitivity) {

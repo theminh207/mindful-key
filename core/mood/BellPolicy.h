@@ -64,6 +64,21 @@
 // người viết UI sau đọc rồi chép thẳng ra màn hình.
 extern const double kBellPolicyHysteresisFactor;   // 0.9
 
+// Khoảng lặng tối thiểu MẶC ĐỊNH giữa hai lần chuông. Vỏ vẫn truyền giá trị vào constructor (lớp
+// này không tự đọc settings) — hằng này chỉ để cả ba vỏ lấy CÙNG một con số mà không phải chép
+// `45000` ba lần. "Một con số chép vào ba vỏ rồi trôi lệch" là kiểu hỏng dự án đã trả giá bốn lần;
+// `git grep kBellPolicyDefaultCooldownMs` thấy hết mọi nơi dùng.
+//
+// 🟡 CHỐT TẠM (Q10, spec/typing-cadence-bell/README.md §5) — 45 giây là con số kế thừa từ MÔ HÌNH
+// CŨ (đếm chuỗi câu căng liên tiếp), và không có ADR/ghi chú nào giải thích vì sao là 45 chứ không
+// phải 30 hay 60. Research 2026-08-02 giữ nó lại có lý do, không phải vì quán tính: với cổng vũ
+// trang + cửa sổ trượt 30 giây, một chu kỳ "gõ nhanh → nghỉ tay ngắn → gõ nhanh lại" tự nó đã mất
+// ~15-30 giây mới vượt ngưỡng lần nữa. Nên cooldown DƯỚI ~20-30 giây gần như vô nghĩa (cơ chế khác
+// đã chặn từ trước), còn 45 giây cắt thêm ~15-30 giây thật — có tác dụng, mà vẫn xa mức "ép nghỉ"
+// hàng phút kiểu công cụ chống RSI, đúng tinh thần "chuông là lời mời, không phải kết luận".
+// Chưa ai gõ thật để kiểm; xem docs/tasks/typing-cadence-bell-execution.md §2.
+extern const int64_t kBellPolicyDefaultCooldownMs;  // 45000
+
 // TIỀN ĐIỀU KIỆN CỦA `thresholdCpm`: phải > 0. Mức "Tắt chuông" (Q1) biểu đạt bằng `enabled=false`,
 // **KHÔNG** bằng `thresholdCpm=0`. Vì sao phải nói ra: với `thresholdCpm=0` thì cổng chống rung là
 // `cpm < 0` — không bao giờ đúng — nên chuông reo đúng MỘT lần rồi CÂM VĨNH VIỄN. Đây là ca một vỏ
